@@ -7,19 +7,50 @@
   <link rel="stylesheet" href="auth.css">
 </head>
 <body>
-  <div class="auth-box">
-    <h2>Đăng ký tài khoản</h2>
+  <main class="auth-page">
+    <section class="auth-box">
+      <a href="index.html" class="auth-brand">🍔 FoodHub</a>
+      <p class="auth-kicker">Tạo tài khoản mới</p>
+      <h1>Đăng ký</h1>
 
-    <form onsubmit="register(event)">
-      <input type="text" id="fullname" placeholder="Họ và tên" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Mật khẩu" required>
-      <button type="submit">Đăng ký</button>
-    </form>
+      <div class="social-grid" aria-label="Đăng ký nhanh">
+        <button type="button" class="social-btn google" onclick="showComingSoon('Google')">
+          <span>G</span>
+          Google
+        </button>
+        <button type="button" class="social-btn facebook" onclick="showComingSoon('Facebook')">
+          <span>f</span>
+          Facebook
+        </button>
+      </div>
 
-    <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
-    <p><a href="index.html">Về trang chủ</a></p>
-  </div>
+      <div class="auth-divider"><span>hoặc tạo bằng email</span></div>
+
+      <form onsubmit="register(event)">
+        <label>
+          Họ và tên
+          <input type="text" id="fullname" placeholder="Nguyễn Văn A" autocomplete="name" required>
+        </label>
+
+        <label>
+          Email
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+
+        <label>
+          Mật khẩu
+          <input type="password" id="password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" required>
+        </label>
+
+        <button type="submit" class="primary-btn">Tạo tài khoản</button>
+      </form>
+
+      <p class="auth-switch">Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+      <a href="index.html" class="home-link">Về trang chủ</a>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
   <script src="auth.js"></script>
