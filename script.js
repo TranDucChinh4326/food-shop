@@ -1,4 +1,4 @@
-const API_URL = "https://2206-171-252-153-58.ngrok-free.app/api/foods";
+const API_URL = "https://excluded-storm-amendment-document.trycloudflare.com/api/foods";
 
 let foods = [];
 let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];
