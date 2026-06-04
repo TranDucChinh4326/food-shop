@@ -26,6 +26,7 @@ header {
   font-size: 26px;
   font-weight: bold;
   color: #ff5722;
+  text-decoration: none;
 }
 
 nav a {
@@ -118,6 +119,22 @@ nav a:hover {
   width: 100%;
   border-radius: 30px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.page-title {
+  padding: 54px 8% 22px;
+  text-align: center;
+}
+
+.page-title h1 {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+
+.page-title p {
+  color: #555;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
 .categories,

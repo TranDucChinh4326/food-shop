@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ hàng - FoodHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">🍔 FoodHub</a>
+
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="menu.html">Thực đơn</a>
+      <a href="cart.html">Giỏ hàng</a>
+      <a href="track.html">Tra cứu đơn</a>
+      <a href="contact.html">Liên hệ</a>
+    </nav>
+
+    <div id="user-area">
+      <a href="login.html">Đăng nhập</a>
+    </div>
+
+    <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
+  </header>
+
+  <main>
+    <section class="page-title">
+      <h1>Giỏ hàng</h1>
+      <p>Kiểm tra món ăn và điền thông tin giao hàng.</p>
+    </section>
+
+    <section class="cart-section">
+      <h2>Giỏ hàng của bạn</h2>
+      <div id="cart-items"></div>
+
+      <div class="cart-total">
+        Tổng tiền: <span id="total-price">0đ</span>
+      </div>
+    </section>
+
+    <section class="order-section">
+      <h2>Thông tin đặt hàng</h2>
+
+      <form id="orderForm" onsubmit="submitOrder(event)">
+        <input type="text" id="customerName" placeholder="Họ và tên" required>
+        <input type="tel" id="customerPhone" placeholder="Số điện thoại" required>
+        <input type="text" id="customerAddress" placeholder="Địa chỉ giao hàng" required>
+        <textarea id="customerNote" placeholder="Ghi chú thêm"></textarea>
+        <button type="submit" class="btn">Xác nhận đặt hàng</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 FoodHub. All rights reserved.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -16,11 +16,10 @@ async function register(event) {
       },
       body: JSON.stringify({ fullname, email, password })
     });
-
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.message);
+      alert(data.message || "Không thể đăng ký.");
       return;
     }
 
@@ -46,11 +45,10 @@ async function login(event) {
       },
       body: JSON.stringify({ email, password })
     });
-
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.message);
+      alert(data.message || "Không thể đăng nhập.");
       return;
     }
 

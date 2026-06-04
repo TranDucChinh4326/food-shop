@@ -1,130 +1,71 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FoodHub - Đặt đồ ăn online</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <a class="logo" href="index.html">🍔 FoodHub</a>
 
-<header>
-  <div class="logo">🍔 FoodHub</div>
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="menu.html">Thực đơn</a>
+      <a href="cart.html">Giỏ hàng</a>
+      <a href="track.html">Tra cứu đơn</a>
+      <a href="contact.html">Liên hệ</a>
+    </nav>
 
-  <nav>
-    <a href="#">Trang chủ</a>
-    <a href="#menu">Thực đơn</a>
-    <a href="#cart">Giỏ hàng</a>
-    <a href="#contact">Liên hệ</a>
-  </nav>
-
-  <div id="user-area">
-    <a href="login.html">Đăng nhập</a>
-  </div>
-
-  <a href="#cart" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
-</header>
-
-<section class="hero">
-  <div class="hero-text">
-    <span class="badge">Giao nhanh trong 30 phút</span>
-    <h1>Đồ ăn ngon giao tận nơi</h1>
-    <p>Đặt món nhanh chóng, thực đơn đa dạng, giá cả hợp lý và giao hàng tận tay.</p>
-    <a href="#menu" class="btn">Xem thực đơn</a>
-  </div>
-
-  <div class="hero-img">
-    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38" alt="Food">
-  </div>
-</section>
-
-<section class="categories">
-  <h2>Danh mục món ăn</h2>
-
-  <div class="filter-box">
-    <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="renderFoods()">
-
-    <select id="categoryFilter" onchange="renderFoods()">
-      <option value="all">Tất cả</option>
-      <option value="burger">Burger</option>
-      <option value="pizza">Pizza</option>
-      <option value="noodle">Mì & Phở</option>
-      <option value="drink">Đồ uống</option>
-    </select>
-  </div>
-</section>
-
-<section id="menu" class="menu">
-  <h2>Món ăn nổi bật</h2>
-  <div id="food-list" class="food-list"></div>
-</section>
-
-<section id="cart" class="cart-section">
-  <h2>Giỏ hàng của bạn</h2>
-
-  <div id="cart-items"></div>
-
-  <div class="cart-total">
-    Tổng tiền: <span id="total-price">0đ</span>
-  </div>
-</section>
-
-<section class="order-section">
-  <h2>Thông tin đặt hàng</h2>
-
-  <form id="orderForm" onsubmit="submitOrder(event)">
-    <input type="text" id="customerName" placeholder="Họ và tên" required>
-    <input type="tel" id="customerPhone" placeholder="Số điện thoại" required>
-    <input type="text" id="customerAddress" placeholder="Địa chỉ giao hàng" required>
-    <textarea id="customerNote" placeholder="Ghi chú thêm"></textarea>
-    <button type="submit" class="btn">Xác nhận đặt hàng</button>
-  </form>
-</section>
-
-<section class="track-section">
-  <h2>Tra cứu đơn hàng</h2>
-
-  <form class="track-form" onsubmit="trackOrder(event)">
-    <input type="number" id="trackOrderId" placeholder="Nhập mã đơn hàng" min="1" required>
-    <button type="submit" class="btn">Tra cứu</button>
-  </form>
-
-  <div id="track-result" class="track-result"></div>
-</section>
-
-<section class="about">
-  <h2>Vì sao chọn FoodHub?</h2>
-
-  <div class="about-list">
-    <div>
-      <h3>🚀 Giao nhanh</h3>
-      <p>Món ăn được giao nhanh chóng, đảm bảo nóng hổi khi đến tay khách hàng.</p>
+    <div id="user-area">
+      <a href="login.html">Đăng nhập</a>
     </div>
 
-    <div>
-      <h3>🍱 Đa dạng món</h3>
-      <p>Thực đơn phong phú với burger, pizza, mì cay, nước uống và nhiều món khác.</p>
-    </div>
+    <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
+  </header>
 
-    <div>
-      <h3>💰 Giá hợp lý</h3>
-      <p>Giá cả phù hợp với học sinh, sinh viên và dân văn phòng.</p>
-    </div>
-  </div>
-</section>
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <span class="badge">Giao nhanh trong 30 phút</span>
+        <h1>Đồ ăn ngon giao tận nơi</h1>
+        <p>Đặt món nhanh chóng, thực đơn đa dạng, giá cả hợp lý và giao hàng tận tay.</p>
+        <a href="menu.html" class="btn">Xem thực đơn</a>
+      </div>
 
-<section id="contact" class="contact">
-  <h2>Liên hệ</h2>
-  <p>Hotline: 0123 456 789</p>
-  <p>Email: foodhub@gmail.com</p>
-  <p>Địa chỉ: Cần Thơ, Việt Nam</p>
-</section>
+      <div class="hero-img">
+        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38" alt="Pizza nóng hổi">
+      </div>
+    </section>
 
-<footer>
-  <p>© 2026 FoodHub. All rights reserved.</p>
-</footer>
+    <section class="about">
+      <h2>Vì sao chọn FoodHub?</h2>
 
-<script src="config.js"></script>
-<script src="script.js"></script>
+      <div class="about-list">
+        <div>
+          <h3>🚀 Giao nhanh</h3>
+          <p>Món ăn được giao nhanh chóng, đảm bảo nóng hổi khi đến tay khách hàng.</p>
+        </div>
+
+        <div>
+          <h3>🍱 Đa dạng món</h3>
+          <p>Thực đơn phong phú với burger, pizza, mì cay, nước uống và nhiều món khác.</p>
+        </div>
+
+        <div>
+          <h3>💰 Giá hợp lý</h3>
+          <p>Giá cả phù hợp với học sinh, sinh viên và dân văn phòng.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 FoodHub. All rights reserved.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

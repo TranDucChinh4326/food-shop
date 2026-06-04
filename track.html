@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tra cứu đơn hàng - FoodHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">🍔 FoodHub</a>
+
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="menu.html">Thực đơn</a>
+      <a href="cart.html">Giỏ hàng</a>
+      <a href="track.html">Tra cứu đơn</a>
+      <a href="contact.html">Liên hệ</a>
+    </nav>
+
+    <div id="user-area">
+      <a href="login.html">Đăng nhập</a>
+    </div>
+
+    <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
+  </header>
+
+  <main>
+    <section class="page-title">
+      <h1>Tra cứu đơn hàng</h1>
+      <p>Nhập mã đơn để xem trạng thái xử lý và chi tiết món đã đặt.</p>
+    </section>
+
+    <section class="track-section">
+      <h2>Thông tin đơn hàng</h2>
+
+      <form class="track-form" onsubmit="trackOrder(event)">
+        <input type="number" id="trackOrderId" placeholder="Nhập mã đơn hàng" min="1" required>
+        <button type="submit" class="btn">Tra cứu</button>
+      </form>
+
+      <div id="track-result" class="track-result"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 FoodHub. All rights reserved.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

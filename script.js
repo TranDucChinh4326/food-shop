@@ -28,14 +28,24 @@ function getCategoryKey(categoryId) {
   }
 }
 
+function updateCartCount() {
+  const cartCount = document.getElementById("cart-count");
+
+  if (!cartCount) return;
+
+  cartCount.textContent = cart.reduce((sum, item) => sum + Number(item.quantity), 0);
+}
+
 async function loadFoods() {
   const foodList = document.getElementById("food-list");
+
+  if (!foodList) return;
+
   foodList.innerHTML = "<p>Đang tải món ăn...</p>";
 
   try {
     const response = await fetch(API_URL);
     foods = await response.json();
-
     foods = foods.map(food => ({
       id: food.id,
       name: food.name,
@@ -54,33 +64,33 @@ async function loadFoods() {
 
 function renderFoods() {
   const foodList = document.getElementById("food-list");
-  const searchValue = document.getElementById("searchInput").value.toLowerCase();
-  const categoryValue = document.getElementById("categoryFilter").value;
+  const searchInput = document.getElementById("searchInput");
+  const categoryFilter = document.getElementById("categoryFilter");
 
+  if (!foodList || !searchInput || !categoryFilter) return;
+
+  const searchValue = searchInput.value.toLowerCase();
+  const categoryValue = categoryFilter.value;
   const filteredFoods = foods.filter(food => {
     const matchSearch = food.name.toLowerCase().includes(searchValue);
     const matchCategory = categoryValue === "all" || food.category === categoryValue;
     return matchSearch && matchCategory;
   });
 
-  foodList.innerHTML = "";
-
   if (filteredFoods.length === 0) {
     foodList.innerHTML = "<p>Không tìm thấy món ăn phù hợp.</p>";
     return;
   }
 
-  filteredFoods.forEach(food => {
-    foodList.innerHTML += `
-      <div class="food-card">
-        <img src="${food.image}" alt="${food.name}">
-        <h3>${food.name}</h3>
-        <p>${food.desc}</p>
-        <span>${formatMoney(food.price)}</span>
-        <button onclick="addToCart(${food.id})">Thêm vào giỏ</button>
-      </div>
-    `;
-  });
+  foodList.innerHTML = filteredFoods.map(food => `
+    <div class="food-card">
+      <img src="${food.image}" alt="${food.name}">
+      <h3>${food.name}</h3>
+      <p>${food.desc || ""}</p>
+      <span>${formatMoney(food.price)}</span>
+      <button onclick="addToCart(${food.id})">Thêm vào giỏ</button>
+    </div>
+  `).join("");
 }
 
 function addToCart(foodId) {
@@ -106,32 +116,31 @@ function addToCart(foodId) {
 
   saveCart();
   renderCart();
-  alert("Đã thêm " + food.name + " vào giỏ hàng!");
+  updateCartCount();
+  alert(`Đã thêm ${food.name} vào giỏ hàng!`);
 }
 
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
   const totalPrice = document.getElementById("total-price");
-  const cartCount = document.getElementById("cart-count");
 
-  cartItems.innerHTML = "";
+  updateCartCount();
+
+  if (!cartItems || !totalPrice) return;
 
   if (cart.length === 0) {
     cartItems.innerHTML = `<p class="empty-cart">Giỏ hàng đang trống.</p>`;
     totalPrice.textContent = "0đ";
-    cartCount.textContent = "0";
     return;
   }
 
   let total = 0;
-  let count = 0;
 
-  cart.forEach(item => {
+  cartItems.innerHTML = cart.map(item => {
     const itemTotal = Number(item.price) * Number(item.quantity);
     total += itemTotal;
-    count += Number(item.quantity);
 
-    cartItems.innerHTML += `
+    return `
       <div class="cart-item">
         <div>
           <h4>${item.name}</h4>
@@ -145,14 +154,12 @@ function renderCart() {
         </div>
 
         <strong>${formatMoney(itemTotal)}</strong>
-
         <button class="remove-btn" onclick="removeItem(${item.id})">Xóa</button>
       </div>
     `;
-  });
+  }).join("");
 
   totalPrice.textContent = formatMoney(total);
-  cartCount.textContent = count;
 }
 
 function changeQuantity(foodId, amount) {
@@ -163,7 +170,7 @@ function changeQuantity(foodId, amount) {
   item.quantity += amount;
 
   if (item.quantity <= 0) {
-    cart = cart.filter(item => item.id !== foodId);
+    cart = cart.filter(cartItem => cartItem.id !== foodId);
   }
 
   saveCart();
@@ -212,7 +219,6 @@ async function submitOrder(event) {
         }))
       })
     });
-
     const data = await response.json();
 
     if (!response.ok) {
@@ -222,10 +228,10 @@ async function submitOrder(event) {
 
     alert(
       "Đặt hàng thành công!\n\n" +
-      "Mã đơn: #" + data.order.id + "\n" +
-      "Khách hàng: " + name + "\n" +
-      "Số điện thoại: " + phone + "\n" +
-      "Địa chỉ: " + address + "\n\n" +
+      `Mã đơn: #${data.order.id}\n` +
+      `Khách hàng: ${name}\n` +
+      `Số điện thoại: ${phone}\n` +
+      `Địa chỉ: ${address}\n\n` +
       "Cảm ơn bạn đã đặt hàng tại FoodHub."
     );
 
@@ -233,6 +239,7 @@ async function submitOrder(event) {
     saveCart();
     renderCart();
     document.getElementById("orderForm").reset();
+    window.location.href = `track.html?order=${data.order.id}`;
   } catch (error) {
     alert("Không kết nối được server đặt hàng.");
     console.error(error);
@@ -243,15 +250,17 @@ async function submitOrder(event) {
 }
 
 async function trackOrder(event) {
-  event.preventDefault();
+  if (event) event.preventDefault();
 
-  const orderId = document.getElementById("trackOrderId").value;
+  const input = document.getElementById("trackOrderId");
   const resultBox = document.getElementById("track-result");
+
+  if (!input || !resultBox || !input.value) return;
 
   resultBox.innerHTML = "<p>Đang tra cứu đơn hàng...</p>";
 
   try {
-    const response = await fetch(`${ORDERS_API}/${orderId}`);
+    const response = await fetch(`${ORDERS_API}/${input.value}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -295,8 +304,6 @@ function getOrderStatusLabel(status) {
   return labels[status] || status;
 }
 
-loadFoods();
-renderCart();
 function renderUser() {
   const userArea = document.getElementById("user-area");
 
@@ -326,4 +333,18 @@ function logout() {
   window.location.href = "index.html";
 }
 
+function initTrackPage() {
+  const input = document.getElementById("trackOrderId");
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get("order");
+
+  if (input && orderId) {
+    input.value = orderId;
+    trackOrder();
+  }
+}
+
+loadFoods();
+renderCart();
 renderUser();
+initTrackPage();
