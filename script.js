@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/foods";
+const API_URL = "https://2206-171-252-153-58.ngrok-free.app/api/foods";
 
 let foods = [];
 let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];

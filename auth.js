@@ -1,4 +1,4 @@
-const AUTH_API = "http://localhost:3000/api/auth";
+const AUTH_API = "https://2206-171-252-153-58.ngrok-free.app/api/auth";
 
 async function register(event) {
   event.preventDefault();
