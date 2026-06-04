@@ -1,62 +1,53 @@
-const foods = [
-  {
-    id: 1,
-    name: "Burger bò phô mai",
-    category: "burger",
-    price: 59000,
-    desc: "Burger bò mềm, phô mai béo ngậy, rau tươi và sốt đặc biệt.",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd"
-  },
-  {
-    id: 2,
-    name: "Pizza hải sản",
-    category: "pizza",
-    price: 129000,
-    desc: "Pizza giòn thơm, topping hải sản tươi ngon, phô mai kéo sợi.",
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591"
-  },
-  {
-    id: 3,
-    name: "Mì cay đặc biệt",
-    category: "noodle",
-    price: 49000,
-    desc: "Mì cay nóng hổi, nước dùng đậm vị, topping đầy đủ.",
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624"
-  },
-  {
-    id: 4,
-    name: "Gà rán giòn cay",
-    category: "burger",
-    price: 69000,
-    desc: "Gà rán vàng giòn, vị cay nhẹ, ăn kèm tương ớt.",
-    image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58"
-  },
-  {
-    id: 5,
-    name: "Trà đào cam sả",
-    category: "drink",
-    price: 29000,
-    desc: "Trà đào thanh mát, hương cam sả thơm nhẹ.",
-    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc"
-  },
-  {
-    id: 6,
-    name: "Phở bò tái",
-    category: "noodle",
-    price: 55000,
-    desc: "Phở bò nóng hổi, nước dùng ngọt thanh, thịt bò mềm.",
-    image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43"
-  }
-];
+const API_URL = "http://localhost:3000/api/foods";
 
+let foods = [];
 let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];
 
 function formatMoney(number) {
-  return number.toLocaleString("vi-VN") + "đ";
+  return Number(number).toLocaleString("vi-VN") + "đ";
 }
 
 function saveCart() {
   localStorage.setItem("foodhub_cart", JSON.stringify(cart));
+}
+
+function getCategoryKey(categoryId) {
+  switch (Number(categoryId)) {
+    case 1:
+      return "burger";
+    case 2:
+      return "pizza";
+    case 3:
+      return "noodle";
+    case 4:
+      return "drink";
+    default:
+      return "other";
+  }
+}
+
+async function loadFoods() {
+  const foodList = document.getElementById("food-list");
+  foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+
+  try {
+    const response = await fetch(API_URL);
+    foods = await response.json();
+
+    foods = foods.map(food => ({
+      id: food.id,
+      name: food.name,
+      category: getCategoryKey(food.category_id),
+      price: food.price,
+      desc: food.description,
+      image: food.image
+    }));
+
+    renderFoods();
+  } catch (error) {
+    console.error("Lỗi tải món ăn:", error);
+    foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
+  }
 }
 
 function renderFoods() {
@@ -92,6 +83,12 @@ function renderFoods() {
 
 function addToCart(foodId) {
   const food = foods.find(item => item.id === foodId);
+
+  if (!food) {
+    alert("Không tìm thấy món ăn.");
+    return;
+  }
+
   const itemInCart = cart.find(item => item.id === foodId);
 
   if (itemInCart) {
@@ -128,9 +125,9 @@ function renderCart() {
   let count = 0;
 
   cart.forEach(item => {
-    const itemTotal = item.price * item.quantity;
+    const itemTotal = Number(item.price) * Number(item.quantity);
     total += itemTotal;
-    count += item.quantity;
+    count += Number(item.quantity);
 
     cartItems.innerHTML += `
       <div class="cart-item">
@@ -203,5 +200,30 @@ function submitOrder(event) {
   document.getElementById("orderForm").reset();
 }
 
-renderFoods();
+loadFoods();
 renderCart();
+function renderUser() {
+  const userArea = document.getElementById("user-area");
+
+  if (!userArea) return;
+
+  const user = JSON.parse(localStorage.getItem("foodhub_user"));
+
+  if (user) {
+    userArea.innerHTML = `
+      <span class="user-name">👤 ${user.fullname}</span>
+      <button onclick="logout()" class="logout-btn">Đăng xuất</button>
+    `;
+  } else {
+    userArea.innerHTML = `<a href="login.html">Đăng nhập</a>`;
+  }
+}
+
+function logout() {
+  localStorage.removeItem("foodhub_token");
+  localStorage.removeItem("foodhub_user");
+  alert("Đã đăng xuất");
+  window.location.href = "index.html";
+}
+
+renderUser();

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký - FoodHub</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h2>Đăng ký tài khoản</h2>
+
+  <form onsubmit="register(event)">
+    <input type="text" id="fullname" placeholder="Họ và tên" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Mật khẩu" required>
+    <button type="submit">Đăng ký</button>
+  </form>
+
+  <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+</div>
+
+<script src="auth.js"></script>
+</body>
+</html>
