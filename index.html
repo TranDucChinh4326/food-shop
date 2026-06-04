@@ -81,6 +81,17 @@
   </form>
 </section>
 
+<section class="track-section">
+  <h2>Tra cứu đơn hàng</h2>
+
+  <form class="track-form" onsubmit="trackOrder(event)">
+    <input type="number" id="trackOrderId" placeholder="Nhập mã đơn hàng" min="1" required>
+    <button type="submit" class="btn">Tra cứu</button>
+  </form>
+
+  <div id="track-result" class="track-result"></div>
+</section>
+
 <section class="about">
   <h2>Vì sao chọn FoodHub?</h2>
 

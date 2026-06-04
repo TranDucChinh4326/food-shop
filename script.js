@@ -242,6 +242,59 @@ async function submitOrder(event) {
   }
 }
 
+async function trackOrder(event) {
+  event.preventDefault();
+
+  const orderId = document.getElementById("trackOrderId").value;
+  const resultBox = document.getElementById("track-result");
+
+  resultBox.innerHTML = "<p>Đang tra cứu đơn hàng...</p>";
+
+  try {
+    const response = await fetch(`${ORDERS_API}/${orderId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      resultBox.innerHTML = `<p>${data.message || "Không tìm thấy đơn hàng."}</p>`;
+      return;
+    }
+
+    resultBox.innerHTML = `
+      <div class="track-card">
+        <h3>Đơn #${data.id} - ${formatMoney(data.total_price)}</h3>
+        <p><strong>Trạng thái:</strong> ${getOrderStatusLabel(data.status)}</p>
+        <p><strong>Khách hàng:</strong> ${data.customer_name}</p>
+        <p><strong>Số điện thoại:</strong> ${data.phone}</p>
+        <p><strong>Địa chỉ:</strong> ${data.address}</p>
+        ${data.note ? `<p><strong>Ghi chú:</strong> ${data.note}</p>` : ""}
+        <div>
+          ${data.items.map(item => `
+            <div class="track-line">
+              <span>${item.food_name} x ${item.quantity}</span>
+              <strong>${formatMoney(item.subtotal)}</strong>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    resultBox.innerHTML = "<p>Không kết nối được server.</p>";
+    console.error(error);
+  }
+}
+
+function getOrderStatusLabel(status) {
+  const labels = {
+    pending: "Chờ xác nhận",
+    confirmed: "Đã xác nhận",
+    delivering: "Đang giao",
+    done: "Hoàn tất",
+    cancelled: "Đã hủy"
+  };
+
+  return labels[status] || status;
+}
+
 loadFoods();
 renderCart();
 function renderUser() {
@@ -252,8 +305,13 @@ function renderUser() {
   const user = JSON.parse(localStorage.getItem("foodhub_user"));
 
   if (user) {
+    const adminLink = String(user.role || "").toUpperCase() === "ADMIN"
+      ? `<a href="admin.html">Quản trị</a>`
+      : "";
+
     userArea.innerHTML = `
       <span class="user-name">👤 ${user.fullname}</span>
+      ${adminLink}
       <button onclick="logout()" class="logout-btn">Đăng xuất</button>
     `;
   } else {

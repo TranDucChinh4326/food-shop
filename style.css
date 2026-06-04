@@ -124,6 +124,7 @@ nav a:hover {
 .menu,
 .cart-section,
 .order-section,
+.track-section,
 .about,
 .contact {
   padding: 50px 8%;
@@ -255,6 +256,51 @@ h2 {
   resize: none;
 }
 
+.track-section {
+  background: white;
+}
+
+.track-form {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 0 auto 22px;
+  max-width: 520px;
+}
+
+.track-form input {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  flex: 1;
+  font-size: 16px;
+  min-width: 0;
+  outline: none;
+  padding: 13px 16px;
+}
+
+.track-result {
+  margin: 0 auto;
+  max-width: 720px;
+  text-align: left;
+}
+
+.track-card {
+  background: #fff8f0;
+  border-radius: 15px;
+  padding: 18px;
+}
+
+.track-card h3 {
+  margin-bottom: 12px;
+}
+
+.track-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+}
+
 .about {
   background: #fff8f0;
 }
@@ -324,6 +370,10 @@ footer {
   }
 
   .filter-box {
+    flex-direction: column;
+  }
+
+  .track-form {
     flex-direction: column;
   }
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị FoodHub</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <a href="index.html" class="brand">FoodHub</a>
+      <span>Quản trị</span>
+    </div>
+
+    <button id="logoutBtn" type="button">Đăng xuất</button>
+  </header>
+
+  <main class="admin-shell">
+    <section class="panel">
+      <div class="panel-title">
+        <h1>Đơn hàng</h1>
+        <button id="refreshOrdersBtn" type="button">Tải lại</button>
+      </div>
+
+      <div id="ordersList" class="list-state">Đang tải đơn hàng...</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <h2>Món ăn</h2>
+        <button id="refreshFoodsBtn" type="button">Tải lại</button>
+      </div>
+
+      <form id="foodForm" class="food-form">
+        <input type="hidden" id="foodId">
+
+        <label>
+          Tên món
+          <input type="text" id="foodName" required>
+        </label>
+
+        <label>
+          Danh mục
+          <select id="foodCategory" required>
+            <option value="1">Burger</option>
+            <option value="2">Pizza</option>
+            <option value="3">Mì & Phở</option>
+            <option value="4">Đồ uống</option>
+          </select>
+        </label>
+
+        <label>
+          Giá
+          <input type="number" id="foodPrice" min="1000" step="1000" required>
+        </label>
+
+        <label>
+          Link ảnh
+          <input type="url" id="foodImage">
+        </label>
+
+        <label class="wide">
+          Mô tả
+          <textarea id="foodDescription" rows="3"></textarea>
+        </label>
+
+        <label class="check-row">
+          <input type="checkbox" id="foodActive" checked>
+          Đang bán
+        </label>
+
+        <div class="form-actions">
+          <button type="submit">Lưu món</button>
+          <button type="button" id="resetFoodFormBtn">Nhập món mới</button>
+        </div>
+      </form>
+
+      <div id="foodsList" class="food-table">Đang tải món ăn...</div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
