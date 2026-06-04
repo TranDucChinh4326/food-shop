@@ -313,7 +313,7 @@ function renderUser() {
 
   if (user) {
     const adminLink = String(user.role || "").toUpperCase() === "ADMIN"
-      ? `<a href="admin.html">Quản trị</a>`
+      ? `<a href="admin.html" class="header-action secondary">Quản trị</a>`
       : "";
 
     userArea.innerHTML = `
@@ -322,7 +322,10 @@ function renderUser() {
       <button onclick="logout()" class="logout-btn">Đăng xuất</button>
     `;
   } else {
-    userArea.innerHTML = `<a href="login.html">Đăng nhập</a>`;
+    userArea.innerHTML = `
+      <a href="login.html" class="header-action primary">Đăng nhập</a>
+      <a href="register.html" class="header-action secondary">Đăng ký</a>
+    `;
   }
 }
 

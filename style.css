@@ -12,9 +12,9 @@ body {
 
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 18px 8%;
+  gap: 24px;
+  padding: 16px 8%;
   background: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.08);
   position: sticky;
@@ -26,35 +26,59 @@ header {
   font-size: 26px;
   font-weight: bold;
   color: #ff5722;
+  flex: 0 0 auto;
   text-decoration: none;
+}
+
+nav {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 6px;
 }
 
 nav a {
-  margin: 0 14px;
+  border-radius: 8px;
+  display: inline-flex;
+  font-size: 16px;
+  line-height: 1;
+  padding: 10px 12px;
   text-decoration: none;
   color: #333;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 nav a:hover {
+  background: #fff1eb;
   color: #ff5722;
 }
 
 .cart-btn {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  min-height: 44px;
   text-decoration: none;
   background: #ff5722;
   color: white;
-  padding: 11px 18px;
-  border-radius: 25px;
+  padding: 0 18px;
+  border-radius: 999px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 #cart-count {
   background: white;
   color: #ff5722;
-  padding: 2px 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
   border-radius: 50%;
-  margin-left: 5px;
 }
 
 .hero {
@@ -370,6 +394,18 @@ footer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    flex: none;
+  }
+
+  #user-area {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cart-btn,
+  .header-action,
+  .logout-btn {
+    min-height: 40px;
   }
 
   .hero {
@@ -404,76 +440,51 @@ footer {
   }
 }
 #user-area {
-  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
 }
 
 .user-name {
-  font-weight: bold;
   color: #333;
+  font-weight: 700;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.header-action,
+.logout-btn {
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 800;
+  justify-content: center;
+  line-height: 1;
+  min-height: 44px;
+  padding: 0 16px;
+  text-decoration: none;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.header-action.primary,
 .logout-btn {
   background: #ff5722;
   color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
 }
 
+.header-action.secondary {
+  background: #fff1eb;
+  color: #ff5722;
+}
+
+.header-action:hover,
 .logout-btn:hover {
-  background: #e64a19;
-}
-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-#user-area{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-left:auto;
-    margin-right:20px;
-}
-
-.user-name{
-    font-weight:600;
-    color:#333;
-}
-
-.logout-btn{
-    background:#ff5722;
-    color:white;
-    border:none;
-    padding:8px 14px;
-    border-radius:20px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.logout-btn:hover{
-    background:#e64a19;
-}
-#user-area {
-    margin-left: auto;
-    margin-right: 20px;
-}
-
-#user-area a {
-    text-decoration: none;
-    background: #ff5722;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-#user-area a:hover {
-    background: #e64a19;
+  transform: translateY(-1px);
 }
