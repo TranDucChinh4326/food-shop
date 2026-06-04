@@ -1,4 +1,6 @@
-const API_URL = "https://excluded-storm-amendment-document.trycloudflare.com/api/foods";
+const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+const API_URL = `${API_BASE_URL}/foods`;
+const ORDERS_API = `${API_BASE_URL}/orders`;
 
 let foods = [];
 let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];
@@ -174,7 +176,7 @@ function removeItem(foodId) {
   renderCart();
 }
 
-function submitOrder(event) {
+async function submitOrder(event) {
   event.preventDefault();
 
   if (cart.length === 0) {
@@ -185,19 +187,59 @@ function submitOrder(event) {
   const name = document.getElementById("customerName").value;
   const phone = document.getElementById("customerPhone").value;
   const address = document.getElementById("customerAddress").value;
+  const note = document.getElementById("customerNote").value;
+  const submitButton = document.querySelector("#orderForm button[type='submit']");
+  const token = localStorage.getItem("foodhub_token");
 
-  alert(
-    "Đặt hàng thành công!\n\n" +
-    "Khách hàng: " + name + "\n" +
-    "Số điện thoại: " + phone + "\n" +
-    "Địa chỉ: " + address + "\n\n" +
-    "Cảm ơn bạn đã đặt hàng tại FoodHub."
-  );
+  submitButton.disabled = true;
+  submitButton.textContent = "Đang gửi đơn...";
 
-  cart = [];
-  saveCart();
-  renderCart();
-  document.getElementById("orderForm").reset();
+  try {
+    const response = await fetch(ORDERS_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({
+        customerName: name,
+        customerPhone: phone,
+        customerAddress: address,
+        customerNote: note,
+        items: cart.map(item => ({
+          foodId: item.id,
+          quantity: item.quantity
+        }))
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Không thể đặt hàng. Vui lòng thử lại.");
+      return;
+    }
+
+    alert(
+      "Đặt hàng thành công!\n\n" +
+      "Mã đơn: #" + data.order.id + "\n" +
+      "Khách hàng: " + name + "\n" +
+      "Số điện thoại: " + phone + "\n" +
+      "Địa chỉ: " + address + "\n\n" +
+      "Cảm ơn bạn đã đặt hàng tại FoodHub."
+    );
+
+    cart = [];
+    saveCart();
+    renderCart();
+    document.getElementById("orderForm").reset();
+  } catch (error) {
+    alert("Không kết nối được server đặt hàng.");
+    console.error(error);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Xác nhận đặt hàng";
+  }
 }
 
 loadFoods();

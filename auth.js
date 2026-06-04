@@ -1,4 +1,5 @@
-const AUTH_API = "https://excluded-storm-amendment-document.trycloudflare.com/api/auth";
+const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+const AUTH_API = `${API_BASE_URL}/auth`;
 
 async function register(event) {
   event.preventDefault();
