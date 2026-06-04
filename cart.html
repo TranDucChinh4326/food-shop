@@ -26,31 +26,62 @@
     <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
   </header>
 
-  <main>
-    <section class="page-title">
-      <h1>Giỏ hàng</h1>
-      <p>Kiểm tra món ăn và điền thông tin giao hàng.</p>
+  <main class="checkout-page">
+    <section class="checkout-hero">
+      <span class="badge">Thanh toán</span>
+      <h1>Hoàn tất đơn hàng</h1>
+      <p>Kiểm tra lại món đã chọn, nhập thông tin giao hàng và gửi đơn cho FoodHub.</p>
     </section>
 
-    <section class="cart-section">
-      <h2>Giỏ hàng của bạn</h2>
-      <div id="cart-items"></div>
+    <section class="checkout-grid">
+      <div class="checkout-card">
+        <div class="section-heading">
+          <div>
+            <h2>Giỏ hàng của bạn</h2>
+            <p>Các món sẽ được giữ trong trình duyệt của bạn.</p>
+          </div>
+          <a href="menu.html" class="text-link">Thêm món</a>
+        </div>
 
-      <div class="cart-total">
-        Tổng tiền: <span id="total-price">0đ</span>
+        <div id="cart-items"></div>
+
+        <div class="cart-total">
+          Tổng tiền: <span id="total-price">0đ</span>
+        </div>
       </div>
-    </section>
 
-    <section class="order-section">
-      <h2>Thông tin đặt hàng</h2>
+      <div class="checkout-card">
+        <div class="section-heading">
+          <div>
+            <h2>Thông tin giao hàng</h2>
+            <p>FoodHub sẽ liên hệ xác nhận trước khi giao.</p>
+          </div>
+        </div>
 
-      <form id="orderForm" onsubmit="submitOrder(event)">
-        <input type="text" id="customerName" placeholder="Họ và tên" required>
-        <input type="tel" id="customerPhone" placeholder="Số điện thoại" required>
-        <input type="text" id="customerAddress" placeholder="Địa chỉ giao hàng" required>
-        <textarea id="customerNote" placeholder="Ghi chú thêm"></textarea>
-        <button type="submit" class="btn">Xác nhận đặt hàng</button>
-      </form>
+        <form id="orderForm" class="order-form" onsubmit="submitOrder(event)">
+          <label>
+            Họ và tên
+            <input type="text" id="customerName" placeholder="Nguyễn Văn A" required>
+          </label>
+
+          <label>
+            Số điện thoại
+            <input type="tel" id="customerPhone" placeholder="0900 000 000" required>
+          </label>
+
+          <label>
+            Địa chỉ giao hàng
+            <input type="text" id="customerAddress" placeholder="Số nhà, đường, quận/huyện" required>
+          </label>
+
+          <label>
+            Ghi chú
+            <textarea id="customerNote" placeholder="Ví dụ: giao giờ nghỉ trưa, ít cay..."></textarea>
+          </label>
+
+          <button type="submit" class="btn">Xác nhận đặt hàng</button>
+        </form>
+      </div>
     </section>
   </main>
 

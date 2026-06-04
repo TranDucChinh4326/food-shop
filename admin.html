@@ -8,8 +8,8 @@
 </head>
 <body>
   <header class="admin-header">
-    <div>
-      <a href="index.html" class="brand">FoodHub</a>
+    <div class="admin-brand">
+      <a href="index.html">🍔 FoodHub</a>
       <span>Quản trị</span>
     </div>
 
@@ -17,68 +17,106 @@
   </header>
 
   <main class="admin-shell">
-    <section class="panel">
-      <div class="panel-title">
-        <h1>Đơn hàng</h1>
-        <button id="refreshOrdersBtn" type="button">Tải lại</button>
+    <section class="admin-hero">
+      <div>
+        <p class="kicker">Bảng điều khiển</p>
+        <h1>Quản lý đơn hàng và thực đơn</h1>
+        <p>Theo dõi đơn mới, cập nhật trạng thái giao hàng và chỉnh sửa món ăn đang bán.</p>
       </div>
 
-      <div id="ordersList" class="list-state">Đang tải đơn hàng...</div>
+      <div class="admin-stats">
+        <div>
+          <strong id="ordersCount">0</strong>
+          <span>Đơn hàng</span>
+        </div>
+        <div>
+          <strong id="foodsCount">0</strong>
+          <span>Món ăn</span>
+        </div>
+      </div>
     </section>
 
-    <section class="panel">
+    <section class="dashboard-grid">
+      <section class="panel orders-panel">
+        <div class="panel-title">
+          <div>
+            <h2>Đơn hàng</h2>
+            <p>Cập nhật trạng thái xử lý cho từng đơn.</p>
+          </div>
+          <button id="refreshOrdersBtn" type="button">Tải lại</button>
+        </div>
+
+        <div id="ordersList" class="list-state">Đang tải đơn hàng...</div>
+      </section>
+
+      <aside class="panel food-form-panel">
+        <div class="panel-title compact">
+          <div>
+            <h2>Món ăn</h2>
+            <p>Thêm hoặc sửa thông tin món.</p>
+          </div>
+        </div>
+
+        <form id="foodForm" class="food-form">
+          <input type="hidden" id="foodId">
+
+          <label>
+            Tên món
+            <input type="text" id="foodName" required>
+          </label>
+
+          <label>
+            Danh mục
+            <select id="foodCategory" required>
+              <option value="1">Burger</option>
+              <option value="2">Pizza</option>
+              <option value="3">Mì & Phở</option>
+              <option value="4">Đồ uống</option>
+            </select>
+          </label>
+
+          <label>
+            Giá
+            <input type="number" id="foodPrice" min="1000" step="1000" required>
+          </label>
+
+          <label>
+            Link ảnh
+            <input type="url" id="foodImage">
+          </label>
+
+          <label>
+            Mô tả
+            <textarea id="foodDescription" rows="3"></textarea>
+          </label>
+
+          <label class="check-row">
+            <input type="checkbox" id="foodActive" checked>
+            Đang bán
+          </label>
+
+          <div class="form-actions">
+            <button type="submit">Lưu món</button>
+            <button type="button" id="resetFoodFormBtn">Món mới</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+
+    <section class="panel foods-panel">
       <div class="panel-title">
-        <h2>Món ăn</h2>
+        <div>
+          <h2>Danh sách món ăn</h2>
+          <p>Chọn sửa để đưa thông tin món lên form bên trên.</p>
+        </div>
         <button id="refreshFoodsBtn" type="button">Tải lại</button>
       </div>
-
-      <form id="foodForm" class="food-form">
-        <input type="hidden" id="foodId">
-
-        <label>
-          Tên món
-          <input type="text" id="foodName" required>
-        </label>
-
-        <label>
-          Danh mục
-          <select id="foodCategory" required>
-            <option value="1">Burger</option>
-            <option value="2">Pizza</option>
-            <option value="3">Mì & Phở</option>
-            <option value="4">Đồ uống</option>
-          </select>
-        </label>
-
-        <label>
-          Giá
-          <input type="number" id="foodPrice" min="1000" step="1000" required>
-        </label>
-
-        <label>
-          Link ảnh
-          <input type="url" id="foodImage">
-        </label>
-
-        <label class="wide">
-          Mô tả
-          <textarea id="foodDescription" rows="3"></textarea>
-        </label>
-
-        <label class="check-row">
-          <input type="checkbox" id="foodActive" checked>
-          Đang bán
-        </label>
-
-        <div class="form-actions">
-          <button type="submit">Lưu món</button>
-          <button type="button" id="resetFoodFormBtn">Nhập món mới</button>
-        </div>
-      </form>
 
       <div id="foodsList" class="food-table">Đang tải món ăn...</div>
     </section>
   </main>
+
+  <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
   <script src="admin.js"></script>

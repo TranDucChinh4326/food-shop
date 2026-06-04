@@ -7,6 +7,8 @@ const user = JSON.parse(localStorage.getItem("foodhub_user") || "null");
 const ordersList = document.getElementById("ordersList");
 const foodsList = document.getElementById("foodsList");
 const foodForm = document.getElementById("foodForm");
+const ordersCount = document.getElementById("ordersCount");
+const foodsCount = document.getElementById("foodsCount");
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -15,8 +17,24 @@ const statusLabels = {
   cancelled: "Đã hủy"
 };
 
+let toastTimer;
+
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
+}
+
+function showAdminToast(message, type = "success") {
+  const toast = document.getElementById("adminToast");
+
+  if (!toast) return;
+
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.className = `admin-toast ${type} show`;
+
+  toastTimer = setTimeout(() => {
+    toast.className = `admin-toast ${type}`;
+  }, 2600);
 }
 
 function authHeaders() {
@@ -55,6 +73,7 @@ async function loadOrders() {
 
   try {
     const orders = await requestJson(`${ADMIN_API}/orders`);
+    ordersCount.textContent = orders.length;
 
     if (orders.length === 0) {
       ordersList.textContent = "Chưa có đơn hàng.";
@@ -67,7 +86,7 @@ async function loadOrders() {
           <div>
             <h3>Đơn #${order.id} - ${formatMoney(order.total_price)}</h3>
             <p class="order-meta">
-              ${order.customer_name} - ${order.phone}<br>
+              <strong>${order.customer_name}</strong> - ${order.phone}<br>
               ${order.address}<br>
               ${order.note ? `Ghi chú: ${order.note}<br>` : ""}
               Ngày đặt: ${new Date(order.created_at).toLocaleString("vi-VN")}
@@ -93,6 +112,7 @@ async function loadOrders() {
     `).join("");
   } catch (error) {
     ordersList.textContent = error.message;
+    showAdminToast(error.message, "error");
   }
 }
 
@@ -108,6 +128,7 @@ async function loadFoods() {
 
   try {
     const foods = await requestJson(`${ADMIN_API}/foods`);
+    foodsCount.textContent = foods.length;
 
     if (foods.length === 0) {
       foodsList.textContent = "Chưa có món ăn.";
@@ -122,8 +143,8 @@ async function loadFoods() {
           <p>${food.category_name || "Chưa phân loại"} - ${formatMoney(food.price)}</p>
           <p class="muted">${food.is_active ? "Đang bán" : "Đã ẩn"}</p>
         </div>
-        <button type="button" data-edit-food="${food.id}">Sửa</button>
         <div class="food-actions">
+          <button type="button" data-edit-food="${food.id}">Sửa</button>
           <button type="button" data-hide-food="${food.id}">Ẩn</button>
         </div>
       </div>
@@ -132,6 +153,7 @@ async function loadFoods() {
     window.foodhubAdminFoods = foods;
   } catch (error) {
     foodsList.textContent = error.message;
+    showAdminToast(error.message, "error");
   }
 }
 
@@ -173,9 +195,9 @@ async function saveFood(event) {
 
     resetFoodForm();
     await loadFoods();
-    alert("Đã lưu món ăn.");
+    showAdminToast("Đã lưu món ăn.");
   } catch (error) {
-    alert(error.message);
+    showAdminToast(error.message, "error");
   }
 }
 
@@ -189,8 +211,9 @@ async function hideFood(foodId) {
       method: "DELETE"
     });
     await loadFoods();
+    showAdminToast("Đã ẩn món khỏi thực đơn.");
   } catch (error) {
-    alert(error.message);
+    showAdminToast(error.message, "error");
   }
 }
 
@@ -212,8 +235,9 @@ ordersList.addEventListener("change", async event => {
 
   try {
     await updateOrderStatus(event.target.dataset.orderId, event.target.value);
+    showAdminToast("Đã cập nhật trạng thái đơn hàng.");
   } catch (error) {
-    alert(error.message);
+    showAdminToast(error.message, "error");
     await loadOrders();
   }
 });

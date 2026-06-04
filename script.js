@@ -117,7 +117,7 @@ function addToCart(foodId) {
   const food = foods.find(item => item.id === foodId);
 
   if (!food) {
-    alert("Không tìm thấy món ăn.");
+    showSiteToast("Không tìm thấy món ăn.", "error");
     return;
   }
 
@@ -207,7 +207,7 @@ async function submitOrder(event) {
   event.preventDefault();
 
   if (cart.length === 0) {
-    alert("Giỏ hàng đang trống. Vui lòng chọn món trước.");
+    showSiteToast("Giỏ hàng đang trống. Vui lòng chọn món trước.", "error");
     return;
   }
 
@@ -242,26 +242,21 @@ async function submitOrder(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.message || "Không thể đặt hàng. Vui lòng thử lại.");
+      showSiteToast(data.message || "Không thể đặt hàng. Vui lòng thử lại.", "error");
       return;
     }
-
-    alert(
-      "Đặt hàng thành công!\n\n" +
-      `Mã đơn: #${data.order.id}\n` +
-      `Khách hàng: ${name}\n` +
-      `Số điện thoại: ${phone}\n` +
-      `Địa chỉ: ${address}\n\n` +
-      "Cảm ơn bạn đã đặt hàng tại FoodHub."
-    );
 
     cart = [];
     saveCart();
     renderCart();
     document.getElementById("orderForm").reset();
-    window.location.href = `track.html?order=${data.order.id}`;
+    showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
+
+    setTimeout(() => {
+      window.location.href = `track.html?order=${data.order.id}`;
+    }, 900);
   } catch (error) {
-    alert("Không kết nối được server đặt hàng.");
+    showSiteToast("Không kết nối được server đặt hàng.", "error");
     console.error(error);
   } finally {
     submitButton.disabled = false;
@@ -352,8 +347,11 @@ function renderUser() {
 function logout() {
   localStorage.removeItem("foodhub_token");
   localStorage.removeItem("foodhub_user");
-  alert("Đã đăng xuất");
-  window.location.href = "index.html";
+  showSiteToast("Đã đăng xuất");
+
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 500);
 }
 
 function initTrackPage() {
