@@ -4,6 +4,26 @@ const ORDERS_API = `${API_BASE_URL}/orders`;
 
 let foods = [];
 let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];
+let toastTimer;
+
+function showSiteToast(message, type = "success") {
+  let toast = document.getElementById("site-toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "site-toast";
+    toast.className = "site-toast";
+    document.body.appendChild(toast);
+  }
+
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.className = `site-toast ${type} show`;
+
+  toastTimer = setTimeout(() => {
+    toast.className = `site-toast ${type}`;
+  }, 2400);
+}
 
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
@@ -117,7 +137,7 @@ function addToCart(foodId) {
   saveCart();
   renderCart();
   updateCartCount();
-  alert(`Đã thêm ${food.name} vào giỏ hàng!`);
+  showSiteToast(`Đã thêm ${food.name} vào giỏ hàng`);
 }
 
 function renderCart() {

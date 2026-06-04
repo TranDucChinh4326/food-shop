@@ -26,30 +26,35 @@
     <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
   </header>
 
-  <main>
-    <section class="page-title">
-      <h1>Thực đơn FoodHub</h1>
-      <p>Chọn món yêu thích và thêm vào giỏ hàng.</p>
-    </section>
-
-    <section class="categories">
-      <h2>Danh mục món ăn</h2>
-
-      <div class="filter-box">
-        <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="renderFoods()">
-
-        <select id="categoryFilter" onchange="renderFoods()">
-          <option value="all">Tất cả</option>
-          <option value="burger">Burger</option>
-          <option value="pizza">Pizza</option>
-          <option value="noodle">Mì & Phở</option>
-          <option value="drink">Đồ uống</option>
-        </select>
+  <main class="menu-page">
+    <section class="menu-hero">
+      <div>
+        <span class="badge">Thực đơn hôm nay</span>
+        <h1>Chọn món ngon cho bữa của bạn</h1>
+        <p>Danh sách món được cập nhật từ hệ thống FoodHub, chọn nhanh rồi thêm vào giỏ hàng.</p>
       </div>
     </section>
 
-    <section class="menu">
-      <h2>Món ăn nổi bật</h2>
+    <section class="menu-panel">
+      <div class="menu-toolbar">
+        <div>
+          <h2>Món ăn nổi bật</h2>
+          <p>Tìm theo tên món hoặc lọc nhanh theo danh mục.</p>
+        </div>
+
+        <div class="filter-box">
+          <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="renderFoods()">
+
+          <select id="categoryFilter" onchange="renderFoods()">
+            <option value="all">Tất cả</option>
+            <option value="burger">Burger</option>
+            <option value="pizza">Pizza</option>
+            <option value="noodle">Mì & Phở</option>
+            <option value="drink">Đồ uống</option>
+          </select>
+        </div>
+      </div>
+
       <div id="food-list" class="food-list"></div>
     </section>
   </main>
