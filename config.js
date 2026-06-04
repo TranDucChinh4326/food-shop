@@ -1,3 +1,3 @@
 window.FOODHUB_CONFIG = {
-  API_BASE_URL: "http://localhost:3000/api"
+  API_BASE_URL: "https://jewellery-student-skin-hope.trycloudflare.com/api"
 };
