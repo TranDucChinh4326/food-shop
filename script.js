@@ -1,10 +1,17 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 const API_URL = `${API_BASE_URL}/foods`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
+const AUTH_TOKEN_KEY = "foodhub_token";
+const AUTH_USER_KEY = "foodhub_user";
+const CART_KEY = "foodhub_cart";
 
 let foods = [];
-let cart = JSON.parse(localStorage.getItem("foodhub_cart")) || [];
+let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
+
+localStorage.removeItem(AUTH_TOKEN_KEY);
+localStorage.removeItem(AUTH_USER_KEY);
+localStorage.removeItem(CART_KEY);
 
 function showSiteToast(message, type = "success") {
   let toast = document.getElementById("site-toast");
@@ -30,7 +37,28 @@ function formatMoney(number) {
 }
 
 function saveCart() {
-  localStorage.setItem("foodhub_cart", JSON.stringify(cart));
+  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function getAuthToken() {
+  return sessionStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+function getCurrentUser() {
+  return JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
+}
+
+function isLoggedIn() {
+  return Boolean(getAuthToken() && getCurrentUser());
+}
+
+function requireLogin(message = "Vui long dang nhap de tiep tuc.", target = window.location.href) {
+  sessionStorage.setItem("foodhub_after_login", target);
+  showSiteToast(message, "error");
+
+  setTimeout(() => {
+    window.location.href = `login.html?redirect=${encodeURIComponent(target)}`;
+  }, 700);
 }
 
 function getCategoryKey(categoryId) {
@@ -114,6 +142,11 @@ function renderFoods() {
 }
 
 function addToCart(foodId) {
+  if (!isLoggedIn()) {
+    requireLogin("Vui long dang nhap de them mon vao gio hang.", "menu.html");
+    return;
+  }
+
   const food = foods.find(item => item.id === foodId);
 
   if (!food) {
@@ -206,6 +239,11 @@ function removeItem(foodId) {
 async function submitOrder(event) {
   event.preventDefault();
 
+  if (!isLoggedIn()) {
+    requireLogin("Vui long dang nhap de dat hang.", "cart.html");
+    return;
+  }
+
   if (cart.length === 0) {
     showSiteToast("Giỏ hàng đang trống. Vui lòng chọn món trước.", "error");
     return;
@@ -216,7 +254,7 @@ async function submitOrder(event) {
   const address = document.getElementById("customerAddress").value;
   const note = document.getElementById("customerNote").value;
   const submitButton = document.querySelector("#orderForm button[type='submit']");
-  const token = localStorage.getItem("foodhub_token");
+  const token = getAuthToken();
 
   submitButton.disabled = true;
   submitButton.textContent = "Đang gửi đơn...";
@@ -240,6 +278,13 @@ async function submitOrder(event) {
       })
     });
     const data = await response.json();
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(AUTH_TOKEN_KEY);
+      sessionStorage.removeItem(AUTH_USER_KEY);
+      requireLogin(data.message || "Phien dang nhap da het han. Vui long dang nhap lai.", "cart.html");
+      return;
+    }
 
     if (!response.ok) {
       showSiteToast(data.message || "Không thể đặt hàng. Vui lòng thử lại.", "error");
@@ -324,7 +369,7 @@ function renderUser() {
 
   if (!userArea) return;
 
-  const user = JSON.parse(localStorage.getItem("foodhub_user"));
+  const user = getCurrentUser();
 
   if (user) {
     const adminLink = String(user.role || "").toUpperCase() === "ADMIN"
@@ -345,8 +390,10 @@ function renderUser() {
 }
 
 function logout() {
-  localStorage.removeItem("foodhub_token");
-  localStorage.removeItem("foodhub_user");
+  sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  sessionStorage.removeItem(AUTH_USER_KEY);
+  sessionStorage.removeItem(CART_KEY);
+  cart = [];
   showSiteToast("Đã đăng xuất");
 
   setTimeout(() => {
@@ -365,7 +412,18 @@ function initTrackPage() {
   }
 }
 
-loadFoods();
-renderCart();
-renderUser();
-initTrackPage();
+function protectCheckoutPage() {
+  const orderForm = document.getElementById("orderForm");
+
+  if (!orderForm || isLoggedIn()) return true;
+
+  requireLogin("Vui long dang nhap de xem gio hang va dat hang.", "cart.html");
+  return false;
+}
+
+if (protectCheckoutPage()) {
+  loadFoods();
+  renderCart();
+  renderUser();
+  initTrackPage();
+}

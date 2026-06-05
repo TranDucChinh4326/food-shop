@@ -1,7 +1,12 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 const AUTH_API = `${API_BASE_URL}/auth`;
+const AUTH_TOKEN_KEY = "foodhub_token";
+const AUTH_USER_KEY = "foodhub_user";
 
 let toastTimer;
+
+localStorage.removeItem(AUTH_TOKEN_KEY);
+localStorage.removeItem(AUTH_USER_KEY);
 
 function showToast(message, type = "info") {
   const toast = document.getElementById("toast");
@@ -32,6 +37,18 @@ function setSubmitState(form, isLoading, loadingText) {
 
   button.disabled = isLoading;
   button.textContent = isLoading ? loadingText : button.dataset.defaultText;
+}
+
+function getSafeRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const redirectUrl = params.get("redirect") || sessionStorage.getItem("foodhub_after_login") || "index.html";
+
+  try {
+    const url = new URL(redirectUrl, window.location.origin);
+    return url.origin === window.location.origin ? `${url.pathname}${url.search}${url.hash}` : "index.html";
+  } catch (error) {
+    return "index.html";
+  }
 }
 
 async function register(event) {
@@ -96,13 +113,15 @@ async function login(event) {
       return;
     }
 
-    localStorage.setItem("foodhub_token", data.token);
-    localStorage.setItem("foodhub_user", JSON.stringify(data.user));
+    sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
 
     showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
 
     setTimeout(() => {
-      window.location.href = "index.html";
+      const redirectUrl = getSafeRedirectUrl();
+      sessionStorage.removeItem("foodhub_after_login");
+      window.location.href = redirectUrl;
     }, 700);
   } catch (error) {
     showToast("Không kết nối được server.", "error");
