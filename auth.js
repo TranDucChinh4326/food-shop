@@ -130,3 +130,45 @@ async function login(event) {
     setSubmitState(form, false);
   }
 }
+
+function initSupportWidget() {
+  if (document.getElementById("support-widget")) return;
+
+  const widget = document.createElement("div");
+  widget.id = "support-widget";
+  widget.className = "support-widget";
+  widget.innerHTML = `
+    <div class="support-panel" aria-label="Kenh ho tro FoodHub">
+      <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
+        <span>Z</span>
+        <strong>Zalo</strong>
+      </a>
+      <a href="https://m.me/" target="_blank" rel="noopener" class="support-link messenger">
+        <span>f</span>
+        <strong>Messenger</strong>
+      </a>
+      <a href="tel:0123456789" class="support-link phone">
+        <span>☎</span>
+        <strong>Hotline</strong>
+      </a>
+      <a href="mailto:foodhub@gmail.com" class="support-link email">
+        <span>@</span>
+        <strong>Email</strong>
+      </a>
+    </div>
+    <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
+      <span>?</span>
+      Ho tro
+    </button>
+  `;
+
+  const button = widget.querySelector(".support-toggle");
+  button.addEventListener("click", () => {
+    const isOpen = widget.classList.toggle("open");
+    button.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  document.body.appendChild(widget);
+}
+
+initSupportWidget();
