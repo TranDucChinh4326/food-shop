@@ -298,7 +298,7 @@ async function submitOrder(event) {
     showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
 
     setTimeout(() => {
-      window.location.href = `track.html?order=${data.order.id}`;
+      window.location.href = "track.html";
     }, 900);
   } catch (error) {
     showSiteToast("Không kết nối được server đặt hàng.", "error");
@@ -352,6 +352,111 @@ async function trackOrder(event) {
   }
 }
 
+async function loadOrderHistory(event) {
+  if (event) event.preventDefault();
+
+  const resultBox = document.getElementById("track-result");
+  const searchInput = document.getElementById("orderSearch");
+  const dateInput = document.getElementById("orderDate");
+
+  if (!resultBox) return;
+
+  if (!isLoggedIn()) {
+    requireLogin("Vui long dang nhap de xem lich su don hang.", "track.html");
+    return;
+  }
+
+  const params = new URLSearchParams();
+  const searchValue = searchInput?.value.trim();
+  const dateValue = dateInput?.value;
+
+  if (searchValue) params.set("q", searchValue);
+  if (dateValue) params.set("date", dateValue);
+
+  resultBox.innerHTML = "<p>Dang tai lich su don hang...</p>";
+
+  try {
+    const response = await fetch(`${ORDERS_API}?${params.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json();
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(AUTH_TOKEN_KEY);
+      sessionStorage.removeItem(AUTH_USER_KEY);
+      requireLogin(data.message || "Phien dang nhap da het han. Vui long dang nhap lai.", "track.html");
+      return;
+    }
+
+    if (!response.ok) {
+      resultBox.innerHTML = `<p>${data.message || "Khong the tai lich su don hang."}</p>`;
+      return;
+    }
+
+    renderOrderHistory(data);
+  } catch (error) {
+    resultBox.innerHTML = "<p>Khong ket noi duoc server.</p>";
+    console.error(error);
+  }
+}
+
+function renderOrderHistory(orders) {
+  const resultBox = document.getElementById("track-result");
+
+  if (!resultBox) return;
+
+  if (!orders.length) {
+    resultBox.innerHTML = `
+      <div class="empty-history">
+        <h3>Chua co don hang phu hop</h3>
+        <p>Ban co the quay lai thuc don de dat mon hoac thu bo loc khac.</p>
+        <a href="menu.html" class="btn">Dat mon ngay</a>
+      </div>
+    `;
+    return;
+  }
+
+  resultBox.innerHTML = orders.map(order => `
+    <article class="track-card">
+      <div class="order-history-top">
+        <div>
+          <h3>Don #${order.id} - ${formatMoney(order.total_price)}</h3>
+          <p>${new Date(order.created_at).toLocaleString("vi-VN")}</p>
+        </div>
+        <span class="status-pill">${getOrderStatusLabel(order.status)}</span>
+      </div>
+
+      <div class="history-info">
+        <p><strong>Khach hang:</strong> ${order.customer_name}</p>
+        <p><strong>So dien thoai:</strong> ${order.phone}</p>
+        <p><strong>Dia chi:</strong> ${order.address}</p>
+        ${order.note ? `<p><strong>Ghi chu:</strong> ${order.note}</p>` : ""}
+      </div>
+
+      <div class="history-items">
+        ${order.items.map(item => `
+          <div class="track-line">
+            <span>${item.food_name} x ${item.quantity}</span>
+            <strong>${formatMoney(item.subtotal)}</strong>
+          </div>
+        `).join("")}
+      </div>
+    </article>
+  `).join("");
+}
+
+function resetOrderHistoryFilter() {
+  const searchInput = document.getElementById("orderSearch");
+  const dateInput = document.getElementById("orderDate");
+
+  if (searchInput) searchInput.value = "";
+  if (dateInput) dateInput.value = "";
+
+  loadOrderHistory();
+}
+
 function getOrderStatusLabel(status) {
   const labels = {
     pending: "Chờ xác nhận",
@@ -402,22 +507,20 @@ function logout() {
 }
 
 function initTrackPage() {
-  const input = document.getElementById("trackOrderId");
-  const params = new URLSearchParams(window.location.search);
-  const orderId = params.get("order");
+  const resultBox = document.getElementById("track-result");
 
-  if (input && orderId) {
-    input.value = orderId;
-    trackOrder();
-  }
+  if (resultBox) loadOrderHistory();
 }
 
 function protectCheckoutPage() {
   const orderForm = document.getElementById("orderForm");
+  const orderHistory = document.getElementById("orderSearch");
 
-  if (!orderForm || isLoggedIn()) return true;
+  if (!orderForm && !orderHistory) return true;
+  if (isLoggedIn()) return true;
 
-  requireLogin("Vui long dang nhap de xem gio hang va dat hang.", "cart.html");
+  const target = orderHistory ? "track.html" : "cart.html";
+  requireLogin("Vui long dang nhap de tiep tuc.", target);
   return false;
 }
 
