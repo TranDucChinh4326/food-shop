@@ -932,6 +932,215 @@ footer {
     max-width: calc(100vw - 32px);
   }
 }
+
+@media (max-width: 560px) {
+  body {
+    font-size: 15px;
+  }
+
+  header {
+    gap: 10px;
+    padding: 14px 16px 16px;
+    position: static;
+  }
+
+  .logo {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  nav {
+    gap: 6px;
+    max-width: 360px;
+  }
+
+  nav a {
+    background: #fff7f1;
+    border: 1px solid #f4e5dc;
+    font-size: 14px;
+    padding: 9px 10px;
+  }
+
+  #user-area {
+    gap: 8px;
+    margin-top: 2px;
+    width: 100%;
+  }
+
+  .user-name {
+    background: #fff7f1;
+    border-radius: 999px;
+    max-width: 100%;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .header-action,
+  .logout-btn,
+  .cart-btn {
+    font-size: 14px;
+    min-height: 42px;
+    padding: 0 14px;
+  }
+
+  .cart-btn {
+    margin-top: 2px;
+  }
+
+  #cart-count {
+    height: 22px;
+    min-width: 22px;
+  }
+
+  .hero,
+  .menu-page,
+  .checkout-page,
+  .track-page,
+  .contact-page {
+    padding: 18px 16px 34px;
+  }
+
+  .hero {
+    gap: 22px;
+  }
+
+  .hero-text h1 {
+    font-size: 34px;
+    line-height: 1.12;
+  }
+
+  .hero-text p,
+  .menu-hero p,
+  .checkout-hero p,
+  .track-hero p,
+  .contact-hero p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .menu-hero,
+  .checkout-hero,
+  .track-hero,
+  .contact-hero {
+    border-radius: 8px;
+    margin-bottom: 18px;
+    min-height: 0;
+    padding: 22px;
+  }
+
+  .menu-hero h1,
+  .checkout-hero h1,
+  .track-hero h1,
+  .contact-hero h1 {
+    font-size: 31px;
+    line-height: 1.12;
+  }
+
+  .badge {
+    font-size: 14px;
+    margin-bottom: 14px;
+    padding: 7px 12px;
+  }
+
+  .menu-panel,
+  .checkout-card,
+  .track-card-shell,
+  .contact-card {
+    padding: 18px;
+  }
+
+  .section-heading {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .section-heading h2,
+  .menu-toolbar h2 {
+    font-size: 26px;
+  }
+
+  .history-filter {
+    gap: 10px;
+  }
+
+  .history-filter input,
+  .track-form input,
+  .filter-box input,
+  .filter-box select,
+  .order-form input,
+  .order-form textarea {
+    font-size: 15px;
+    padding: 12px 13px;
+    width: 100%;
+  }
+
+  .history-filter .btn,
+  .order-form .btn,
+  .track-form .btn {
+    text-align: center;
+    width: 100%;
+  }
+
+  .track-result {
+    max-width: 100%;
+  }
+
+  .track-card {
+    padding: 16px;
+  }
+
+  .order-history-top {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .status-pill {
+    width: fit-content;
+  }
+
+  .track-line {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .food-card img {
+    height: 190px;
+  }
+
+  .support-widget {
+    bottom: 18px;
+    right: 14px;
+  }
+
+  .support-toggle {
+    border-radius: 50%;
+    box-shadow: 0 12px 28px rgba(255, 87, 34, 0.32);
+    font-size: 0;
+    height: 54px;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0;
+    width: 54px;
+  }
+
+  .support-toggle span {
+    background: transparent;
+    font-size: 24px;
+    height: auto;
+    width: auto;
+  }
+
+  .support-panel {
+    bottom: 64px;
+    right: 0;
+  }
+
+  .site-toast {
+    bottom: 84px;
+  }
+}
 #user-area {
   align-items: center;
   display: flex;
