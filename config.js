@@ -1,3 +1,3 @@
 window.FOODHUB_CONFIG = {
-  API_BASE_URL: "https://jewellery-student-skin-hope.trycloudflare.com/api"
+  API_BASE_URL: "https://food-backend-xrb9.onrender.com/api"
 };
