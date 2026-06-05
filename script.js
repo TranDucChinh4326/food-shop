@@ -494,6 +494,37 @@ function renderUser() {
   }
 }
 
+function initMobileMenu() {
+  const header = document.querySelector("header");
+
+  if (!header || header.querySelector(".mobile-menu-toggle")) return;
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "mobile-menu-toggle";
+  toggle.setAttribute("aria-label", "Mo menu");
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.innerHTML = "<span></span><span></span><span></span>";
+
+  const overlay = document.createElement("div");
+  overlay.className = "mobile-menu-overlay";
+
+  toggle.addEventListener("click", () => {
+    const isOpen = header.classList.toggle("mobile-menu-open");
+    document.body.classList.toggle("menu-lock", isOpen);
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  overlay.addEventListener("click", () => {
+    header.classList.remove("mobile-menu-open");
+    document.body.classList.remove("menu-lock");
+    toggle.setAttribute("aria-expanded", "false");
+  });
+
+  header.prepend(toggle);
+  header.appendChild(overlay);
+}
+
 function logout() {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
   sessionStorage.removeItem(AUTH_USER_KEY);
@@ -568,6 +599,7 @@ if (protectCheckoutPage()) {
   loadFoods();
   renderCart();
   renderUser();
+  initMobileMenu();
   initTrackPage();
   initSupportWidget();
 }
