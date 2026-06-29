@@ -329,13 +329,15 @@ h2 {
 
 .checkout-page,
 .track-page,
-.contact-page {
+.contact-page,
+.profile-page {
   padding: 34px 8% 58px;
 }
 
 .checkout-hero,
 .track-hero,
-.contact-hero {
+.contact-hero,
+.profile-hero {
   background:
     linear-gradient(90deg, rgba(34, 28, 23, 0.82), rgba(34, 28, 23, 0.18)),
     url("https://images.unsplash.com/photo-1498837167922-ddd27525d352") center/cover;
@@ -361,9 +363,16 @@ h2 {
     url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d") center/cover;
 }
 
+.profile-hero {
+  background:
+    linear-gradient(90deg, rgba(34, 28, 23, 0.82), rgba(34, 28, 23, 0.14)),
+    url("https://images.unsplash.com/photo-1556740758-90de374c12ad") center/cover;
+}
+
 .checkout-hero .badge,
 .track-hero .badge,
-.contact-hero .badge {
+.contact-hero .badge,
+.profile-hero .badge {
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
   width: fit-content;
@@ -371,7 +380,8 @@ h2 {
 
 .checkout-hero h1,
 .track-hero h1,
-.contact-hero h1 {
+.contact-hero h1,
+.profile-hero h1 {
   font-size: 42px;
   line-height: 1.15;
   margin-bottom: 12px;
@@ -379,7 +389,8 @@ h2 {
 
 .checkout-hero p,
 .track-hero p,
-.contact-hero p {
+.contact-hero p,
+.profile-hero p {
   color: rgba(255, 255, 255, 0.86);
   font-size: 18px;
   line-height: 1.6;
@@ -394,12 +405,55 @@ h2 {
 }
 
 .checkout-card,
-.track-card-shell {
+.track-card-shell,
+.profile-card {
   background: #fff;
   border: 1px solid #f0e5dc;
   border-radius: 8px;
   box-shadow: 0 16px 42px rgba(78, 45, 25, 0.08);
   padding: 24px;
+}
+
+.profile-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.profile-card {
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.profile-card label {
+  color: #444;
+  display: grid;
+  font-weight: 700;
+  gap: 8px;
+}
+
+.profile-card input {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  min-height: 50px;
+  outline: none;
+  padding: 0 15px;
+  width: 100%;
+}
+
+.profile-card input:focus {
+  border-color: #ff8a65;
+  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.12);
+}
+
+.profile-card .btn {
+  border-radius: 12px;
+  justify-self: start;
+  min-height: 48px;
+  padding: 0 22px;
 }
 
 .section-heading {
@@ -857,26 +911,30 @@ footer {
   .food-list,
   .about-list,
   .checkout-grid,
-  .contact-grid {
+  .contact-grid,
+  .profile-grid {
     grid-template-columns: 1fr;
   }
 
   .checkout-page,
   .track-page,
-  .contact-page {
+  .contact-page,
+  .profile-page {
     padding: 22px 5% 44px;
   }
 
   .checkout-hero,
   .track-hero,
-  .contact-hero {
+  .contact-hero,
+  .profile-hero {
     min-height: 220px;
     padding: 28px;
   }
 
   .checkout-hero h1,
   .track-hero h1,
-  .contact-hero h1 {
+  .contact-hero h1,
+  .profile-hero h1 {
     font-size: 34px;
   }
 
@@ -1112,7 +1170,8 @@ footer {
   .menu-page,
   .checkout-page,
   .track-page,
-  .contact-page {
+  .contact-page,
+  .profile-page {
     padding: 18px 16px 34px;
   }
 
@@ -1129,7 +1188,8 @@ footer {
   .menu-hero p,
   .checkout-hero p,
   .track-hero p,
-  .contact-hero p {
+  .contact-hero p,
+  .profile-hero p {
     font-size: 16px;
     line-height: 1.5;
   }
@@ -1137,7 +1197,8 @@ footer {
   .menu-hero,
   .checkout-hero,
   .track-hero,
-  .contact-hero {
+  .contact-hero,
+  .profile-hero {
     border-radius: 8px;
     margin-bottom: 18px;
     min-height: 0;
@@ -1147,7 +1208,8 @@ footer {
   .menu-hero h1,
   .checkout-hero h1,
   .track-hero h1,
-  .contact-hero h1 {
+  .contact-hero h1,
+  .profile-hero h1 {
     font-size: 31px;
     line-height: 1.12;
   }
@@ -1161,7 +1223,8 @@ footer {
   .menu-panel,
   .checkout-card,
   .track-card-shell,
-  .contact-card {
+  .contact-card,
+  .profile-card {
     padding: 18px;
   }
 
@@ -1184,7 +1247,8 @@ footer {
   .filter-box input,
   .filter-box select,
   .order-form input,
-  .order-form textarea {
+  .order-form textarea,
+  .profile-card input {
     font-size: 15px;
     padding: 12px 13px;
     width: 100%;
@@ -1192,7 +1256,8 @@ footer {
 
   .history-filter .btn,
   .order-form .btn,
-  .track-form .btn {
+  .track-form .btn,
+  .profile-card .btn {
     text-align: center;
     width: 100%;
   }

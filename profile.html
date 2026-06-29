@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tài khoản - FoodHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">🍔 FoodHub</a>
+
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="menu.html">Thực đơn</a>
+      <a href="cart.html">Giỏ hàng</a>
+      <a href="track.html">Lịch sử đơn</a>
+      <a href="contact.html">Liên hệ</a>
+    </nav>
+
+    <div id="user-area">
+      <a href="login.html" class="header-action primary">Đăng nhập</a>
+      <a href="register.html" class="header-action secondary">Đăng ký</a>
+    </div>
+
+    <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
+  </header>
+
+  <main class="profile-page">
+    <section class="profile-hero">
+      <span class="badge">Tài khoản</span>
+      <h1>Thông tin cá nhân</h1>
+      <p>Cập nhật họ tên, email và đổi mật khẩu đăng nhập FoodHub.</p>
+    </section>
+
+    <section class="profile-grid">
+      <form id="profileForm" class="profile-card">
+        <div class="section-heading">
+          <div>
+            <h2>Hồ sơ</h2>
+            <p>Thông tin này dùng cho đăng nhập và hiển thị trong tài khoản.</p>
+          </div>
+        </div>
+
+        <label>
+          Họ và tên
+          <input type="text" id="profileFullname" required>
+        </label>
+
+        <label>
+          Email
+          <input type="email" id="profileEmail" required>
+        </label>
+
+        <button type="submit" class="btn">Lưu thông tin</button>
+      </form>
+
+      <form id="passwordForm" class="profile-card">
+        <div class="section-heading">
+          <div>
+            <h2>Đổi mật khẩu</h2>
+            <p>Áp dụng cho tài khoản đăng ký bằng email và mật khẩu.</p>
+          </div>
+        </div>
+
+        <label>
+          Mật khẩu hiện tại
+          <input type="password" id="currentPassword" autocomplete="current-password" required>
+        </label>
+
+        <label>
+          Mật khẩu mới
+          <input type="password" id="newPassword" autocomplete="new-password" minlength="6" required>
+        </label>
+
+        <button type="submit" class="btn">Đổi mật khẩu</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>@2026 Tran Duc Chinh IT</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

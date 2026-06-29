@@ -483,6 +483,7 @@ function renderUser() {
 
     userArea.innerHTML = `
       <span class="user-name">👤 ${user.fullname}</span>
+      <a href="profile.html" class="header-action secondary">Tài khoản</a>
       ${adminLink}
       <button onclick="logout()" class="logout-btn">Đăng xuất</button>
     `;
@@ -546,11 +547,12 @@ function initTrackPage() {
 function protectCheckoutPage() {
   const orderForm = document.getElementById("orderForm");
   const orderHistory = document.getElementById("orderSearch");
+  const profileForm = document.getElementById("profileForm");
 
-  if (!orderForm && !orderHistory) return true;
+  if (!orderForm && !orderHistory && !profileForm) return true;
   if (isLoggedIn()) return true;
 
-  const target = orderHistory ? "track.html" : "cart.html";
+  const target = profileForm ? "profile.html" : orderHistory ? "track.html" : "cart.html";
   requireLogin("Vui long dang nhap de tiep tuc.", target);
   return false;
 }
