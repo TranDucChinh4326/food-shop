@@ -2,8 +2,11 @@ const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:30
 const AUTH_API = `${API_BASE_URL}/auth`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
+const GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
+const FACEBOOK_APP_ID = window.FOODHUB_CONFIG?.FACEBOOK_APP_ID || "";
 
 let toastTimer;
+let googleTokenClient;
 
 localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
@@ -23,7 +26,7 @@ function showToast(message, type = "info") {
 }
 
 function showComingSoon(provider) {
-  showToast(`Đăng nhập bằng ${provider} sẽ được hỗ trợ ở phiên bản sau.`, "info");
+  showToast(`${provider} chua duoc cau hinh App ID/Client ID.`, "info");
 }
 
 function setSubmitState(form, isLoading, loadingText) {
@@ -51,6 +54,122 @@ function getSafeRedirectUrl() {
   }
 }
 
+function finishLogin(data) {
+  sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
+  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+  showToast("Dang nhap thanh cong. Dang vao FoodHub...", "success");
+
+  setTimeout(() => {
+    const redirectUrl = getSafeRedirectUrl();
+    sessionStorage.removeItem("foodhub_after_login");
+    window.location.href = redirectUrl;
+  }, 700);
+}
+
+function loadScript(src, id) {
+  return new Promise((resolve, reject) => {
+    if (document.getElementById(id)) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = id;
+    script.src = src;
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function postSocialToken(provider, accessToken) {
+  const response = await fetch(`${AUTH_API}/${provider}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ accessToken })
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Khong the dang nhap social.");
+  }
+
+  finishLogin(data);
+}
+
+async function loginWithGoogle() {
+  if (!GOOGLE_CLIENT_ID) {
+    showComingSoon("Google");
+    return;
+  }
+
+  try {
+    await loadScript("https://accounts.google.com/gsi/client", "google-identity-script");
+
+    if (!googleTokenClient) {
+      googleTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: "openid email profile",
+        callback: async response => {
+          if (!response.access_token) {
+            showToast("Google khong tra ve access token.", "error");
+            return;
+          }
+
+          try {
+            await postSocialToken("google", response.access_token);
+          } catch (error) {
+            showToast(error.message, "error");
+          }
+        }
+      });
+    }
+
+    googleTokenClient.requestAccessToken({ prompt: "select_account" });
+  } catch (error) {
+    console.error(error);
+    showToast("Khong tai duoc Google Login.", "error");
+  }
+}
+
+async function loginWithFacebook() {
+  if (!FACEBOOK_APP_ID) {
+    showComingSoon("Facebook");
+    return;
+  }
+
+  try {
+    await loadScript("https://connect.facebook.net/vi_VN/sdk.js", "facebook-sdk-script");
+
+    FB.init({
+      appId: FACEBOOK_APP_ID,
+      cookie: false,
+      xfbml: false,
+      version: "v20.0"
+    });
+
+    FB.login(async response => {
+      if (!response.authResponse?.accessToken) {
+        showToast("Ban da huy dang nhap Facebook.", "info");
+        return;
+      }
+
+      try {
+        await postSocialToken("facebook", response.authResponse.accessToken);
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    }, { scope: "public_profile,email" });
+  } catch (error) {
+    console.error(error);
+    showToast("Khong tai duoc Facebook Login.", "error");
+  }
+}
+
 async function register(event) {
   event.preventDefault();
 
@@ -59,7 +178,7 @@ async function register(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  setSubmitState(form, true, "Đang tạo tài khoản...");
+  setSubmitState(form, true, "Dang tao tai khoan...");
 
   try {
     const response = await fetch(`${AUTH_API}/register`, {
@@ -72,17 +191,17 @@ async function register(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      showToast(data.message || "Không thể đăng ký.", "error");
+      showToast(data.message || "Khong the dang ky.", "error");
       return;
     }
 
-    showToast("Đăng ký thành công. Đang chuyển sang đăng nhập...", "success");
+    showToast("Dang ky thanh cong. Dang chuyen sang dang nhap...", "success");
 
     setTimeout(() => {
       window.location.href = "login.html";
     }, 900);
   } catch (error) {
-    showToast("Không kết nối được server.", "error");
+    showToast("Khong ket noi duoc server.", "error");
     console.error(error);
   } finally {
     setSubmitState(form, false);
@@ -96,7 +215,7 @@ async function login(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  setSubmitState(form, true, "Đang đăng nhập...");
+  setSubmitState(form, true, "Dang dang nhap...");
 
   try {
     const response = await fetch(`${AUTH_API}/login`, {
@@ -109,22 +228,13 @@ async function login(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      showToast(data.message || "Không thể đăng nhập.", "error");
+      showToast(data.message || "Khong the dang nhap.", "error");
       return;
     }
 
-    sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
-    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
-
-    showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
-
-    setTimeout(() => {
-      const redirectUrl = getSafeRedirectUrl();
-      sessionStorage.removeItem("foodhub_after_login");
-      window.location.href = redirectUrl;
-    }, 700);
+    finishLogin(data);
   } catch (error) {
-    showToast("Không kết nối được server.", "error");
+    showToast("Khong ket noi duoc server.", "error");
     console.error(error);
   } finally {
     setSubmitState(form, false);
