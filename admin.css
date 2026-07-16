@@ -3,14 +3,15 @@
 }
 
 :root {
-  --accent: #ff5722;
-  --accent-soft: #fff1eb;
-  --ink: #242424;
-  --muted: #666;
-  --line: #eee2d8;
+  --accent: #2563eb;
+  --accent-soft: #eff6ff;
+  --danger: #ef4444;
+  --ink: #0f172a;
+  --muted: #53627c;
+  --line: #e2e8f0;
   --paper: #fff;
-  --page: #f7f2ed;
-  --dark: #25211f;
+  --page: #f8fafc;
+  --dark: #334155;
 }
 
 body {
@@ -47,8 +48,9 @@ button:disabled {
 }
 
 .admin-sidebar {
-  background: #171514;
-  color: #fff;
+  background: #fff;
+  border-right: 1px solid var(--line);
+  color: var(--ink);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -59,7 +61,7 @@ button:disabled {
 }
 
 .sidebar-brand {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid var(--line);
   padding: 0 6px 20px;
 }
 
@@ -72,7 +74,7 @@ button:disabled {
 }
 
 .sidebar-brand span {
-  color: rgba(255, 255, 255, 0.62);
+  color: #64748b;
   display: block;
   font-size: 13px;
   font-weight: 800;
@@ -89,7 +91,7 @@ button:disabled {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.72);
+  color: #334155;
   display: flex;
   justify-content: space-between;
   min-height: 48px;
@@ -99,13 +101,13 @@ button:disabled {
 
 .admin-nav-btn:hover,
 .admin-nav-btn.active {
-  background: rgba(255, 87, 34, 0.16);
-  border-color: rgba(255, 87, 34, 0.36);
-  color: #fff;
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: #1d4ed8;
 }
 
 .admin-nav-btn strong {
-  background: #fff;
+  background: #dbeafe;
   border-radius: 999px;
   color: var(--accent);
   min-width: 28px;
@@ -120,9 +122,9 @@ button:disabled {
 }
 
 .sidebar-footer a {
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #fff;
+  color: var(--ink);
   font-weight: 800;
   padding: 13px 16px;
   text-decoration: none;
@@ -132,7 +134,7 @@ button:disabled {
 #refreshOrdersBtn,
 #refreshFoodsBtn,
 #resetFoodFormBtn {
-  background: var(--dark);
+  background: #475569;
 }
 
 .admin-main {
@@ -141,11 +143,11 @@ button:disabled {
 }
 
 .admin-topbar {
-  align-items: end;
+  align-items: center;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 12px 34px rgba(78, 45, 25, 0.06);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   display: flex;
   gap: 20px;
   justify-content: space-between;
@@ -263,7 +265,7 @@ button:disabled {
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 16px 42px rgba(78, 45, 25, 0.08);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   padding: 22px;
 }
 
@@ -477,6 +479,250 @@ button:disabled {
   gap: 14px;
 }
 
+.admin-table-page {
+  padding: 0;
+}
+
+.page-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 28px 30px 12px;
+}
+
+.page-heading h2 {
+  font-size: 28px;
+  margin: 0 0 10px;
+}
+
+.page-heading p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.page-heading a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.page-heading span {
+  color: #94a3b8;
+  margin: 0 8px;
+}
+
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primary-btn {
+  background: var(--accent);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+}
+
+.ghost-btn,
+.icon-text-btn {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.staff-create-form {
+  border-bottom: 1px solid var(--line);
+  margin: 0 30px 18px;
+  padding: 20px 0;
+}
+
+.staff-create-form.is-collapsed {
+  display: none;
+}
+
+.form-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.staff-form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.staff-form-grid .permission-list {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.table-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 30px 24px;
+}
+
+.table-toolbar input {
+  max-width: 320px;
+  width: 100%;
+}
+
+.table-toolbar select {
+  width: 88px;
+}
+
+.table-state {
+  display: block;
+  padding: 0 30px 26px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  border-collapse: collapse;
+  min-width: 980px;
+  width: 100%;
+}
+
+.admin-table th {
+  background: #f8fafc;
+  color: #53627c;
+  font-size: 13px;
+  padding: 16px 14px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.admin-table td {
+  border-bottom: 1px solid var(--line);
+  color: #475569;
+  padding: 15px 14px;
+  vertical-align: middle;
+}
+
+.admin-table td:first-child,
+.admin-table th:first-child {
+  text-align: center;
+  width: 70px;
+}
+
+.admin-table td:last-child,
+.admin-table th:last-child {
+  width: 170px;
+}
+
+.admin-table strong {
+  color: var(--ink);
+  display: block;
+}
+
+.admin-table small {
+  color: #94a3b8;
+  display: block;
+  margin-top: 4px;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: transparent;
+  border-radius: 6px;
+  color: var(--accent);
+  min-height: 32px;
+  padding: 0 8px;
+}
+
+.icon-btn.key {
+  color: #f97316;
+}
+
+.icon-btn.lock {
+  color: var(--danger);
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
+}
+
+.account-detail-row {
+  display: none;
+}
+
+.account-detail-row.is-open {
+  display: table-row;
+}
+
+.account-detail {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 220px 1fr auto;
+  padding: 16px;
+}
+
+.account-detail label {
+  color: var(--ink);
+  display: grid;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.account-detail select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.account-detail-actions {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+}
+
+.table-footer {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 30px 30px;
+}
+
+.pager {
+  align-items: center;
+  display: flex;
+}
+
+.pager button,
+.pager span {
+  align-items: center;
+  border: 1px solid var(--line);
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+}
+
+.pager button {
+  background: #fff;
+  color: #94a3b8;
+  padding: 0;
+}
+
+.pager span {
+  background: #e2e8f0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
 .account-card {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -607,9 +853,36 @@ button:disabled {
   .account-main,
   .user-toolbar,
   .account-controls,
-  .account-permissions {
+  .account-permissions,
+  .page-heading,
+  .table-footer,
+  .account-detail,
+  .staff-form-grid,
+  .staff-form-grid .permission-list {
     flex-direction: column;
     grid-template-columns: 1fr;
+  }
+
+  .table-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    margin-inline: 20px;
+  }
+
+  .table-toolbar input,
+  .table-toolbar select {
+    max-width: none;
+    width: 100%;
+  }
+
+  .page-heading,
+  .table-state,
+  .table-footer {
+    padding-inline: 20px;
+  }
+
+  .staff-create-form {
+    margin-inline: 20px;
   }
 
   .admin-nav {

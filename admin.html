@@ -160,19 +160,24 @@
     </section>
 
     <section class="admin-section" data-admin-section="accounts">
-      <section class="panel accounts-panel">
-        <div class="panel-title">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
           <div>
-            <p class="kicker">Tai khoan</p>
             <h2>Quan ly nguoi dung</h2>
-            <p>Tao nhan vien, cap quyen dong, khoa tai khoan va dat lai mat khau khi co yeu cau.</p>
+            <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly nguoi dung</p>
           </div>
-          <button id="refreshUsersBtn" type="button">Tai lai</button>
+          <div class="heading-actions">
+            <button id="showStaffFormBtn" type="button" class="primary-btn">+ Them moi</button>
+            <button id="refreshUsersBtn" type="button" class="ghost-btn">Tai lai</button>
+          </div>
         </div>
 
-        <div class="accounts-grid">
-          <form id="staffForm" class="food-form">
+        <form id="staffForm" class="food-form staff-create-form is-collapsed">
+          <div class="form-head">
             <h3>Tao nhan vien</h3>
+            <button type="button" id="hideStaffFormBtn" class="icon-text-btn">Dong</button>
+          </div>
+          <div class="staff-form-grid">
             <label>
               Ho va ten
               <input type="text" id="staffName" required>
@@ -194,21 +199,20 @@
               </select>
             </label>
             <div id="staffPermissions" class="permission-list"></div>
-            <button type="submit">Tao nhan vien</button>
-          </form>
-
-          <div>
-            <div class="user-toolbar">
-              <select id="userTypeFilter">
-                <option value="all">Tat ca</option>
-                <option value="staff">Nhan vien</option>
-                <option value="customers">Khach hang</option>
-              </select>
-              <input type="search" id="userSearch" placeholder="Tim ten hoac email">
-            </div>
-            <div id="usersList" class="accounts-list">Dang tai tai khoan...</div>
           </div>
+          <button type="submit" class="primary-btn">Tao nhan vien</button>
+        </form>
+
+        <div class="user-toolbar table-toolbar">
+          <input type="search" id="userSearch" placeholder="Tim kiem">
+          <select id="userTypeFilter">
+            <option value="all">Tat ca</option>
+            <option value="staff">Nhan vien</option>
+            <option value="customers">Khach hang</option>
+          </select>
         </div>
+
+        <div id="usersList" class="accounts-list table-state">Dang tai tai khoan...</div>
       </section>
     </section>
   </main>

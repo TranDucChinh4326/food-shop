@@ -22,6 +22,8 @@ const userSearch = document.getElementById("userSearch");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
+const showStaffFormBtn = document.getElementById("showStaffFormBtn");
+const hideStaffFormBtn = document.getElementById("hideStaffFormBtn");
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -50,6 +52,18 @@ function showAdminSection(sectionId) {
 
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
+}
+
+function formatRole(role) {
+  const roles = {
+    USER: "Khach hang",
+    STAFF_SALES: "Nhan vien ban hang",
+    STAFF_CONTENT: "Quan ly mon an",
+    STAFF_MANAGER: "Quan ly nhan vien",
+    ADMIN: "Admin"
+  };
+
+  return roles[role] || role || "Khach hang";
 }
 
 function escapeHtml(value) {
@@ -157,44 +171,76 @@ async function loadUsers() {
       return;
     }
 
-    usersList.innerHTML = users.map(account => `
-      <article class="account-card" data-user-id="${account.id}" data-email="${escapeHtml(account.email)}" data-name="${escapeHtml(account.fullname)}">
-        <div class="account-main">
-          <div>
-            <h3>${escapeHtml(account.fullname)}</h3>
-            <p>${escapeHtml(account.email)}</p>
-            <small>${account.emailVerified ? "Email da xac thuc" : "Email chua xac thuc"} - ${account.passwordSet ? "Co mat khau" : "Chua dat mat khau"}</small>
-          </div>
-          <span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Dang hoat dong" : "Da khoa"}</span>
-        </div>
-
-        <div class="account-controls">
-          <label>
-            Vai tro
-            <select data-account-role>
-              <option value="USER" ${account.role === "USER" ? "selected" : ""}>Khach hang</option>
-              <option value="STAFF_SALES" ${account.role === "STAFF_SALES" ? "selected" : ""}>Nhan vien ban hang</option>
-              <option value="STAFF_CONTENT" ${account.role === "STAFF_CONTENT" ? "selected" : ""}>Quan ly mon an</option>
-              <option value="STAFF_MANAGER" ${account.role === "STAFF_MANAGER" ? "selected" : ""}>Quan ly nhan vien</option>
-            </select>
-          </label>
-          <div class="permission-list account-permissions">
-            ${adminPermissions.map(permission => `
-              <label class="permission-item">
-                <input type="checkbox" value="${permission.value}" ${account.permissions.includes(permission.value) ? "checked" : ""}>
-                <span>${permission.label}</span>
-              </label>
+    usersList.innerHTML = `
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Ho ten</th>
+              <th>Email</th>
+              <th>Vai tro</th>
+              <th>Xac thuc</th>
+              <th>Trang thai</th>
+              <th>Chuc nang</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${users.map((account, index) => `
+              <tr class="account-row" data-user-id="${account.id}">
+                <td>${index + 1}</td>
+                <td>
+                  <strong>${escapeHtml(account.fullname)}</strong>
+                  <small>${account.passwordSet ? "Co mat khau" : "Chua dat mat khau"}</small>
+                </td>
+                <td>${escapeHtml(account.email)}</td>
+                <td>${formatRole(account.role)}</td>
+                <td>${account.emailVerified ? "Da xac thuc" : "Chua xac thuc"}</td>
+                <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="icon-btn edit" title="Sua" data-edit-user="${account.id}">Sua</button>
+                    <button type="button" class="icon-btn key" title="Dat mat khau" data-reset-password="${account.id}">MK</button>
+                    <button type="button" class="icon-btn lock" title="${account.isActive ? "Khoa" : "Mo khoa"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${account.isActive ? "Khoa" : "Mo"}</button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="account-detail-row" data-detail-for="${account.id}" data-email="${escapeHtml(account.email)}" data-name="${escapeHtml(account.fullname)}">
+                <td colspan="7">
+                  <div class="account-detail">
+                    <label>
+                      Vai tro
+                      <select data-account-role>
+                        <option value="USER" ${account.role === "USER" ? "selected" : ""}>Khach hang</option>
+                        <option value="STAFF_SALES" ${account.role === "STAFF_SALES" ? "selected" : ""}>Nhan vien ban hang</option>
+                        <option value="STAFF_CONTENT" ${account.role === "STAFF_CONTENT" ? "selected" : ""}>Quan ly mon an</option>
+                        <option value="STAFF_MANAGER" ${account.role === "STAFF_MANAGER" ? "selected" : ""}>Quan ly nhan vien</option>
+                      </select>
+                    </label>
+                    <div class="permission-list account-permissions">
+                      ${adminPermissions.map(permission => `
+                        <label class="permission-item">
+                          <input type="checkbox" value="${permission.value}" ${account.permissions.includes(permission.value) ? "checked" : ""}>
+                          <span>${permission.label}</span>
+                        </label>
+                      `).join("")}
+                    </div>
+                    <div class="account-detail-actions">
+                      <button type="button" data-save-user="${account.id}">Luu thay doi</button>
+                      <button type="button" class="ghost-btn" data-close-detail="${account.id}">Dong</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
             `).join("")}
-          </div>
-        </div>
-
-        <div class="account-actions">
-          <button type="button" data-save-user="${account.id}">Luu quyen</button>
-          <button type="button" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${account.isActive ? "Khoa" : "Mo khoa"}</button>
-          <button type="button" data-reset-password="${account.id}">Dat mat khau</button>
-        </div>
-      </article>
-    `).join("");
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        Dang hien thi tu 1 den ${users.length} cua ${users.length} ket qua
+        <div class="pager"><button type="button" disabled>&lsaquo;</button><span>1</span><button type="button" disabled>&rsaquo;</button></div>
+      </div>
+    `;
   } catch (error) {
     usersList.textContent = error.message;
     showAdminToast(error.message, "error");
@@ -377,12 +423,12 @@ async function createStaff(event) {
   }
 }
 
-async function saveAccount(card, userId) {
+async function saveAccount(detailRow, userId) {
   const payload = {
-    fullname: card.dataset.name,
-    email: card.dataset.email,
-    role: card.querySelector("[data-account-role]").value,
-    permissions: getCheckedPermissions(card.querySelector(".account-permissions"))
+    fullname: detailRow.dataset.name,
+    email: detailRow.dataset.email,
+    role: detailRow.querySelector("[data-account-role]").value,
+    permissions: getCheckedPermissions(detailRow.querySelector(".account-permissions"))
   };
 
   await requestJson(`${ADMIN_API}/users/${userId}`, {
@@ -420,6 +466,8 @@ document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders
 document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
 document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
+showStaffFormBtn?.addEventListener("click", () => staffForm?.classList.remove("is-collapsed"));
+hideStaffFormBtn?.addEventListener("click", () => staffForm?.classList.add("is-collapsed"));
 navButtons.forEach(button => {
   button.addEventListener("click", () => showAdminSection(button.dataset.adminTarget));
 });
@@ -463,13 +511,26 @@ foodsList.addEventListener("click", event => {
 });
 
 usersList?.addEventListener("click", async event => {
+  const editId = event.target.dataset.editUser;
+  const closeId = event.target.dataset.closeDetail;
   const saveId = event.target.dataset.saveUser;
   const toggleId = event.target.dataset.toggleUser;
   const resetId = event.target.dataset.resetPassword;
 
   try {
+    if (editId) {
+      const detailRow = usersList.querySelector(`[data-detail-for="${editId}"]`);
+      detailRow?.classList.toggle("is-open");
+      return;
+    }
+
+    if (closeId) {
+      usersList.querySelector(`[data-detail-for="${closeId}"]`)?.classList.remove("is-open");
+      return;
+    }
+
     if (saveId) {
-      await saveAccount(event.target.closest(".account-card"), saveId);
+      await saveAccount(event.target.closest(".account-detail-row"), saveId);
       showAdminToast("Da cap nhat quyen tai khoan.");
       await loadUsers();
     }
