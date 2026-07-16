@@ -167,41 +167,10 @@
             <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly nguoi dung</p>
           </div>
           <div class="heading-actions">
-            <button id="showStaffFormBtn" type="button" class="primary-btn">+ Them moi</button>
+            <a href="admin-account.html" class="primary-btn button-link">+ Them moi</a>
             <button id="refreshUsersBtn" type="button" class="ghost-btn">Tai lai</button>
           </div>
         </div>
-
-        <form id="staffForm" class="food-form staff-create-form is-collapsed">
-          <div class="form-head">
-            <h3>Tao nhan vien</h3>
-            <button type="button" id="hideStaffFormBtn" class="icon-text-btn">Dong</button>
-          </div>
-          <div class="staff-form-grid">
-            <label>
-              Ho va ten
-              <input type="text" id="staffName" required>
-            </label>
-            <label>
-              Email
-              <input type="email" id="staffEmail" required>
-            </label>
-            <label>
-              Mat khau tam
-              <input type="password" id="staffPassword" minlength="6" required>
-            </label>
-            <label>
-              Vai tro
-              <select id="staffRole">
-                <option value="STAFF_SALES">Nhan vien ban hang</option>
-                <option value="STAFF_CONTENT">Quan ly mon an</option>
-                <option value="STAFF_MANAGER">Quan ly nhan vien</option>
-              </select>
-            </label>
-            <div id="staffPermissions" class="permission-list"></div>
-          </div>
-          <button type="submit" class="primary-btn">Tao nhan vien</button>
-        </form>
 
         <div class="user-toolbar table-toolbar">
           <input type="search" id="userSearch" placeholder="Tim kiem">

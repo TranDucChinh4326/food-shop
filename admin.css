@@ -96,7 +96,9 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   min-height: 48px;
+  padding: 0 16px;
   text-align: left;
+  text-decoration: none;
   width: 100%;
 }
 
@@ -526,6 +528,25 @@ button:disabled {
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
 }
 
+.button-link {
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  font-weight: 600;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  text-decoration: none;
+}
+
+.button-link.primary-btn {
+  color: #fff;
+}
+
+.button-link.ghost-btn {
+  color: var(--ink);
+}
+
 .ghost-btn,
 .icon-text-btn {
   background: #f8fafc;
@@ -537,6 +558,37 @@ button:disabled {
   border-bottom: 1px solid var(--line);
   margin: 0 30px 18px;
   padding: 20px 0;
+}
+
+.account-form-panel {
+  margin: 0 auto;
+  max-width: 760px;
+  padding: 0;
+}
+
+.form-page-heading {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+}
+
+.account-page-form {
+  display: grid;
+  gap: 24px;
+  padding: 26px 30px 30px;
+}
+
+.account-page-form h3 {
+  margin: 0 0 6px;
+}
+
+.form-note {
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.account-form-actions {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
 }
 
 .staff-create-form.is-collapsed {

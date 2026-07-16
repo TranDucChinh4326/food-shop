@@ -22,8 +22,6 @@ const userSearch = document.getElementById("userSearch");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
-const showStaffFormBtn = document.getElementById("showStaffFormBtn");
-const hideStaffFormBtn = document.getElementById("hideStaffFormBtn");
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -262,36 +260,9 @@ function renderUsersTable() {
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
                 <td>
                   <div class="table-actions">
-                    <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua tai khoan" data-edit-user="${account.id}">${editIcon()}</button>
+                    <a class="icon-btn edit" href="admin-account.html?id=${account.id}" title="Sua" aria-label="Sua tai khoan">${editIcon()}</a>
                     <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}">${keyIcon()}</button>
                     <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
-                  </div>
-                </td>
-              </tr>
-              <tr class="account-detail-row" data-detail-for="${account.id}" data-email="${escapeHtml(account.email)}" data-name="${escapeHtml(account.fullname)}">
-                <td colspan="7">
-                  <div class="account-detail">
-                    <label>
-                      Vai tro
-                      <select data-account-role>
-                        <option value="USER" ${account.role === "USER" ? "selected" : ""}>Khach hang</option>
-                        <option value="STAFF_SALES" ${account.role === "STAFF_SALES" ? "selected" : ""}>Nhan vien ban hang</option>
-                        <option value="STAFF_CONTENT" ${account.role === "STAFF_CONTENT" ? "selected" : ""}>Quan ly mon an</option>
-                        <option value="STAFF_MANAGER" ${account.role === "STAFF_MANAGER" ? "selected" : ""}>Quan ly nhan vien</option>
-                      </select>
-                    </label>
-                    <div class="permission-list account-permissions">
-                      ${adminPermissions.map(permission => `
-                        <label class="permission-item">
-                          <input type="checkbox" value="${permission.value}" ${account.permissions.includes(permission.value) ? "checked" : ""}>
-                          <span>${permission.label}</span>
-                        </label>
-                      `).join("")}
-                    </div>
-                    <div class="account-detail-actions">
-                      <button type="button" data-save-user="${account.id}">Luu thay doi</button>
-                      <button type="button" class="ghost-btn" data-close-detail="${account.id}">Dong</button>
-                    </div>
                   </div>
                 </td>
               </tr>
@@ -531,8 +502,6 @@ document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders
 document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
 document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
-showStaffFormBtn?.addEventListener("click", () => staffForm?.classList.remove("is-collapsed"));
-hideStaffFormBtn?.addEventListener("click", () => staffForm?.classList.add("is-collapsed"));
 navButtons.forEach(button => {
   button.addEventListener("click", () => showAdminSection(button.dataset.adminTarget));
 });
@@ -581,9 +550,6 @@ foodsList.addEventListener("click", event => {
 
 usersList?.addEventListener("click", async event => {
   const pageAction = event.target.dataset.usersPage;
-  const editId = event.target.dataset.editUser;
-  const closeId = event.target.dataset.closeDetail;
-  const saveId = event.target.dataset.saveUser;
   const toggleId = event.target.dataset.toggleUser;
   const resetId = event.target.dataset.resetPassword;
 
@@ -602,23 +568,6 @@ usersList?.addEventListener("click", async event => {
       usersPage = Math.min(Math.max(usersPage, 1), totalPages);
       renderUsersTable();
       return;
-    }
-
-    if (editId) {
-      const detailRow = usersList.querySelector(`[data-detail-for="${editId}"]`);
-      detailRow?.classList.toggle("is-open");
-      return;
-    }
-
-    if (closeId) {
-      usersList.querySelector(`[data-detail-for="${closeId}"]`)?.classList.remove("is-open");
-      return;
-    }
-
-    if (saveId) {
-      await saveAccount(event.target.closest(".account-detail-row"), saveId);
-      showAdminToast("Da cap nhat quyen tai khoan.");
-      await loadUsers();
     }
 
     if (toggleId) {

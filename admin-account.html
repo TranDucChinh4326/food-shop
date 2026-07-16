@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tai khoan - FoodHub Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <a href="index.html">🍔 FoodHub</a>
+      <span>Bang quan tri</span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Menu quan tri">
+      <a class="admin-nav-btn" href="admin.html">Tong quan</a>
+      <a class="admin-nav-btn" href="admin.html">Don hang</a>
+      <a class="admin-nav-btn" href="admin.html">Mon an</a>
+      <a class="admin-nav-btn active" href="admin.html">Tai khoan</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="admin.html">Ve danh sach</a>
+      <button id="logoutBtn" type="button">Dang xuat</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div>
+        <p class="kicker">FoodHub Admin</p>
+        <h1 id="accountPageTitle">Them tai khoan</h1>
+      </div>
+      <p id="accountPageHelp">Nhap thong tin tai khoan va cap quyen phu hop.</p>
+    </header>
+
+    <section class="panel account-form-panel">
+      <div class="page-heading form-page-heading">
+        <div>
+          <h2 id="accountFormTitle">Them moi tai khoan</h2>
+          <p><a href="admin.html">Quan ly nguoi dung</a> <span>/</span> <span id="accountBreadcrumb">Them moi</span></p>
+        </div>
+      </div>
+
+      <form id="accountForm" class="account-page-form">
+        <div class="staff-form-grid">
+          <label>
+            Ho va ten
+            <input type="text" id="accountName" required>
+          </label>
+
+          <label>
+            Email
+            <input type="email" id="accountEmail" required>
+          </label>
+
+          <label id="passwordField">
+            Mat khau tam
+            <input type="password" id="accountPassword" minlength="6">
+          </label>
+
+          <label>
+            Vai tro
+            <select id="accountRole" required>
+              <option value="USER">Khach hang</option>
+              <option value="STAFF_SALES">Nhan vien ban hang</option>
+              <option value="STAFF_CONTENT">Quan ly mon an</option>
+              <option value="STAFF_MANAGER">Quan ly nhan vien</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <h3>Quyen tai khoan</h3>
+          <p class="form-note">Khach hang thong thuong khong can cap quyen quan tri.</p>
+          <div id="accountPermissions" class="permission-list account-permissions"></div>
+        </div>
+
+        <div class="form-actions account-form-actions">
+          <button type="submit" class="primary-btn">Luu tai khoan</button>
+          <a href="admin.html" class="ghost-btn button-link">Quay ve</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="admin-account.js"></script>
+</body>
+</html>
