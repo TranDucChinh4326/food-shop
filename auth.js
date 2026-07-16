@@ -31,6 +31,19 @@ function showComingSoon(provider) {
   showToast(`${provider} chua duoc cau hinh App ID/Client ID.`, "info");
 }
 
+function handleVerificationStep(data, fallbackMessage) {
+  showToast(data.message || fallbackMessage, "info");
+
+  if (data.verificationUrl) {
+    setTimeout(() => {
+      window.location.href = data.verificationUrl;
+    }, 900);
+    return true;
+  }
+
+  return false;
+}
+
 function setSubmitState(form, isLoading, loadingText) {
   const button = form.querySelector("button[type='submit']");
 
@@ -239,11 +252,15 @@ async function register(event) {
       return;
     }
 
-    showToast("Dang ky thanh cong. Dang chuyen sang dang nhap...", "success");
+    if (handleVerificationStep(data, "Dang ky thanh cong. Vui long xac thuc email.")) {
+      return;
+    }
+
+    showToast(data.message || "Dang ky thanh cong. Hay kiem tra email de xac thuc.", "success");
 
     setTimeout(() => {
       window.location.href = "login.html";
-    }, 900);
+    }, 1400);
   } catch (error) {
     showToast("Khong ket noi duoc server.", "error");
     console.error(error);
@@ -270,6 +287,11 @@ async function login(event) {
       body: JSON.stringify({ email, password })
     });
     const data = await response.json();
+
+    if (response.status === 403) {
+      handleVerificationStep(data, "Email chua xac thuc.");
+      return;
+    }
 
     if (!response.ok) {
       showToast(data.message || "Khong the dang nhap.", "error");

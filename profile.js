@@ -101,6 +101,17 @@ function renderSocialAccounts(accounts = []) {
   }).join("");
 }
 
+function renderEmailVerifyStatus(user) {
+  const status = document.getElementById("emailVerifyStatus");
+  if (!status) return;
+
+  const isVerified = Boolean(user?.emailVerified);
+  status.className = `verify-status ${isVerified ? "verified" : "pending"}`;
+  status.textContent = isVerified
+    ? "Email da duoc xac thuc. Google cung email se tu dong dong bo vao tai khoan nay."
+    : "Email chua xac thuc. Ban can xac thuc truoc khi dang nhap bang mat khau.";
+}
+
 async function loadSocialAccounts() {
   try {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/accounts`);
@@ -117,6 +128,7 @@ async function postSocialLink(provider, accessToken) {
   });
 
   renderSocialAccounts(data.accounts || []);
+  await loadProfile();
   showSiteToast(data.message || "Da lien ket tai khoan.");
 }
 
@@ -236,6 +248,7 @@ async function loadProfile() {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
     document.getElementById("profileFullname").value = data.user.fullname || "";
     document.getElementById("profileEmail").value = data.user.email || "";
+    renderEmailVerifyStatus(data.user);
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
     await loadSocialAccounts();
@@ -258,8 +271,17 @@ async function saveProfile(event) {
       body: JSON.stringify(payload)
     });
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+    renderEmailVerifyStatus(data.user);
     renderUser();
-    showSiteToast("Da cap nhat thong tin tai khoan.");
+    if (data.verificationUrl) {
+      showSiteToast(data.message || "Vui long xac thuc email moi.");
+      setTimeout(() => {
+        window.location.href = data.verificationUrl;
+      }, 900);
+      return;
+    }
+
+    showSiteToast(data.message || "Da cap nhat thong tin tai khoan.");
   } catch (error) {
     showSiteToast(error.message, "error");
   }
