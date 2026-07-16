@@ -80,7 +80,6 @@ function loadScript(src, id) {
     script.src = src;
     script.async = true;
     script.defer = true;
-    script.crossOrigin = "anonymous";
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);
