@@ -145,16 +145,22 @@ async function loginWithFacebook() {
   try {
     await loadScript("https://connect.facebook.net/vi_VN/sdk.js", "facebook-sdk-script");
 
+    if (!window.FB) {
+      showToast("Facebook SDK chua san sang. Kiem tra App Domain tren Meta.", "error");
+      return;
+    }
+
     FB.init({
       appId: FACEBOOK_APP_ID,
       cookie: false,
       xfbml: false,
+      status: true,
       version: "v20.0"
     });
 
     FB.login(async response => {
       if (!response.authResponse?.accessToken) {
-        showToast("Ban da huy dang nhap Facebook.", "info");
+        showToast("Facebook chua cap quyen dang nhap hoac popup da bi dong.", "info");
         return;
       }
 
