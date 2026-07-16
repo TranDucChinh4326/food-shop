@@ -3,166 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản trị FoodHub</title>
+  <title>Quan tri FoodHub</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <header class="admin-header">
-    <div class="admin-brand">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
       <a href="index.html">🍔 FoodHub</a>
-      <span>Quản trị</span>
+      <span>Bang quan tri</span>
     </div>
 
-    <button id="logoutBtn" type="button">Đăng xuất</button>
-  </header>
+    <nav class="admin-nav" aria-label="Menu quan tri">
+      <button class="admin-nav-btn active" type="button" data-admin-target="overview">
+        <span>Tong quan</span>
+      </button>
+      <button class="admin-nav-btn" type="button" data-admin-target="orders">
+        <span>Don hang</span>
+        <strong id="ordersCount">0</strong>
+      </button>
+      <button class="admin-nav-btn" type="button" data-admin-target="foods">
+        <span>Mon an</span>
+        <strong id="foodsCount">0</strong>
+      </button>
+      <button class="admin-nav-btn" type="button" data-admin-target="accounts">
+        <span>Tai khoan</span>
+      </button>
+    </nav>
 
-  <main class="admin-shell">
-    <section class="admin-hero">
+    <div class="sidebar-footer">
+      <a href="index.html">Ve website</a>
+      <button id="logoutBtn" type="button">Dang xuat</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
       <div>
-        <p class="kicker">Bảng điều khiển</p>
-        <h1>Quản lý đơn hàng và thực đơn</h1>
-        <p>Theo dõi đơn mới, cập nhật trạng thái giao hàng và chỉnh sửa món ăn đang bán.</p>
+        <p class="kicker">FoodHub Admin</p>
+        <h1>Quan ly he thong</h1>
       </div>
+      <p>Chia tung khu vuc rieng de quan ly don hang, mon an va tai khoan de hon.</p>
+    </header>
 
-      <div class="admin-stats">
+    <section class="admin-section active" data-admin-section="overview">
+      <section class="admin-hero">
         <div>
-          <strong id="ordersCount">0</strong>
-          <span>Đơn hàng</span>
+          <p class="kicker">Bang dieu khien</p>
+          <h2>Quan tri FoodHub gon gang hon</h2>
+          <p>Theo doi nhanh tinh hinh he thong va di thang den khu vuc can xu ly.</p>
         </div>
-        <div>
-          <strong id="foodsCount">0</strong>
-          <span>Món ăn</span>
-        </div>
+      </section>
+
+      <div class="overview-grid">
+        <button class="overview-card" type="button" data-admin-shortcut="orders">
+          <span>Don hang</span>
+          <strong>Xu ly trang thai giao hang</strong>
+          <small>Cap nhat xac nhan, dang giao, hoan tat hoac huy don.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="foods">
+          <span>Mon an</span>
+          <strong>Them sua thuc don</strong>
+          <small>Quan ly gia, hinh anh, mo ta va trang thai dang ban.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="accounts">
+          <span>Tai khoan</span>
+          <strong>Nhan vien va khach hang</strong>
+          <small>Cap quyen dong, khoa tai khoan va dat lai mat khau khi can.</small>
+        </button>
       </div>
     </section>
 
-    <section class="dashboard-grid">
+    <section class="admin-section" data-admin-section="orders">
       <section class="panel orders-panel">
         <div class="panel-title">
           <div>
-            <h2>Đơn hàng</h2>
-            <p>Cập nhật trạng thái xử lý cho từng đơn.</p>
+            <p class="kicker">Don hang</p>
+            <h2>Quan ly don hang</h2>
+            <p>Cap nhat trang thai xu ly cho tung don va xem chi tiet mon da dat.</p>
           </div>
-          <button id="refreshOrdersBtn" type="button">Tải lại</button>
+          <button id="refreshOrdersBtn" type="button">Tai lai</button>
         </div>
 
-        <div id="ordersList" class="list-state">Đang tải đơn hàng...</div>
+        <div id="ordersList" class="list-state">Dang tai don hang...</div>
       </section>
+    </section>
 
-      <aside class="panel food-form-panel">
-        <div class="panel-title compact">
+    <section class="admin-section" data-admin-section="foods">
+      <div class="food-management-grid">
+        <aside class="panel food-form-panel">
+          <div class="panel-title compact">
+            <div>
+              <p class="kicker">Mon an</p>
+              <h2>Thong tin mon</h2>
+              <p>Them mon moi hoac chinh sua mon dang co.</p>
+            </div>
+          </div>
+
+          <form id="foodForm" class="food-form">
+            <input type="hidden" id="foodId">
+
+            <label>
+              Ten mon
+              <input type="text" id="foodName" required>
+            </label>
+
+            <label>
+              Danh muc
+              <select id="foodCategory" required>
+                <option value="1">Burger</option>
+                <option value="2">Pizza</option>
+                <option value="3">Mi & Pho</option>
+                <option value="4">Do uong</option>
+              </select>
+            </label>
+
+            <label>
+              Gia
+              <input type="number" id="foodPrice" min="1000" step="1000" required>
+            </label>
+
+            <label>
+              Link anh
+              <input type="url" id="foodImage">
+            </label>
+
+            <label>
+              Mo ta
+              <textarea id="foodDescription" rows="3"></textarea>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" id="foodActive" checked>
+              Dang ban
+            </label>
+
+            <div class="form-actions">
+              <button type="submit">Luu mon</button>
+              <button type="button" id="resetFoodFormBtn">Nhap mon moi</button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="panel foods-panel">
+          <div class="panel-title">
+            <div>
+              <p class="kicker">Danh sach</p>
+              <h2>Mon an hien co</h2>
+              <p>Chon sua de dua thong tin mon len form ben trai.</p>
+            </div>
+            <button id="refreshFoodsBtn" type="button">Tai lai</button>
+          </div>
+
+          <div id="foodsList" class="food-table">Dang tai mon an...</div>
+        </section>
+      </div>
+    </section>
+
+    <section class="admin-section" data-admin-section="accounts">
+      <section class="panel accounts-panel">
+        <div class="panel-title">
           <div>
-            <h2>Món ăn</h2>
-            <p>Thêm hoặc sửa thông tin món.</p>
+            <p class="kicker">Tai khoan</p>
+            <h2>Quan ly nguoi dung</h2>
+            <p>Tao nhan vien, cap quyen dong, khoa tai khoan va dat lai mat khau khi co yeu cau.</p>
+          </div>
+          <button id="refreshUsersBtn" type="button">Tai lai</button>
+        </div>
+
+        <div class="accounts-grid">
+          <form id="staffForm" class="food-form">
+            <h3>Tao nhan vien</h3>
+            <label>
+              Ho va ten
+              <input type="text" id="staffName" required>
+            </label>
+            <label>
+              Email
+              <input type="email" id="staffEmail" required>
+            </label>
+            <label>
+              Mat khau tam
+              <input type="password" id="staffPassword" minlength="6" required>
+            </label>
+            <label>
+              Vai tro
+              <select id="staffRole">
+                <option value="STAFF_SALES">Nhan vien ban hang</option>
+                <option value="STAFF_CONTENT">Quan ly mon an</option>
+                <option value="STAFF_MANAGER">Quan ly nhan vien</option>
+              </select>
+            </label>
+            <div id="staffPermissions" class="permission-list"></div>
+            <button type="submit">Tao nhan vien</button>
+          </form>
+
+          <div>
+            <div class="user-toolbar">
+              <select id="userTypeFilter">
+                <option value="all">Tat ca</option>
+                <option value="staff">Nhan vien</option>
+                <option value="customers">Khach hang</option>
+              </select>
+              <input type="search" id="userSearch" placeholder="Tim ten hoac email">
+            </div>
+            <div id="usersList" class="accounts-list">Dang tai tai khoan...</div>
           </div>
         </div>
-
-        <form id="foodForm" class="food-form">
-          <input type="hidden" id="foodId">
-
-          <label>
-            Tên món
-            <input type="text" id="foodName" required>
-          </label>
-
-          <label>
-            Danh mục
-            <select id="foodCategory" required>
-              <option value="1">Burger</option>
-              <option value="2">Pizza</option>
-              <option value="3">Mì & Phở</option>
-              <option value="4">Đồ uống</option>
-            </select>
-          </label>
-
-          <label>
-            Giá
-            <input type="number" id="foodPrice" min="1000" step="1000" required>
-          </label>
-
-          <label>
-            Link ảnh
-            <input type="url" id="foodImage">
-          </label>
-
-          <label>
-            Mô tả
-            <textarea id="foodDescription" rows="3"></textarea>
-          </label>
-
-          <label class="check-row">
-            <input type="checkbox" id="foodActive" checked>
-            Đang bán
-          </label>
-
-          <div class="form-actions">
-            <button type="submit">Lưu món</button>
-            <button type="button" id="resetFoodFormBtn">Món mới</button>
-          </div>
-        </form>
-      </aside>
-    </section>
-
-    <section class="panel foods-panel">
-      <div class="panel-title">
-        <div>
-          <h2>Danh sách món ăn</h2>
-          <p>Chọn sửa để đưa thông tin món lên form bên trên.</p>
-        </div>
-        <button id="refreshFoodsBtn" type="button">Tải lại</button>
-      </div>
-
-      <div id="foodsList" class="food-table">Đang tải món ăn...</div>
-    </section>
-
-    <section class="panel accounts-panel">
-      <div class="panel-title">
-        <div>
-          <h2>Quan ly tai khoan</h2>
-          <p>Admin co the tao nhan vien, cap quyen dong, khoa tai khoan va dat lai mat khau khi co yeu cau.</p>
-        </div>
-        <button id="refreshUsersBtn" type="button">Tai lai</button>
-      </div>
-
-      <div class="accounts-grid">
-        <form id="staffForm" class="food-form">
-          <h3>Tao nhan vien</h3>
-          <label>
-            Ho va ten
-            <input type="text" id="staffName" required>
-          </label>
-          <label>
-            Email
-            <input type="email" id="staffEmail" required>
-          </label>
-          <label>
-            Mat khau tam
-            <input type="password" id="staffPassword" minlength="6" required>
-          </label>
-          <label>
-            Vai tro
-            <select id="staffRole">
-              <option value="STAFF_SALES">Nhan vien ban hang</option>
-              <option value="STAFF_CONTENT">Quan ly mon an</option>
-              <option value="STAFF_MANAGER">Quan ly nhan vien</option>
-            </select>
-          </label>
-          <div id="staffPermissions" class="permission-list"></div>
-          <button type="submit">Tao nhan vien</button>
-        </form>
-
-        <div>
-          <div class="user-toolbar">
-            <select id="userTypeFilter">
-              <option value="all">Tat ca</option>
-              <option value="staff">Nhan vien</option>
-              <option value="customers">Khach hang</option>
-            </select>
-            <input type="search" id="userSearch" placeholder="Tim ten hoac email">
-          </div>
-          <div id="usersList" class="accounts-list">Dang tai tai khoan...</div>
-        </div>
-      </div>
+      </section>
     </section>
   </main>
 

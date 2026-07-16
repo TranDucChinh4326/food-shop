@@ -19,6 +19,9 @@ const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
 const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
+const navButtons = [...document.querySelectorAll("[data-admin-target]")];
+const adminSections = [...document.querySelectorAll("[data-admin-section]")];
+const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -30,6 +33,20 @@ const statusLabels = {
 let toastTimer;
 let adminPermissions = [];
 let userSearchTimer;
+
+function showAdminSection(sectionId) {
+  const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
+
+  navButtons.forEach(button => {
+    button.classList.toggle("active", button.dataset.adminTarget === target);
+  });
+
+  adminSections.forEach(section => {
+    section.classList.toggle("active", section.dataset.adminSection === target);
+  });
+
+  sessionStorage.setItem("foodhub_admin_section", target);
+}
 
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
@@ -287,7 +304,8 @@ function fillFoodForm(food) {
   document.getElementById("foodImage").value = food.image || "";
   document.getElementById("foodDescription").value = food.description || "";
   document.getElementById("foodActive").checked = Boolean(food.is_active);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  showAdminSection("foods");
+  foodForm.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function saveFood(event) {
@@ -402,6 +420,12 @@ document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders
 document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
 document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
+navButtons.forEach(button => {
+  button.addEventListener("click", () => showAdminSection(button.dataset.adminTarget));
+});
+shortcutButtons.forEach(button => {
+  button.addEventListener("click", () => showAdminSection(button.dataset.adminShortcut));
+});
 foodForm.addEventListener("submit", saveFood);
 staffForm?.addEventListener("submit", createStaff);
 userTypeFilter?.addEventListener("change", loadUsers);
@@ -466,6 +490,7 @@ usersList?.addEventListener("click", async event => {
 });
 
 requireAdminSession();
+showAdminSection(sessionStorage.getItem("foodhub_admin_section") || "overview");
 loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();
