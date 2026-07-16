@@ -194,7 +194,7 @@ async function loginWithFacebook() {
 
     FB.login(response => {
       handleFacebookResponse(response);
-    }, { scope: "public_profile,email" });
+    }, { scope: "public_profile" });
   } catch (error) {
     console.error(error);
     showToast(error.message || "Khong tai duoc Facebook Login.", "error");
