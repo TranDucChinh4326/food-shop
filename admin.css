@@ -643,24 +643,27 @@ button:disabled {
   border-radius: 6px;
   color: var(--accent);
   display: inline-flex;
-  font-size: 18px;
   justify-content: center;
-  min-height: 32px;
-  min-width: 32px;
+  min-height: 30px;
+  min-width: 30px;
   padding: 0;
 }
 
-.icon-btn span {
-  display: inline-block;
-  font-family: "Segoe UI Symbol", "Arial Unicode MS", "Segoe UI", sans-serif;
-  line-height: 1;
+.icon-btn svg {
+  fill: none;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.1;
+  width: 20px;
 }
 
 .icon-btn.key {
   color: #f97316;
 }
 
-.icon-btn.lock {
+.icon-btn.delete {
   color: var(--danger);
 }
 

@@ -69,6 +69,38 @@ function formatRole(role) {
   return roles[role] || role || "Khach hang";
 }
 
+function editIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+    </svg>
+  `;
+}
+
+function keyIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="7.5" cy="14.5" r="3.5"></circle>
+      <path d="M10 12 20 2"></path>
+      <path d="m15 7 2 2"></path>
+      <path d="m17 5 2 2"></path>
+    </svg>
+  `;
+}
+
+function trashIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 6h18"></path>
+      <path d="M8 6V4h8v2"></path>
+      <path d="M19 6l-1 14H6L5 6"></path>
+      <path d="M10 11v5"></path>
+      <path d="M14 11v5"></path>
+    </svg>
+  `;
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -230,9 +262,9 @@ function renderUsersTable() {
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
                 <td>
                   <div class="table-actions">
-                    <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua tai khoan" data-edit-user="${account.id}"><span aria-hidden="true">&#9998;</span></button>
-                    <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}"><span aria-hidden="true">&#9919;</span></button>
-                    <button type="button" class="icon-btn lock" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}"><span aria-hidden="true">${account.isActive ? "&#128274;" : "&#128275;"}</span></button>
+                    <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua tai khoan" data-edit-user="${account.id}">${editIcon()}</button>
+                    <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}">${keyIcon()}</button>
+                    <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
                   </div>
                 </td>
               </tr>
