@@ -112,6 +112,39 @@ function renderEmailVerifyStatus(user) {
     : "Email chua xac thuc. Ban can xac thuc truoc khi dang nhap bang mat khau.";
 }
 
+function renderPasswordMode(user) {
+  const form = document.getElementById("passwordForm");
+  const currentPassword = document.getElementById("currentPassword");
+  const newPassword = document.getElementById("newPassword");
+
+  if (!form || !currentPassword || !newPassword) return;
+
+  const title = form.querySelector(".section-heading h2");
+  const hint = form.querySelector(".section-heading p");
+  const button = form.querySelector("button[type='submit']");
+  const currentLabel = currentPassword.closest("label");
+  const hasPasswordSet = Boolean(user?.passwordSet);
+
+  currentPassword.required = hasPasswordSet;
+  if (currentLabel) {
+    currentLabel.hidden = !hasPasswordSet;
+  }
+
+  if (title) {
+    title.textContent = hasPasswordSet ? "Doi mat khau" : "Tao mat khau dang nhap";
+  }
+
+  if (hint) {
+    hint.textContent = hasPasswordSet
+      ? "Nhap mat khau hien tai de doi sang mat khau moi."
+      : "Tai khoan nay dang dang nhap bang Google/Facebook. Hay tao mat khau neu ban muon dang nhap bang email.";
+  }
+
+  if (button) {
+    button.textContent = hasPasswordSet ? "Doi mat khau" : "Tao mat khau";
+  }
+}
+
 async function loadSocialAccounts() {
   try {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/accounts`);
@@ -249,6 +282,7 @@ async function loadProfile() {
     document.getElementById("profileFullname").value = data.user.fullname || "";
     document.getElementById("profileEmail").value = data.user.email || "";
     renderEmailVerifyStatus(data.user);
+    renderPasswordMode(data.user);
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
     await loadSocialAccounts();
