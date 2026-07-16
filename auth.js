@@ -4,9 +4,11 @@ const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
 const FACEBOOK_APP_ID = window.FOODHUB_CONFIG?.FACEBOOK_APP_ID || "";
+const FACEBOOK_SDK_VERSION = "v25.0";
 
 let toastTimer;
 let googleTokenClient;
+let facebookSdkPromise;
 
 localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
@@ -78,10 +80,56 @@ function loadScript(src, id) {
     script.src = src;
     script.async = true;
     script.defer = true;
+    script.crossOrigin = "anonymous";
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);
   });
+}
+
+function initFacebookSdk() {
+  if (!FACEBOOK_APP_ID) {
+    return Promise.reject(new Error("Facebook chua duoc cau hinh App ID."));
+  }
+
+  if (window.FB) {
+    FB.init({
+      appId: FACEBOOK_APP_ID,
+      cookie: false,
+      xfbml: false,
+      status: true,
+      version: FACEBOOK_SDK_VERSION
+    });
+    return Promise.resolve();
+  }
+
+  if (!facebookSdkPromise) {
+    facebookSdkPromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Facebook SDK tai qua lau hoac bi trinh duyet chan."));
+      }, 10000);
+
+      window.fbAsyncInit = () => {
+        clearTimeout(timeout);
+        FB.init({
+          appId: FACEBOOK_APP_ID,
+          cookie: false,
+          xfbml: false,
+          status: true,
+          version: FACEBOOK_SDK_VERSION
+        });
+        resolve();
+      };
+
+      loadScript("https://connect.facebook.net/vi_VN/sdk.js", "facebook-sdk-script")
+        .catch(error => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+    });
+  }
+
+  return facebookSdkPromise;
 }
 
 async function postSocialToken(provider, accessToken) {
@@ -143,20 +191,7 @@ async function loginWithFacebook() {
   }
 
   try {
-    await loadScript("https://connect.facebook.net/vi_VN/sdk.js", "facebook-sdk-script");
-
-    if (!window.FB) {
-      showToast("Facebook SDK chua san sang. Kiem tra App Domain tren Meta.", "error");
-      return;
-    }
-
-    FB.init({
-      appId: FACEBOOK_APP_ID,
-      cookie: false,
-      xfbml: false,
-      status: true,
-      version: "v20.0"
-    });
+    await initFacebookSdk();
 
     FB.login(async response => {
       if (!response.authResponse?.accessToken) {
@@ -172,7 +207,7 @@ async function loginWithFacebook() {
     }, { scope: "public_profile,email" });
   } catch (error) {
     console.error(error);
-    showToast("Khong tai duoc Facebook Login.", "error");
+    showToast(error.message || "Khong tai duoc Facebook Login.", "error");
   }
 }
 
