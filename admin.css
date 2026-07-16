@@ -19,8 +19,9 @@ body {
   background: var(--page);
   color: var(--ink);
   display: grid;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   grid-template-columns: 272px minmax(0, 1fr);
+  letter-spacing: 0;
   min-height: 100vh;
 }
 
@@ -37,7 +38,7 @@ button {
   background: var(--accent);
   color: #fff;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 600;
   min-height: 42px;
   padding: 0 16px;
 }
@@ -68,8 +69,8 @@ button:disabled {
 .sidebar-brand a {
   color: var(--accent);
   display: block;
-  font-size: 26px;
-  font-weight: 900;
+  font-size: 25px;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -77,7 +78,7 @@ button:disabled {
   color: #64748b;
   display: block;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
   margin-top: 6px;
   text-transform: uppercase;
 }
@@ -125,7 +126,7 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 600;
   padding: 13px 16px;
   text-decoration: none;
 }
@@ -156,7 +157,8 @@ button:disabled {
 }
 
 .admin-topbar h1 {
-  font-size: 32px;
+  font-size: 30px;
+  font-weight: 700;
   margin: 0;
 }
 
@@ -190,7 +192,7 @@ button:disabled {
 .kicker {
   color: var(--accent);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
   margin: 0 0 8px;
   text-transform: uppercase;
 }
@@ -235,7 +237,7 @@ button:disabled {
 
 .overview-card span {
   color: var(--accent);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .overview-card strong {
@@ -284,7 +286,8 @@ button:disabled {
 }
 
 .panel-title h2 {
-  font-size: 28px;
+  font-size: 26px;
+  font-weight: 700;
   margin: 0 0 6px;
 }
 
@@ -356,7 +359,7 @@ button:disabled {
 .food-form label {
   color: #444;
   display: grid;
-  font-weight: 800;
+  font-weight: 600;
   gap: 7px;
 }
 
@@ -493,6 +496,7 @@ button:disabled {
 
 .page-heading h2 {
   font-size: 28px;
+  font-weight: 700;
   margin: 0 0 10px;
 }
 
@@ -591,6 +595,7 @@ button:disabled {
   background: #f8fafc;
   color: #53627c;
   font-size: 13px;
+  font-weight: 600;
   padding: 16px 14px;
   text-align: left;
   text-transform: uppercase;
@@ -599,6 +604,7 @@ button:disabled {
 .admin-table td {
   border-bottom: 1px solid var(--line);
   color: #475569;
+  font-size: 15px;
   padding: 15px 14px;
   vertical-align: middle;
 }
@@ -617,6 +623,7 @@ button:disabled {
 .admin-table strong {
   color: var(--ink);
   display: block;
+  font-weight: 600;
 }
 
 .admin-table small {
@@ -631,11 +638,22 @@ button:disabled {
 }
 
 .icon-btn {
+  align-items: center;
   background: transparent;
   border-radius: 6px;
   color: var(--accent);
+  display: inline-flex;
+  font-size: 18px;
+  justify-content: center;
   min-height: 32px;
-  padding: 0 8px;
+  min-width: 32px;
+  padding: 0;
+}
+
+.icon-btn span {
+  display: inline-block;
+  font-family: "Segoe UI Symbol", "Arial Unicode MS", "Segoe UI", sans-serif;
+  line-height: 1;
 }
 
 .icon-btn.key {
@@ -671,7 +689,7 @@ button:disabled {
 .account-detail label {
   color: var(--ink);
   display: grid;
-  font-weight: 800;
+  font-weight: 600;
   gap: 7px;
 }
 
@@ -720,7 +738,7 @@ button:disabled {
 .pager span {
   background: #e2e8f0;
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .account-card {

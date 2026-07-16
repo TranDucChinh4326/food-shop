@@ -199,9 +199,9 @@ async function loadUsers() {
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
                 <td>
                   <div class="table-actions">
-                    <button type="button" class="icon-btn edit" title="Sua" data-edit-user="${account.id}">Sua</button>
-                    <button type="button" class="icon-btn key" title="Dat mat khau" data-reset-password="${account.id}">MK</button>
-                    <button type="button" class="icon-btn lock" title="${account.isActive ? "Khoa" : "Mo khoa"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${account.isActive ? "Khoa" : "Mo"}</button>
+                    <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua tai khoan" data-edit-user="${account.id}"><span aria-hidden="true">&#9998;</span></button>
+                    <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}"><span aria-hidden="true">&#9919;</span></button>
+                    <button type="button" class="icon-btn lock" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}"><span aria-hidden="true">${account.isActive ? "&#128274;" : "&#128275;"}</span></button>
                   </div>
                 </td>
               </tr>
