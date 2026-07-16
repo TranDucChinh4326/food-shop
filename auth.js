@@ -192,21 +192,25 @@ async function loginWithFacebook() {
   try {
     await initFacebookSdk();
 
-    FB.login(async response => {
-      if (!response.authResponse?.accessToken) {
-        showToast("Facebook chua cap quyen dang nhap hoac popup da bi dong.", "info");
-        return;
-      }
-
-      try {
-        await postSocialToken("facebook", response.authResponse.accessToken);
-      } catch (error) {
-        showToast(error.message, "error");
-      }
+    FB.login(response => {
+      handleFacebookResponse(response);
     }, { scope: "public_profile,email" });
   } catch (error) {
     console.error(error);
     showToast(error.message || "Khong tai duoc Facebook Login.", "error");
+  }
+}
+
+async function handleFacebookResponse(response) {
+  if (!response.authResponse?.accessToken) {
+    showToast("Facebook chua cap quyen dang nhap hoac popup da bi dong.", "info");
+    return;
+  }
+
+  try {
+    await postSocialToken("facebook", response.authResponse.accessToken);
+  } catch (error) {
+    showToast(error.message, "error");
   }
 }
 
