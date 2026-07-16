@@ -14,6 +14,11 @@ const foodsList = document.getElementById("foodsList");
 const foodForm = document.getElementById("foodForm");
 const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
+const usersList = document.getElementById("usersList");
+const staffForm = document.getElementById("staffForm");
+const staffPermissions = document.getElementById("staffPermissions");
+const userTypeFilter = document.getElementById("userTypeFilter");
+const userSearch = document.getElementById("userSearch");
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -23,9 +28,20 @@ const statusLabels = {
 };
 
 let toastTimer;
+let adminPermissions = [];
+let userSearchTimer;
 
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function showAdminToast(message, type = "success") {
@@ -50,7 +66,9 @@ function authHeaders() {
 }
 
 function requireAdminSession() {
-  if (!token || String(user?.role || "").toUpperCase() !== "ADMIN") {
+  const role = String(user?.role || "").toUpperCase();
+
+  if (!token || role === "USER") {
     alert("Vui lòng đăng nhập bằng tài khoản admin.");
     window.location.href = "login.html";
   }
@@ -78,6 +96,92 @@ async function requestJson(url, options = {}) {
   }
 
   return data;
+}
+
+function renderPermissionChecks(container, selected = [], name = "permissions") {
+  if (!container) return;
+
+  container.innerHTML = adminPermissions.map(permission => `
+    <label class="permission-item">
+      <input type="checkbox" name="${name}" value="${permission.value}" ${selected.includes(permission.value) ? "checked" : ""}>
+      <span>${permission.label}</span>
+    </label>
+  `).join("");
+}
+
+function getCheckedPermissions(container) {
+  return [...container.querySelectorAll("input[type='checkbox']:checked")].map(input => input.value);
+}
+
+async function loadAdminPermissions() {
+  try {
+    const data = await requestJson(`${ADMIN_API}/permissions`);
+    adminPermissions = data.permissions || [];
+    renderPermissionChecks(staffPermissions);
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function loadUsers() {
+  if (!usersList) return;
+
+  usersList.textContent = "Dang tai tai khoan...";
+
+  try {
+    const params = new URLSearchParams({
+      type: userTypeFilter?.value || "all",
+      q: userSearch?.value || ""
+    });
+    const users = await requestJson(`${ADMIN_API}/users?${params.toString()}`);
+
+    if (users.length === 0) {
+      usersList.textContent = "Chua co tai khoan phu hop.";
+      return;
+    }
+
+    usersList.innerHTML = users.map(account => `
+      <article class="account-card" data-user-id="${account.id}" data-email="${escapeHtml(account.email)}" data-name="${escapeHtml(account.fullname)}">
+        <div class="account-main">
+          <div>
+            <h3>${escapeHtml(account.fullname)}</h3>
+            <p>${escapeHtml(account.email)}</p>
+            <small>${account.emailVerified ? "Email da xac thuc" : "Email chua xac thuc"} - ${account.passwordSet ? "Co mat khau" : "Chua dat mat khau"}</small>
+          </div>
+          <span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Dang hoat dong" : "Da khoa"}</span>
+        </div>
+
+        <div class="account-controls">
+          <label>
+            Vai tro
+            <select data-account-role>
+              <option value="USER" ${account.role === "USER" ? "selected" : ""}>Khach hang</option>
+              <option value="STAFF_SALES" ${account.role === "STAFF_SALES" ? "selected" : ""}>Nhan vien ban hang</option>
+              <option value="STAFF_CONTENT" ${account.role === "STAFF_CONTENT" ? "selected" : ""}>Quan ly mon an</option>
+              <option value="STAFF_MANAGER" ${account.role === "STAFF_MANAGER" ? "selected" : ""}>Quan ly nhan vien</option>
+            </select>
+          </label>
+          <div class="permission-list account-permissions">
+            ${adminPermissions.map(permission => `
+              <label class="permission-item">
+                <input type="checkbox" value="${permission.value}" ${account.permissions.includes(permission.value) ? "checked" : ""}>
+                <span>${permission.label}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="account-actions">
+          <button type="button" data-save-user="${account.id}">Luu quyen</button>
+          <button type="button" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${account.isActive ? "Khoa" : "Mo khoa"}</button>
+          <button type="button" data-reset-password="${account.id}">Dat mat khau</button>
+        </div>
+      </article>
+    `).join("");
+  } catch (error) {
+    usersList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
 }
 
 async function loadOrders() {
@@ -229,6 +333,64 @@ async function hideFood(foodId) {
   }
 }
 
+async function createStaff(event) {
+  event.preventDefault();
+
+  const payload = {
+    fullname: document.getElementById("staffName").value,
+    email: document.getElementById("staffEmail").value,
+    password: document.getElementById("staffPassword").value,
+    role: document.getElementById("staffRole").value,
+    permissions: getCheckedPermissions(staffPermissions)
+  };
+
+  try {
+    await requestJson(`${ADMIN_API}/staff`, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    staffForm.reset();
+    renderPermissionChecks(staffPermissions);
+    await loadUsers();
+    showAdminToast("Da tao nhan vien.");
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function saveAccount(card, userId) {
+  const payload = {
+    fullname: card.dataset.name,
+    email: card.dataset.email,
+    role: card.querySelector("[data-account-role]").value,
+    permissions: getCheckedPermissions(card.querySelector(".account-permissions"))
+  };
+
+  await requestJson(`${ADMIN_API}/users/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
+async function toggleAccount(userId, isActive) {
+  await requestJson(`${ADMIN_API}/users/${userId}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ isActive })
+  });
+}
+
+async function resetAccountPassword(userId) {
+  const newPassword = prompt("Nhap mat khau moi toi thieu 6 ky tu cho tai khoan nay:");
+
+  if (!newPassword) return;
+
+  await requestJson(`${ADMIN_API}/users/${userId}/password`, {
+    method: "PUT",
+    body: JSON.stringify({ newPassword })
+  });
+}
+
 document.getElementById("logoutBtn").addEventListener("click", () => {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
   sessionStorage.removeItem(AUTH_USER_KEY);
@@ -239,7 +401,14 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders);
 document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
 document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
+document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 foodForm.addEventListener("submit", saveFood);
+staffForm?.addEventListener("submit", createStaff);
+userTypeFilter?.addEventListener("change", loadUsers);
+userSearch?.addEventListener("input", () => {
+  clearTimeout(userSearchTimer);
+  userSearchTimer = setTimeout(loadUsers, 300);
+});
 
 ordersList.addEventListener("change", async event => {
   if (!event.target.matches(".status-select")) {
@@ -269,6 +438,34 @@ foodsList.addEventListener("click", event => {
   }
 });
 
+usersList?.addEventListener("click", async event => {
+  const saveId = event.target.dataset.saveUser;
+  const toggleId = event.target.dataset.toggleUser;
+  const resetId = event.target.dataset.resetPassword;
+
+  try {
+    if (saveId) {
+      await saveAccount(event.target.closest(".account-card"), saveId);
+      showAdminToast("Da cap nhat quyen tai khoan.");
+      await loadUsers();
+    }
+
+    if (toggleId) {
+      await toggleAccount(toggleId, event.target.dataset.active === "1");
+      showAdminToast("Da cap nhat trang thai tai khoan.");
+      await loadUsers();
+    }
+
+    if (resetId) {
+      await resetAccountPassword(resetId);
+      showAdminToast("Da dat lai mat khau.");
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
 requireAdminSession();
+loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();
