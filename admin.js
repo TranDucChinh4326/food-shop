@@ -35,6 +35,9 @@ const statusLabels = {
 let toastTimer;
 let adminPermissions = [];
 let userSearchTimer;
+let cachedUsers = [];
+let usersPage = 1;
+const USERS_PER_PAGE = 5;
 
 function showAdminSection(sectionId) {
   const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
@@ -167,9 +170,37 @@ async function loadUsers() {
     const users = await requestJson(`${ADMIN_API}/users?${params.toString()}`);
 
     if (users.length === 0) {
+      cachedUsers = [];
+      usersPage = 1;
       usersList.textContent = "Chua co tai khoan phu hop.";
       return;
     }
+
+    cachedUsers = users;
+    usersPage = Math.min(usersPage, Math.ceil(cachedUsers.length / USERS_PER_PAGE)) || 1;
+    renderUsersTable();
+  } catch (error) {
+    usersList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderUsersTable() {
+  if (!usersList) return;
+
+  const totalUsers = cachedUsers.length;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE));
+  usersPage = Math.min(Math.max(usersPage, 1), totalPages);
+
+  const startIndex = (usersPage - 1) * USERS_PER_PAGE;
+  const pageUsers = cachedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+  const from = totalUsers === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageUsers.length;
+
+  if (totalUsers === 0) {
+    usersList.textContent = "Chua co tai khoan phu hop.";
+    return;
+  }
 
     usersList.innerHTML = `
       <div class="table-wrap">
@@ -186,9 +217,9 @@ async function loadUsers() {
             </tr>
           </thead>
           <tbody>
-            ${users.map((account, index) => `
+            ${pageUsers.map((account, index) => `
               <tr class="account-row" data-user-id="${account.id}">
-                <td>${index + 1}</td>
+                <td>${startIndex + index + 1}</td>
                 <td>
                   <strong>${escapeHtml(account.fullname)}</strong>
                   <small>${account.passwordSet ? "Co mat khau" : "Chua dat mat khau"}</small>
@@ -237,14 +268,16 @@ async function loadUsers() {
         </table>
       </div>
       <div class="table-footer">
-        Dang hien thi tu 1 den ${users.length} cua ${users.length} ket qua
-        <div class="pager"><button type="button" disabled>&lsaquo;</button><span>1</span><button type="button" disabled>&rsaquo;</button></div>
+        Dang hien thi tu ${from} den ${to} cua ${totalUsers} ket qua
+        <div class="pager">
+          <button type="button" data-users-page="prev" ${usersPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+          ${Array.from({ length: totalPages }, (_, index) => `
+            <button type="button" class="${usersPage === index + 1 ? "active" : ""}" data-users-page="${index + 1}">${index + 1}</button>
+          `).join("")}
+          <button type="button" data-users-page="next" ${usersPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+        </div>
       </div>
     `;
-  } catch (error) {
-    usersList.textContent = error.message;
-    showAdminToast(error.message, "error");
-  }
 }
 
 async function loadOrders() {
@@ -476,9 +509,13 @@ shortcutButtons.forEach(button => {
 });
 foodForm.addEventListener("submit", saveFood);
 staffForm?.addEventListener("submit", createStaff);
-userTypeFilter?.addEventListener("change", loadUsers);
+userTypeFilter?.addEventListener("change", () => {
+  usersPage = 1;
+  loadUsers();
+});
 userSearch?.addEventListener("input", () => {
   clearTimeout(userSearchTimer);
+  usersPage = 1;
   userSearchTimer = setTimeout(loadUsers, 300);
 });
 
@@ -511,6 +548,7 @@ foodsList.addEventListener("click", event => {
 });
 
 usersList?.addEventListener("click", async event => {
+  const pageAction = event.target.dataset.usersPage;
   const editId = event.target.dataset.editUser;
   const closeId = event.target.dataset.closeDetail;
   const saveId = event.target.dataset.saveUser;
@@ -518,6 +556,22 @@ usersList?.addEventListener("click", async event => {
   const resetId = event.target.dataset.resetPassword;
 
   try {
+    if (pageAction) {
+      const totalPages = Math.max(1, Math.ceil(cachedUsers.length / USERS_PER_PAGE));
+
+      if (pageAction === "prev") {
+        usersPage -= 1;
+      } else if (pageAction === "next") {
+        usersPage += 1;
+      } else {
+        usersPage = Number(pageAction);
+      }
+
+      usersPage = Math.min(Math.max(usersPage, 1), totalPages);
+      renderUsersTable();
+      return;
+    }
+
     if (editId) {
       const detailRow = usersList.querySelector(`[data-detail-for="${editId}"]`);
       detailRow?.classList.toggle("is-open");
