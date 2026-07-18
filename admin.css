@@ -730,8 +730,58 @@ button:disabled {
 .table-toolbar {
   align-items: center;
   display: flex;
+  gap: 12px;
   justify-content: space-between;
   margin: 20px 30px 24px;
+}
+
+.table-toolbar input,
+.table-toolbar select {
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 500;
+  min-height: 46px;
+  outline: none;
+  padding: 0 16px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.table-toolbar input {
+  background: #fff;
+}
+
+.table-toolbar input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.table-toolbar select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:
+    calc(100% - 19px) 50%,
+    calc(100% - 13px) 50%;
+  background-repeat: no-repeat;
+  background-size: 6px 6px, 6px 6px;
+  cursor: pointer;
+  padding-right: 42px;
+}
+
+.table-toolbar input:hover,
+.table-toolbar select:hover {
+  border-color: #bfd0e5;
+  background-color: #fbfdff;
+}
+
+.table-toolbar input:focus,
+.table-toolbar select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .table-toolbar input {
@@ -756,7 +806,9 @@ button:disabled {
 }
 
 .table-toolbar.multi-filter #foodPageSize {
-  width: 120px;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  width: 96px;
 }
 
 .table-state {
