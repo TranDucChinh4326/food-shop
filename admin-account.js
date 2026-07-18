@@ -11,6 +11,7 @@ const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
 const params = new URLSearchParams(window.location.search);
 const accountId = params.get("id");
 const isEditMode = Boolean(accountId);
+const accountType = params.get("type") === "customer" ? "customer" : "staff";
 
 const accountForm = document.getElementById("accountForm");
 const accountName = document.getElementById("accountName");
@@ -19,8 +20,11 @@ const accountPassword = document.getElementById("accountPassword");
 const passwordField = document.getElementById("passwordField");
 const accountRole = document.getElementById("accountRole");
 const accountPermissions = document.getElementById("accountPermissions");
+const permissionPanel = document.getElementById("permissionPanel");
 const accountFormTitle = document.getElementById("accountFormTitle");
 const accountBreadcrumb = document.getElementById("accountBreadcrumb");
+const accountBackLink = document.getElementById("accountBackLink");
+const accountCancelLink = document.getElementById("accountCancelLink");
 
 let toastTimer;
 let adminPermissions = [];
@@ -88,20 +92,58 @@ function renderPermissionChecks(selected = []) {
   `).join("");
 }
 
+function isCustomerMode() {
+  return accountType === "customer" || accountRole.value === "USER";
+}
+
+function syncAccountMode() {
+  const listType = accountType === "customer" ? "customers" : "staff";
+  const listUrl = `admin.html?section=accounts&accountType=${listType}`;
+
+  if (accountBackLink) accountBackLink.href = listUrl;
+  if (accountCancelLink) accountCancelLink.href = listUrl;
+
+  [...accountRole.options].forEach(option => {
+    if (accountType === "customer") {
+      option.hidden = option.value !== "USER";
+    } else {
+      option.hidden = option.value === "USER";
+    }
+  });
+
+  if (!isEditMode) {
+    accountRole.value = accountType === "customer" ? "USER" : "STAFF_SALES";
+  }
+
+  if (permissionPanel) {
+    permissionPanel.style.display = isCustomerMode() ? "none" : "block";
+    const note = permissionPanel.querySelector(".form-note");
+    if (note) {
+      note.textContent = isCustomerMode()
+        ? "Khach hang khong duoc cap quyen quan tri."
+        : "Chon cac khu vuc nhan vien duoc phep xem va thao tac trong trang quan tri.";
+    }
+  }
+}
+
 function getCheckedPermissions() {
   return [...accountPermissions.querySelectorAll("input[type='checkbox']:checked")].map(input => input.value);
 }
 
 function setModeText() {
   if (isEditMode) {
-    accountFormTitle.textContent = "Cap nhat thong tin tai khoan";
+    accountFormTitle.textContent = accountType === "customer"
+      ? "Cap nhat tai khoan khach hang"
+      : "Cap nhat tai khoan nhan vien";
     accountBreadcrumb.textContent = "Cap nhat";
     passwordField.hidden = true;
     accountPassword.required = false;
     return;
   }
 
-  accountFormTitle.textContent = "Them moi tai khoan";
+  accountFormTitle.textContent = accountType === "customer"
+    ? "Tao tai khoan khach hang"
+    : "Them tai khoan nhan vien";
   accountBreadcrumb.textContent = "Them moi";
   accountPassword.required = true;
 }
@@ -127,6 +169,7 @@ async function loadAccount() {
   accountEmail.value = account.email || "";
   accountRole.value = account.role || "USER";
   renderPermissionChecks(account.permissions || []);
+  syncAccountMode();
 }
 
 async function saveAccount(event) {
@@ -150,9 +193,10 @@ async function saveAccount(event) {
     });
 
     sessionStorage.setItem("foodhub_admin_section", "accounts");
+    sessionStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
     showAdminToast(isEditMode ? "Da cap nhat tai khoan." : "Da tao tai khoan.");
     setTimeout(() => {
-      window.location.href = "admin.html";
+      window.location.href = `admin.html?section=accounts&accountType=${accountType === "customer" ? "customers" : "staff"}`;
     }, 700);
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -167,16 +211,17 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 accountRole.addEventListener("change", () => {
-  accountPermissions.closest("div").style.display = accountRole.value === "USER" ? "none" : "block";
+  syncAccountMode();
 });
 
 accountForm.addEventListener("submit", saveAccount);
 
 requireAdminSession();
 setModeText();
+syncAccountMode();
 loadPermissions()
   .then(loadAccount)
   .then(() => {
-    accountPermissions.closest("div").style.display = accountRole.value === "USER" ? "none" : "block";
+    syncAccountMode();
   })
   .catch(error => showAdminToast(error.message, "error"));

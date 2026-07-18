@@ -22,8 +22,9 @@ const foodCategoryFilter = document.getElementById("foodCategoryFilter");
 const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const foodCreateLink = document.getElementById("foodCreateLink");
-const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
+const userPageSize = document.getElementById("userPageSize");
+const accountCreateLink = document.getElementById("accountCreateLink");
 const announcementSearch = document.getElementById("announcementSearch");
 const announcementStatusFilter = document.getElementById("announcementStatusFilter");
 const announcementsCount = document.getElementById("announcementsCount");
@@ -61,7 +62,8 @@ let foodsPerPage = 5;
 let userSearchTimer;
 let cachedUsers = [];
 let usersPage = 1;
-const USERS_PER_PAGE = 5;
+let usersPerPage = 5;
+let activeAccountType = "staff";
 let announcementSearchTimer;
 let cachedAnnouncements = [];
 let announcementsPage = 1;
@@ -92,7 +94,14 @@ function showAdminSection(sectionId) {
   navButtons.forEach(button => {
     const isFoodNav = button.dataset.adminTarget === "foods";
     const matchesFoodCategory = !button.dataset.foodCategory || button.dataset.foodCategory === activeFoodCategory;
-    button.classList.toggle("active", button.dataset.adminTarget === target && (!isFoodNav || matchesFoodCategory));
+    const isAccountNav = button.dataset.adminTarget === "accounts";
+    const matchesAccountType = !button.dataset.accountType || button.dataset.accountType === activeAccountType;
+    button.classList.toggle(
+      "active",
+      button.dataset.adminTarget === target
+        && (!isFoodNav || matchesFoodCategory)
+        && (!isAccountNav || matchesAccountType)
+    );
   });
 
   adminSections.forEach(section => {
@@ -103,7 +112,39 @@ function showAdminSection(sectionId) {
     setAdminNavGroupOpen("foods-menu", true);
   }
 
+  if (target === "accounts") {
+    setAdminNavGroupOpen("accounts-menu", true);
+  }
+
   sessionStorage.setItem("foodhub_admin_section", target);
+}
+
+function normalizeAccountType(value) {
+  return value === "customers" ? "customers" : "staff";
+}
+
+function getAccountTypeTitle() {
+  return activeAccountType === "customers" ? "Tai khoan khach hang" : "Tai khoan nhan vien";
+}
+
+function syncAccountView() {
+  const accountSection = document.querySelector('[data-admin-section="accounts"]');
+  if (!accountSection) return;
+
+  accountSection.querySelector(".page-heading h2").textContent = getAccountTypeTitle();
+  const breadcrumb = accountSection.querySelector(".page-heading p");
+  if (breadcrumb) {
+    breadcrumb.innerHTML = `<a href="index.html">Trang chu</a> <span>/</span> ${getAccountTypeTitle()}`;
+  }
+
+  document.querySelectorAll("[data-account-tab]").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.accountTab === activeAccountType);
+  });
+
+  if (accountCreateLink) {
+    accountCreateLink.href = `admin-account.html?type=${activeAccountType === "customers" ? "customer" : "staff"}`;
+    accountCreateLink.textContent = activeAccountType === "customers" ? "+ Tao khach hang" : "+ Them nhan vien";
+  }
 }
 
 function formatMoney(number) {
@@ -306,11 +347,12 @@ async function loadAdminPermissions() {
 async function loadUsers() {
   if (!usersList) return;
 
-  usersList.textContent = "Dang tai tai khoan...";
+  syncAccountView();
+  usersList.textContent = `Dang tai ${activeAccountType === "customers" ? "khach hang" : "nhan vien"}...`;
 
   try {
     const params = new URLSearchParams({
-      type: userTypeFilter?.value || "all",
+      type: activeAccountType,
       q: userSearch?.value || ""
     });
     const users = await requestJson(`${ADMIN_API}/users?${params.toString()}`);
@@ -318,12 +360,12 @@ async function loadUsers() {
     if (users.length === 0) {
       cachedUsers = [];
       usersPage = 1;
-      usersList.textContent = "Chua co tai khoan phu hop.";
+      usersList.textContent = `Chua co ${activeAccountType === "customers" ? "khach hang" : "nhan vien"} phu hop.`;
       return;
     }
 
     cachedUsers = users;
-    usersPage = Math.min(usersPage, Math.ceil(cachedUsers.length / USERS_PER_PAGE)) || 1;
+    usersPage = Math.min(usersPage, Math.ceil(cachedUsers.length / usersPerPage)) || 1;
     renderUsersTable();
   } catch (error) {
     usersList.textContent = error.message;
@@ -335,16 +377,16 @@ function renderUsersTable() {
   if (!usersList) return;
 
   const totalUsers = cachedUsers.length;
-  const totalPages = Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(totalUsers / usersPerPage));
   usersPage = Math.min(Math.max(usersPage, 1), totalPages);
 
-  const startIndex = (usersPage - 1) * USERS_PER_PAGE;
-  const pageUsers = cachedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+  const startIndex = (usersPage - 1) * usersPerPage;
+  const pageUsers = cachedUsers.slice(startIndex, startIndex + usersPerPage);
   const from = totalUsers === 0 ? 0 : startIndex + 1;
   const to = startIndex + pageUsers.length;
 
   if (totalUsers === 0) {
-    usersList.textContent = "Chua co tai khoan phu hop.";
+    usersList.textContent = `Chua co ${activeAccountType === "customers" ? "khach hang" : "nhan vien"} phu hop.`;
     return;
   }
 
@@ -363,7 +405,9 @@ function renderUsersTable() {
             </tr>
           </thead>
           <tbody>
-            ${pageUsers.map((account, index) => `
+            ${pageUsers.map((account, index) => {
+              const isRootAdmin = String(account.role || "").toUpperCase() === "ADMIN";
+              return `
               <tr class="account-row" data-user-id="${account.id}">
                 <td>${startIndex + index + 1}</td>
                 <td>
@@ -376,13 +420,18 @@ function renderUsersTable() {
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
                 <td>
                   <div class="table-actions">
-                    <a class="icon-btn edit" href="admin-account.html?id=${account.id}" title="Sua" aria-label="Sua tai khoan">${editIcon()}</a>
-                    <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}">${keyIcon()}</button>
-                    <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
+                    ${isRootAdmin
+                      ? `<span class="admin-lock-note">Quan tri cao nhat</span>`
+                      : `
+                        <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sua" aria-label="Sua tai khoan">${editIcon()}</a>
+                        <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}">${keyIcon()}</button>
+                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
+                      `}
                   </div>
                 </td>
               </tr>
-            `).join("")}
+            `;
+            }).join("")}
           </tbody>
         </table>
       </div>
@@ -1070,6 +1119,13 @@ navButtons.forEach(button => {
       renderFoodsTable();
     }
 
+    if (button.dataset.accountType) {
+      activeAccountType = normalizeAccountType(button.dataset.accountType);
+      sessionStorage.setItem("foodhub_account_type", activeAccountType);
+      usersPage = 1;
+      loadUsers();
+    }
+
     showAdminSection(button.dataset.adminTarget);
   });
 });
@@ -1114,9 +1170,25 @@ foodSearch?.addEventListener("input", () => {
   foodsPage = 1;
   foodSearchTimer = setTimeout(renderFoodsTable, 250);
 });
-userTypeFilter?.addEventListener("change", () => {
+document.querySelectorAll("[data-account-tab]").forEach(tab => {
+  tab.addEventListener("click", event => {
+    event.preventDefault();
+    activeAccountType = normalizeAccountType(tab.dataset.accountTab);
+    sessionStorage.setItem("foodhub_account_type", activeAccountType);
+    usersPage = 1;
+    const url = new URL(window.location.href);
+    url.searchParams.set("section", "accounts");
+    url.searchParams.set("accountType", activeAccountType);
+    window.history.replaceState({}, "", url);
+    showAdminSection("accounts");
+    loadUsers();
+  });
+});
+userPageSize?.addEventListener("change", () => {
+  usersPerPage = Number(userPageSize.value || 5);
+  sessionStorage.setItem("foodhub_users_page_size", String(usersPerPage));
   usersPage = 1;
-  loadUsers();
+  renderUsersTable();
 });
 userSearch?.addEventListener("input", () => {
   clearTimeout(userSearchTimer);
@@ -1197,7 +1269,7 @@ usersList?.addEventListener("click", async event => {
   try {
     if (pageButton) {
       const pageAction = pageButton.dataset.usersPage;
-      const totalPages = Math.max(1, Math.ceil(cachedUsers.length / USERS_PER_PAGE));
+      const totalPages = Math.max(1, Math.ceil(cachedUsers.length / usersPerPage));
 
       if (pageAction === "prev") {
         usersPage -= 1;
@@ -1311,18 +1383,29 @@ requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
 const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
 const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_size") || "5");
+const initialAccountType = pageParams.get("accountType") || sessionStorage.getItem("foodhub_account_type") || "staff";
+const initialUsersPageSize = Number(sessionStorage.getItem("foodhub_users_page_size") || "5");
 
 if (["all", "food", "drink"].includes(initialFoodCategory)) {
   activeFoodCategory = initialFoodCategory;
   activeFoodSubcategory = initialFoodSubcategory;
 }
 
+activeAccountType = normalizeAccountType(initialAccountType);
+sessionStorage.setItem("foodhub_account_type", activeAccountType);
+
 if ([5, 10, 20].includes(initialFoodPageSize) && foodPageSize) {
   foodsPerPage = initialFoodPageSize;
   foodPageSize.value = String(foodsPerPage);
 }
 
+if ([5, 10, 20].includes(initialUsersPageSize) && userPageSize) {
+  usersPerPage = initialUsersPageSize;
+  userPageSize.value = String(usersPerPage);
+}
+
 showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || "overview");
+syncAccountView();
 loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();

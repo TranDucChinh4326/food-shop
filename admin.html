@@ -25,7 +25,15 @@
           <a href="admin.html?section=foods&foodCategory=drink" data-admin-target="foods" data-food-category="drink"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nuoc uong</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=accounts" data-admin-target="accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
+      <div class="admin-nav-group">
+        <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="accounts-menu" aria-expanded="false">
+          <span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span>
+        </button>
+        <div class="admin-subnav">
+          <a href="admin.html?section=accounts&accountType=staff" data-admin-target="accounts" data-account-type="staff"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nhan vien</span></a>
+          <a href="admin.html?section=accounts&accountType=customers" data-admin-target="accounts" data-account-type="customers"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Khach hang</span></a>
+        </div>
+      </div>
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Ma giam gia</span></a>
       <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thong ke</span></a>
@@ -136,17 +144,22 @@
             <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly nguoi dung</p>
           </div>
           <div class="heading-actions">
-            <a href="admin-account.html" class="primary-btn button-link">+ Them moi</a>
+            <a href="admin-account.html?type=staff" id="accountCreateLink" class="primary-btn button-link">+ Them moi</a>
             <button id="refreshUsersBtn" type="button" class="ghost-btn">Tai lai</button>
           </div>
         </div>
 
-        <div class="user-toolbar table-toolbar">
+        <div class="account-mode-tabs" aria-label="Loai tai khoan">
+          <a href="admin.html?section=accounts&accountType=staff" data-account-tab="staff">Tai khoan nhan vien</a>
+          <a href="admin.html?section=accounts&accountType=customers" data-account-tab="customers">Tai khoan khach hang</a>
+        </div>
+
+        <div class="user-toolbar table-toolbar multi-filter">
           <input type="search" id="userSearch" placeholder="Tim kiem">
-          <select id="userTypeFilter">
-            <option value="all">Tat ca</option>
-            <option value="staff">Nhan vien</option>
-            <option value="customers">Khach hang</option>
+          <select id="userPageSize" aria-label="So dong tai khoan moi trang">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
           </select>
         </div>
 
