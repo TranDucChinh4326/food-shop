@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thong bao - FoodHub Admin</title>
+  <title>Mon an - FoodHub Admin</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -17,14 +17,14 @@
       <a class="admin-nav-btn" href="admin.html">Tong quan</a>
       <a class="admin-nav-btn" href="admin.html">Don hang</a>
       <div class="admin-nav-group">
-        <a class="admin-nav-btn" href="admin.html">Danh muc</a>
+        <a class="admin-nav-btn active" href="admin.html">Danh muc</a>
         <div class="admin-subnav">
           <a href="admin.html">Do an</a>
           <a href="admin.html">Nuoc uong</a>
         </div>
       </div>
       <a class="admin-nav-btn" href="admin.html">Tai khoan</a>
-      <a class="admin-nav-btn active" href="admin.html">Thong bao</a>
+      <a class="admin-nav-btn" href="admin.html">Thong bao</a>
     </nav>
 
     <div class="sidebar-footer">
@@ -37,48 +37,55 @@
     <section class="panel account-form-panel">
       <div class="page-heading form-page-heading">
         <div>
-          <h2 id="announcementFormTitle">Them moi thong bao</h2>
-          <p><a href="admin.html">Quan ly thong bao</a> <span>/</span> <span id="announcementBreadcrumb">Them moi</span></p>
+          <h2 id="foodFormTitle">Them moi mon</h2>
+          <p><a href="admin.html">Quan ly mon an</a> <span>/</span> <span id="foodBreadcrumb">Them moi</span></p>
         </div>
       </div>
 
-      <form id="announcementForm" class="account-page-form announcement-page-form">
-        <label>
-          Tieu de
-          <input type="text" id="announcementTitle" maxlength="255" required>
-        </label>
+      <form id="foodPageForm" class="account-page-form announcement-page-form food-page-form">
+        <input type="hidden" id="foodId">
 
         <label>
-          Noi dung ngan
-          <textarea id="announcementContent" rows="4" placeholder="Nhap noi dung hien thi ben duoi tieu de"></textarea>
-        </label>
-
-        <label>
-          Ngay dang
-          <input type="datetime-local" id="announcementPublishedAt">
+          Ten mon
+          <input type="text" id="foodName" required>
         </label>
 
         <div class="announcement-date-grid">
           <label>
-            So ngay hieu luc
-            <input type="number" id="announcementValidityDays" min="1" step="1" placeholder="Bo trong neu khong het han">
+            Danh muc
+            <select id="foodCategory" required>
+              <option value="1">Burger</option>
+              <option value="2">Pizza</option>
+              <option value="3">Mi & Pho</option>
+              <option value="4">Do uong</option>
+            </select>
           </label>
 
           <label>
-            Ngay het hieu luc
-            <input type="datetime-local" id="announcementExpiresAt" readonly>
+            Gia
+            <input type="number" id="foodPrice" min="1000" step="1000" required>
           </label>
         </div>
 
-        <div class="announcement-checks">
-          <label class="check-row">
-            <input type="checkbox" id="announcementActive" checked>
-            Hien thi tren trang chu
-          </label>
-        </div>
+        <label>
+          Link anh
+          <input type="url" id="foodImage" placeholder="https://...">
+        </label>
+
+        <label>
+          Mo ta
+          <textarea id="foodDescription" rows="4"></textarea>
+        </label>
+
+        <label class="check-row">
+          <input type="checkbox" id="foodActive" checked>
+          Dang ban
+        </label>
+
+        <div id="foodPreview" class="food-preview" hidden></div>
 
         <div class="form-actions account-form-actions">
-          <button type="submit" class="primary-btn">Luu thong bao</button>
+          <button type="submit" class="primary-btn">Luu mon</button>
           <a href="admin.html" class="ghost-btn button-link">Quay ve</a>
         </div>
       </form>
@@ -88,6 +95,6 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="admin-announcement.js"></script>
+  <script src="admin-food.js"></script>
 </body>
 </html>

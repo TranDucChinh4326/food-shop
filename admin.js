@@ -11,13 +11,15 @@ const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
 
 const ordersList = document.getElementById("ordersList");
 const foodsList = document.getElementById("foodsList");
-const foodForm = document.getElementById("foodForm");
 const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
 const usersList = document.getElementById("usersList");
 const announcementsList = document.getElementById("announcementsList");
 const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
+const foodSearch = document.getElementById("foodSearch");
+const foodCategoryFilter = document.getElementById("foodCategoryFilter");
+const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
 const announcementSearch = document.getElementById("announcementSearch");
@@ -36,6 +38,9 @@ const statusLabels = {
 
 let toastTimer;
 let adminPermissions = [];
+let cachedFoods = [];
+let foodSearchTimer;
+let activeFoodCategory = "all";
 let userSearchTimer;
 let cachedUsers = [];
 let usersPage = 1;
@@ -44,12 +49,19 @@ let announcementSearchTimer;
 let cachedAnnouncements = [];
 let announcementsPage = 1;
 const ANNOUNCEMENTS_PER_PAGE = 5;
+const FOOD_CATEGORY_TITLES = {
+  all: "Tat ca mon",
+  food: "Do an",
+  drink: "Nuoc uong"
+};
 
 function showAdminSection(sectionId) {
   const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
 
   navButtons.forEach(button => {
-    button.classList.toggle("active", button.dataset.adminTarget === target);
+    const isFoodNav = button.dataset.adminTarget === "foods";
+    const matchesFoodCategory = !button.dataset.foodCategory || button.dataset.foodCategory === activeFoodCategory;
+    button.classList.toggle("active", button.dataset.adminTarget === target && (!isFoodNav || matchesFoodCategory));
   });
 
   adminSections.forEach(section => {
@@ -399,7 +411,7 @@ async function loadOrders() {
 
   try {
     const orders = await requestJson(`${ADMIN_API}/orders`);
-    ordersCount.textContent = orders.length;
+    if (ordersCount) ordersCount.textContent = orders.length;
 
     if (orders.length === 0) {
       ordersList.textContent = "Chưa có đơn hàng.";
@@ -450,86 +462,99 @@ async function updateOrderStatus(orderId, status) {
 }
 
 async function loadFoods() {
-  foodsList.textContent = "Đang tải món ăn...";
+  if (!foodsList) return;
+
+  foodsList.textContent = "Dang tai mon an...";
 
   try {
     const foods = await requestJson(`${ADMIN_API}/foods`);
-    foodsCount.textContent = foods.length;
-
-    if (foods.length === 0) {
-      foodsList.textContent = "Chưa có món ăn.";
-      return;
-    }
-
-    foodsList.innerHTML = foods.map(food => `
-      <div class="food-row">
-        <img src="${food.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"}" alt="${food.name}">
-        <div>
-          <h3>${food.name}</h3>
-          <p>${food.category_name || "Chưa phân loại"} - ${formatMoney(food.price)}</p>
-          <p class="muted">${food.is_active ? "Đang bán" : "Đã ẩn"}</p>
-        </div>
-        <div class="food-actions">
-          <button type="button" data-edit-food="${food.id}">Sửa</button>
-          <button type="button" data-hide-food="${food.id}">Ẩn</button>
-        </div>
-      </div>
-    `).join("");
-
-    window.foodhubAdminFoods = foods;
+    cachedFoods = foods;
+    if (foodsCount) foodsCount.textContent = foods.length;
+    renderFoodsTable();
   } catch (error) {
     foodsList.textContent = error.message;
     showAdminToast(error.message, "error");
   }
 }
 
-function resetFoodForm() {
-  foodForm.reset();
-  document.getElementById("foodId").value = "";
-  document.getElementById("foodActive").checked = true;
-}
+function getFoodType(food) {
+  const categoryId = String(food.category_id || "");
+  const categoryName = String(food.category_name || "").toLowerCase();
 
-function fillFoodForm(food) {
-  document.getElementById("foodId").value = food.id;
-  document.getElementById("foodName").value = food.name;
-  document.getElementById("foodCategory").value = food.category_id;
-  document.getElementById("foodPrice").value = food.price;
-  document.getElementById("foodImage").value = food.image || "";
-  document.getElementById("foodDescription").value = food.description || "";
-  document.getElementById("foodActive").checked = Boolean(food.is_active);
-  showAdminSection("foods");
-  foodForm.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-async function saveFood(event) {
-  event.preventDefault();
-
-  const foodId = document.getElementById("foodId").value;
-  const payload = {
-    name: document.getElementById("foodName").value,
-    categoryId: document.getElementById("foodCategory").value,
-    price: document.getElementById("foodPrice").value,
-    image: document.getElementById("foodImage").value,
-    description: document.getElementById("foodDescription").value,
-    isActive: document.getElementById("foodActive").checked ? 1 : 0
-  };
-
-  try {
-    await requestJson(foodId ? `${ADMIN_API}/foods/${foodId}` : `${ADMIN_API}/foods`, {
-      method: foodId ? "PUT" : "POST",
-      body: JSON.stringify(payload)
-    });
-
-    resetFoodForm();
-    await loadFoods();
-    showAdminToast("Đã lưu món ăn.");
-  } catch (error) {
-    showAdminToast(error.message, "error");
+  if (categoryId === "4" || categoryName.includes("uong") || categoryName.includes("drink")) {
+    return "drink";
   }
+
+  return "food";
+}
+
+function renderFoodsTable() {
+  if (!foodsList) return;
+
+  activeFoodCategory = foodCategoryFilter?.value || activeFoodCategory || "all";
+  if (foodCategoryTitle) {
+    foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
+  }
+
+  const search = String(foodSearch?.value || "").trim().toLowerCase();
+  const filteredFoods = cachedFoods.filter(food => {
+    const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
+    const matchesSearch = !search
+      || String(food.name || "").toLowerCase().includes(search)
+      || String(food.category_name || "").toLowerCase().includes(search)
+      || String(food.price || "").includes(search);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  if (filteredFoods.length === 0) {
+    foodsList.textContent = "Chua co mon phu hop.";
+    return;
+  }
+
+  foodsList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table foods-admin-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Hinh anh</th>
+            <th>Ten mon</th>
+            <th>Gia</th>
+            <th>Chuc nang</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filteredFoods.map((food, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>
+                <img class="admin-food-thumb" src="${escapeHtml(food.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c")}" alt="${escapeHtml(food.name)}">
+              </td>
+              <td>
+                <strong>${escapeHtml(food.name)}</strong>
+                <small>${escapeHtml(food.category_name || "Chua phan loai")} - ${food.is_active ? "Dang ban" : "Da an"}</small>
+              </td>
+              <td>${formatMoney(food.price)}</td>
+              <td>
+                <div class="table-actions">
+                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
+                  <button type="button" class="icon-btn delete" title="An mon" aria-label="An mon" data-hide-food="${food.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      Dang hien thi ${filteredFoods.length} mon
+    </div>
+  `;
 }
 
 async function hideFood(foodId) {
-  if (!confirm("Ẩn món này khỏi thực đơn?")) {
+  if (!confirm("An mon nay khoi thuc don?")) {
     return;
   }
 
@@ -538,7 +563,7 @@ async function hideFood(foodId) {
       method: "DELETE"
     });
     await loadFoods();
-    showAdminToast("Đã ẩn món khỏi thực đơn.");
+    showAdminToast("Da an mon khoi thuc don.");
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -610,18 +635,33 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders);
-document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
-document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
+document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 navButtons.forEach(button => {
-  button.addEventListener("click", () => showAdminSection(button.dataset.adminTarget));
+  button.addEventListener("click", () => {
+    if (button.dataset.foodCategory && foodCategoryFilter) {
+      activeFoodCategory = button.dataset.foodCategory;
+      foodCategoryFilter.value = activeFoodCategory;
+      renderFoodsTable();
+    }
+
+    showAdminSection(button.dataset.adminTarget);
+  });
 });
 shortcutButtons.forEach(button => {
   button.addEventListener("click", () => showAdminSection(button.dataset.adminShortcut));
 });
-foodForm.addEventListener("submit", saveFood);
 staffForm?.addEventListener("submit", createStaff);
+foodCategoryFilter?.addEventListener("change", () => {
+  activeFoodCategory = foodCategoryFilter.value;
+  renderFoodsTable();
+  showAdminSection("foods");
+});
+foodSearch?.addEventListener("input", () => {
+  clearTimeout(foodSearchTimer);
+  foodSearchTimer = setTimeout(renderFoodsTable, 250);
+});
 userTypeFilter?.addEventListener("change", () => {
   usersPage = 1;
   loadUsers();
@@ -655,16 +695,11 @@ ordersList.addEventListener("change", async event => {
   }
 });
 
-foodsList.addEventListener("click", event => {
-  const editId = event.target.dataset.editFood;
-  const hideId = event.target.dataset.hideFood;
+foodsList?.addEventListener("click", event => {
+  const hideButton = event.target.closest("[data-hide-food]");
 
-  if (editId) {
-    const food = window.foodhubAdminFoods.find(item => String(item.id) === String(editId));
-    if (food) fillFoodForm(food);
-  }
-
-  if (hideId) {
+  if (hideButton) {
+    const hideId = hideButton.dataset.hideFood;
     hideFood(hideId);
   }
 });

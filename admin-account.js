@@ -19,7 +19,6 @@ const accountPassword = document.getElementById("accountPassword");
 const passwordField = document.getElementById("passwordField");
 const accountRole = document.getElementById("accountRole");
 const accountPermissions = document.getElementById("accountPermissions");
-const accountPageTitle = document.getElementById("accountPageTitle");
 const accountFormTitle = document.getElementById("accountFormTitle");
 const accountBreadcrumb = document.getElementById("accountBreadcrumb");
 
@@ -95,7 +94,6 @@ function getCheckedPermissions() {
 
 function setModeText() {
   if (isEditMode) {
-    accountPageTitle.textContent = "Cap nhat tai khoan";
     accountFormTitle.textContent = "Cap nhat thong tin tai khoan";
     accountBreadcrumb.textContent = "Cap nhat";
     passwordField.hidden = true;
@@ -103,7 +101,6 @@ function setModeText() {
     return;
   }
 
-  accountPageTitle.textContent = "Them tai khoan";
   accountFormTitle.textContent = "Them moi tai khoan";
   accountBreadcrumb.textContent = "Them moi";
   accountPassword.required = true;

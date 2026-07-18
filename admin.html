@@ -19,18 +19,21 @@
       </button>
       <button class="admin-nav-btn" type="button" data-admin-target="orders">
         <span>Don hang</span>
-        <strong id="ordersCount">0</strong>
       </button>
-      <button class="admin-nav-btn" type="button" data-admin-target="foods">
-        <span>Mon an</span>
-        <strong id="foodsCount">0</strong>
-      </button>
+      <div class="admin-nav-group">
+        <button class="admin-nav-btn" type="button" data-admin-target="foods" data-food-category="all">
+          <span>Danh muc</span>
+        </button>
+        <div class="admin-subnav">
+          <button type="button" data-admin-target="foods" data-food-category="food">Do an</button>
+          <button type="button" data-admin-target="foods" data-food-category="drink">Nuoc uong</button>
+        </div>
+      </div>
       <button class="admin-nav-btn" type="button" data-admin-target="accounts">
         <span>Tai khoan</span>
       </button>
       <button class="admin-nav-btn" type="button" data-admin-target="announcements">
         <span>Thong bao</span>
-        <strong id="announcementsCount">0</strong>
       </button>
     </nav>
 
@@ -41,23 +44,7 @@
   </aside>
 
   <main class="admin-main">
-    <header class="admin-topbar">
-      <div>
-        <p class="kicker">FoodHub Admin</p>
-        <h1>Quan ly he thong</h1>
-      </div>
-      <p>Chia tung khu vuc rieng de quan ly don hang, mon an va tai khoan de hon.</p>
-    </header>
-
     <section class="admin-section active" data-admin-section="overview">
-      <section class="admin-hero">
-        <div>
-          <p class="kicker">Bang dieu khien</p>
-          <h2>Quan tri FoodHub gon gang hon</h2>
-          <p>Theo doi nhanh tinh hinh he thong va di thang den khu vuc can xu ly.</p>
-        </div>
-      </section>
-
       <div class="overview-grid">
         <button class="overview-card" type="button" data-admin-shortcut="orders">
           <span>Don hang</span>
@@ -98,74 +85,29 @@
     </section>
 
     <section class="admin-section" data-admin-section="foods">
-      <div class="food-management-grid">
-        <aside class="panel food-form-panel">
-          <div class="panel-title compact">
-            <div>
-              <p class="kicker">Mon an</p>
-              <h2>Thong tin mon</h2>
-              <p>Them mon moi hoac chinh sua mon dang co.</p>
-            </div>
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quan ly mon an</h2>
+            <p><a href="index.html">Trang chu</a> <span>/</span> <span id="foodCategoryTitle">Tat ca mon</span></p>
           </div>
-
-          <form id="foodForm" class="food-form">
-            <input type="hidden" id="foodId">
-
-            <label>
-              Ten mon
-              <input type="text" id="foodName" required>
-            </label>
-
-            <label>
-              Danh muc
-              <select id="foodCategory" required>
-                <option value="1">Burger</option>
-                <option value="2">Pizza</option>
-                <option value="3">Mi & Pho</option>
-                <option value="4">Do uong</option>
-              </select>
-            </label>
-
-            <label>
-              Gia
-              <input type="number" id="foodPrice" min="1000" step="1000" required>
-            </label>
-
-            <label>
-              Link anh
-              <input type="url" id="foodImage">
-            </label>
-
-            <label>
-              Mo ta
-              <textarea id="foodDescription" rows="3"></textarea>
-            </label>
-
-            <label class="check-row">
-              <input type="checkbox" id="foodActive" checked>
-              Dang ban
-            </label>
-
-            <div class="form-actions">
-              <button type="submit">Luu mon</button>
-              <button type="button" id="resetFoodFormBtn">Nhap mon moi</button>
-            </div>
-          </form>
-        </aside>
-
-        <section class="panel foods-panel">
-          <div class="panel-title">
-            <div>
-              <p class="kicker">Danh sach</p>
-              <h2>Mon an hien co</h2>
-              <p>Chon sua de dua thong tin mon len form ben trai.</p>
-            </div>
-            <button id="refreshFoodsBtn" type="button">Tai lai</button>
+          <div class="heading-actions">
+            <a href="admin-food.html" class="primary-btn button-link">+ Them moi</a>
+            <button id="refreshFoodsBtn" type="button" class="ghost-btn">Tai lai</button>
           </div>
+        </div>
 
-          <div id="foodsList" class="food-table">Dang tai mon an...</div>
-        </section>
-      </div>
+        <div class="food-toolbar table-toolbar multi-filter">
+          <input type="search" id="foodSearch" placeholder="Tim kiem">
+          <select id="foodCategoryFilter">
+            <option value="all">Tat ca</option>
+            <option value="food">Do an</option>
+            <option value="drink">Nuoc uong</option>
+          </select>
+        </div>
+
+        <div id="foodsList" class="accounts-list table-state">Dang tai mon an...</div>
+      </section>
     </section>
 
     <section class="admin-section" data-admin-section="accounts">

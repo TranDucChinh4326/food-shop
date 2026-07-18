@@ -19,7 +19,6 @@ const announcementPublishedAt = document.getElementById("announcementPublishedAt
 const announcementValidityDays = document.getElementById("announcementValidityDays");
 const announcementExpiresAt = document.getElementById("announcementExpiresAt");
 const announcementActive = document.getElementById("announcementActive");
-const announcementPageTitle = document.getElementById("announcementPageTitle");
 const announcementFormTitle = document.getElementById("announcementFormTitle");
 const announcementBreadcrumb = document.getElementById("announcementBreadcrumb");
 
@@ -81,13 +80,11 @@ async function requestJson(url, options = {}) {
 
 function setModeText() {
   if (isEditMode) {
-    announcementPageTitle.textContent = "Cap nhat thong bao";
     announcementFormTitle.textContent = "Cap nhat thong tin thong bao";
     announcementBreadcrumb.textContent = "Cap nhat";
     return;
   }
 
-  announcementPageTitle.textContent = "Them thong bao";
   announcementFormTitle.textContent = "Them moi thong bao";
   announcementBreadcrumb.textContent = "Them moi";
 }
