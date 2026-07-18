@@ -872,6 +872,72 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+function initChatSupportWidget() {
+  if (document.getElementById("support-widget")) return;
+
+  const user = getCurrentUser();
+  const displayName = user?.fullname || "ban";
+  const widget = document.createElement("div");
+  widget.id = "support-widget";
+  widget.className = "support-widget";
+  widget.innerHTML = `
+    <div class="support-panel chat-panel" aria-label="Hop chat ho tro FoodHub">
+      <div class="chat-header">
+        <div>
+          <strong>FoodHub Support</strong>
+          <small>Dang truc tuyen</small>
+        </div>
+        <button type="button" class="chat-close" aria-label="Dong ho tro">x</button>
+      </div>
+      <div class="chat-messages" aria-live="polite">
+        <div class="chat-message bot">Xin chao ${escapeHtml(displayName)}, FoodHub co the ho tro gi cho ban?</div>
+        <div class="chat-message bot muted">Day la khung chat tam thoi. Sau nay minh se ket noi du lieu he thong de tra loi tu dong.</div>
+      </div>
+      <form class="chat-form">
+        <input type="text" class="chat-input" placeholder="Nhap tin nhan..." aria-label="Nhap tin nhan ho tro">
+        <button type="submit">Gui</button>
+      </form>
+    </div>
+    <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
+      <span>?</span>
+      Ho tro
+    </button>
+  `;
+
+  const button = widget.querySelector(".support-toggle");
+  const closeButton = widget.querySelector(".chat-close");
+  const chatForm = widget.querySelector(".chat-form");
+  const chatInput = widget.querySelector(".chat-input");
+  const chatMessages = widget.querySelector(".chat-messages");
+
+  button.addEventListener("click", () => {
+    const isOpen = widget.classList.toggle("open");
+    button.setAttribute("aria-expanded", String(isOpen));
+    if (isOpen) chatInput.focus();
+  });
+
+  closeButton.addEventListener("click", () => {
+    widget.classList.remove("open");
+    button.setAttribute("aria-expanded", "false");
+  });
+
+  chatForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    chatMessages.insertAdjacentHTML("beforeend", `
+      <div class="chat-message user">${escapeHtml(message)}</div>
+      <div class="chat-message bot muted">FoodHub da nhan tin nhan cua ban. Chuc nang tra loi tu dong se duoc cap nhat sau.</div>
+    `);
+    chatInput.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  document.body.appendChild(widget);
+}
+
 if (protectCheckoutPage()) {
   loadFoods();
   loadPublicAnnouncements();
@@ -882,5 +948,5 @@ if (protectCheckoutPage()) {
   initTrackPage();
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
-  initSupportWidget();
+  initChatSupportWidget();
 }
