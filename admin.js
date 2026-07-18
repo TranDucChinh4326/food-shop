@@ -44,6 +44,7 @@ let adminPermissions = [];
 let cachedFoods = [];
 let foodSearchTimer;
 let activeFoodCategory = "all";
+let activeFoodSubcategory = "all";
 let foodsPage = 1;
 let foodsPerPage = 5;
 let userSearchTimer;
@@ -523,21 +524,65 @@ function getFoodCategoryLabel(food) {
   return "Chua phan loai";
 }
 
-function renderFoodsTable() {
-  if (!foodsList) return;
+function getFoodCategoryFilterOptions() {
+  if (activeFoodCategory === "food" || activeFoodCategory === "drink") {
+    const categoryMap = new Map();
 
-  activeFoodCategory = foodCategoryFilter?.value || activeFoodCategory || "all";
-  foodsPerPage = Number(foodPageSize?.value || foodsPerPage || 5);
-  sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
-  sessionStorage.setItem("foodhub_food_page_size", String(foodsPerPage));
+    cachedFoods.forEach(food => {
+      if (getFoodType(food) !== activeFoodCategory || !food.category_id || !food.category_name) {
+        return;
+      }
 
-  if (foodCategoryTitle) {
-    foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
+      categoryMap.set(String(food.category_id), food.category_name);
+    });
+
+    return [
+      { value: "all", label: "Tat ca" },
+      ...Array.from(categoryMap.entries())
+        .sort((first, second) => first[1].localeCompare(second[1], "vi"))
+        .map(([value, label]) => ({ value, label }))
+    ];
   }
 
+  return [
+    { value: "all", label: "Tat ca" },
+    { value: "food", label: "Do an" },
+    { value: "drink", label: "Nuoc uong" }
+  ];
+}
+
+function renderFoodCategoryFilterOptions() {
+  if (!foodCategoryFilter) return;
+
+  const options = getFoodCategoryFilterOptions();
+  const selectedValue = activeFoodCategory === "all" ? activeFoodSubcategory : activeFoodSubcategory;
+  foodCategoryFilter.innerHTML = options
+    .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+    .join("");
+
+  const hasSelectedValue = options.some(option => option.value === selectedValue);
+  foodCategoryFilter.value = hasSelectedValue ? selectedValue : "all";
+  activeFoodSubcategory = foodCategoryFilter.value;
+}
+
+function getFilteredFoods() {
   const search = String(foodSearch?.value || "").trim().toLowerCase();
-  const filteredFoods = cachedFoods.filter(food => {
-    const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
+  const filterValue = foodCategoryFilter?.value || activeFoodSubcategory || "all";
+  activeFoodSubcategory = filterValue;
+
+  return cachedFoods.filter(food => {
+    const foodType = getFoodType(food);
+    let matchesCategory = true;
+
+    if (activeFoodCategory === "food" || activeFoodCategory === "drink") {
+      matchesCategory = foodType === activeFoodCategory
+        && (filterValue === "all" || String(food.category_id || "") === filterValue);
+    } else if (filterValue === "food" || filterValue === "drink") {
+      matchesCategory = foodType === filterValue;
+    } else if (filterValue !== "all") {
+      matchesCategory = String(food.category_id || "") === filterValue;
+    }
+
     const matchesSearch = !search
       || String(food.name || "").toLowerCase().includes(search)
       || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
@@ -545,6 +590,24 @@ function renderFoodsTable() {
 
     return matchesCategory && matchesSearch;
   });
+}
+
+function renderFoodsTable() {
+  if (!foodsList) return;
+
+  foodsPerPage = Number(foodPageSize?.value || foodsPerPage || 5);
+  if (![5, 10, 20].includes(foodsPerPage)) foodsPerPage = 5;
+
+  renderFoodCategoryFilterOptions();
+  sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+  sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
+  sessionStorage.setItem("foodhub_food_page_size", String(foodsPerPage));
+
+  if (foodCategoryTitle) {
+    foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
+  }
+
+  const filteredFoods = getFilteredFoods();
   const totalFoods = filteredFoods.length;
   const totalPages = Math.max(1, Math.ceil(totalFoods / foodsPerPage));
   foodsPage = Math.min(Math.max(foodsPage, 1), totalPages);
@@ -695,8 +758,9 @@ navButtons.forEach(button => {
   button.addEventListener("click", () => {
     if (button.dataset.foodCategory && foodCategoryFilter) {
       activeFoodCategory = button.dataset.foodCategory;
-      foodCategoryFilter.value = activeFoodCategory;
+      activeFoodSubcategory = "all";
       sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+      sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
       foodsPage = 1;
       renderFoodsTable();
     }
@@ -719,7 +783,7 @@ shortcutButtons.forEach(button => {
   button.addEventListener("click", () => {
     if (button.dataset.adminShortcut === "foods" && foodCategoryFilter) {
       activeFoodCategory = "all";
-      foodCategoryFilter.value = activeFoodCategory;
+      activeFoodSubcategory = "all";
       foodsPage = 1;
       renderFoodsTable();
     }
@@ -729,8 +793,8 @@ shortcutButtons.forEach(button => {
 });
 staffForm?.addEventListener("submit", createStaff);
 foodCategoryFilter?.addEventListener("change", () => {
-  activeFoodCategory = foodCategoryFilter.value;
-  sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+  activeFoodSubcategory = foodCategoryFilter.value || "all";
+  sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
   foodsPage = 1;
   renderFoodsTable();
   showAdminSection("foods");
@@ -784,16 +848,7 @@ foodsList?.addEventListener("click", event => {
 
   if (pageButton) {
     const pageAction = pageButton.dataset.foodsPage;
-    const search = String(foodSearch?.value || "").trim().toLowerCase();
-    const totalFilteredFoods = cachedFoods.filter(food => {
-      const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
-      const matchesSearch = !search
-        || String(food.name || "").toLowerCase().includes(search)
-        || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
-        || String(food.price || "").includes(search);
-
-      return matchesCategory && matchesSearch;
-    }).length;
+    const totalFilteredFoods = getFilteredFoods().length;
     const totalPages = Math.max(1, Math.ceil(totalFilteredFoods / foodsPerPage));
 
     if (pageAction === "prev") {
@@ -891,11 +946,12 @@ announcementsList?.addEventListener("click", async event => {
 
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
+const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
 const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_size") || "5");
 
-if (["all", "food", "drink"].includes(initialFoodCategory) && foodCategoryFilter) {
+if (["all", "food", "drink"].includes(initialFoodCategory)) {
   activeFoodCategory = initialFoodCategory;
-  foodCategoryFilter.value = activeFoodCategory;
+  activeFoodSubcategory = initialFoodSubcategory;
 }
 
 if ([5, 10, 20].includes(initialFoodPageSize) && foodPageSize) {
