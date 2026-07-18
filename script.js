@@ -9,6 +9,7 @@ const CART_KEY = "foodhub_cart";
 let foods = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
+let announcementTimer;
 
 localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
@@ -126,7 +127,7 @@ async function loadPublicAnnouncements() {
   if (!box) return;
 
   try {
-    const response = await fetch(`${ANNOUNCEMENTS_API}?limit=4`);
+    const response = await fetch(`${ANNOUNCEMENTS_API}?limit=20`);
     const announcements = await response.json();
 
     if (!response.ok || announcements.length === 0) {
@@ -134,7 +135,11 @@ async function loadPublicAnnouncements() {
       return;
     }
 
-    box.innerHTML = announcements.map(item => {
+    const tickerItems = announcements.length > 1 ? [...announcements, announcements[0]] : announcements;
+
+    box.innerHTML = `
+      <div class="announcement-track">
+        ${tickerItems.map(item => {
       const title = escapeHtml(item.title);
       const content = escapeHtml(item.content || "");
       const important = item.is_important ? `<span class="announcement-badge">Quan trong</span>` : "";
@@ -149,11 +154,40 @@ async function loadPublicAnnouncements() {
       }
 
       return `<div class="announcement-item">${body}</div>`;
-    }).join("");
+    }).join("")}
+      </div>
+    `;
+
+    startAnnouncementTicker(box, announcements.length);
   } catch (error) {
     box.innerHTML = `<span class="announcement-empty">Khong the tai thong bao.</span>`;
     console.error(error);
   }
+}
+
+function startAnnouncementTicker(box, itemCount) {
+  const track = box.querySelector(".announcement-track");
+
+  clearInterval(announcementTimer);
+
+  if (!track || itemCount <= 1) return;
+
+  let index = 0;
+  const rowHeight = 32;
+
+  announcementTimer = setInterval(() => {
+    index += 1;
+    track.style.transition = "transform 0.45s ease";
+    track.style.transform = `translateY(-${index * rowHeight}px)`;
+
+    if (index === itemCount) {
+      setTimeout(() => {
+        track.style.transition = "none";
+        track.style.transform = "translateY(0)";
+        index = 0;
+      }, 480);
+    }
+  }, 2800);
 }
 
 function renderFoods() {

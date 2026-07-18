@@ -23,28 +23,27 @@ header {
 }
 
 .site-announcements {
-  background: #fff;
+  background: #263241;
   border-bottom: 1px solid #f0e5dc;
-  padding: 12px 8%;
+  color: #fff;
+  padding: 6px 8%;
 }
 
 .announcement-shell {
-  align-items: stretch;
+  align-items: center;
   display: grid;
-  gap: 14px;
-  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 18px;
+  grid-template-columns: auto minmax(0, 1fr);
   margin: 0 auto;
   max-width: 1180px;
 }
 
 .announcement-heading {
   align-items: center;
-  background: #fff7f1;
-  border: 1px solid #f0e5dc;
-  border-radius: 8px;
   display: flex;
-  gap: 10px;
-  padding: 12px 14px;
+  gap: 8px;
+  min-height: 32px;
+  white-space: nowrap;
 }
 
 .announcement-heading span {
@@ -66,33 +65,35 @@ header {
 }
 
 .announcement-heading strong {
-  color: #222;
-  font-size: 15px;
+  color: #fff;
+  font-size: 14px;
   line-height: 1.25;
 }
 
 .public-announcements {
-  display: grid;
-  gap: 8px;
+  height: 32px;
+  overflow: hidden;
+  position: relative;
+}
+
+.announcement-track {
+  will-change: transform;
 }
 
 .announcement-item {
   align-items: center;
-  background: #fff;
-  border: 1px solid #f0e5dc;
-  border-radius: 8px;
-  color: #222;
-  display: grid;
-  gap: 4px 10px;
-  grid-template-columns: auto minmax(0, 1fr);
-  min-height: 54px;
-  padding: 10px 14px;
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  height: 32px;
+  min-width: 0;
+  overflow: hidden;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .announcement-item:hover {
-  border-color: #ffb59b;
-  box-shadow: 0 10px 24px rgba(78, 45, 25, 0.08);
+  color: #ffd6c8;
 }
 
 .announcement-badge {
@@ -106,23 +107,22 @@ header {
 
 .announcement-title {
   font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .announcement-item small {
-  color: #666;
-  grid-column: 2;
-  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.82);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .announcement-empty {
   align-items: center;
-  background: #fff7f1;
-  border: 1px solid #f0e5dc;
-  border-radius: 8px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.82);
   display: flex;
-  min-height: 54px;
-  padding: 0 14px;
+  min-height: 32px;
 }
 
 .logo {
