@@ -19,6 +19,7 @@ const foodType = document.getElementById("foodType");
 const foodCategory = document.getElementById("foodCategory");
 const foodPrice = document.getElementById("foodPrice");
 const foodImage = document.getElementById("foodImage");
+const foodImageFile = document.getElementById("foodImageFile");
 const foodDescription = document.getElementById("foodDescription");
 const foodActive = document.getElementById("foodActive");
 const foodFormTitle = document.getElementById("foodFormTitle");
@@ -27,6 +28,7 @@ const foodPreview = document.getElementById("foodPreview");
 
 let toastTimer;
 let foodCategories = [];
+const MAX_IMAGE_SIZE = 1.5 * 1024 * 1024;
 
 function showAdminToast(message, type = "success") {
   const toast = document.getElementById("adminToast");
@@ -181,6 +183,40 @@ function renderPreview() {
   `;
 }
 
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("Vui long chon tep hinh anh."));
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      reject(new Error("Anh toi da 1.5MB de web tai nhanh hon."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Khong the doc tep anh."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFileChange() {
+  const file = foodImageFile.files?.[0];
+
+  if (!file) return;
+
+  try {
+    foodImage.value = await readImageFile(file);
+    renderPreview();
+    showAdminToast("Da chon anh mon.");
+  } catch (error) {
+    foodImageFile.value = "";
+    showAdminToast(error.message, "error");
+  }
+}
+
 async function loadFood() {
   if (!isEditMode) return;
 
@@ -248,7 +284,7 @@ foodPageForm.addEventListener("submit", saveFood);
 foodType.addEventListener("change", () => renderCategoryOptions());
 foodName.addEventListener("input", renderPreview);
 foodPrice.addEventListener("input", renderPreview);
-foodImage.addEventListener("input", renderPreview);
+foodImageFile.addEventListener("change", handleImageFileChange);
 
 requireAdminSession();
 setModeText();
