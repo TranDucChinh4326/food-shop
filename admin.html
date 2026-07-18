@@ -27,6 +27,8 @@
       </div>
       <a class="admin-nav-btn" href="admin.html?section=accounts" data-admin-target="accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Ma giam gia</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thong ke</span></a>
     </nav>
   </aside>
 
@@ -68,6 +70,16 @@
           <span>Thong bao</span>
           <strong>Dang tin tren trang chu</strong>
           <small>Quan ly cac thong bao hien thi o dau website cho khach hang.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="discounts">
+          <span>Ma giam gia</span>
+          <strong>Tao uu dai dat hang</strong>
+          <small>Quan ly ma giam theo phan tram, so tien, han dung va so luot su dung.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="stats">
+          <span>Thong ke</span>
+          <strong>Theo doi doanh thu</strong>
+          <small>Xem tong don, doanh thu, mon ban chay va tinh hinh tai khoan.</small>
         </button>
       </div>
     </section>
@@ -166,6 +178,136 @@
         </div>
 
         <div id="announcementsList" class="accounts-list table-state">Dang tai thong bao...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="discounts">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quan ly ma giam gia</h2>
+            <p><a href="index.html">Trang chu</a> <span>/</span> Ma giam gia</p>
+          </div>
+          <div class="heading-actions">
+            <button id="resetDiscountFormBtn" type="button" class="primary-btn">+ Them moi</button>
+            <button id="refreshDiscountsBtn" type="button" class="ghost-btn">Tai lai</button>
+          </div>
+        </div>
+
+        <form id="discountForm" class="announcement-page-form discount-form">
+          <input type="hidden" id="discountId">
+          <div class="announcement-date-grid">
+            <label>
+              Ma giam gia
+              <input id="discountCode" type="text" placeholder="VD: FOODHUB10" maxlength="40" required>
+            </label>
+            <label>
+              Ten chuong trinh
+              <input id="discountName" type="text" placeholder="VD: Giam 10% cho don tu 100.000d" required>
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              Kieu giam
+              <select id="discountType">
+                <option value="percent">Phan tram</option>
+                <option value="fixed">So tien</option>
+              </select>
+            </label>
+            <label>
+              Gia tri
+              <input id="discountValue" type="number" min="1" step="1" placeholder="10 hoac 20000" required>
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              Don toi thieu
+              <input id="discountMinOrder" type="number" min="0" step="1000" value="0">
+            </label>
+            <label>
+              Giam toi da
+              <input id="discountMaxDiscount" type="number" min="0" step="1000" placeholder="Bo trong neu khong gioi han">
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              So luot su dung
+              <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bo trong neu khong gioi han">
+            </label>
+            <label>
+              Trang thai
+              <select id="discountIsActive">
+                <option value="1">Hoat dong</option>
+                <option value="0">Tam an</option>
+              </select>
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              Bat dau
+              <input id="discountStartsAt" type="datetime-local">
+            </label>
+            <label>
+              Het han
+              <input id="discountExpiresAt" type="datetime-local">
+            </label>
+          </div>
+          <div class="account-form-actions form-actions">
+            <button id="saveDiscountBtn" type="submit" class="primary-btn">Luu ma</button>
+            <button type="button" class="ghost-btn" data-reset-discount>Nhap lai</button>
+          </div>
+        </form>
+
+        <div class="discount-toolbar table-toolbar multi-filter">
+          <input type="search" id="discountSearch" placeholder="Tim kiem">
+          <select id="discountStatusFilter">
+            <option value="all">Tat ca</option>
+            <option value="active">Hoat dong</option>
+            <option value="scheduled">Sap dien ra</option>
+            <option value="expired">Het han</option>
+            <option value="soldout">Het luot</option>
+            <option value="hidden">Da an</option>
+          </select>
+          <select id="discountPageSize" aria-label="So dong ma giam gia moi trang">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        <div id="discountsList" class="accounts-list table-state">Dang tai ma giam gia...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="stats">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Thong ke he thong</h2>
+            <p><a href="index.html">Trang chu</a> <span>/</span> Thong ke</p>
+          </div>
+          <div class="heading-actions">
+            <button id="refreshStatsBtn" type="button" class="ghost-btn">Tai lai</button>
+          </div>
+        </div>
+
+        <div class="stats-filter table-toolbar multi-filter">
+          <input id="statsFromDate" type="date" aria-label="Tu ngay">
+          <input id="statsToDate" type="date" aria-label="Den ngay">
+          <button id="applyStatsFilterBtn" type="button" class="primary-btn">Loc</button>
+        </div>
+
+        <div id="statsSummary" class="stats-grid table-state">Dang tai thong ke...</div>
+        <div class="stats-columns">
+          <section>
+            <h3>Mon ban chay</h3>
+            <div id="statsTopFoods" class="table-state compact-state">Dang tai...</div>
+          </section>
+          <section>
+            <h3>Doanh thu theo ngay</h3>
+            <div id="statsDaily" class="table-state compact-state">Dang tai...</div>
+          </section>
+        </div>
       </section>
     </section>
   </main>

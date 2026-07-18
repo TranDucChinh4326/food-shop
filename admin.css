@@ -1108,6 +1108,30 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   width: 96px;
 }
 
+.table-toolbar.multi-filter #discountPageSize {
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  width: 96px;
+}
+
+.discount-form {
+  border-top: 1px solid var(--line);
+  margin: 8px 30px 22px;
+  padding-top: 22px;
+}
+
+.discount-form .form-actions {
+  grid-template-columns: minmax(180px, 0.3fr) minmax(180px, 0.3fr);
+}
+
+.stats-filter input[type="date"] {
+  max-width: 190px;
+}
+
+.stats-filter button {
+  min-width: 110px;
+}
+
 .table-state {
   display: block;
   padding: 0 30px 26px;
@@ -1161,6 +1185,19 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 .announcements-table th:nth-child(3),
 .announcements-table th:nth-child(4) {
   width: 160px;
+}
+
+.discounts-table td:nth-child(2) {
+  min-width: 240px;
+}
+
+.discounts-table td:nth-child(5),
+.discounts-table th:nth-child(5) {
+  min-width: 210px;
+}
+
+.compact-table {
+  min-width: 560px;
 }
 
 .foods-admin-table {
@@ -1281,6 +1318,66 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   display: flex;
   justify-content: space-between;
   padding: 22px 30px 30px;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+}
+
+.stats-card span {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stats-card strong {
+  color: var(--ink);
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stats-columns {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 30px 30px;
+}
+
+.stats-columns section {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+}
+
+.stats-columns h3 {
+  border-bottom: 1px solid var(--line);
+  font-size: 20px;
+  margin: 0;
+  padding: 18px 20px;
+}
+
+.compact-state {
+  padding: 18px 20px 20px;
+}
+
+.empty-note {
+  color: var(--muted);
+  margin: 0;
 }
 
 .pager {

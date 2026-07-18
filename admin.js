@@ -27,6 +27,16 @@ const userSearch = document.getElementById("userSearch");
 const announcementSearch = document.getElementById("announcementSearch");
 const announcementStatusFilter = document.getElementById("announcementStatusFilter");
 const announcementsCount = document.getElementById("announcementsCount");
+const discountsList = document.getElementById("discountsList");
+const discountForm = document.getElementById("discountForm");
+const discountSearch = document.getElementById("discountSearch");
+const discountStatusFilter = document.getElementById("discountStatusFilter");
+const discountPageSize = document.getElementById("discountPageSize");
+const statsSummary = document.getElementById("statsSummary");
+const statsTopFoods = document.getElementById("statsTopFoods");
+const statsDaily = document.getElementById("statsDaily");
+const statsFromDate = document.getElementById("statsFromDate");
+const statsToDate = document.getElementById("statsToDate");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
 const navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
@@ -56,6 +66,10 @@ let announcementSearchTimer;
 let cachedAnnouncements = [];
 let announcementsPage = 1;
 const ANNOUNCEMENTS_PER_PAGE = 5;
+let discountSearchTimer;
+let cachedDiscounts = [];
+let discountsPage = 1;
+let discountsPerPage = 5;
 const FOOD_CATEGORY_TITLES = {
   all: "Tat ca mon",
   food: "Do an",
@@ -122,6 +136,51 @@ function formatAnnouncementStatus(status) {
   };
 
   return statuses[status] || status || "Khong ro";
+}
+
+function formatDiscountStatus(status) {
+  const statuses = {
+    active: "Hoat dong",
+    hidden: "Da an",
+    expired: "Het han",
+    scheduled: "Sap dien ra",
+    soldout: "Het luot"
+  };
+
+  return statuses[status] || status || "Khong ro";
+}
+
+function formatDiscountValue(discount) {
+  if (discount.discount_type === "fixed") {
+    return formatMoney(discount.discount_value);
+  }
+
+  return `${Number(discount.discount_value).toLocaleString("vi-VN")}%`;
+}
+
+function formatDateInputValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function renderSimpleTable(headers, rows, emptyText) {
+  if (!rows.length) return `<p class="empty-note">${emptyText}</p>`;
+
+  return `
+    <div class="table-wrap">
+      <table class="admin-table compact-table">
+        <thead>
+          <tr>${headers.map(header => `<th>${header}</th>`).join("")}</tr>
+        </thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 function editIcon() {
@@ -425,6 +484,231 @@ function renderAnnouncementsTable() {
       </div>
     </div>
   `;
+}
+
+function resetDiscountForm() {
+  if (!discountForm) return;
+
+  discountForm.reset();
+  document.getElementById("discountId").value = "";
+  document.getElementById("discountMinOrder").value = "0";
+  document.getElementById("discountIsActive").value = "1";
+  document.getElementById("saveDiscountBtn").textContent = "Luu ma";
+}
+
+function fillDiscountForm(discount) {
+  document.getElementById("discountId").value = discount.id;
+  document.getElementById("discountCode").value = discount.code || "";
+  document.getElementById("discountName").value = discount.name || "";
+  document.getElementById("discountType").value = discount.discount_type || "percent";
+  document.getElementById("discountValue").value = discount.discount_value || "";
+  document.getElementById("discountMinOrder").value = discount.min_order || 0;
+  document.getElementById("discountMaxDiscount").value = discount.max_discount ?? "";
+  document.getElementById("discountUsageLimit").value = discount.usage_limit ?? "";
+  document.getElementById("discountStartsAt").value = formatDateInputValue(discount.starts_at);
+  document.getElementById("discountExpiresAt").value = formatDateInputValue(discount.expires_at);
+  document.getElementById("discountIsActive").value = discount.is_active ? "1" : "0";
+  document.getElementById("saveDiscountBtn").textContent = "Cap nhat ma";
+  discountForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function readDiscountPayload() {
+  return {
+    code: document.getElementById("discountCode").value,
+    name: document.getElementById("discountName").value,
+    discountType: document.getElementById("discountType").value,
+    discountValue: document.getElementById("discountValue").value,
+    minOrder: document.getElementById("discountMinOrder").value,
+    maxDiscount: document.getElementById("discountMaxDiscount").value,
+    usageLimit: document.getElementById("discountUsageLimit").value,
+    startsAt: document.getElementById("discountStartsAt").value || null,
+    expiresAt: document.getElementById("discountExpiresAt").value || null,
+    isActive: document.getElementById("discountIsActive").value === "1"
+  };
+}
+
+async function saveDiscount(event) {
+  event.preventDefault();
+
+  const discountId = document.getElementById("discountId").value;
+  const payload = readDiscountPayload();
+
+  try {
+    await requestJson(`${ADMIN_API}/discounts${discountId ? `/${discountId}` : ""}`, {
+      method: discountId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+
+    showAdminToast(discountId ? "Da cap nhat ma giam gia." : "Da tao ma giam gia.");
+    resetDiscountForm();
+    await loadDiscounts();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function loadDiscounts() {
+  if (!discountsList) return;
+
+  discountsList.textContent = "Dang tai ma giam gia...";
+
+  try {
+    const params = new URLSearchParams({
+      q: discountSearch?.value || "",
+      status: discountStatusFilter?.value || "all"
+    });
+    const discounts = await requestJson(`${ADMIN_API}/discounts?${params.toString()}`);
+
+    cachedDiscounts = discounts;
+    discountsPage = Math.min(discountsPage, Math.ceil(cachedDiscounts.length / discountsPerPage)) || 1;
+    renderDiscountsTable();
+  } catch (error) {
+    discountsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderDiscountsTable() {
+  if (!discountsList) return;
+
+  discountsPerPage = Number(discountPageSize?.value || discountsPerPage || 5);
+  if (![5, 10, 20].includes(discountsPerPage)) discountsPerPage = 5;
+
+  const total = cachedDiscounts.length;
+  const totalPages = Math.max(1, Math.ceil(total / discountsPerPage));
+  discountsPage = Math.min(Math.max(discountsPage, 1), totalPages);
+
+  const startIndex = (discountsPage - 1) * discountsPerPage;
+  const pageItems = cachedDiscounts.slice(startIndex, startIndex + discountsPerPage);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageItems.length;
+
+  if (total === 0) {
+    discountsList.textContent = "Chua co ma giam gia phu hop.";
+    return;
+  }
+
+  discountsList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table discounts-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Ma</th>
+            <th>Gia tri</th>
+            <th>Dieu kien</th>
+            <th>Hieu luc</th>
+            <th>Trang thai</th>
+            <th>Chuc nang</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pageItems.map((item, index) => `
+            <tr>
+              <td>${startIndex + index + 1}</td>
+              <td>
+                <strong>${escapeHtml(item.code)}</strong>
+                <small>${escapeHtml(item.name)}</small>
+              </td>
+              <td>${formatDiscountValue(item)}</td>
+              <td>
+                <strong>Tu ${formatMoney(item.min_order || 0)}</strong>
+                <small>${item.max_discount ? `Toi da ${formatMoney(item.max_discount)}` : "Khong gioi han giam"}</small>
+              </td>
+              <td>
+                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bat dau ngay"}</strong>
+                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</small>
+              </td>
+              <td><span class="account-status ${item.status === "active" ? "active" : "locked"}">${formatDiscountStatus(item.status)}</span></td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua ma giam gia" data-edit-discount="${item.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa ma giam gia" data-delete-discount="${item.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-discounts-page="prev" ${discountsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${discountsPage === index + 1 ? "active" : ""}" data-discounts-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-discounts-page="next" ${discountsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadStats() {
+  if (!statsSummary) return;
+
+  statsSummary.textContent = "Dang tai thong ke...";
+  statsTopFoods.textContent = "Dang tai...";
+  statsDaily.textContent = "Dang tai...";
+
+  try {
+    const params = new URLSearchParams();
+    if (statsFromDate?.value) params.set("from", statsFromDate.value);
+    if (statsToDate?.value) params.set("to", statsToDate.value);
+
+    const data = await requestJson(`${ADMIN_API}/stats?${params.toString()}`);
+    renderStats(data);
+  } catch (error) {
+    statsSummary.textContent = error.message;
+    statsTopFoods.textContent = "";
+    statsDaily.textContent = "";
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderStats(data) {
+  const summary = data.summary || {};
+  const statCards = [
+    ["Tong don", summary.total_orders || 0],
+    ["Doanh thu hoan tat", formatMoney(summary.revenue || 0)],
+    ["Don cho xu ly", summary.pending_orders || 0],
+    ["Don hoan tat", summary.done_orders || 0],
+    ["Tai khoan", summary.total_users || 0],
+    ["Khach hang", summary.customers || 0],
+    ["Mon dang ban", summary.active_foods || 0],
+    ["Ma dang dung", summary.active_discounts || 0]
+  ];
+
+  statsSummary.innerHTML = statCards.map(([label, value]) => `
+    <article class="stats-card">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </article>
+  `).join("");
+
+  statsTopFoods.innerHTML = renderSimpleTable(
+    ["Mon", "So luong", "Doanh thu"],
+    (data.topFoods || []).map(item => `
+      <tr>
+        <td><strong>${escapeHtml(item.food_name)}</strong></td>
+        <td>${Number(item.quantity || 0).toLocaleString("vi-VN")}</td>
+        <td>${formatMoney(item.revenue || 0)}</td>
+      </tr>
+    `),
+    "Chua co du lieu mon ban."
+  );
+
+  statsDaily.innerHTML = renderSimpleTable(
+    ["Ngay", "Don", "Doanh thu"],
+    (data.dailyRevenue || []).map(item => `
+      <tr>
+        <td><strong>${new Date(item.order_date).toLocaleDateString("vi-VN")}</strong></td>
+        <td>${Number(item.orders_count || 0).toLocaleString("vi-VN")}</td>
+        <td>${formatMoney(item.revenue || 0)}</td>
+      </tr>
+    `),
+    "Chua co du lieu doanh thu."
+  );
 }
 
 async function loadOrders() {
@@ -763,6 +1047,12 @@ document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders
 document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
+document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDiscounts);
+document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
+document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
+document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
+discountForm?.addEventListener("submit", saveDiscount);
+discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
 navButtons.forEach(button => {
   button.addEventListener("click", event => {
     event.preventDefault();
@@ -841,6 +1131,20 @@ announcementSearch?.addEventListener("input", () => {
   clearTimeout(announcementSearchTimer);
   announcementsPage = 1;
   announcementSearchTimer = setTimeout(loadAnnouncements, 300);
+});
+discountStatusFilter?.addEventListener("change", () => {
+  discountsPage = 1;
+  loadDiscounts();
+});
+discountPageSize?.addEventListener("change", () => {
+  discountsPerPage = Number(discountPageSize.value || 5);
+  discountsPage = 1;
+  renderDiscountsTable();
+});
+discountSearch?.addEventListener("input", () => {
+  clearTimeout(discountSearchTimer);
+  discountsPage = 1;
+  discountSearchTimer = setTimeout(loadDiscounts, 300);
 });
 
 ordersList.addEventListener("change", async event => {
@@ -959,6 +1263,50 @@ announcementsList?.addEventListener("click", async event => {
   }
 });
 
+discountsList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-discounts-page]");
+  const editButton = event.target.closest("[data-edit-discount]");
+  const deleteButton = event.target.closest("[data-delete-discount]");
+
+  try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.discountsPage;
+      const totalPages = Math.max(1, Math.ceil(cachedDiscounts.length / discountsPerPage));
+
+      if (pageAction === "prev") {
+        discountsPage -= 1;
+      } else if (pageAction === "next") {
+        discountsPage += 1;
+      } else {
+        discountsPage = Number(pageAction);
+      }
+
+      discountsPage = Math.min(Math.max(discountsPage, 1), totalPages);
+      renderDiscountsTable();
+      return;
+    }
+
+    if (editButton) {
+      const discount = cachedDiscounts.find(item => String(item.id) === String(editButton.dataset.editDiscount))
+        || await requestJson(`${ADMIN_API}/discounts/${editButton.dataset.editDiscount}`);
+      fillDiscountForm(discount);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("Xoa vinh vien ma giam gia nay?")) return;
+
+      await requestJson(`${ADMIN_API}/discounts/${deleteButton.dataset.deleteDiscount}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Da xoa ma giam gia.");
+      await loadDiscounts();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
 const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
@@ -979,3 +1327,5 @@ loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();
 loadAnnouncements();
+loadDiscounts();
+loadStats();
