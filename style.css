@@ -15,6 +15,7 @@ header {
   box-shadow: 0 2px 12px rgba(40, 24, 14, 0.08);
   position: sticky;
   top: 0;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
   z-index: 100;
 }
 
@@ -25,6 +26,7 @@ header {
   justify-content: space-between;
   min-height: 82px;
   padding: 12px 8%;
+  transition: min-height 0.2s ease, padding 0.2s ease;
 }
 
 .header-tools {
@@ -33,6 +35,47 @@ header {
   gap: 12px;
   justify-content: flex-end;
   min-width: 0;
+}
+
+header.header-compact {
+  box-shadow: 0 6px 22px rgba(40, 24, 14, 0.12);
+}
+
+header.header-compact .header-top {
+  min-height: 62px;
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+header.header-compact .logo {
+  font-size: 27px;
+}
+
+header.header-compact .site-announcements,
+header.header-compact nav,
+header.header-compact .top-icon {
+  display: none;
+}
+
+header.header-compact .header-tools {
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  header.header-compact .header-top {
+    min-height: 72px;
+    padding: 12px 5%;
+  }
+
+  header.header-compact .logo {
+    font-size: 26px;
+  }
+
+  header.header-compact .site-announcements,
+  header.header-compact nav,
+  header.header-compact .top-icon {
+    display: revert;
+  }
 }
 
 .top-icon {

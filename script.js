@@ -801,6 +801,19 @@ function initMobileMenu() {
   header.appendChild(overlay);
 }
 
+function initCompactHeader() {
+  const header = document.querySelector("header");
+  if (!header) return;
+
+  const updateHeaderState = () => {
+    header.classList.toggle("header-compact", window.innerWidth > 900 && window.scrollY > 90);
+  };
+
+  updateHeaderState();
+  window.addEventListener("scroll", updateHeaderState, { passive: true });
+  window.addEventListener("resize", updateHeaderState);
+}
+
 function logout() {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
   sessionStorage.removeItem(AUTH_USER_KEY);
@@ -1074,6 +1087,7 @@ if (protectCheckoutPage()) {
   renderUser();
   initAccountMenu();
   initMobileMenu();
+  initCompactHeader();
   initTrackPage();
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
