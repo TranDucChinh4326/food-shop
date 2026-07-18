@@ -21,6 +21,7 @@ const foodSearch = document.getElementById("foodSearch");
 const foodCategoryFilter = document.getElementById("foodCategoryFilter");
 const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
+const foodCreateLink = document.getElementById("foodCreateLink");
 const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
 const announcementSearch = document.getElementById("announcementSearch");
@@ -592,6 +593,13 @@ function getFilteredFoods() {
   });
 }
 
+function updateFoodCreateLink() {
+  if (!foodCreateLink) return;
+
+  const type = activeFoodCategory === "drink" ? "drink" : "food";
+  foodCreateLink.href = `admin-food.html?type=${type}`;
+}
+
 function renderFoodsTable() {
   if (!foodsList) return;
 
@@ -606,6 +614,7 @@ function renderFoodsTable() {
   if (foodCategoryTitle) {
     foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
   }
+  updateFoodCreateLink();
 
   const filteredFoods = getFilteredFoods();
   const totalFoods = filteredFoods.length;
@@ -647,7 +656,7 @@ function renderFoodsTable() {
               <td>${formatMoney(food.price)}</td>
               <td>
                 <div class="table-actions">
-                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
+                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&type=${getFoodType(food)}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
                   <button type="button" class="icon-btn delete" title="An mon" aria-label="An mon" data-hide-food="${food.id}">${trashIcon()}</button>
                 </div>
               </td>

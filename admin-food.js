@@ -11,11 +11,13 @@ const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
 const params = new URLSearchParams(window.location.search);
 const foodIdParam = params.get("id");
 const isEditMode = Boolean(foodIdParam);
+let selectedFoodType = params.get("type") === "drink" ? "drink" : "food";
 
 const foodPageForm = document.getElementById("foodPageForm");
 const foodId = document.getElementById("foodId");
 const foodName = document.getElementById("foodName");
 const foodType = document.getElementById("foodType");
+const foodTypeLabel = document.getElementById("foodTypeLabel");
 const foodCategory = document.getElementById("foodCategory");
 const foodPrice = document.getElementById("foodPrice");
 const foodImage = document.getElementById("foodImage");
@@ -85,14 +87,24 @@ async function requestJson(url, options = {}) {
 }
 
 function setModeText() {
+  const typeText = selectedFoodType === "drink" ? "nuoc uong" : "do an";
+
   if (isEditMode) {
-    foodFormTitle.textContent = "Cap nhat thong tin mon";
-    foodBreadcrumb.textContent = "Cap nhat";
+    foodFormTitle.textContent = `Cap nhat ${typeText}`;
+    foodBreadcrumb.textContent = `Cap nhat ${typeText}`;
     return;
   }
 
-  foodFormTitle.textContent = "Them moi mon";
-  foodBreadcrumb.textContent = "Them moi";
+  foodFormTitle.textContent = `Them moi ${typeText}`;
+  foodBreadcrumb.textContent = `Them moi ${typeText}`;
+}
+
+function syncFoodTypeField() {
+  foodType.value = selectedFoodType;
+
+  if (foodTypeLabel) {
+    foodTypeLabel.value = selectedFoodType === "drink" ? "Nuoc uong" : "Do an";
+  }
 }
 
 function escapeHtml(value) {
@@ -118,7 +130,7 @@ function getCategoryType(category) {
 }
 
 function getSubCategories(type) {
-  const selectedType = type || foodType.value || "food";
+  const selectedType = type || selectedFoodType || "food";
   const children = foodCategories.filter(category => {
     const parentId = Number(category.parentId || category.parent_id || 0);
     return parentId > 0 && getCategoryType(category) === selectedType;
@@ -230,11 +242,13 @@ async function loadFood() {
 
   foodId.value = food.id;
   foodName.value = food.name || "";
-  foodType.value = getCategoryType({
+  selectedFoodType = getCategoryType({
     id: food.category_id,
     name: food.category_name,
     type: food.category_type
   });
+  syncFoodTypeField();
+  setModeText();
   renderCategoryOptions(food.category_id || "");
   foodCategory.value = food.category_id || foodCategory.value;
   foodPrice.value = food.price || "";
@@ -264,9 +278,11 @@ async function saveFood(event) {
     });
 
     sessionStorage.setItem("foodhub_admin_section", "foods");
+    sessionStorage.setItem("foodhub_food_category", selectedFoodType);
+    sessionStorage.setItem("foodhub_food_subcategory", "all");
     showAdminToast(currentFoodId ? "Da cap nhat mon." : "Da them mon.");
     setTimeout(() => {
-      window.location.href = "admin.html";
+      window.location.href = `admin.html?section=foods&foodCategory=${selectedFoodType}`;
     }, 700);
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -281,12 +297,12 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 foodPageForm.addEventListener("submit", saveFood);
-foodType.addEventListener("change", () => renderCategoryOptions());
 foodName.addEventListener("input", renderPreview);
 foodPrice.addEventListener("input", renderPreview);
 foodImageFile.addEventListener("change", handleImageFileChange);
 
 requireAdminSession();
+syncFoodTypeField();
 setModeText();
 loadCategories()
   .then(loadFood)
