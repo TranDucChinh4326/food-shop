@@ -858,7 +858,16 @@ function initSupportWidget() {
       </a>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span>🤖</span>
+      <span aria-hidden="true">
+        <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
+          <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
+          <path class="robot-antenna" d="M32 18v-7"></path>
+          <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
+          <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
+          <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
+          <path class="robot-mouth" d="M26 42h12"></path>
+        </svg>
+      </span>
     </button>
   `;
 
@@ -898,7 +907,16 @@ function initChatSupportWidget() {
       </form>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span>🤖</span>
+      <span aria-hidden="true">
+        <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
+          <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
+          <path class="robot-antenna" d="M32 18v-7"></path>
+          <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
+          <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
+          <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
+          <path class="robot-mouth" d="M26 42h12"></path>
+        </svg>
+      </span>
     </button>
   `;
 
