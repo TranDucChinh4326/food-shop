@@ -26,8 +26,10 @@ const announcementSearch = document.getElementById("announcementSearch");
 const announcementStatusFilter = document.getElementById("announcementStatusFilter");
 const announcementsCount = document.getElementById("announcementsCount");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
+const navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
+const pageParams = new URLSearchParams(window.location.search);
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -55,6 +57,16 @@ const FOOD_CATEGORY_TITLES = {
   drink: "Nuoc uong"
 };
 
+function setAdminNavGroupOpen(toggleName, isOpen) {
+  const toggle = document.querySelector(`[data-admin-toggle="${toggleName}"]`);
+  const group = toggle?.closest(".admin-nav-group");
+
+  if (!toggle || !group) return;
+
+  group.classList.toggle("is-open", isOpen);
+  toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
 function showAdminSection(sectionId) {
   const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
 
@@ -67,6 +79,10 @@ function showAdminSection(sectionId) {
   adminSections.forEach(section => {
     section.classList.toggle("active", section.dataset.adminSection === target);
   });
+
+  if (target === "foods") {
+    setAdminNavGroupOpen("foods-menu", true);
+  }
 
   sessionStorage.setItem("foodhub_admin_section", target);
 }
@@ -492,6 +508,8 @@ function renderFoodsTable() {
   if (!foodsList) return;
 
   activeFoodCategory = foodCategoryFilter?.value || activeFoodCategory || "all";
+  sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+
   if (foodCategoryTitle) {
     foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
   }
@@ -643,18 +661,39 @@ navButtons.forEach(button => {
     if (button.dataset.foodCategory && foodCategoryFilter) {
       activeFoodCategory = button.dataset.foodCategory;
       foodCategoryFilter.value = activeFoodCategory;
+      sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
       renderFoodsTable();
     }
 
     showAdminSection(button.dataset.adminTarget);
   });
 });
+navToggles.forEach(toggle => {
+  toggle.addEventListener("click", () => {
+    const group = toggle.closest(".admin-nav-group");
+    const isOpen = !group?.classList.contains("is-open");
+
+    if (!group) return;
+
+    group.classList.toggle("is-open", isOpen);
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+});
 shortcutButtons.forEach(button => {
-  button.addEventListener("click", () => showAdminSection(button.dataset.adminShortcut));
+  button.addEventListener("click", () => {
+    if (button.dataset.adminShortcut === "foods" && foodCategoryFilter) {
+      activeFoodCategory = "all";
+      foodCategoryFilter.value = activeFoodCategory;
+      renderFoodsTable();
+    }
+
+    showAdminSection(button.dataset.adminShortcut);
+  });
 });
 staffForm?.addEventListener("submit", createStaff);
 foodCategoryFilter?.addEventListener("change", () => {
   activeFoodCategory = foodCategoryFilter.value;
+  sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
   renderFoodsTable();
   showAdminSection("foods");
 });
@@ -779,7 +818,14 @@ announcementsList?.addEventListener("click", async event => {
 });
 
 requireAdminSession();
-showAdminSection(sessionStorage.getItem("foodhub_admin_section") || "overview");
+const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
+
+if (["all", "food", "drink"].includes(initialFoodCategory) && foodCategoryFilter) {
+  activeFoodCategory = initialFoodCategory;
+  foodCategoryFilter.value = activeFoodCategory;
+}
+
+showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || "overview");
 loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();
