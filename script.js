@@ -999,6 +999,7 @@ function initChatSupportWidget() {
     widget.classList.remove("open");
     button.setAttribute("aria-expanded", "false");
     quickMenu.hidden = true;
+    emojiPicker.hidden = true;
   });
 
   menuButton.addEventListener("click", () => {
@@ -1030,6 +1031,7 @@ function initChatSupportWidget() {
     if (!emojiOption) return;
 
     chatInput.value += String.fromCodePoint(Number(emojiOption.dataset.code));
+    emojiPicker.hidden = true;
     chatInput.focus();
   });
 
@@ -1052,7 +1054,14 @@ function initChatSupportWidget() {
       <div class="chat-message bot muted">FoodHub da nhan tin nhan cua ban. Chuc nang tra loi tu dong se duoc cap nhat sau.</div>
     `);
     chatInput.value = "";
+    emojiPicker.hidden = true;
     chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  document.addEventListener("click", event => {
+    if (emojiPicker.hidden) return;
+    if (emojiPicker.contains(event.target) || emojiButton.contains(event.target)) return;
+    emojiPicker.hidden = true;
   });
 
   document.body.appendChild(widget);
