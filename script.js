@@ -805,8 +805,25 @@ function initCompactHeader() {
   const header = document.querySelector("header");
   if (!header) return;
 
+  let isCompact = false;
+
   const updateHeaderState = () => {
-    header.classList.toggle("header-compact", window.innerWidth > 900 && window.scrollY > 90);
+    if (window.innerWidth <= 900) {
+      isCompact = false;
+      header.classList.remove("header-compact");
+      return;
+    }
+
+    if (!isCompact && window.scrollY > 170) {
+      isCompact = true;
+      header.classList.add("header-compact");
+      return;
+    }
+
+    if (isCompact && window.scrollY < 48) {
+      isCompact = false;
+      header.classList.remove("header-compact");
+    }
   };
 
   updateHeaderState();
