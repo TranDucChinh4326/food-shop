@@ -551,15 +551,26 @@ function renderUser() {
   const user = getCurrentUser();
 
   if (user) {
-    const adminLink = String(user.role || "").toUpperCase() === "ADMIN"
-      ? `<a href="admin.html" class="header-action secondary">Quản trị</a>`
-      : "";
+    const isAdmin = String(user.role || "").toUpperCase() === "ADMIN";
+    const menuLink = isAdmin
+      ? `<a href="admin.html" class="account-menu-link">Quản trị</a>`
+      : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
+    const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
 
     userArea.innerHTML = `
-      <span class="user-name">👤 ${escapeHtml(user.fullname)}</span>
-      <a href="profile.html" class="header-action secondary">Tài khoản</a>
-      ${adminLink}
-      <button onclick="logout()" class="logout-btn">Đăng xuất</button>
+      <div class="account-menu">
+        <button type="button" class="account-toggle" aria-label="Mở tài khoản" aria-expanded="false">
+          <span class="account-avatar">${initial}</span>
+        </button>
+        <div class="account-dropdown">
+          <div class="account-summary">
+            <strong>${escapeHtml(user.fullname)}</strong>
+            <small>${escapeHtml(isAdmin ? "Quản trị viên" : "Khách hàng")}</small>
+          </div>
+          ${menuLink}
+          <button type="button" class="account-menu-link danger" onclick="logout()">Đăng xuất</button>
+        </div>
+      </div>
     `;
   } else {
     userArea.innerHTML = `
@@ -567,6 +578,26 @@ function renderUser() {
       <a href="register.html" class="header-action secondary">Đăng ký</a>
     `;
   }
+}
+
+function initAccountMenu() {
+  document.addEventListener("click", event => {
+    const currentMenu = event.target.closest(".account-menu");
+
+    document.querySelectorAll(".account-menu.open").forEach(menu => {
+      if (menu !== currentMenu) {
+        menu.classList.remove("open");
+        menu.querySelector(".account-toggle")?.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    const toggle = event.target.closest(".account-toggle");
+    if (!toggle) return;
+
+    const menu = toggle.closest(".account-menu");
+    const isOpen = menu.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
 }
 
 function initMobileMenu() {
@@ -677,6 +708,7 @@ if (protectCheckoutPage()) {
   loadPublicAnnouncements();
   renderCart();
   renderUser();
+  initAccountMenu();
   initMobileMenu();
   initTrackPage();
   initSupportWidget();
