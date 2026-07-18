@@ -28,6 +28,10 @@
       <button class="admin-nav-btn" type="button" data-admin-target="accounts">
         <span>Tai khoan</span>
       </button>
+      <button class="admin-nav-btn" type="button" data-admin-target="announcements">
+        <span>Thong bao</span>
+        <strong id="announcementsCount">0</strong>
+      </button>
     </nav>
 
     <div class="sidebar-footer">
@@ -69,6 +73,11 @@
           <span>Tai khoan</span>
           <strong>Nhan vien va khach hang</strong>
           <small>Cap quyen dong, khoa tai khoan va dat lai mat khau khi can.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="announcements">
+          <span>Thong bao</span>
+          <strong>Dang tin tren trang chu</strong>
+          <small>Quan ly cac thong bao hien thi o dau website cho khach hang.</small>
         </button>
       </div>
     </section>
@@ -182,6 +191,37 @@
         </div>
 
         <div id="usersList" class="accounts-list table-state">Dang tai tai khoan...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="announcements">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quan ly thong bao</h2>
+            <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly thong bao</p>
+          </div>
+          <div class="heading-actions">
+            <a href="admin-announcement.html" class="primary-btn button-link">+ Them moi</a>
+            <button id="refreshAnnouncementsBtn" type="button" class="ghost-btn">Tai lai</button>
+          </div>
+        </div>
+
+        <div class="announcement-toolbar table-toolbar multi-filter">
+          <input type="search" id="announcementSearch" placeholder="Tim kiem">
+          <select id="announcementStatusFilter">
+            <option value="all">Tat ca</option>
+            <option value="active">Dang hien</option>
+            <option value="hidden">Da an</option>
+          </select>
+          <select id="announcementImportantFilter">
+            <option value="all">Tat ca loai</option>
+            <option value="important">Tin quan trong</option>
+            <option value="normal">Tin thuong</option>
+          </select>
+        </div>
+
+        <div id="announcementsList" class="accounts-list table-state">Dang tai thong bao...</div>
       </section>
     </section>
   </main>

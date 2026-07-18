@@ -22,6 +22,109 @@ header {
   z-index: 100;
 }
 
+.site-announcements {
+  background: #fff;
+  border-bottom: 1px solid #f0e5dc;
+  padding: 12px 8%;
+}
+
+.announcement-shell {
+  align-items: stretch;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 190px minmax(0, 1fr);
+  margin: 0 auto;
+  max-width: 1180px;
+}
+
+.announcement-heading {
+  align-items: center;
+  background: #fff7f1;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.announcement-heading span {
+  align-items: center;
+  background: #ffb020;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.announcement-heading span::before {
+  content: "!";
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.announcement-heading strong {
+  color: #222;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.public-announcements {
+  display: grid;
+  gap: 8px;
+}
+
+.announcement-item {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  color: #222;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 54px;
+  padding: 10px 14px;
+  text-decoration: none;
+}
+
+.announcement-item:hover {
+  border-color: #ffb59b;
+  box-shadow: 0 10px 24px rgba(78, 45, 25, 0.08);
+}
+
+.announcement-badge {
+  background: #ff5722;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 5px 8px;
+}
+
+.announcement-title {
+  font-weight: 800;
+}
+
+.announcement-item small {
+  color: #666;
+  grid-column: 2;
+  line-height: 1.45;
+}
+
+.announcement-empty {
+  align-items: center;
+  background: #fff7f1;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  color: #666;
+  display: flex;
+  min-height: 54px;
+  padding: 0 14px;
+}
+
 .logo {
   font-size: 26px;
   font-weight: bold;
@@ -1022,6 +1125,10 @@ footer {
   .checkout-grid,
   .contact-grid,
   .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .announcement-shell {
     grid-template-columns: 1fr;
   }
 

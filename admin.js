@@ -15,10 +15,15 @@ const foodForm = document.getElementById("foodForm");
 const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
 const usersList = document.getElementById("usersList");
+const announcementsList = document.getElementById("announcementsList");
 const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
 const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
+const announcementSearch = document.getElementById("announcementSearch");
+const announcementStatusFilter = document.getElementById("announcementStatusFilter");
+const announcementImportantFilter = document.getElementById("announcementImportantFilter");
+const announcementsCount = document.getElementById("announcementsCount");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
@@ -36,6 +41,10 @@ let userSearchTimer;
 let cachedUsers = [];
 let usersPage = 1;
 const USERS_PER_PAGE = 5;
+let announcementSearchTimer;
+let cachedAnnouncements = [];
+let announcementsPage = 1;
+const ANNOUNCEMENTS_PER_PAGE = 5;
 
 function showAdminSection(sectionId) {
   const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
@@ -53,6 +62,11 @@ function showAdminSection(sectionId) {
 
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
+}
+
+function formatDateTime(value) {
+  if (!value) return "Chua hen ngay";
+  return new Date(value).toLocaleString("vi-VN");
 }
 
 function formatRole(role) {
@@ -283,6 +297,94 @@ function renderUsersTable() {
     `;
 }
 
+async function loadAnnouncements() {
+  if (!announcementsList) return;
+
+  announcementsList.textContent = "Dang tai thong bao...";
+
+  try {
+    const params = new URLSearchParams({
+      q: announcementSearch?.value || "",
+      status: announcementStatusFilter?.value || "all",
+      important: announcementImportantFilter?.value || "all"
+    });
+    const announcements = await requestJson(`${ADMIN_API}/announcements?${params.toString()}`);
+
+    cachedAnnouncements = announcements;
+    if (announcementsCount) announcementsCount.textContent = announcements.length;
+    announcementsPage = Math.min(announcementsPage, Math.ceil(cachedAnnouncements.length / ANNOUNCEMENTS_PER_PAGE)) || 1;
+    renderAnnouncementsTable();
+  } catch (error) {
+    announcementsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderAnnouncementsTable() {
+  if (!announcementsList) return;
+
+  const total = cachedAnnouncements.length;
+  const totalPages = Math.max(1, Math.ceil(total / ANNOUNCEMENTS_PER_PAGE));
+  announcementsPage = Math.min(Math.max(announcementsPage, 1), totalPages);
+
+  const startIndex = (announcementsPage - 1) * ANNOUNCEMENTS_PER_PAGE;
+  const pageItems = cachedAnnouncements.slice(startIndex, startIndex + ANNOUNCEMENTS_PER_PAGE);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageItems.length;
+
+  if (total === 0) {
+    announcementsList.textContent = "Chua co thong bao phu hop.";
+    return;
+  }
+
+  announcementsList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table announcements-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Tieu de</th>
+            <th>Loai</th>
+            <th>Ngay dang</th>
+            <th>Trang thai</th>
+            <th>Chuc nang</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pageItems.map((item, index) => `
+            <tr>
+              <td>${startIndex + index + 1}</td>
+              <td>
+                <strong>${escapeHtml(item.title)}</strong>
+                <small>${escapeHtml(item.content || "Khong co noi dung mo ta")}</small>
+              </td>
+              <td>${item.is_important ? "Tin quan trong" : "Tin thuong"}</td>
+              <td>${formatDateTime(item.published_at)}</td>
+              <td><span class="account-status ${item.is_active ? "active" : "locked"}">${item.is_active ? "Hoat dong" : "Da an"}</span></td>
+              <td>
+                <div class="table-actions">
+                  <a class="icon-btn edit" href="admin-announcement.html?id=${item.id}" title="Sua" aria-label="Sua thong bao">${editIcon()}</a>
+                  <button type="button" class="icon-btn delete" title="An" aria-label="An thong bao" data-hide-announcement="${item.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-announcements-page="prev" ${announcementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${announcementsPage === index + 1 ? "active" : ""}" data-announcements-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-announcements-page="next" ${announcementsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
 async function loadOrders() {
   ordersList.textContent = "Đang tải đơn hàng...";
 
@@ -502,6 +604,7 @@ document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders
 document.getElementById("refreshFoodsBtn").addEventListener("click", loadFoods);
 document.getElementById("resetFoodFormBtn").addEventListener("click", resetFoodForm);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
+document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 navButtons.forEach(button => {
   button.addEventListener("click", () => showAdminSection(button.dataset.adminTarget));
 });
@@ -518,6 +621,19 @@ userSearch?.addEventListener("input", () => {
   clearTimeout(userSearchTimer);
   usersPage = 1;
   userSearchTimer = setTimeout(loadUsers, 300);
+});
+announcementStatusFilter?.addEventListener("change", () => {
+  announcementsPage = 1;
+  loadAnnouncements();
+});
+announcementImportantFilter?.addEventListener("change", () => {
+  announcementsPage = 1;
+  loadAnnouncements();
+});
+announcementSearch?.addEventListener("input", () => {
+  clearTimeout(announcementSearchTimer);
+  announcementsPage = 1;
+  announcementSearchTimer = setTimeout(loadAnnouncements, 300);
 });
 
 ordersList.addEventListener("change", async event => {
@@ -549,12 +665,13 @@ foodsList.addEventListener("click", event => {
 });
 
 usersList?.addEventListener("click", async event => {
-  const pageAction = event.target.dataset.usersPage;
-  const toggleId = event.target.dataset.toggleUser;
-  const resetId = event.target.dataset.resetPassword;
+  const pageButton = event.target.closest("[data-users-page]");
+  const toggleButton = event.target.closest("[data-toggle-user]");
+  const resetButton = event.target.closest("[data-reset-password]");
 
   try {
-    if (pageAction) {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.usersPage;
       const totalPages = Math.max(1, Math.ceil(cachedUsers.length / USERS_PER_PAGE));
 
       if (pageAction === "prev") {
@@ -570,15 +687,51 @@ usersList?.addEventListener("click", async event => {
       return;
     }
 
-    if (toggleId) {
-      await toggleAccount(toggleId, event.target.dataset.active === "1");
+    if (toggleButton) {
+      await toggleAccount(toggleButton.dataset.toggleUser, toggleButton.dataset.active === "1");
       showAdminToast("Da cap nhat trang thai tai khoan.");
       await loadUsers();
     }
 
-    if (resetId) {
-      await resetAccountPassword(resetId);
+    if (resetButton) {
+      await resetAccountPassword(resetButton.dataset.resetPassword);
       showAdminToast("Da dat lai mat khau.");
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
+announcementsList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-announcements-page]");
+  const hideButton = event.target.closest("[data-hide-announcement]");
+
+  try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.announcementsPage;
+      const totalPages = Math.max(1, Math.ceil(cachedAnnouncements.length / ANNOUNCEMENTS_PER_PAGE));
+
+      if (pageAction === "prev") {
+        announcementsPage -= 1;
+      } else if (pageAction === "next") {
+        announcementsPage += 1;
+      } else {
+        announcementsPage = Number(pageAction);
+      }
+
+      announcementsPage = Math.min(Math.max(announcementsPage, 1), totalPages);
+      renderAnnouncementsTable();
+      return;
+    }
+
+    if (hideButton) {
+      if (!confirm("An thong bao nay khoi trang chu?")) return;
+
+      await requestJson(`${ADMIN_API}/announcements/${hideButton.dataset.hideAnnouncement}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Da an thong bao.");
+      await loadAnnouncements();
     }
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -590,3 +743,4 @@ showAdminSection(sessionStorage.getItem("foodhub_admin_section") || "overview");
 loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadFoods();
+loadAnnouncements();

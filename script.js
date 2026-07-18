@@ -1,6 +1,7 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 const API_URL = `${API_BASE_URL}/foods`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
+const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
@@ -30,6 +31,15 @@ function showSiteToast(message, type = "success") {
   toastTimer = setTimeout(() => {
     toast.className = `site-toast ${type}`;
   }, 2400);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function formatMoney(number) {
@@ -107,6 +117,42 @@ async function loadFoods() {
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
     foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
+  }
+}
+
+async function loadPublicAnnouncements() {
+  const box = document.getElementById("publicAnnouncements");
+
+  if (!box) return;
+
+  try {
+    const response = await fetch(`${ANNOUNCEMENTS_API}?limit=4`);
+    const announcements = await response.json();
+
+    if (!response.ok || announcements.length === 0) {
+      box.innerHTML = `<span class="announcement-empty">Hien chua co thong bao moi.</span>`;
+      return;
+    }
+
+    box.innerHTML = announcements.map(item => {
+      const title = escapeHtml(item.title);
+      const content = escapeHtml(item.content || "");
+      const important = item.is_important ? `<span class="announcement-badge">Quan trong</span>` : "";
+      const body = `
+        ${important}
+        <span class="announcement-title">${title}</span>
+        ${content ? `<small>${content}</small>` : ""}
+      `;
+
+      if (item.link_url) {
+        return `<a class="announcement-item" href="${escapeHtml(item.link_url)}">${body}</a>`;
+      }
+
+      return `<div class="announcement-item">${body}</div>`;
+    }).join("");
+  } catch (error) {
+    box.innerHTML = `<span class="announcement-empty">Khong the tai thong bao.</span>`;
+    console.error(error);
   }
 }
 
@@ -599,6 +645,7 @@ function initSupportWidget() {
 
 if (protectCheckoutPage()) {
   loadFoods();
+  loadPublicAnnouncements();
   renderCart();
   renderUser();
   initMobileMenu();

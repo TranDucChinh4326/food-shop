@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thong bao - FoodHub Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <a href="index.html">FoodHub</a>
+      <span>Bang quan tri</span>
+    </div>
+
+    <nav class="admin-nav" aria-label="Menu quan tri">
+      <a class="admin-nav-btn" href="admin.html">Tong quan</a>
+      <a class="admin-nav-btn" href="admin.html">Don hang</a>
+      <a class="admin-nav-btn" href="admin.html">Mon an</a>
+      <a class="admin-nav-btn" href="admin.html">Tai khoan</a>
+      <a class="admin-nav-btn active" href="admin.html">Thong bao</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="admin.html">Ve danh sach</a>
+      <button id="logoutBtn" type="button">Dang xuat</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div>
+        <p class="kicker">FoodHub Admin</p>
+        <h1 id="announcementPageTitle">Them thong bao</h1>
+      </div>
+      <p id="announcementPageHelp">Thong bao se duoc hien thi o dau trang chu khi dang hoat dong.</p>
+    </header>
+
+    <section class="panel account-form-panel">
+      <div class="page-heading form-page-heading">
+        <div>
+          <h2 id="announcementFormTitle">Them moi thong bao</h2>
+          <p><a href="admin.html">Quan ly thong bao</a> <span>/</span> <span id="announcementBreadcrumb">Them moi</span></p>
+        </div>
+      </div>
+
+      <form id="announcementForm" class="account-page-form announcement-page-form">
+        <label>
+          Tieu de
+          <input type="text" id="announcementTitle" maxlength="255" required>
+        </label>
+
+        <label>
+          Noi dung ngan
+          <textarea id="announcementContent" rows="4" placeholder="Nhap noi dung hien thi ben duoi tieu de"></textarea>
+        </label>
+
+        <label>
+          Link dieu huong
+          <input type="text" id="announcementLink" placeholder="menu.html hoac https://...">
+        </label>
+
+        <label>
+          Ngay dang
+          <input type="datetime-local" id="announcementPublishedAt">
+        </label>
+
+        <div class="announcement-checks">
+          <label class="check-row">
+            <input type="checkbox" id="announcementImportant">
+            Tin quan trong
+          </label>
+
+          <label class="check-row">
+            <input type="checkbox" id="announcementActive" checked>
+            Hien thi tren trang chu
+          </label>
+        </div>
+
+        <div class="form-actions account-form-actions">
+          <button type="submit" class="primary-btn">Luu thong bao</button>
+          <a href="admin.html" class="ghost-btn button-link">Quay ve</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="admin-announcement.js"></script>
+</body>
+</html>
