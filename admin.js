@@ -80,6 +80,17 @@ function formatRole(role) {
   return roles[role] || role || "Khach hang";
 }
 
+function formatAnnouncementStatus(status) {
+  const statuses = {
+    active: "Hoat dong",
+    hidden: "Da an",
+    expired: "Het han",
+    scheduled: "Sap hien thi"
+  };
+
+  return statuses[status] || status || "Khong ro";
+}
+
 function editIcon() {
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -343,6 +354,7 @@ function renderAnnouncementsTable() {
             <th>STT</th>
             <th>Tieu de</th>
             <th>Ngay dang</th>
+            <th>Het hieu luc</th>
             <th>Trang thai</th>
             <th>Chuc nang</th>
           </tr>
@@ -356,7 +368,8 @@ function renderAnnouncementsTable() {
                 <small>${escapeHtml(item.content || "Khong co noi dung mo ta")}</small>
               </td>
               <td>${formatDateTime(item.published_at)}</td>
-              <td><span class="account-status ${item.is_active ? "active" : "locked"}">${item.is_active ? "Hoat dong" : "Da an"}</span></td>
+              <td>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</td>
+              <td><span class="account-status ${item.status === "active" ? "active" : "locked"}">${formatAnnouncementStatus(item.status)}</span></td>
               <td>
                 <div class="table-actions">
                   <a class="icon-btn edit" href="admin-announcement.html?id=${item.id}" title="Sua" aria-label="Sua thong bao">${editIcon()}</a>

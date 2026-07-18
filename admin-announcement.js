@@ -16,6 +16,8 @@ const announcementForm = document.getElementById("announcementForm");
 const announcementTitle = document.getElementById("announcementTitle");
 const announcementContent = document.getElementById("announcementContent");
 const announcementPublishedAt = document.getElementById("announcementPublishedAt");
+const announcementValidityDays = document.getElementById("announcementValidityDays");
+const announcementExpiresAt = document.getElementById("announcementExpiresAt");
 const announcementActive = document.getElementById("announcementActive");
 const announcementPageTitle = document.getElementById("announcementPageTitle");
 const announcementFormTitle = document.getElementById("announcementFormTitle");
@@ -98,6 +100,27 @@ function toDatetimeLocal(value) {
   return offsetDate.toISOString().slice(0, 16);
 }
 
+function getPublishDate() {
+  if (announcementPublishedAt.value) {
+    return new Date(announcementPublishedAt.value);
+  }
+
+  return new Date();
+}
+
+function updateExpiresAtPreview() {
+  const days = Number(announcementValidityDays.value);
+
+  if (!Number.isFinite(days) || days <= 0) {
+    announcementExpiresAt.value = "";
+    return;
+  }
+
+  const expiresAt = getPublishDate();
+  expiresAt.setDate(expiresAt.getDate() + days);
+  announcementExpiresAt.value = toDatetimeLocal(expiresAt);
+}
+
 async function loadAnnouncement() {
   if (!isEditMode) return;
 
@@ -106,6 +129,7 @@ async function loadAnnouncement() {
   announcementTitle.value = announcement.title || "";
   announcementContent.value = announcement.content || "";
   announcementPublishedAt.value = toDatetimeLocal(announcement.published_at);
+  announcementExpiresAt.value = toDatetimeLocal(announcement.expires_at);
   announcementActive.checked = Boolean(announcement.is_active);
 }
 
@@ -116,6 +140,8 @@ async function saveAnnouncement(event) {
     title: announcementTitle.value.trim(),
     content: announcementContent.value.trim(),
     publishedAt: announcementPublishedAt.value || null,
+    validityDays: announcementValidityDays.value || null,
+    expiresAt: announcementValidityDays.value ? null : (announcementExpiresAt.value || null),
     isActive: announcementActive.checked
   };
 
@@ -143,6 +169,8 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 announcementForm.addEventListener("submit", saveAnnouncement);
+announcementPublishedAt.addEventListener("input", updateExpiresAtPreview);
+announcementValidityDays.addEventListener("input", updateExpiresAtPreview);
 
 requireAdminSession();
 setModeText();

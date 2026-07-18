@@ -47,6 +47,18 @@ function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
 }
 
+function formatDateTime(value) {
+  if (!value) return "Chua dat";
+
+  return new Date(value).toLocaleString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
 function saveCart() {
   sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
@@ -141,11 +153,9 @@ async function loadPublicAnnouncements() {
       <div class="announcement-track">
         ${tickerItems.map(item => {
       const title = escapeHtml(item.title);
-      const content = escapeHtml(item.content || "");
       return `
         <div class="announcement-item">
-        <span class="announcement-title">${title}</span>
-        ${content ? `<small>${content}</small>` : ""}
+          <span class="announcement-title">${title}</span>
         </div>
       `;
     }).join("")}
@@ -156,6 +166,61 @@ async function loadPublicAnnouncements() {
   } catch (error) {
     box.innerHTML = `<span class="announcement-empty">Khong the tai thong bao.</span>`;
     console.error(error);
+  }
+}
+
+function getAnnouncementStatusText(status) {
+  const labels = {
+    active: "Dang hoat dong",
+    hidden: "Da an",
+    expired: "Het han",
+    scheduled: "Sap hien thi"
+  };
+
+  return labels[status] || status || "Khong ro";
+}
+
+async function loadAnnouncementArchive() {
+  const list = document.getElementById("announcementArchiveList");
+
+  if (!list) return;
+
+  list.innerHTML = `<p>Dang tai thong bao...</p>`;
+
+  try {
+    const response = await fetch(`${ANNOUNCEMENTS_API}/archive`);
+    const announcements = await response.json();
+
+    if (!response.ok) {
+      throw new Error(announcements.message || "Khong the tai thong bao.");
+    }
+
+    if (announcements.length === 0) {
+      list.innerHTML = `<p>Chua co thong bao nao.</p>`;
+      return;
+    }
+
+    list.innerHTML = announcements.map(item => `
+      <article class="archive-announcement ${escapeHtml(item.status)}">
+        <div>
+          <span class="archive-status ${escapeHtml(item.status)}">${escapeHtml(getAnnouncementStatusText(item.status))}</span>
+          <h2>${escapeHtml(item.title)}</h2>
+          ${item.content ? `<p>${escapeHtml(item.content)}</p>` : ""}
+        </div>
+        <dl>
+          <div>
+            <dt>Ngay dang</dt>
+            <dd>${formatDateTime(item.published_at)}</dd>
+          </div>
+          <div>
+            <dt>Het hieu luc</dt>
+            <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</dd>
+          </div>
+        </dl>
+      </article>
+    `).join("");
+  } catch (error) {
+    list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
   }
 }
 
@@ -711,5 +776,6 @@ if (protectCheckoutPage()) {
   initAccountMenu();
   initMobileMenu();
   initTrackPage();
+  loadAnnouncementArchive();
   initSupportWidget();
 }

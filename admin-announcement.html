@@ -60,6 +60,18 @@
           <input type="datetime-local" id="announcementPublishedAt">
         </label>
 
+        <div class="announcement-date-grid">
+          <label>
+            So ngay hieu luc
+            <input type="number" id="announcementValidityDays" min="1" step="1" placeholder="Bo trong neu khong het han">
+          </label>
+
+          <label>
+            Ngay het hieu luc
+            <input type="datetime-local" id="announcementExpiresAt" readonly>
+          </label>
+        </div>
+
         <div class="announcement-checks">
           <label class="check-row">
             <input type="checkbox" id="announcementActive" checked>
