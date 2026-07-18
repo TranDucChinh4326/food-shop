@@ -32,48 +32,18 @@ header {
 
 .announcement-shell {
   align-items: center;
-  display: grid;
-  gap: 12px;
-  grid-template-columns: auto minmax(0, 1fr);
+  display: flex;
+  justify-content: center;
   margin: 0 auto;
   max-width: 1180px;
-}
-
-.announcement-heading {
-  align-items: center;
-  display: flex;
-  gap: 6px;
-  min-height: 28px;
-  white-space: nowrap;
-}
-
-.announcement-heading span {
-  background: transparent;
-  border-radius: 0;
-  color: #fff;
-  display: inline;
-  font-size: 14px;
-  font-weight: 600;
-  height: auto;
-  width: auto;
-}
-
-.announcement-heading span::before {
-  content: "";
-}
-
-.announcement-heading span::after {
-  content: ":";
-}
-
-.announcement-heading strong {
-  display: none;
 }
 
 .public-announcements {
   height: 28px;
   overflow: hidden;
   position: relative;
+  text-align: center;
+  width: 100%;
 }
 
 .announcement-track {
@@ -90,6 +60,7 @@ header {
   height: 28px;
   min-width: 0;
   overflow: hidden;
+  justify-content: center;
   text-decoration: none;
   white-space: nowrap;
 }
