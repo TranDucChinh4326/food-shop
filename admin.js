@@ -497,6 +497,9 @@ async function loadFoods() {
 }
 
 function getFoodType(food) {
+  const type = String(food.category_type || "").toLowerCase();
+  if (type === "drink" || type === "food") return type;
+
   const categoryId = String(food.category_id || "");
   const categoryName = String(food.category_name || "").toLowerCase();
 
@@ -505,6 +508,19 @@ function getFoodType(food) {
   }
 
   return "food";
+}
+
+function getFoodCategoryLabel(food) {
+  const parentName = food.parent_category_name;
+  const categoryName = food.category_name;
+
+  if (parentName && categoryName) {
+    return `${parentName} / ${categoryName}`;
+  }
+
+  if (categoryName) return categoryName;
+
+  return "Chua phan loai";
 }
 
 function renderFoodsTable() {
@@ -524,7 +540,7 @@ function renderFoodsTable() {
     const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
     const matchesSearch = !search
       || String(food.name || "").toLowerCase().includes(search)
-      || String(food.category_name || "").toLowerCase().includes(search)
+      || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
       || String(food.price || "").includes(search);
 
     return matchesCategory && matchesSearch;
@@ -563,7 +579,7 @@ function renderFoodsTable() {
               </td>
               <td>
                 <strong>${escapeHtml(food.name)}</strong>
-                <small>${escapeHtml(food.category_name || "Chua phan loai")} - ${food.is_active ? "Dang ban" : "Da an"}</small>
+                <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Dang ban" : "Da an"}</small>
               </td>
               <td>${formatMoney(food.price)}</td>
               <td>
@@ -773,7 +789,7 @@ foodsList?.addEventListener("click", event => {
       const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
       const matchesSearch = !search
         || String(food.name || "").toLowerCase().includes(search)
-        || String(food.category_name || "").toLowerCase().includes(search)
+        || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
         || String(food.price || "").includes(search);
 
       return matchesCategory && matchesSearch;

@@ -52,15 +52,22 @@
 
         <div class="announcement-date-grid">
           <label>
-            Danh muc
-            <select id="foodCategory" required>
-              <option value="1">Burger</option>
-              <option value="2">Pizza</option>
-              <option value="3">Mi & Pho</option>
-              <option value="4">Do uong</option>
+            Nhom chinh
+            <select id="foodType" required>
+              <option value="food">Do an</option>
+              <option value="drink">Nuoc uong</option>
             </select>
           </label>
 
+          <label>
+            Danh muc con
+            <select id="foodCategory" required>
+              <option value="">Dang tai danh muc...</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="announcement-date-grid">
           <label>
             Gia
             <input type="number" id="foodPrice" min="1000" step="1000" required>

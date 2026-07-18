@@ -86,18 +86,75 @@ function requireLogin(message = "Vui long dang nhap de tiep tuc.", target = wind
   }, 700);
 }
 
-function getCategoryKey(categoryId) {
-  switch (Number(categoryId)) {
+function slugify(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getCategoryKey(food) {
+  const type = String(food.category_type || "").toLowerCase();
+
+  if (type === "food" || type === "drink") {
+    return type;
+  }
+
+  switch (Number(food.category_id)) {
     case 1:
-      return "burger";
     case 2:
-      return "pizza";
     case 3:
-      return "noodle";
-    case 4:
-      return "drink";
+      return "food";
     default:
-      return "other";
+      return Number(food.category_id) === 4 ? "drink" : "food";
+  }
+}
+
+function getSubCategoryKey(food) {
+  return food.category_slug || slugify(food.category_name || food.category_id || "khac");
+}
+
+function renderMenuCategoryOptions() {
+  const categoryFilter = document.getElementById("categoryFilter");
+
+  if (!categoryFilter) return;
+
+  const oldValue = categoryFilter.value || "all";
+  const groups = {
+    food: new Map(),
+    drink: new Map()
+  };
+
+  foods.forEach(food => {
+    const key = food.subcategory || food.category;
+    const label = food.categoryName || (food.category === "drink" ? "Do uong" : "Do an");
+
+    if (!groups[food.category].has(key)) {
+      groups[food.category].set(key, label);
+    }
+  });
+
+  categoryFilter.innerHTML = `
+    <option value="all">Tat ca</option>
+    <option value="food">Do an</option>
+    <option value="drink">Nuoc uong</option>
+    ${groups.food.size ? `
+      <optgroup label="Do an">
+        ${[...groups.food.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
+      </optgroup>
+    ` : ""}
+    ${groups.drink.size ? `
+      <optgroup label="Nuoc uong">
+        ${[...groups.drink.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
+      </optgroup>
+    ` : ""}
+  `;
+
+  if ([...categoryFilter.options].some(option => option.value === oldValue)) {
+    categoryFilter.value = oldValue;
   }
 }
 
@@ -122,12 +179,16 @@ async function loadFoods() {
     foods = foods.map(food => ({
       id: food.id,
       name: food.name,
-      category: getCategoryKey(food.category_id),
+      category: getCategoryKey(food),
+      subcategory: getSubCategoryKey(food),
+      categoryName: food.category_name,
+      parentCategoryName: food.parent_category_name,
       price: food.price,
       desc: food.description,
       image: food.image
     }));
 
+    renderMenuCategoryOptions();
     renderFoods();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
@@ -364,7 +425,7 @@ function renderFoods() {
   const categoryValue = categoryFilter.value;
   const filteredFoods = foods.filter(food => {
     const matchSearch = food.name.toLowerCase().includes(searchValue);
-    const matchCategory = categoryValue === "all" || food.category === categoryValue;
+    const matchCategory = categoryValue === "all" || food.category === categoryValue || food.subcategory === categoryValue;
     return matchSearch && matchCategory;
   });
 

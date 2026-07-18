@@ -15,6 +15,7 @@ const isEditMode = Boolean(foodIdParam);
 const foodPageForm = document.getElementById("foodPageForm");
 const foodId = document.getElementById("foodId");
 const foodName = document.getElementById("foodName");
+const foodType = document.getElementById("foodType");
 const foodCategory = document.getElementById("foodCategory");
 const foodPrice = document.getElementById("foodPrice");
 const foodImage = document.getElementById("foodImage");
@@ -25,6 +26,7 @@ const foodBreadcrumb = document.getElementById("foodBreadcrumb");
 const foodPreview = document.getElementById("foodPreview");
 
 let toastTimer;
+let foodCategories = [];
 
 function showAdminToast(message, type = "success") {
   const toast = document.getElementById("adminToast");
@@ -100,6 +102,66 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function getCategoryType(category) {
+  const type = String(category.type || "").toLowerCase();
+
+  if (type === "drink" || type === "food") return type;
+
+  const text = String(category.name || "").toLowerCase();
+  if (Number(category.id) === 4 || text.includes("uong") || text.includes("tra") || text.includes("ca phe")) {
+    return "drink";
+  }
+
+  return "food";
+}
+
+function getSubCategories(type) {
+  const selectedType = type || foodType.value || "food";
+  const children = foodCategories.filter(category => {
+    const parentId = Number(category.parentId || category.parent_id || 0);
+    return parentId > 0 && getCategoryType(category) === selectedType;
+  });
+
+  if (children.length > 0) return children;
+
+  return foodCategories.filter(category => getCategoryType(category) === selectedType);
+}
+
+function renderCategoryOptions(selectedId = "") {
+  const categories = getSubCategories();
+
+  if (categories.length === 0) {
+    foodCategory.innerHTML = `<option value="">Chua co danh muc con</option>`;
+    return;
+  }
+
+  foodCategory.innerHTML = categories.map(category => `
+    <option value="${category.id}" ${String(category.id) === String(selectedId) ? "selected" : ""}>
+      ${escapeHtml(category.name)}
+    </option>
+  `).join("");
+
+  if (selectedId && !categories.some(category => String(category.id) === String(selectedId))) {
+    foodCategory.value = categories[0].id;
+  }
+}
+
+async function loadCategories() {
+  try {
+    foodCategories = await requestJson(`${ADMIN_API}/categories`);
+  } catch (error) {
+    foodCategories = [
+      { id: 1, name: "Burger", type: "food" },
+      { id: 2, name: "Pizza", type: "food" },
+      { id: 3, name: "Mi & Pho", type: "food" },
+      { id: 4, name: "Do uong", type: "drink" }
+    ];
+    showAdminToast(error.message, "error");
+  }
+
+  renderCategoryOptions();
+}
+
 function renderPreview() {
   const imageUrl = foodImage.value.trim();
 
@@ -132,7 +194,13 @@ async function loadFood() {
 
   foodId.value = food.id;
   foodName.value = food.name || "";
-  foodCategory.value = food.category_id || "1";
+  foodType.value = getCategoryType({
+    id: food.category_id,
+    name: food.category_name,
+    type: food.category_type
+  });
+  renderCategoryOptions(food.category_id || "");
+  foodCategory.value = food.category_id || foodCategory.value;
   foodPrice.value = food.price || "";
   foodImage.value = food.image || "";
   foodDescription.value = food.description || "";
@@ -177,10 +245,13 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 foodPageForm.addEventListener("submit", saveFood);
+foodType.addEventListener("change", () => renderCategoryOptions());
 foodName.addEventListener("input", renderPreview);
 foodPrice.addEventListener("input", renderPreview);
 foodImage.addEventListener("input", renderPreview);
 
 requireAdminSession();
 setModeText();
-loadFood().catch(error => showAdminToast(error.message, "error"));
+loadCategories()
+  .then(loadFood)
+  .catch(error => showAdminToast(error.message, "error"));
