@@ -783,7 +783,7 @@ function renderUser() {
   if (user) {
     const isAdmin = String(user.role || "").toUpperCase() === "ADMIN";
     const menuLink = isAdmin
-      ? `<a href="admin.html" class="account-menu-link">Quản trị</a>`
+      ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
 

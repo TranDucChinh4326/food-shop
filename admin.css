@@ -71,7 +71,7 @@ button:disabled {
   display: grid;
   align-items: center;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) 46px;
+  grid-template-columns: minmax(0, 1fr);
   padding: 0 8px 22px;
 }
 
@@ -312,10 +312,6 @@ body.sidebar-collapsed .sidebar-brand a {
   justify-content: center;
 }
 
-body.sidebar-collapsed .sidebar-toggle-btn {
-  justify-self: center;
-}
-
 body.sidebar-collapsed .sidebar-label,
 body.sidebar-collapsed .nav-text,
 body.sidebar-collapsed .admin-nav-toggle::after {
@@ -346,6 +342,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav {
   display: none;
 }
 
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-group {
+  justify-items: center;
+  width: 58px;
+}
+
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn {
+  width: 58px;
+}
+
+body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon {
+  flex-basis: 24px;
+  margin: 0;
+}
+
 body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
   height: 0;
   margin: 0;
@@ -368,10 +379,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   border-bottom: 1px solid var(--line);
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin: 0 -5% 34px;
   min-height: 82px;
   padding: 0 5%;
+}
+
+.admin-page-toggle {
+  flex: 0 0 46px;
+}
+
+.admin-page-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
 }
 
 .admin-top-icon,

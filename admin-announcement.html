@@ -10,7 +10,6 @@
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
       <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
-      <button class="sidebar-toggle-btn" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true"></button>
       <span class="sidebar-label">Bang quan tri</span>
     </div>
 
@@ -31,16 +30,19 @@
 
   <main class="admin-main">
     <header class="admin-page-bar">
-      <a class="admin-top-icon" href="index.html" title="Ve website" aria-label="Ve website"><span class="nav-icon" data-icon="home" aria-hidden="true"></span></a>
-      <details class="admin-user-menu">
-        <summary>
-          <span class="admin-avatar"><span class="nav-icon" data-icon="account" aria-hidden="true"></span></span>
-          <span class="admin-user-name" data-admin-user-name>admin</span>
-        </summary>
-        <div class="admin-user-dropdown">
-          <button id="logoutBtn" type="button">Dang xuat</button>
-        </div>
-      </details>
+      <button class="sidebar-toggle-btn admin-page-toggle" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true"></button>
+      <div class="admin-page-actions">
+        <a class="admin-top-icon" href="index.html" title="Ve website" aria-label="Ve website"><span class="nav-icon" data-icon="home" aria-hidden="true"></span></a>
+        <details class="admin-user-menu">
+          <summary>
+            <span class="admin-avatar"><span class="nav-icon" data-icon="account" aria-hidden="true"></span></span>
+            <span class="admin-user-name" data-admin-user-name>admin</span>
+          </summary>
+          <div class="admin-user-dropdown">
+            <button id="logoutBtn" type="button">Dang xuat</button>
+          </div>
+        </details>
+      </div>
     </header>
 
     <section class="panel account-form-panel">
