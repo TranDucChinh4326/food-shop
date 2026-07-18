@@ -137,10 +137,6 @@ function syncAccountView() {
     breadcrumb.innerHTML = `<a href="index.html">Trang chu</a> <span>/</span> ${getAccountTypeTitle()}`;
   }
 
-  document.querySelectorAll("[data-account-tab]").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.accountTab === activeAccountType);
-  });
-
   if (accountCreateLink) {
     accountCreateLink.href = `admin-account.html?type=${activeAccountType === "customers" ? "customer" : "staff"}`;
     accountCreateLink.textContent = activeAccountType === "customers" ? "+ Tao khach hang" : "+ Them nhan vien";
@@ -1169,20 +1165,6 @@ foodSearch?.addEventListener("input", () => {
   clearTimeout(foodSearchTimer);
   foodsPage = 1;
   foodSearchTimer = setTimeout(renderFoodsTable, 250);
-});
-document.querySelectorAll("[data-account-tab]").forEach(tab => {
-  tab.addEventListener("click", event => {
-    event.preventDefault();
-    activeAccountType = normalizeAccountType(tab.dataset.accountTab);
-    sessionStorage.setItem("foodhub_account_type", activeAccountType);
-    usersPage = 1;
-    const url = new URL(window.location.href);
-    url.searchParams.set("section", "accounts");
-    url.searchParams.set("accountType", activeAccountType);
-    window.history.replaceState({}, "", url);
-    showAdminSection("accounts");
-    loadUsers();
-  });
 });
 userPageSize?.addEventListener("change", () => {
   usersPerPage = Number(userPageSize.value || 5);

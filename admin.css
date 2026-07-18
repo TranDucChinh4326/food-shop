@@ -823,36 +823,6 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   padding: 0 12px;
 }
 
-.account-mode-tabs {
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  display: inline-flex;
-  gap: 6px;
-  margin: 14px 30px 0;
-  padding: 6px;
-}
-
-.account-mode-tabs a {
-  border-radius: 13px;
-  color: #64748b;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 11px 16px;
-  text-decoration: none;
-}
-
-.account-mode-tabs a:hover {
-  color: #2563eb;
-}
-
-.account-mode-tabs a.active {
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  color: #2563eb;
-}
-
 .admin-lock-note {
   color: #64748b;
   display: inline-flex;
