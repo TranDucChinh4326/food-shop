@@ -8,7 +8,28 @@
 </head>
 <body>
   <header>
-    <a class="logo" href="index.html">🍔 FoodHub</a>
+    <div class="header-top">
+      <a class="logo" href="index.html">🍔 FoodHub</a>
+
+      <div class="header-tools">
+        <a href="menu.html" class="top-icon" title="Tìm kiếm món ăn" aria-label="Tìm kiếm món ăn">⌕</a>
+        <a href="contact.html" class="top-icon" title="Hotline" aria-label="Hotline">☎</a>
+        <a href="#publicAnnouncements" class="top-icon" title="Thông báo" aria-label="Thông báo">🔔</a>
+        <div id="user-area">
+          <a href="login.html" class="header-action primary">Đăng nhập</a>
+          <a href="register.html" class="header-action secondary">Đăng ký</a>
+        </div>
+        <a href="cart.html" class="cart-btn">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
+      </div>
+    </div>
+
+    <section class="site-announcements" aria-label="Thông báo FoodHub">
+      <div class="announcement-shell">
+        <div id="publicAnnouncements" class="public-announcements">
+          Đang tải thông báo...
+        </div>
+      </div>
+    </section>
 
     <nav>
       <a href="index.html">Trang chủ</a>
@@ -17,13 +38,6 @@
       <a href="track.html">Lịch sử đơn</a>
       <a href="contact.html">Liên hệ</a>
     </nav>
-
-    <div id="user-area">
-      <a href="login.html" class="header-action primary">Đăng nhập</a>
-      <a href="register.html" class="header-action secondary">Đăng ký</a>
-    </div>
-
-    <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
   </header>
 
   <main class="profile-page">

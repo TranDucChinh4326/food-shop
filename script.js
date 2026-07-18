@@ -556,7 +556,7 @@ function renderUser() {
       : "";
 
     userArea.innerHTML = `
-      <span class="user-name">👤 ${user.fullname}</span>
+      <span class="user-name">👤 ${escapeHtml(user.fullname)}</span>
       <a href="profile.html" class="header-action secondary">Tài khoản</a>
       ${adminLink}
       <button onclick="logout()" class="logout-btn">Đăng xuất</button>
@@ -571,6 +571,7 @@ function renderUser() {
 
 function initMobileMenu() {
   const header = document.querySelector("header");
+  const headerTop = document.querySelector(".header-top");
 
   if (!header || header.querySelector(".mobile-menu-toggle")) return;
 
@@ -596,7 +597,7 @@ function initMobileMenu() {
     toggle.setAttribute("aria-expanded", "false");
   });
 
-  header.prepend(toggle);
+  (headerTop || header).prepend(toggle);
   header.appendChild(overlay);
 }
 
