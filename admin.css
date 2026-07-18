@@ -194,6 +194,10 @@ button:disabled {
   width: 9px;
 }
 
+.nav-icon[data-icon="utensils"] svg {
+  transform: translateX(-0.5px);
+}
+
 .nav-text,
 .sidebar-label {
   overflow: hidden;
