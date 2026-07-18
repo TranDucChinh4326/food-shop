@@ -19,6 +19,7 @@ const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
 const foodSearch = document.getElementById("foodSearch");
 const foodCategoryFilter = document.getElementById("foodCategoryFilter");
+const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
@@ -43,6 +44,8 @@ let adminPermissions = [];
 let cachedFoods = [];
 let foodSearchTimer;
 let activeFoodCategory = "all";
+let foodsPage = 1;
+let foodsPerPage = 5;
 let userSearchTimer;
 let cachedUsers = [];
 let usersPage = 1;
@@ -508,7 +511,9 @@ function renderFoodsTable() {
   if (!foodsList) return;
 
   activeFoodCategory = foodCategoryFilter?.value || activeFoodCategory || "all";
+  foodsPerPage = Number(foodPageSize?.value || foodsPerPage || 5);
   sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+  sessionStorage.setItem("foodhub_food_page_size", String(foodsPerPage));
 
   if (foodCategoryTitle) {
     foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
@@ -524,8 +529,15 @@ function renderFoodsTable() {
 
     return matchesCategory && matchesSearch;
   });
+  const totalFoods = filteredFoods.length;
+  const totalPages = Math.max(1, Math.ceil(totalFoods / foodsPerPage));
+  foodsPage = Math.min(Math.max(foodsPage, 1), totalPages);
+  const startIndex = (foodsPage - 1) * foodsPerPage;
+  const pageFoods = filteredFoods.slice(startIndex, startIndex + foodsPerPage);
+  const from = totalFoods === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageFoods.length;
 
-  if (filteredFoods.length === 0) {
+  if (totalFoods === 0) {
     foodsList.textContent = "Chua co mon phu hop.";
     return;
   }
@@ -543,9 +555,9 @@ function renderFoodsTable() {
           </tr>
         </thead>
         <tbody>
-          ${filteredFoods.map((food, index) => `
+          ${pageFoods.map((food, index) => `
             <tr>
-              <td>${index + 1}</td>
+              <td>${startIndex + index + 1}</td>
               <td>
                 <img class="admin-food-thumb" src="${escapeHtml(food.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c")}" alt="${escapeHtml(food.name)}">
               </td>
@@ -566,7 +578,14 @@ function renderFoodsTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi ${filteredFoods.length} mon
+      Dang hien thi tu ${from} den ${to} cua ${totalFoods} ket qua
+      <div class="pager">
+        <button type="button" data-foods-page="prev" ${foodsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${foodsPage === index + 1 ? "active" : ""}" data-foods-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-foods-page="next" ${foodsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
     </div>
   `;
 }
@@ -662,6 +681,7 @@ navButtons.forEach(button => {
       activeFoodCategory = button.dataset.foodCategory;
       foodCategoryFilter.value = activeFoodCategory;
       sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+      foodsPage = 1;
       renderFoodsTable();
     }
 
@@ -684,6 +704,7 @@ shortcutButtons.forEach(button => {
     if (button.dataset.adminShortcut === "foods" && foodCategoryFilter) {
       activeFoodCategory = "all";
       foodCategoryFilter.value = activeFoodCategory;
+      foodsPage = 1;
       renderFoodsTable();
     }
 
@@ -694,11 +715,18 @@ staffForm?.addEventListener("submit", createStaff);
 foodCategoryFilter?.addEventListener("change", () => {
   activeFoodCategory = foodCategoryFilter.value;
   sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+  foodsPage = 1;
   renderFoodsTable();
   showAdminSection("foods");
 });
+foodPageSize?.addEventListener("change", () => {
+  foodsPerPage = Number(foodPageSize.value || 5);
+  foodsPage = 1;
+  renderFoodsTable();
+});
 foodSearch?.addEventListener("input", () => {
   clearTimeout(foodSearchTimer);
+  foodsPage = 1;
   foodSearchTimer = setTimeout(renderFoodsTable, 250);
 });
 userTypeFilter?.addEventListener("change", () => {
@@ -735,7 +763,35 @@ ordersList.addEventListener("change", async event => {
 });
 
 foodsList?.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-foods-page]");
   const hideButton = event.target.closest("[data-hide-food]");
+
+  if (pageButton) {
+    const pageAction = pageButton.dataset.foodsPage;
+    const search = String(foodSearch?.value || "").trim().toLowerCase();
+    const totalFilteredFoods = cachedFoods.filter(food => {
+      const matchesCategory = activeFoodCategory === "all" || getFoodType(food) === activeFoodCategory;
+      const matchesSearch = !search
+        || String(food.name || "").toLowerCase().includes(search)
+        || String(food.category_name || "").toLowerCase().includes(search)
+        || String(food.price || "").includes(search);
+
+      return matchesCategory && matchesSearch;
+    }).length;
+    const totalPages = Math.max(1, Math.ceil(totalFilteredFoods / foodsPerPage));
+
+    if (pageAction === "prev") {
+      foodsPage -= 1;
+    } else if (pageAction === "next") {
+      foodsPage += 1;
+    } else {
+      foodsPage = Number(pageAction);
+    }
+
+    foodsPage = Math.min(Math.max(foodsPage, 1), totalPages);
+    renderFoodsTable();
+    return;
+  }
 
   if (hideButton) {
     const hideId = hideButton.dataset.hideFood;
@@ -819,10 +875,16 @@ announcementsList?.addEventListener("click", async event => {
 
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
+const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_size") || "5");
 
 if (["all", "food", "drink"].includes(initialFoodCategory) && foodCategoryFilter) {
   activeFoodCategory = initialFoodCategory;
   foodCategoryFilter.value = activeFoodCategory;
+}
+
+if ([5, 10, 20].includes(initialFoodPageSize) && foodPageSize) {
+  foodsPerPage = initialFoodPageSize;
+  foodPageSize.value = String(foodsPerPage);
 }
 
 showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || "overview");

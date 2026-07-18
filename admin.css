@@ -95,14 +95,18 @@ button:disabled {
 
 .admin-nav-toggle::after {
   color: #94a3b8;
-  content: "v";
-  font-size: 13px;
+  content: "";
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  height: 8px;
   margin-left: auto;
+  transform: rotate(45deg);
   transition: transform 0.18s ease;
+  width: 8px;
 }
 
 .admin-nav-group.is-open .admin-nav-toggle::after {
-  transform: rotate(180deg);
+  transform: rotate(225deg);
 }
 
 .admin-nav-btn {
@@ -749,6 +753,10 @@ button:disabled {
 
 .table-toolbar.multi-filter select {
   width: 190px;
+}
+
+.table-toolbar.multi-filter #foodPageSize {
+  width: 120px;
 }
 
 .table-state {
