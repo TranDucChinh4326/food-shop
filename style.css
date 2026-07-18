@@ -24,15 +24,16 @@ header {
 
 .site-announcements {
   background: #263241;
-  border-bottom: 1px solid #f0e5dc;
+  border-bottom: 0;
   color: #fff;
-  padding: 6px 8%;
+  font-size: 14px;
+  padding: 5px 8%;
 }
 
 .announcement-shell {
   align-items: center;
   display: grid;
-  gap: 18px;
+  gap: 12px;
   grid-template-columns: auto minmax(0, 1fr);
   margin: 0 auto;
   max-width: 1180px;
@@ -41,37 +42,36 @@ header {
 .announcement-heading {
   align-items: center;
   display: flex;
-  gap: 8px;
-  min-height: 32px;
+  gap: 6px;
+  min-height: 28px;
   white-space: nowrap;
 }
 
 .announcement-heading span {
-  align-items: center;
-  background: #ffb020;
-  border-radius: 50%;
+  background: transparent;
+  border-radius: 0;
   color: #fff;
-  display: inline-flex;
-  font-size: 0;
-  height: 32px;
-  justify-content: center;
-  width: 32px;
+  display: inline;
+  font-size: 14px;
+  font-weight: 600;
+  height: auto;
+  width: auto;
 }
 
 .announcement-heading span::before {
-  content: "!";
-  font-size: 18px;
-  font-weight: 900;
+  content: "";
+}
+
+.announcement-heading span::after {
+  content: ":";
 }
 
 .announcement-heading strong {
-  color: #fff;
-  font-size: 14px;
-  line-height: 1.25;
+  display: none;
 }
 
 .public-announcements {
-  height: 32px;
+  height: 28px;
   overflow: hidden;
   position: relative;
 }
@@ -84,8 +84,10 @@ header {
   align-items: center;
   color: #fff;
   display: flex;
-  gap: 10px;
-  height: 32px;
+  font-size: 14px;
+  font-weight: 400;
+  gap: 8px;
+  height: 28px;
   min-width: 0;
   overflow: hidden;
   text-decoration: none;
@@ -97,16 +99,16 @@ header {
 }
 
 .announcement-badge {
-  background: #ff5722;
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   color: #fff;
   font-size: 12px;
-  font-weight: 900;
-  padding: 5px 8px;
+  font-weight: 600;
+  padding: 3px 7px;
 }
 
 .announcement-title {
-  font-weight: 800;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -122,7 +124,7 @@ header {
   align-items: center;
   color: rgba(255, 255, 255, 0.82);
   display: flex;
-  min-height: 32px;
+  min-height: 28px;
 }
 
 .logo {

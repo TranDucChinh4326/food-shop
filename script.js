@@ -173,7 +173,7 @@ function startAnnouncementTicker(box, itemCount) {
   if (!track || itemCount <= 1) return;
 
   let index = 0;
-  const rowHeight = 32;
+  const rowHeight = 28;
 
   announcementTimer = setInterval(() => {
     index += 1;
