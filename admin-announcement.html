@@ -9,27 +9,28 @@
 <body>
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
-      <a href="index.html">FoodHub</a>
-      <span>Bang quan tri</span>
+      <a href="index.html"><span class="brand-mark">🍔</span><span class="sidebar-label">FoodHub</span></a>
+      <button class="sidebar-toggle-btn" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true">☰</button>
+      <span class="sidebar-label">Bang quan tri</span>
     </div>
 
     <nav class="admin-nav" aria-label="Menu quan tri">
-      <a class="admin-nav-btn" href="admin.html?section=overview">Tong quan</a>
-      <a class="admin-nav-btn" href="admin.html?section=orders">Don hang</a>
+      <a class="admin-nav-btn" href="admin.html?section=overview"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-text">Tong quan</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=orders"><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-text">Don hang</span></a>
       <div class="admin-nav-group">
-        <a class="admin-nav-btn" href="admin.html?section=foods">Danh muc</a>
+        <a class="admin-nav-btn" href="admin.html?section=foods"><span class="nav-icon" aria-hidden="true">◫</span><span class="nav-text">Danh muc</span></a>
         <div class="admin-subnav">
-          <a href="admin.html?section=foods&foodCategory=food">Do an</a>
-          <a href="admin.html?section=foods&foodCategory=drink">Nuoc uong</a>
+          <a href="admin.html?section=foods&foodCategory=food"><span class="nav-icon" aria-hidden="true">◦</span><span class="nav-text">Do an</span></a>
+          <a href="admin.html?section=foods&foodCategory=drink"><span class="nav-icon" aria-hidden="true">◦</span><span class="nav-text">Nuoc uong</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=accounts">Tai khoan</a>
-      <a class="admin-nav-btn active" href="admin.html?section=announcements">Thong bao</a>
+      <a class="admin-nav-btn" href="admin.html?section=accounts"><span class="nav-icon" aria-hidden="true">◎</span><span class="nav-text">Tai khoan</span></a>
+      <a class="admin-nav-btn active" href="admin.html?section=announcements"><span class="nav-icon" aria-hidden="true">◇</span><span class="nav-text">Thong bao</span></a>
     </nav>
 
     <div class="sidebar-footer">
-      <a href="admin.html">Ve danh sach</a>
-      <button id="logoutBtn" type="button">Dang xuat</button>
+      <a href="admin.html"><span class="nav-icon" aria-hidden="true">↩</span><span class="nav-text">Ve danh sach</span></a>
+      <button id="logoutBtn" type="button"><span class="nav-icon" aria-hidden="true">⎋</span><span class="nav-text">Dang xuat</span></button>
     </div>
   </aside>
 
@@ -88,6 +89,7 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
+  <script src="admin-sidebar.js"></script>
   <script src="admin-announcement.js"></script>
 </body>
 </html>

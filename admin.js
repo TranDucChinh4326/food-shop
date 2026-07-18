@@ -765,6 +765,10 @@ document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers)
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 navButtons.forEach(button => {
   button.addEventListener("click", () => {
+    if (!button.dataset.adminTarget) {
+      return;
+    }
+
     if (button.dataset.foodCategory && foodCategoryFilter) {
       activeFoodCategory = button.dataset.foodCategory;
       activeFoodSubcategory = "all";

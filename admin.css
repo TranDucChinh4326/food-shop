@@ -23,6 +23,7 @@ body {
   grid-template-columns: 272px minmax(0, 1fr);
   letter-spacing: 0;
   min-height: 100vh;
+  transition: grid-template-columns 0.2s ease;
 }
 
 button,
@@ -56,31 +57,70 @@ button:disabled {
   flex-direction: column;
   gap: 24px;
   min-height: 100vh;
+  overflow: hidden;
   padding: 24px 18px;
   position: sticky;
   top: 0;
+  transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+  width: 272px;
+  z-index: 20;
 }
 
 .sidebar-brand {
   border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 42px;
   padding: 0 6px 20px;
 }
 
 .sidebar-brand a {
+  align-items: center;
   color: var(--accent);
-  display: block;
+  display: flex;
   font-size: 25px;
+  gap: 10px;
   font-weight: 700;
+  min-width: 0;
   text-decoration: none;
 }
 
-.sidebar-brand span {
+.brand-mark {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 34px;
+  font-size: 25px;
+  justify-content: center;
+}
+
+.sidebar-brand > .sidebar-label {
   color: #64748b;
   display: block;
   font-size: 13px;
   font-weight: 500;
+  grid-column: 1 / -1;
   margin-top: 6px;
   text-transform: uppercase;
+}
+
+.sidebar-toggle-btn {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: #475569;
+  display: inline-flex;
+  font-size: 19px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0;
+  width: 42px;
+}
+
+.sidebar-toggle-btn:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: var(--accent);
 }
 
 .admin-nav {
@@ -113,9 +153,11 @@ button:disabled {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
+  border-radius: 14px;
   color: #334155;
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
+  justify-content: flex-start;
   min-height: 48px;
   padding: 0 16px;
   text-align: left;
@@ -123,11 +165,34 @@ button:disabled {
   width: 100%;
 }
 
+.nav-icon {
+  align-items: center;
+  color: #64748b;
+  display: inline-flex;
+  flex: 0 0 22px;
+  font-size: 20px;
+  justify-content: center;
+  line-height: 1;
+}
+
+.nav-text,
+.sidebar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.14s ease;
+  white-space: nowrap;
+}
+
 .admin-nav-btn:hover,
 .admin-nav-btn.active {
   background: var(--accent-soft);
   border-color: #bfdbfe;
   color: #1d4ed8;
+}
+
+.admin-nav-btn:hover .nav-icon,
+.admin-nav-btn.active .nav-icon {
+  color: #2563eb;
 }
 
 .admin-nav-btn strong {
@@ -181,12 +246,71 @@ button:disabled {
 }
 
 .sidebar-footer a {
+  align-items: center;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 14px;
   color: var(--ink);
+  display: flex;
+  gap: 12px;
   font-weight: 600;
   padding: 13px 16px;
   text-decoration: none;
+}
+
+.sidebar-footer button {
+  align-items: center;
+  border-radius: 14px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+body.sidebar-collapsed {
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
+body.sidebar-collapsed .admin-sidebar {
+  padding-inline: 14px;
+  width: 88px;
+}
+
+body.sidebar-collapsed .admin-sidebar:hover {
+  box-shadow: 16px 0 40px rgba(15, 23, 42, 0.08);
+  padding-inline: 18px;
+  width: 272px;
+}
+
+body.sidebar-collapsed .sidebar-brand {
+  grid-template-columns: 1fr;
+  padding-inline: 0;
+}
+
+body.sidebar-collapsed .sidebar-toggle-btn {
+  justify-self: center;
+}
+
+body.sidebar-collapsed .sidebar-label,
+body.sidebar-collapsed .nav-text,
+body.sidebar-collapsed .admin-nav-toggle::after {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.sidebar-collapsed .admin-sidebar:hover .sidebar-label,
+body.sidebar-collapsed .admin-sidebar:hover .nav-text,
+body.sidebar-collapsed .admin-sidebar:hover .admin-nav-toggle::after {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand a,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav a,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav button,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer a,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
+  justify-content: center;
+  padding-inline: 0;
 }
 
 #logoutBtn,
@@ -1108,13 +1232,25 @@ button:disabled {
 }
 
 @media (max-width: 1100px) {
-  body {
+  body,
+  body.sidebar-collapsed {
     grid-template-columns: 1fr;
   }
 
-  .admin-sidebar {
+  .admin-sidebar,
+  body.sidebar-collapsed .admin-sidebar,
+  body.sidebar-collapsed .admin-sidebar:hover {
     min-height: 0;
+    padding: 24px 18px;
     position: static;
+    width: auto;
+  }
+
+  body.sidebar-collapsed .sidebar-label,
+  body.sidebar-collapsed .nav-text,
+  body.sidebar-collapsed .admin-nav-toggle::after {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .admin-nav {
