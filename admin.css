@@ -55,10 +55,10 @@ button:disabled {
   color: var(--ink);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 26px;
   min-height: 100vh;
   overflow: hidden;
-  padding: 24px 18px;
+  padding: 28px 20px;
   position: sticky;
   top: 0;
   transition: width 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
@@ -69,9 +69,10 @@ button:disabled {
 .sidebar-brand {
   border-bottom: 1px solid var(--line);
   display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(0, 1fr) 42px;
-  padding: 0 6px 20px;
+  align-items: center;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 46px;
+  padding: 0 8px 22px;
 }
 
 .sidebar-brand a {
@@ -284,12 +285,13 @@ button:disabled {
 }
 
 body.sidebar-collapsed {
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: 108px minmax(0, 1fr);
 }
 
 body.sidebar-collapsed .admin-sidebar {
-  padding-inline: 14px;
-  width: 88px;
+  align-items: center;
+  padding-inline: 20px;
+  width: 108px;
 }
 
 body.sidebar-collapsed .admin-sidebar:hover {
@@ -299,8 +301,15 @@ body.sidebar-collapsed .admin-sidebar:hover {
 }
 
 body.sidebar-collapsed .sidebar-brand {
+  border-bottom: 1px solid var(--line);
   grid-template-columns: 1fr;
-  padding-inline: 0;
+  justify-items: center;
+  padding: 0 0 24px;
+  width: 74px;
+}
+
+body.sidebar-collapsed .sidebar-brand a {
+  justify-content: center;
 }
 
 body.sidebar-collapsed .sidebar-toggle-btn {
@@ -351,16 +360,18 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .admin-main {
   min-width: 0;
-  padding: 30px 5% 56px;
+  padding: 0 5% 56px;
 }
 
 .admin-page-bar {
   align-items: center;
+  border-bottom: 1px solid var(--line);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin: 0 0 18px;
-  min-height: 48px;
+  margin: 0 -5% 34px;
+  min-height: 82px;
+  padding: 0 5%;
 }
 
 .admin-top-icon,
