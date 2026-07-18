@@ -10,6 +10,8 @@ let foods = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
 let announcementTimer;
+let announcementArchive = [];
+let announcementArchivePage = 1;
 
 localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
@@ -180,6 +182,88 @@ function getAnnouncementStatusText(status) {
   return labels[status] || status || "Khong ro";
 }
 
+function getDateInputValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return offsetDate.toISOString().slice(0, 10);
+}
+
+function getFilteredAnnouncementArchive() {
+  const search = document.getElementById("announcementArchiveSearch")?.value.trim().toLowerCase() || "";
+  const status = document.getElementById("announcementArchiveStatus")?.value || "all";
+  const date = document.getElementById("announcementArchiveDate")?.value || "";
+
+  return announcementArchive.filter(item => {
+    const haystack = `${item.title || ""} ${item.content || ""}`.toLowerCase();
+    const matchesSearch = !search || haystack.includes(search);
+    const matchesStatus = status === "all" || item.status === status;
+    const matchesDate = !date || getDateInputValue(item.published_at) === date;
+
+    return matchesSearch && matchesStatus && matchesDate;
+  });
+}
+
+function renderAnnouncementArchive() {
+  const list = document.getElementById("announcementArchiveList");
+  const pager = document.getElementById("announcementArchivePager");
+  const pageSize = Number(document.getElementById("announcementArchivePageSize")?.value || 5);
+
+  if (!list) return;
+
+  const filtered = getFilteredAnnouncementArchive();
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  announcementArchivePage = Math.min(Math.max(announcementArchivePage, 1), totalPages);
+
+  const start = (announcementArchivePage - 1) * pageSize;
+  const pageItems = filtered.slice(start, start + pageSize);
+  const from = total === 0 ? 0 : start + 1;
+  const to = start + pageItems.length;
+
+  if (total === 0) {
+    list.innerHTML = `<p>Khong co thong bao phu hop.</p>`;
+    if (pager) pager.innerHTML = "";
+    return;
+  }
+
+  list.innerHTML = pageItems.map(item => `
+    <article class="archive-announcement ${escapeHtml(item.status)}">
+      <div>
+        <span class="archive-status ${escapeHtml(item.status)}">${escapeHtml(getAnnouncementStatusText(item.status))}</span>
+        <h2>${escapeHtml(item.title)}</h2>
+        ${item.content ? `<p>${escapeHtml(item.content)}</p>` : ""}
+      </div>
+      <dl>
+        <div>
+          <dt>Ngay dang</dt>
+          <dd>${formatDateTime(item.published_at)}</dd>
+        </div>
+        <div>
+          <dt>Het hieu luc</dt>
+          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</dd>
+        </div>
+      </dl>
+    </article>
+  `).join("");
+
+  if (!pager) return;
+
+  pager.innerHTML = `
+    <span>Dang hien thi tu ${from} den ${to} cua ${total} thong bao</span>
+    <div class="archive-pager-buttons">
+      <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""}>&lsaquo;</button>
+      ${Array.from({ length: totalPages }, (_, index) => `
+        <button type="button" class="${announcementArchivePage === index + 1 ? "active" : ""}" data-archive-page="${index + 1}">${index + 1}</button>
+      `).join("")}
+      <button type="button" data-archive-page="next" ${announcementArchivePage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+    </div>
+  `;
+}
+
 async function loadAnnouncementArchive() {
   const list = document.getElementById("announcementArchiveList");
 
@@ -195,33 +279,53 @@ async function loadAnnouncementArchive() {
       throw new Error(announcements.message || "Khong the tai thong bao.");
     }
 
-    if (announcements.length === 0) {
-      list.innerHTML = `<p>Chua co thong bao nao.</p>`;
-      return;
-    }
-
-    list.innerHTML = announcements.map(item => `
-      <article class="archive-announcement ${escapeHtml(item.status)}">
-        <div>
-          <span class="archive-status ${escapeHtml(item.status)}">${escapeHtml(getAnnouncementStatusText(item.status))}</span>
-          <h2>${escapeHtml(item.title)}</h2>
-          ${item.content ? `<p>${escapeHtml(item.content)}</p>` : ""}
-        </div>
-        <dl>
-          <div>
-            <dt>Ngay dang</dt>
-            <dd>${formatDateTime(item.published_at)}</dd>
-          </div>
-          <div>
-            <dt>Het hieu luc</dt>
-            <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</dd>
-          </div>
-        </dl>
-      </article>
-    `).join("");
+    announcementArchive = announcements;
+    announcementArchivePage = 1;
+    renderAnnouncementArchive();
   } catch (error) {
     list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
   }
+}
+
+function initAnnouncementArchiveFilters() {
+  const search = document.getElementById("announcementArchiveSearch");
+  const status = document.getElementById("announcementArchiveStatus");
+  const date = document.getElementById("announcementArchiveDate");
+  const pageSize = document.getElementById("announcementArchivePageSize");
+  const pager = document.getElementById("announcementArchivePager");
+
+  if (!search && !status && !date && !pageSize && !pager) return;
+
+  [search, status, date, pageSize].forEach(control => {
+    control?.addEventListener("input", () => {
+      announcementArchivePage = 1;
+      renderAnnouncementArchive();
+    });
+
+    control?.addEventListener("change", () => {
+      announcementArchivePage = 1;
+      renderAnnouncementArchive();
+    });
+  });
+
+  pager?.addEventListener("click", event => {
+    const button = event.target.closest("[data-archive-page]");
+    if (!button) return;
+
+    const action = button.dataset.archivePage;
+    const totalPages = Math.max(1, Math.ceil(getFilteredAnnouncementArchive().length / Number(pageSize?.value || 5)));
+
+    if (action === "prev") {
+      announcementArchivePage -= 1;
+    } else if (action === "next") {
+      announcementArchivePage += 1;
+    } else {
+      announcementArchivePage = Number(action);
+    }
+
+    announcementArchivePage = Math.min(Math.max(announcementArchivePage, 1), totalPages);
+    renderAnnouncementArchive();
+  });
 }
 
 function startAnnouncementTicker(box, itemCount) {
@@ -776,6 +880,7 @@ if (protectCheckoutPage()) {
   initAccountMenu();
   initMobileMenu();
   initTrackPage();
+  initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
   initSupportWidget();
 }

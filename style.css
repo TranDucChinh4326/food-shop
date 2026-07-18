@@ -161,6 +161,32 @@ header {
   padding: 28px;
 }
 
+.announcement-filters {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) 190px 170px 130px;
+  margin: 0 0 20px;
+}
+
+.announcement-filters input,
+.announcement-filters select {
+  background: #fff;
+  border: 1px solid #ded5cf;
+  border-radius: 8px;
+  color: #222;
+  font-size: 15px;
+  min-height: 46px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.announcement-filters input:focus,
+.announcement-filters select:focus {
+  border-color: #ff9b78;
+  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.1);
+  outline: none;
+}
+
 .announcement-archive-list {
   display: grid;
   gap: 14px;
@@ -234,6 +260,44 @@ header {
   color: #222;
   font-weight: 700;
   margin-top: 4px;
+}
+
+.announcement-archive-pager {
+  align-items: center;
+  color: #5f5350;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.archive-pager-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.archive-pager-buttons button {
+  background: #fff;
+  border: 1px solid #e5d8cf;
+  border-radius: 8px;
+  color: #333;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+}
+
+.archive-pager-buttons button.active {
+  background: #ff5722;
+  border-color: #ff5722;
+  color: #fff;
+}
+
+.archive-pager-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .logo {
@@ -1280,6 +1344,10 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .announcement-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .section-heading {
     flex-direction: column;
   }
@@ -1706,6 +1774,20 @@ footer {
   .support-panel {
     bottom: 64px;
     right: 0;
+  }
+
+  .announcement-filters,
+  .announcement-archive-pager {
+    grid-template-columns: 1fr;
+  }
+
+  .announcement-archive-pager {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .archive-pager-buttons {
+    flex-wrap: wrap;
   }
 
   .site-toast {
