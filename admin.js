@@ -22,7 +22,6 @@ const userTypeFilter = document.getElementById("userTypeFilter");
 const userSearch = document.getElementById("userSearch");
 const announcementSearch = document.getElementById("announcementSearch");
 const announcementStatusFilter = document.getElementById("announcementStatusFilter");
-const announcementImportantFilter = document.getElementById("announcementImportantFilter");
 const announcementsCount = document.getElementById("announcementsCount");
 const navButtons = [...document.querySelectorAll("[data-admin-target]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
@@ -305,8 +304,7 @@ async function loadAnnouncements() {
   try {
     const params = new URLSearchParams({
       q: announcementSearch?.value || "",
-      status: announcementStatusFilter?.value || "all",
-      important: announcementImportantFilter?.value || "all"
+      status: announcementStatusFilter?.value || "all"
     });
     const announcements = await requestJson(`${ADMIN_API}/announcements?${params.toString()}`);
 
@@ -344,7 +342,6 @@ function renderAnnouncementsTable() {
           <tr>
             <th>STT</th>
             <th>Tieu de</th>
-            <th>Loai</th>
             <th>Ngay dang</th>
             <th>Trang thai</th>
             <th>Chuc nang</th>
@@ -358,13 +355,12 @@ function renderAnnouncementsTable() {
                 <strong>${escapeHtml(item.title)}</strong>
                 <small>${escapeHtml(item.content || "Khong co noi dung mo ta")}</small>
               </td>
-              <td>${item.is_important ? "Tin quan trong" : "Tin thuong"}</td>
               <td>${formatDateTime(item.published_at)}</td>
               <td><span class="account-status ${item.is_active ? "active" : "locked"}">${item.is_active ? "Hoat dong" : "Da an"}</span></td>
               <td>
                 <div class="table-actions">
                   <a class="icon-btn edit" href="admin-announcement.html?id=${item.id}" title="Sua" aria-label="Sua thong bao">${editIcon()}</a>
-                  <button type="button" class="icon-btn delete" title="An" aria-label="An thong bao" data-hide-announcement="${item.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa thong bao" data-hide-announcement="${item.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -626,10 +622,6 @@ announcementStatusFilter?.addEventListener("change", () => {
   announcementsPage = 1;
   loadAnnouncements();
 });
-announcementImportantFilter?.addEventListener("change", () => {
-  announcementsPage = 1;
-  loadAnnouncements();
-});
 announcementSearch?.addEventListener("input", () => {
   clearTimeout(announcementSearchTimer);
   announcementsPage = 1;
@@ -725,12 +717,12 @@ announcementsList?.addEventListener("click", async event => {
     }
 
     if (hideButton) {
-      if (!confirm("An thong bao nay khoi trang chu?")) return;
+      if (!confirm("Xoa vinh vien thong bao nay?")) return;
 
       await requestJson(`${ADMIN_API}/announcements/${hideButton.dataset.hideAnnouncement}`, {
         method: "DELETE"
       });
-      showAdminToast("Da an thong bao.");
+      showAdminToast("Da xoa thong bao.");
       await loadAnnouncements();
     }
   } catch (error) {

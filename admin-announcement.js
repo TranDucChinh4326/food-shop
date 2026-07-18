@@ -15,9 +15,7 @@ const isEditMode = Boolean(announcementId);
 const announcementForm = document.getElementById("announcementForm");
 const announcementTitle = document.getElementById("announcementTitle");
 const announcementContent = document.getElementById("announcementContent");
-const announcementLink = document.getElementById("announcementLink");
 const announcementPublishedAt = document.getElementById("announcementPublishedAt");
-const announcementImportant = document.getElementById("announcementImportant");
 const announcementActive = document.getElementById("announcementActive");
 const announcementPageTitle = document.getElementById("announcementPageTitle");
 const announcementFormTitle = document.getElementById("announcementFormTitle");
@@ -107,9 +105,7 @@ async function loadAnnouncement() {
 
   announcementTitle.value = announcement.title || "";
   announcementContent.value = announcement.content || "";
-  announcementLink.value = announcement.link_url || "";
   announcementPublishedAt.value = toDatetimeLocal(announcement.published_at);
-  announcementImportant.checked = Boolean(announcement.is_important);
   announcementActive.checked = Boolean(announcement.is_active);
 }
 
@@ -119,9 +115,7 @@ async function saveAnnouncement(event) {
   const payload = {
     title: announcementTitle.value.trim(),
     content: announcementContent.value.trim(),
-    linkUrl: announcementLink.value.trim(),
     publishedAt: announcementPublishedAt.value || null,
-    isImportant: announcementImportant.checked,
     isActive: announcementActive.checked
   };
 

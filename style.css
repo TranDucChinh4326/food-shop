@@ -69,15 +69,6 @@ header {
   color: #ffd6c8;
 }
 
-.announcement-badge {
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 7px;
-}
-
 .announcement-title {
   font-weight: 600;
   overflow: hidden;

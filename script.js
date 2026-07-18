@@ -142,18 +142,12 @@ async function loadPublicAnnouncements() {
         ${tickerItems.map(item => {
       const title = escapeHtml(item.title);
       const content = escapeHtml(item.content || "");
-      const important = item.is_important ? `<span class="announcement-badge">Quan trong</span>` : "";
-      const body = `
-        ${important}
+      return `
+        <div class="announcement-item">
         <span class="announcement-title">${title}</span>
         ${content ? `<small>${content}</small>` : ""}
+        </div>
       `;
-
-      if (item.link_url) {
-        return `<a class="announcement-item" href="${escapeHtml(item.link_url)}">${body}</a>`;
-      }
-
-      return `<div class="announcement-item">${body}</div>`;
     }).join("")}
       </div>
     `;
