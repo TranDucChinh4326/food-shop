@@ -107,14 +107,14 @@ button:disabled {
   align-items: center;
   background: #f8fafc;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
   color: #475569;
   display: inline-flex;
-  font-size: 19px;
   justify-content: center;
-  min-height: 42px;
+  min-height: 46px;
   padding: 0;
-  width: 42px;
+  width: 46px;
 }
 
 .sidebar-toggle-btn:hover {
@@ -136,13 +136,13 @@ button:disabled {
 .admin-nav-toggle::after {
   color: #94a3b8;
   content: "";
-  border-bottom: 2px solid currentColor;
-  border-right: 2px solid currentColor;
-  height: 8px;
+  border-bottom: 1.8px solid currentColor;
+  border-right: 1.8px solid currentColor;
+  height: 9px;
   margin-left: auto;
   transform: rotate(45deg);
   transition: transform 0.18s ease;
-  width: 8px;
+  width: 9px;
 }
 
 .admin-nav-group.is-open .admin-nav-toggle::after {
@@ -169,10 +169,28 @@ button:disabled {
   align-items: center;
   color: #64748b;
   display: inline-flex;
-  flex: 0 0 22px;
-  font-size: 20px;
+  flex: 0 0 24px;
   justify-content: center;
   line-height: 1;
+}
+
+.nav-icon svg,
+.sidebar-toggle-btn svg {
+  display: block;
+  fill: none;
+  height: 21px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 21px;
+}
+
+.nav-icon[data-icon="dot"] svg {
+  fill: currentColor;
+  height: 9px;
+  stroke-width: 0;
+  width: 9px;
 }
 
 .nav-text,
@@ -292,6 +310,7 @@ body.sidebar-collapsed .sidebar-toggle-btn {
 body.sidebar-collapsed .sidebar-label,
 body.sidebar-collapsed .nav-text,
 body.sidebar-collapsed .admin-nav-toggle::after {
+  max-width: 0;
   opacity: 0;
   pointer-events: none;
 }
@@ -299,6 +318,7 @@ body.sidebar-collapsed .admin-nav-toggle::after {
 body.sidebar-collapsed .admin-sidebar:hover .sidebar-label,
 body.sidebar-collapsed .admin-sidebar:hover .nav-text,
 body.sidebar-collapsed .admin-sidebar:hover .admin-nav-toggle::after {
+  max-width: 190px;
   opacity: 1;
   pointer-events: auto;
 }
@@ -313,6 +333,15 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
   padding-inline: 0;
 }
 
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav {
+  display: none;
+}
+
+body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
+  height: 0;
+  margin: 0;
+}
+
 #logoutBtn,
 #refreshOrdersBtn,
 #refreshFoodsBtn,
@@ -323,6 +352,106 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
 .admin-main {
   min-width: 0;
   padding: 30px 5% 56px;
+}
+
+.admin-page-bar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin: 0 0 18px;
+  min-height: 48px;
+}
+
+.admin-top-icon,
+.admin-user-menu summary {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  color: #475569;
+  display: inline-flex;
+  gap: 10px;
+  min-height: 46px;
+  text-decoration: none;
+}
+
+.admin-top-icon {
+  justify-content: center;
+  width: 46px;
+}
+
+.admin-top-icon:hover,
+.admin-user-menu summary:hover {
+  border-color: #bfdbfe;
+  color: var(--accent);
+}
+
+.admin-user-menu {
+  position: relative;
+}
+
+.admin-user-menu summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0 14px 0 6px;
+}
+
+.admin-user-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-avatar {
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 999px;
+  color: #475569;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.admin-user-name {
+  color: var(--ink);
+  font-weight: 600;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-user-dropdown {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  display: grid;
+  min-width: 172px;
+  padding: 8px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 50;
+}
+
+.admin-user-dropdown button {
+  background: transparent;
+  border-radius: 10px;
+  color: var(--ink);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.admin-user-dropdown #logoutBtn {
+  background: transparent;
+  color: var(--ink);
+}
+
+.admin-user-dropdown button:hover {
+  background: #f8fafc;
+  color: var(--danger);
 }
 
 .admin-topbar {
@@ -1249,8 +1378,14 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
   body.sidebar-collapsed .sidebar-label,
   body.sidebar-collapsed .nav-text,
   body.sidebar-collapsed .admin-nav-toggle::after {
+    max-width: none;
     opacity: 1;
     pointer-events: auto;
+  }
+
+  body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
+    height: auto;
+    margin-top: 6px;
   }
 
   .admin-nav {

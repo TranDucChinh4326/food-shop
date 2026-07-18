@@ -9,42 +9,42 @@
 <body>
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
-      <a href="index.html"><span class="brand-mark">🍔</span><span class="sidebar-label">FoodHub</span></a>
-      <button class="sidebar-toggle-btn" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true">☰</button>
+      <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
+      <button class="sidebar-toggle-btn" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true"></button>
       <span class="sidebar-label">Bang quan tri</span>
     </div>
 
     <nav class="admin-nav" aria-label="Menu quan tri">
-      <button class="admin-nav-btn active" type="button" data-admin-target="overview">
-        <span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-text">Tong quan</span>
-      </button>
-      <button class="admin-nav-btn" type="button" data-admin-target="orders">
-        <span class="nav-icon" aria-hidden="true">▤</span><span class="nav-text">Don hang</span>
-      </button>
+      <a class="admin-nav-btn active" href="admin.html?section=overview" data-admin-target="overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tong quan</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=orders" data-admin-target="orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Don hang</span></a>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="foods-menu" aria-expanded="false">
-          <span class="nav-icon" aria-hidden="true">◫</span><span class="nav-text">Danh muc</span>
+          <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Danh muc</span>
         </button>
         <div class="admin-subnav">
-          <button type="button" data-admin-target="foods" data-food-category="food"><span class="nav-icon" aria-hidden="true">◦</span><span class="nav-text">Do an</span></button>
-          <button type="button" data-admin-target="foods" data-food-category="drink"><span class="nav-icon" aria-hidden="true">◦</span><span class="nav-text">Nuoc uong</span></button>
+          <a href="admin.html?section=foods&foodCategory=food" data-admin-target="foods" data-food-category="food"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Do an</span></a>
+          <a href="admin.html?section=foods&foodCategory=drink" data-admin-target="foods" data-food-category="drink"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nuoc uong</span></a>
         </div>
       </div>
-      <button class="admin-nav-btn" type="button" data-admin-target="accounts">
-        <span class="nav-icon" aria-hidden="true">◎</span><span class="nav-text">Tai khoan</span>
-      </button>
-      <button class="admin-nav-btn" type="button" data-admin-target="announcements">
-        <span class="nav-icon" aria-hidden="true">◇</span><span class="nav-text">Thong bao</span>
-      </button>
+      <a class="admin-nav-btn" href="admin.html?section=accounts" data-admin-target="accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
     </nav>
-
-    <div class="sidebar-footer">
-      <a href="index.html"><span class="nav-icon" aria-hidden="true">↗</span><span class="nav-text">Ve website</span></a>
-      <button id="logoutBtn" type="button"><span class="nav-icon" aria-hidden="true">⎋</span><span class="nav-text">Dang xuat</span></button>
-    </div>
   </aside>
 
   <main class="admin-main">
+    <header class="admin-page-bar">
+      <a class="admin-top-icon" href="index.html" title="Ve website" aria-label="Ve website"><span class="nav-icon" data-icon="home" aria-hidden="true"></span></a>
+      <details class="admin-user-menu">
+        <summary>
+          <span class="admin-avatar"><span class="nav-icon" data-icon="account" aria-hidden="true"></span></span>
+          <span class="admin-user-name" data-admin-user-name>admin</span>
+        </summary>
+        <div class="admin-user-dropdown">
+          <button id="logoutBtn" type="button">Dang xuat</button>
+        </div>
+      </details>
+    </header>
+
     <section class="admin-section active" data-admin-section="overview">
       <div class="overview-grid">
         <button class="overview-card" type="button" data-admin-shortcut="orders">

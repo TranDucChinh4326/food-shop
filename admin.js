@@ -764,7 +764,9 @@ document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods)
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 navButtons.forEach(button => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", event => {
+    event.preventDefault();
+
     if (!button.dataset.adminTarget) {
       return;
     }
