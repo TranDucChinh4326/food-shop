@@ -858,8 +858,7 @@ function initSupportWidget() {
       </a>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span>?</span>
-      Ho tro
+      <span>🤖</span>
     </button>
   `;
 
@@ -899,8 +898,7 @@ function initChatSupportWidget() {
       </form>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span>?</span>
-      Ho tro
+      <span>🤖</span>
     </button>
   `;
 
