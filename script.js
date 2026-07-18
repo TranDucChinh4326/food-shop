@@ -891,19 +891,75 @@ function initChatSupportWidget() {
   widget.innerHTML = `
     <div class="support-panel chat-panel" aria-label="Hop chat ho tro FoodHub">
       <div class="chat-header">
-        <div>
-          <strong>FoodHub Support</strong>
-          <small>Dang truc tuyen</small>
+        <div class="chat-agent">
+          <span class="chat-avatar" aria-hidden="true">
+            <svg viewBox="0 0 64 64" focusable="false">
+              <rect x="13" y="18" width="38" height="32" rx="14"></rect>
+              <path d="M32 18v-7"></path>
+              <circle cx="32" cy="8" r="3"></circle>
+              <circle cx="25" cy="33" r="3"></circle>
+              <circle cx="39" cy="33" r="3"></circle>
+              <path d="M26 42h12"></path>
+            </svg>
+          </span>
+          <div>
+            <strong>FoodHub</strong>
+            <small>Chat voi chung toi</small>
+          </div>
         </div>
-        <button type="button" class="chat-close" aria-label="Dong ho tro">x</button>
+        <div class="chat-header-actions">
+          <button type="button" class="chat-menu" aria-label="Menu ho tro">
+            <span></span><span></span><span></span>
+          </button>
+          <button type="button" class="chat-close" aria-label="Dong ho tro">x</button>
+        </div>
+      </div>
+      <div class="chat-quick-menu" hidden>
+        <a href="menu.html">Xem thuc don</a>
+        <a href="track.html">Lich su don hang</a>
+        <a href="contact.html">Lien he FoodHub</a>
       </div>
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chao ${escapeHtml(displayName)}, FoodHub co the ho tro gi cho ban?</div>
         <div class="chat-message bot muted">Day la khung chat tam thoi. Sau nay minh se ket noi du lieu he thong de tra loi tu dong.</div>
       </div>
       <form class="chat-form">
-        <input type="text" class="chat-input" placeholder="Nhap tin nhan..." aria-label="Nhap tin nhan ho tro">
-        <button type="submit">Gui</button>
+        <input type="file" class="chat-file" aria-label="Dinh kem tep" hidden>
+        <div class="chat-form-main">
+          <input type="text" class="chat-input" placeholder="Nhap noi dung..." aria-label="Nhap tin nhan ho tro">
+          <div class="chat-tools">
+            <button type="button" class="chat-tool chat-like" aria-label="Gui like">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M7 10v10H4V10h3Zm4.2-7c.8 0 1.4.6 1.4 1.4v3.2H18c1.2 0 2 .9 1.8 2.1l-1.1 7.7c-.2 1-1 1.7-2 1.7H9V9.8l2-5.6c.2-.7.8-1.2 1.5-1.2h-1.3Z"></path>
+              </svg>
+            </button>
+            <button type="button" class="chat-tool chat-attach" aria-label="Dinh kem tep">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M18.4 11.2 11 18.6a4.2 4.2 0 0 1-6-6L14 3.7a2.9 2.9 0 0 1 4.1 4.1L9.5 16.4a1.5 1.5 0 0 1-2.1-2.1l7.5-7.5"></path>
+              </svg>
+            </button>
+            <button type="button" class="chat-tool chat-emoji" aria-label="Chon bieu tuong">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <circle cx="12" cy="12" r="9"></circle>
+                <circle cx="9" cy="10" r="1"></circle>
+                <circle cx="15" cy="10" r="1"></circle>
+                <path d="M8 14c1 1.4 2.3 2 4 2s3-.6 4-2"></path>
+              </svg>
+            </button>
+            <button type="submit" class="chat-send" aria-label="Gui tin nhan">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4 12 20 4l-4 16-4-7-8-1Z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="chat-emoji-picker" hidden>
+          <button type="button" data-code="128522">&#128522;</button>
+          <button type="button" data-code="128525">&#128525;</button>
+          <button type="button" data-code="128523">&#128523;</button>
+          <button type="button" data-code="128077">&#128077;</button>
+          <button type="button" data-code="10084">&#10084;</button>
+        </div>
       </form>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
@@ -922,8 +978,15 @@ function initChatSupportWidget() {
 
   const button = widget.querySelector(".support-toggle");
   const closeButton = widget.querySelector(".chat-close");
+  const menuButton = widget.querySelector(".chat-menu");
+  const quickMenu = widget.querySelector(".chat-quick-menu");
   const chatForm = widget.querySelector(".chat-form");
   const chatInput = widget.querySelector(".chat-input");
+  const chatFile = widget.querySelector(".chat-file");
+  const attachButton = widget.querySelector(".chat-attach");
+  const emojiButton = widget.querySelector(".chat-emoji");
+  const emojiPicker = widget.querySelector(".chat-emoji-picker");
+  const likeButton = widget.querySelector(".chat-like");
   const chatMessages = widget.querySelector(".chat-messages");
 
   button.addEventListener("click", () => {
@@ -935,6 +998,47 @@ function initChatSupportWidget() {
   closeButton.addEventListener("click", () => {
     widget.classList.remove("open");
     button.setAttribute("aria-expanded", "false");
+    quickMenu.hidden = true;
+  });
+
+  menuButton.addEventListener("click", () => {
+    quickMenu.hidden = !quickMenu.hidden;
+  });
+
+  attachButton.addEventListener("click", () => {
+    chatFile.click();
+  });
+
+  chatFile.addEventListener("change", () => {
+    const file = chatFile.files?.[0];
+    if (!file) return;
+
+    chatMessages.insertAdjacentHTML("beforeend", `
+      <div class="chat-message user file-message">Da dinh kem: ${escapeHtml(file.name)}</div>
+      <div class="chat-message bot muted">FoodHub da nhan thong tin tep. Tinh nang gui tep that se duoc ket noi sau.</div>
+    `);
+    chatFile.value = "";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  emojiButton.addEventListener("click", () => {
+    emojiPicker.hidden = !emojiPicker.hidden;
+  });
+
+  emojiPicker.addEventListener("click", event => {
+    const emojiOption = event.target.closest("button[data-code]");
+    if (!emojiOption) return;
+
+    chatInput.value += String.fromCodePoint(Number(emojiOption.dataset.code));
+    chatInput.focus();
+  });
+
+  likeButton.addEventListener("click", () => {
+    chatMessages.insertAdjacentHTML("beforeend", `
+      <div class="chat-message user">&#128077;</div>
+      <div class="chat-message bot muted">Cam on ${escapeHtml(displayName)}, FoodHub da nhan phan hoi cua ban.</div>
+    `);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
   chatForm.addEventListener("submit", event => {
