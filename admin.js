@@ -42,8 +42,8 @@ const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
 const statsFromDate = document.getElementById("statsFromDate");
 const statsToDate = document.getElementById("statsToDate");
-const navButtons = [...document.querySelectorAll("[data-admin-target]")];
-const navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
+let navButtons = [...document.querySelectorAll("[data-admin-target]")];
+let navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
 const pageParams = new URLSearchParams(window.location.search);
@@ -78,11 +78,10 @@ let discountSearchTimer;
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
-const FOOD_CATEGORY_TITLES = {
-  all: "Tat ca mon",
-  food: "Do an",
-  drink: "Nuoc uong"
-};
+function refreshAdminNavElements() {
+  navButtons = [...document.querySelectorAll("[data-admin-target]")];
+  navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
+}
 
 function setAdminNavGroupOpen(toggleName, isOpen) {
   const toggle = document.querySelector(`[data-admin-toggle="${toggleName}"]`);
@@ -817,8 +816,91 @@ async function updateOrderStatus(orderId, status) {
   });
 }
 
-function getCategoryTypeLabel(type) {
-  return String(type).toLowerCase() === "drink" ? "Do uong" : "Do an";
+function normalizeAdminCategory(category) {
+  return {
+    ...category,
+    id: Number(category.id),
+    slug: category.slug || slugify(category.name || category.id),
+    parentId: category.parentId ?? category.parent_id ?? null,
+    parentName: category.parentName ?? category.parent_name ?? null,
+    parentSlug: category.parentSlug ?? category.parent_slug ?? null,
+    sortOrder: Number(category.sortOrder ?? category.sort_order ?? category.id ?? 0),
+    isActive: Number(category.isActive ?? category.is_active ?? 1)
+  };
+}
+
+function getRootCategories(includeInactive = true) {
+  return cachedCategories
+    .map(normalizeAdminCategory)
+    .filter(category => !category.parentId && (includeInactive || category.isActive))
+    .sort((first, second) => first.sortOrder - second.sortOrder || String(first.name).localeCompare(String(second.name), "vi"));
+}
+
+function getCategoryById(categoryId) {
+  return cachedCategories
+    .map(normalizeAdminCategory)
+    .find(category => String(category.id) === String(categoryId));
+}
+
+function getCategoryBySlug(slug) {
+  return cachedCategories
+    .map(normalizeAdminCategory)
+    .find(category => String(category.slug) === String(slug));
+}
+
+function getRootCategory(category) {
+  if (!category) return null;
+  const normalized = normalizeAdminCategory(category);
+  return normalized.parentId ? getCategoryById(normalized.parentId) || normalized : normalized;
+}
+
+function getFoodRootCategory(food) {
+  const directCategory = getCategoryById(food.category_id);
+  if (directCategory) {
+    return getRootCategory(directCategory);
+  }
+
+  if (food.parent_category_id) {
+    return getCategoryById(food.parent_category_id);
+  }
+
+  const legacyType = String(food.category_type || "").toLowerCase();
+  if (legacyType === "drink") return getCategoryBySlug("nuoc-uong");
+  if (legacyType === "food") return getCategoryBySlug("do-an");
+
+  return null;
+}
+
+function getFoodRootSlug(food) {
+  return getFoodRootCategory(food)?.slug || "all";
+}
+
+function getFoodCategoryTitle(slug = activeFoodCategory) {
+  if (!slug || slug === "all") return "Tat ca mon";
+  return getCategoryBySlug(slug)?.name || "Tat ca mon";
+}
+
+function renderAdminFoodCategoryNav() {
+  const container = document.querySelector("[data-admin-food-categories]");
+  if (!container) return;
+
+  const roots = getRootCategories(false);
+  container.innerHTML = `
+    <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all">
+      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tat ca mon</span>
+    </a>
+    ${roots.map(category => `
+      <a href="admin.html?section=foods&foodCategory=${escapeHtml(category.slug)}" data-admin-target="foods" data-food-category="${escapeHtml(category.slug)}">
+        <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">${escapeHtml(category.name)}</span>
+      </a>
+    `).join("")}
+  `;
+
+  if (window.AdminSidebar?.refreshIcons) {
+    window.AdminSidebar.refreshIcons(container);
+  }
+
+  refreshAdminNavElements();
 }
 
 function renderCategoryParentOptions(selectedId = "", editingId = "") {
@@ -833,10 +915,25 @@ function renderCategoryParentOptions(selectedId = "", editingId = "") {
     <option value="">Danh muc cha</option>
     ${rootCategories.map(category => `
       <option value="${category.id}" ${String(selectedId || "") === String(category.id) ? "selected" : ""}>
-        ${escapeHtml(category.name)} (${getCategoryTypeLabel(category.type)})
+        ${escapeHtml(category.name)}
       </option>
     `).join("")}
   `;
+}
+
+function renderCategoryFilterOptions() {
+  if (!categoryTypeFilter) return;
+
+  const currentValue = categoryTypeFilter.value || "all";
+  const roots = getRootCategories(true);
+
+  categoryTypeFilter.innerHTML = `
+    <option value="all">Tat ca</option>
+    <option value="root">Danh muc cha</option>
+    ${roots.map(category => `<option value="${category.id}">${escapeHtml(category.name)}</option>`).join("")}
+  `;
+
+  categoryTypeFilter.value = [...categoryTypeFilter.options].some(option => option.value === currentValue) ? currentValue : "all";
 }
 
 function resetCategoryForm() {
@@ -854,7 +951,6 @@ function fillCategoryForm(category) {
 
   document.getElementById("categoryId").value = category.id;
   document.getElementById("categoryName").value = category.name || "";
-  document.getElementById("categoryType").value = String(category.type || "food").toLowerCase() === "drink" ? "drink" : "food";
   document.getElementById("categorySortOrder").value = Number(category.sortOrder || 0);
   document.getElementById("categoryIsActive").checked = Boolean(Number(category.isActive));
   renderCategoryParentOptions(category.parentId || "", category.id);
@@ -863,10 +959,17 @@ function fillCategoryForm(category) {
 
 function getFilteredCategories() {
   const search = String(categorySearch?.value || "").trim().toLowerCase();
-  const type = categoryTypeFilter?.value || "all";
+  const filterValue = categoryTypeFilter?.value || "all";
 
   return cachedCategories.filter(category => {
-    const matchesType = type === "all" || String(category.type || "").toLowerCase() === type;
+    let matchesType = true;
+
+    if (filterValue === "root") {
+      matchesType = !category.parentId;
+    } else if (filterValue !== "all") {
+      matchesType = String(category.id) === String(filterValue) || String(category.parentId || "") === String(filterValue);
+    }
+
     const matchesSearch = !search
       || String(category.name || "").toLowerCase().includes(search)
       || String(category.slug || "").toLowerCase().includes(search)
@@ -880,6 +983,8 @@ function renderCategoriesTable() {
   if (!categoriesList) return;
 
   renderCategoryParentOptions(document.getElementById("categoryParent")?.value || "", document.getElementById("categoryId")?.value || "");
+  renderCategoryFilterOptions();
+  renderAdminFoodCategoryNav();
   const categories = getFilteredCategories();
 
   if (!categories.length) {
@@ -894,8 +999,8 @@ function renderCategoriesTable() {
           <tr>
             <th>STT</th>
             <th>Ten danh muc</th>
-            <th>Nhom</th>
-            <th>Danh muc cha</th>
+            <th>Cap</th>
+            <th>Thuoc danh muc cha</th>
             <th>Trang thai</th>
             <th>Chuc nang</th>
           </tr>
@@ -908,8 +1013,8 @@ function renderCategoriesTable() {
                 <strong>${escapeHtml(category.name)}</strong>
                 <small>${escapeHtml(category.slug || "")}</small>
               </td>
-              <td>${getCategoryTypeLabel(category.type)}</td>
-              <td>${escapeHtml(category.parentName || "Danh muc cha")}</td>
+              <td>${category.parentId ? "Danh muc con" : "Danh muc cha"}</td>
+              <td>${escapeHtml(category.parentName || "-")}</td>
               <td><span class="account-status ${Number(category.isActive) ? "active" : "locked"}">${Number(category.isActive) ? "Hoat dong" : "Da an"}</span></td>
               <td>
                 <div class="table-actions">
@@ -931,7 +1036,8 @@ async function loadCategories() {
   categoriesList.textContent = "Dang tai danh muc...";
 
   try {
-    cachedCategories = await requestJson(`${ADMIN_API}/categories?includeInactive=1`);
+    cachedCategories = (await requestJson(`${ADMIN_API}/categories?includeInactive=1`)).map(normalizeAdminCategory);
+    renderAdminFoodCategoryNav();
     renderCategoriesTable();
   } catch (error) {
     categoriesList.textContent = error.message;
@@ -945,7 +1051,6 @@ async function saveCategory(event) {
   const categoryId = document.getElementById("categoryId").value;
   const payload = {
     name: document.getElementById("categoryName").value,
-    type: document.getElementById("categoryType").value,
     parentId: document.getElementById("categoryParent").value || null,
     sortOrder: document.getElementById("categorySortOrder").value || 0,
     isActive: document.getElementById("categoryIsActive").checked ? 1 : 0
@@ -982,17 +1087,7 @@ async function loadFoods() {
 }
 
 function getFoodType(food) {
-  const type = String(food.category_type || "").toLowerCase();
-  if (type === "drink" || type === "food") return type;
-
-  const categoryId = String(food.category_id || "");
-  const categoryName = String(food.category_name || "").toLowerCase();
-
-  if (categoryId === "4" || categoryName.includes("uong") || categoryName.includes("drink")) {
-    return "drink";
-  }
-
-  return "food";
+  return getFoodRootSlug(food);
 }
 
 function getFoodCategoryLabel(food) {
@@ -1009,29 +1104,23 @@ function getFoodCategoryLabel(food) {
 }
 
 function getFoodCategoryFilterOptions() {
-  if (activeFoodCategory === "food" || activeFoodCategory === "drink") {
-    const categoryMap = new Map();
+  const roots = getRootCategories(false);
 
-    cachedFoods.forEach(food => {
-      if (getFoodType(food) !== activeFoodCategory || !food.category_id || !food.category_name) {
-        return;
-      }
-
-      categoryMap.set(String(food.category_id), food.category_name);
-    });
+  if (activeFoodCategory !== "all") {
+    const root = getCategoryBySlug(activeFoodCategory);
+    const children = cachedCategories
+      .filter(category => String(category.parentId || "") === String(root?.id || "") && category.isActive)
+      .sort((first, second) => Number(first.sortOrder || 0) - Number(second.sortOrder || 0));
 
     return [
       { value: "all", label: "Tat ca" },
-      ...Array.from(categoryMap.entries())
-        .sort((first, second) => first[1].localeCompare(second[1], "vi"))
-        .map(([value, label]) => ({ value, label }))
+      ...children.map(category => ({ value: String(category.id), label: category.name }))
     ];
   }
 
   return [
     { value: "all", label: "Tat ca" },
-    { value: "food", label: "Do an" },
-    { value: "drink", label: "Nuoc uong" }
+    ...roots.map(category => ({ value: category.slug, label: category.name }))
   ];
 }
 
@@ -1055,16 +1144,17 @@ function getFilteredFoods() {
   activeFoodSubcategory = filterValue;
 
   return cachedFoods.filter(food => {
-    const foodType = getFoodType(food);
+    const rootSlug = getFoodRootSlug(food);
     let matchesCategory = true;
 
-    if (activeFoodCategory === "food" || activeFoodCategory === "drink") {
-      matchesCategory = foodType === activeFoodCategory
+    if (activeFoodCategory !== "all") {
+      matchesCategory = rootSlug === activeFoodCategory
         && (filterValue === "all" || String(food.category_id || "") === filterValue);
-    } else if (filterValue === "food" || filterValue === "drink") {
-      matchesCategory = foodType === filterValue;
     } else if (filterValue !== "all") {
-      matchesCategory = String(food.category_id || "") === filterValue;
+      const selectedRoot = getCategoryBySlug(filterValue);
+      matchesCategory = selectedRoot
+        ? rootSlug === selectedRoot.slug
+        : String(food.category_id || "") === filterValue;
     }
 
     const matchesSearch = !search
@@ -1079,8 +1169,8 @@ function getFilteredFoods() {
 function updateFoodCreateLink() {
   if (!foodCreateLink) return;
 
-  const type = activeFoodCategory === "drink" ? "drink" : "food";
-  foodCreateLink.href = `admin-food.html?type=${type}`;
+  const rootSlug = activeFoodCategory === "all" ? getRootCategories(false)[0]?.slug || "all" : activeFoodCategory;
+  foodCreateLink.href = `admin-food.html?foodCategory=${encodeURIComponent(rootSlug)}`;
 }
 
 function renderFoodsTable() {
@@ -1095,7 +1185,7 @@ function renderFoodsTable() {
   sessionStorage.setItem("foodhub_food_page_size", String(foodsPerPage));
 
   if (foodCategoryTitle) {
-    foodCategoryTitle.textContent = FOOD_CATEGORY_TITLES[activeFoodCategory] || FOOD_CATEGORY_TITLES.all;
+    foodCategoryTitle.textContent = getFoodCategoryTitle(activeFoodCategory);
   }
   updateFoodCreateLink();
 
@@ -1139,7 +1229,7 @@ function renderFoodsTable() {
               <td>${formatMoney(food.price)}</td>
               <td>
                 <div class="table-actions">
-                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&type=${getFoodType(food)}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
+                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
                   <button type="button" class="icon-btn delete" title="An mon" aria-label="An mon" data-hide-food="${food.id}">${trashIcon()}</button>
                 </div>
               </td>
@@ -1256,32 +1346,30 @@ categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
-navButtons.forEach(button => {
-  button.addEventListener("click", event => {
-    event.preventDefault();
+document.querySelector(".admin-nav")?.addEventListener("click", event => {
+  const button = event.target.closest("[data-admin-target]");
 
-    if (!button.dataset.adminTarget) {
-      return;
-    }
+  if (!button) return;
 
-    if (button.dataset.foodCategory && foodCategoryFilter) {
-      activeFoodCategory = button.dataset.foodCategory;
-      activeFoodSubcategory = "all";
-      sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
-      sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
-      foodsPage = 1;
-      renderFoodsTable();
-    }
+  event.preventDefault();
 
-    if (button.dataset.accountType) {
-      activeAccountType = normalizeAccountType(button.dataset.accountType);
-      sessionStorage.setItem("foodhub_account_type", activeAccountType);
-      usersPage = 1;
-      loadUsers();
-    }
+  if (button.dataset.foodCategory && foodCategoryFilter) {
+    activeFoodCategory = button.dataset.foodCategory || "all";
+    activeFoodSubcategory = "all";
+    sessionStorage.setItem("foodhub_food_category", activeFoodCategory);
+    sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
+    foodsPage = 1;
+    renderFoodsTable();
+  }
 
-    showAdminSection(button.dataset.adminTarget);
-  });
+  if (button.dataset.accountType) {
+    activeAccountType = normalizeAccountType(button.dataset.accountType);
+    sessionStorage.setItem("foodhub_account_type", activeAccountType);
+    usersPage = 1;
+    loadUsers();
+  }
+
+  showAdminSection(button.dataset.adminTarget);
 });
 categoryTypeFilter?.addEventListener("change", renderCategoriesTable);
 categorySearch?.addEventListener("input", () => {
@@ -1556,10 +1644,12 @@ const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_siz
 const initialAccountType = pageParams.get("accountType") || sessionStorage.getItem("foodhub_account_type") || "staff";
 const initialUsersPageSize = Number(sessionStorage.getItem("foodhub_users_page_size") || "5");
 
-if (["all", "food", "drink"].includes(initialFoodCategory)) {
-  activeFoodCategory = initialFoodCategory;
-  activeFoodSubcategory = initialFoodSubcategory;
-}
+activeFoodCategory = initialFoodCategory === "food"
+  ? "do-an"
+  : initialFoodCategory === "drink"
+    ? "nuoc-uong"
+    : initialFoodCategory || "all";
+activeFoodSubcategory = initialFoodSubcategory;
 
 activeAccountType = normalizeAccountType(initialAccountType);
 sessionStorage.setItem("foodhub_account_type", activeAccountType);

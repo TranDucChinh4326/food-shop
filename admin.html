@@ -21,9 +21,8 @@
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="foods-menu" aria-expanded="false">
           <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quan ly mon an</span>
         </button>
-        <div class="admin-subnav">
-          <a href="admin.html?section=foods&foodCategory=food" data-admin-target="foods" data-food-category="food"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Do an</span></a>
-          <a href="admin.html?section=foods&foodCategory=drink" data-admin-target="foods" data-food-category="drink"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nuoc uong</span></a>
+        <div class="admin-subnav" data-admin-food-categories>
+          <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tat ca mon</span></a>
         </div>
       </div>
       <div class="admin-nav-group">
@@ -128,21 +127,13 @@
               Ten danh muc
               <input id="categoryName" type="text" placeholder="VD: Com, Pho, Banh keo" required>
             </label>
-            <div class="announcement-date-grid">
-              <label>
-                Nhom tren web
-                <select id="categoryType">
-                  <option value="food">Do an</option>
-                  <option value="drink">Do uong</option>
-                </select>
-              </label>
-              <label>
-                Thuoc danh muc cha
-                <select id="categoryParent">
-                  <option value="">Danh muc cha</option>
-                </select>
-              </label>
-            </div>
+            <label>
+              Cap danh muc
+              <select id="categoryParent">
+                <option value="">Danh muc cha</option>
+              </select>
+              <small class="field-hint">De trong neu muon tao muc cha nhu Do an, Do uong, Banh keo. Chon muc cha neu muon tao muc con.</small>
+            </label>
             <div class="announcement-date-grid">
               <label>
                 Thu tu hien thi
@@ -164,8 +155,7 @@
               <input type="search" id="categorySearch" placeholder="Tim kiem">
               <select id="categoryTypeFilter">
                 <option value="all">Tat ca</option>
-                <option value="food">Do an</option>
-                <option value="drink">Do uong</option>
+                <option value="root">Danh muc cha</option>
               </select>
             </div>
             <div id="categoriesList" class="accounts-list table-state">Dang tai danh muc...</div>

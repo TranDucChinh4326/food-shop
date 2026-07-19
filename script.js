@@ -99,20 +99,7 @@ function slugify(value) {
 }
 
 function getCategoryKey(food) {
-  const type = String(food.category_type || "").toLowerCase();
-
-  if (type === "food" || type === "drink") {
-    return type;
-  }
-
-  switch (Number(food.category_id)) {
-    case 1:
-    case 2:
-    case 3:
-      return "food";
-    default:
-      return Number(food.category_id) === 4 ? "drink" : "food";
-  }
+  return food.parent_category_slug || getPublicRootCategoryByFood(food)?.slug || food.category_slug || "all";
 }
 
 function getSubCategoryKey(food) {
@@ -130,48 +117,82 @@ function getCategoryUrl(value) {
 
 function normalizePublicCategory(category) {
   return {
-    id: category.id,
+    id: Number(category.id),
     name: category.name,
     slug: category.slug || slugify(category.name || category.id),
-    type: String(category.type || "").toLowerCase() === "drink" ? "drink" : "food",
+    type: category.type || "",
     parentId: category.parentId ?? category.parent_id ?? null,
     parentName: category.parentName ?? category.parent_name ?? null,
     parentSlug: category.parentSlug ?? category.parent_slug ?? null,
-    sortOrder: Number(category.sortOrder ?? category.sort_order ?? category.id ?? 0)
+    sortOrder: Number(category.sortOrder ?? category.sort_order ?? category.id ?? 0),
+    isActive: Number(category.isActive ?? category.is_active ?? 1)
   };
 }
 
-function getCategoryChildren(type) {
-  const categories = publicCategories
+function getPublicCategories() {
+  return publicCategories
     .map(normalizePublicCategory)
-    .filter(category => category.type === type);
-  const baseRootSlugs = type === "drink" ? ["nuoc-uong"] : ["do-an"];
-  const customRoots = categories.filter(category => !category.parentId && !baseRootSlugs.includes(category.slug));
-  const childCategories = categories.filter(category => category.parentId);
-
-  return (customRoots.length || childCategories.length ? [...customRoots, ...childCategories] : categories)
+    .filter(category => category.isActive)
     .sort((first, second) => first.sortOrder - second.sortOrder || first.name.localeCompare(second.name, "vi"));
 }
 
-function renderPublicNavCategory(type) {
-  const menu = document.querySelector(`[data-public-category-menu="${type}"]`);
-  if (!menu) return;
+function getPublicRootCategories() {
+  return getPublicCategories().filter(category => !category.parentId);
+}
 
-  const label = type === "drink" ? "Do uong" : "Do an";
-  const children = getCategoryChildren(type);
-  const panel = children.length
-    ? children.map(category => `<a href="${getCategoryUrl(category.slug)}">${escapeHtml(category.name)}</a>`).join("")
-    : menu.querySelector(".nav-dropdown-panel")?.innerHTML || "";
+function getPublicCategoryById(categoryId) {
+  return getPublicCategories().find(category => String(category.id) === String(categoryId));
+}
 
-  menu.innerHTML = `
-    <a class="nav-dropdown-toggle" href="${getCategoryUrl(type)}">${label} <span aria-hidden="true">&#9662;</span></a>
-    <div class="nav-dropdown-panel">${panel}</div>
-  `;
+function getPublicCategoryBySlug(slug) {
+  return getPublicCategories().find(category => String(category.slug) === String(slug));
+}
+
+function getPublicRootCategory(category) {
+  if (!category) return null;
+  return category.parentId ? getPublicCategoryById(category.parentId) || category : category;
+}
+
+function getPublicRootCategoryByFood(food) {
+  const directCategory = getPublicCategoryById(food.category_id);
+  if (directCategory) return getPublicRootCategory(directCategory);
+
+  if (food.parent_category_id) return getPublicCategoryById(food.parent_category_id);
+
+  const legacyType = String(food.category_type || "").toLowerCase();
+  if (legacyType === "drink") return getPublicCategoryBySlug("nuoc-uong");
+  if (legacyType === "food") return getPublicCategoryBySlug("do-an");
+
+  return null;
+}
+
+function getRootChildren(rootId) {
+  return getPublicCategories().filter(category => String(category.parentId || "") === String(rootId));
 }
 
 function renderPublicNavCategories() {
-  renderPublicNavCategory("food");
-  renderPublicNavCategory("drink");
+  const menus = [...document.querySelectorAll("[data-public-category-menu]")];
+  if (!menus.length) return;
+
+  const roots = getPublicRootCategories();
+  if (!roots.length) return;
+
+  const html = roots.map(root => {
+    const children = getRootChildren(root.id);
+    const panel = children.length
+      ? children.map(category => `<a href="${getCategoryUrl(category.slug)}">${escapeHtml(category.name)}</a>`).join("")
+      : `<a href="${getCategoryUrl(root.slug)}">Tat ca ${escapeHtml(root.name)}</a>`;
+
+    return `
+      <div class="nav-dropdown" data-public-category-menu="${escapeHtml(root.slug)}">
+        <a class="nav-dropdown-toggle" href="${getCategoryUrl(root.slug)}">${escapeHtml(root.name)} <span aria-hidden="true">&#9662;</span></a>
+        <div class="nav-dropdown-panel">${panel}</div>
+      </div>
+    `;
+  }).join("");
+
+  menus[0].outerHTML = html;
+  menus.slice(1).forEach(menu => menu.remove());
 }
 
 async function loadPublicCategories() {
@@ -193,58 +214,63 @@ function renderMenuCategoryOptions() {
 
   if (!categoryFilter) return;
 
-  const queryValue = getCategoryQueryValue();
-  const queryFood = foods.find(food => food.subcategory === queryValue || food.category === queryValue);
-  const menuScope = queryValue === "food" || queryValue === "drink" ? queryValue : queryFood?.category || "all";
+  const rawQueryValue = getCategoryQueryValue();
+  const queryValue = rawQueryValue === "food" ? "do-an" : rawQueryValue === "drink" ? "nuoc-uong" : rawQueryValue;
+  const queryCategory = getPublicCategoryBySlug(queryValue);
+  const queryRoot = getPublicRootCategory(queryCategory);
+  const menuScope = queryValue === "all" ? "all" : queryRoot?.slug || foods.find(food => food.subcategory === queryValue || food.category === queryValue)?.category || "all";
   const oldValue = categoryFilter.value || queryValue || "all";
-  const groups = {
-    food: new Map(),
-    drink: new Map()
-  };
+  const rootGroups = new Map();
 
   foods.forEach(food => {
-    if (menuScope !== "all" && food.category !== menuScope) return;
+    const root = getPublicCategoryBySlug(food.category);
+    const rootSlug = root?.slug || food.category;
 
-    const key = food.subcategory || food.category;
-    const label = food.categoryName || (food.category === "drink" ? "Do uong" : "Do an");
+    if (menuScope !== "all" && rootSlug !== menuScope) return;
 
-    if (!groups[food.category].has(key)) {
-      groups[food.category].set(key, label);
+    if (!rootGroups.has(rootSlug)) {
+      rootGroups.set(rootSlug, {
+        label: root?.name || food.parentCategoryName || food.categoryName || "Danh muc",
+        children: new Map()
+      });
+    }
+
+    const key = food.subcategory || rootSlug;
+    const label = food.categoryName || rootGroups.get(rootSlug).label;
+
+    if (!rootGroups.get(rootSlug).children.has(key)) {
+      rootGroups.get(rootSlug).children.set(key, label);
     }
   });
 
-  if (menuScope === "food" || menuScope === "drink") {
-    const scopeLabel = menuScope === "drink" ? "Tat ca do uong" : "Tat ca do an";
-    const groupLabel = menuScope === "drink" ? "Nuoc uong" : "Do an";
-    const options = [...groups[menuScope].entries()]
+  if (menuScope !== "all") {
+    const root = getPublicCategoryBySlug(menuScope);
+    const group = rootGroups.get(menuScope);
+    const options = [...(group?.children || new Map()).entries()]
       .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`)
       .join("");
 
     categoryFilter.innerHTML = `
-      <option value="${menuScope}">${scopeLabel}</option>
-      ${options ? `<optgroup label="${groupLabel}">${options}</optgroup>` : ""}
+      <option value="${menuScope}">Tat ca ${escapeHtml(root?.name || group?.label || "mon")}</option>
+      ${options ? `<optgroup label="${escapeHtml(root?.name || group?.label || "Danh muc")}">${options}</optgroup>` : ""}
     `;
   } else {
     categoryFilter.innerHTML = `
       <option value="all">Tat ca</option>
-      <option value="food">Do an</option>
-      <option value="drink">Nuoc uong</option>
-      ${groups.food.size ? `
-        <optgroup label="Do an">
-          ${[...groups.food.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
-        </optgroup>
-      ` : ""}
-      ${groups.drink.size ? `
-        <optgroup label="Nuoc uong">
-          ${[...groups.drink.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
-        </optgroup>
-      ` : ""}
+      ${[...rootGroups.entries()].map(([rootSlug, group]) => `
+        <option value="${escapeHtml(rootSlug)}">${escapeHtml(group.label)}</option>
+        ${group.children.size ? `
+          <optgroup label="${escapeHtml(group.label)}">
+            ${[...group.children.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
+          </optgroup>
+        ` : ""}
+      `).join("")}
     `;
   }
 
   if ([...categoryFilter.options].some(option => option.value === oldValue)) {
     categoryFilter.value = oldValue;
-  } else if (menuScope === "food" || menuScope === "drink") {
+  } else if (menuScope !== "all") {
     categoryFilter.value = menuScope;
   }
 }

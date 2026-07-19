@@ -11,7 +11,7 @@ const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
 const params = new URLSearchParams(window.location.search);
 const foodIdParam = params.get("id");
 const isEditMode = Boolean(foodIdParam);
-let selectedFoodType = params.get("type") === "drink" ? "drink" : "food";
+let selectedRootSlug = params.get("foodCategory") || params.get("type") || sessionStorage.getItem("foodhub_food_category") || "all";
 
 const foodPageForm = document.getElementById("foodPageForm");
 const foodId = document.getElementById("foodId");
@@ -86,8 +86,87 @@ async function requestJson(url, options = {}) {
   return data;
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function slugify(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/Ä‘/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeCategory(category) {
+  return {
+    ...category,
+    id: Number(category.id),
+    slug: category.slug || slugify(category.name || category.id),
+    parentId: category.parentId ?? category.parent_id ?? null,
+    parentName: category.parentName ?? category.parent_name ?? null,
+    parentSlug: category.parentSlug ?? category.parent_slug ?? null,
+    sortOrder: Number(category.sortOrder ?? category.sort_order ?? category.id ?? 0),
+    isActive: Number(category.isActive ?? category.is_active ?? 1)
+  };
+}
+
+function normalizeRootSlug(slug) {
+  if (slug === "food") return "do-an";
+  if (slug === "drink") return "nuoc-uong";
+  return slug || "all";
+}
+
+function getRootCategories() {
+  return foodCategories
+    .filter(category => !category.parentId && category.isActive)
+    .sort((first, second) => first.sortOrder - second.sortOrder || String(first.name).localeCompare(String(second.name), "vi"));
+}
+
+function getCategoryById(categoryId) {
+  return foodCategories.find(category => String(category.id) === String(categoryId));
+}
+
+function getCategoryBySlug(slug) {
+  return foodCategories.find(category => String(category.slug) === String(slug));
+}
+
+function getRootCategory(category) {
+  if (!category) return null;
+  return category.parentId ? getCategoryById(category.parentId) || category : category;
+}
+
+function getSelectedRootCategory() {
+  const roots = getRootCategories();
+  const current = selectedRootSlug === "all" ? null : getCategoryBySlug(selectedRootSlug);
+  const root = current && !current.parentId ? current : roots[0];
+
+  if (root) selectedRootSlug = root.slug;
+  return root || null;
+}
+
+function getSubCategories() {
+  const root = getSelectedRootCategory();
+
+  if (!root) return [];
+
+  const children = foodCategories
+    .filter(category => String(category.parentId || "") === String(root.id) && category.isActive)
+    .sort((first, second) => first.sortOrder - second.sortOrder || String(first.name).localeCompare(String(second.name), "vi"));
+
+  return children.length ? children : [root];
+}
+
 function setModeText() {
-  const typeText = selectedFoodType === "drink" ? "nuoc uong" : "do an";
+  const root = getSelectedRootCategory();
+  const typeText = root?.name ? root.name.toLowerCase() : "mon";
 
   if (isEditMode) {
     foodFormTitle.textContent = `Cap nhat ${typeText}`;
@@ -100,52 +179,20 @@ function setModeText() {
 }
 
 function syncFoodTypeField() {
-  foodType.value = selectedFoodType;
+  const root = getSelectedRootCategory();
+
+  foodType.value = selectedRootSlug;
 
   if (foodTypeLabel) {
-    foodTypeLabel.value = selectedFoodType === "drink" ? "Nuoc uong" : "Do an";
+    foodTypeLabel.value = root?.name || "Danh muc mon";
   }
-}
-
-function escapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function getCategoryType(category) {
-  const type = String(category.type || "").toLowerCase();
-
-  if (type === "drink" || type === "food") return type;
-
-  const text = String(category.name || "").toLowerCase();
-  if (Number(category.id) === 4 || text.includes("uong") || text.includes("tra") || text.includes("ca phe")) {
-    return "drink";
-  }
-
-  return "food";
-}
-
-function getSubCategories(type) {
-  const selectedType = type || selectedFoodType || "food";
-  const children = foodCategories.filter(category => {
-    const parentId = Number(category.parentId || category.parent_id || 0);
-    return parentId > 0 && getCategoryType(category) === selectedType;
-  });
-
-  if (children.length > 0) return children;
-
-  return foodCategories.filter(category => getCategoryType(category) === selectedType);
 }
 
 function renderCategoryOptions(selectedId = "") {
   const categories = getSubCategories();
 
   if (categories.length === 0) {
-    foodCategory.innerHTML = `<option value="">Chua co danh muc con</option>`;
+    foodCategory.innerHTML = `<option value="">Chua co danh muc</option>`;
     return;
   }
 
@@ -155,24 +202,27 @@ function renderCategoryOptions(selectedId = "") {
     </option>
   `).join("");
 
-  if (selectedId && !categories.some(category => String(category.id) === String(selectedId))) {
+  if (!selectedId || !categories.some(category => String(category.id) === String(selectedId))) {
     foodCategory.value = categories[0].id;
   }
 }
 
 async function loadCategories() {
   try {
-    foodCategories = await requestJson(`${ADMIN_API}/categories`);
+    foodCategories = (await requestJson(`${ADMIN_API}/categories`)).map(normalizeCategory);
+    selectedRootSlug = normalizeRootSlug(selectedRootSlug);
+    getSelectedRootCategory();
   } catch (error) {
     foodCategories = [
-      { id: 1, name: "Burger", type: "food" },
-      { id: 2, name: "Pizza", type: "food" },
-      { id: 3, name: "Mi & Pho", type: "food" },
-      { id: 4, name: "Do uong", type: "drink" }
+      { id: 100, name: "Do an", slug: "do-an", parentId: null, sortOrder: 1, isActive: 1 },
+      { id: 101, name: "Nuoc uong", slug: "nuoc-uong", parentId: null, sortOrder: 2, isActive: 1 }
     ];
+    selectedRootSlug = "do-an";
     showAdminToast(error.message, "error");
   }
 
+  syncFoodTypeField();
+  setModeText();
   renderCategoryOptions();
 }
 
@@ -240,17 +290,16 @@ async function loadFood() {
     return;
   }
 
+  const directCategory = getCategoryById(food.category_id);
+  const rootCategory = getRootCategory(directCategory) || getCategoryById(food.parent_category_id);
+  if (rootCategory) selectedRootSlug = rootCategory.slug;
+
   foodId.value = food.id;
-  foodName.value = food.name || "";
-  selectedFoodType = getCategoryType({
-    id: food.category_id,
-    name: food.category_name,
-    type: food.category_type
-  });
   syncFoodTypeField();
   setModeText();
   renderCategoryOptions(food.category_id || "");
   foodCategory.value = food.category_id || foodCategory.value;
+  foodName.value = food.name || "";
   foodPrice.value = food.price || "";
   foodImage.value = food.image || "";
   foodDescription.value = food.description || "";
@@ -278,11 +327,11 @@ async function saveFood(event) {
     });
 
     sessionStorage.setItem("foodhub_admin_section", "foods");
-    sessionStorage.setItem("foodhub_food_category", selectedFoodType);
+    sessionStorage.setItem("foodhub_food_category", selectedRootSlug);
     sessionStorage.setItem("foodhub_food_subcategory", "all");
     showAdminToast(currentFoodId ? "Da cap nhat mon." : "Da them mon.");
     setTimeout(() => {
-      window.location.href = `admin.html?section=foods&foodCategory=${selectedFoodType}`;
+      window.location.href = `admin.html?section=foods&foodCategory=${encodeURIComponent(selectedRootSlug)}`;
     }, 700);
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -302,8 +351,6 @@ foodPrice.addEventListener("input", renderPreview);
 foodImageFile.addEventListener("change", handleImageFileChange);
 
 requireAdminSession();
-syncFoodTypeField();
-setModeText();
 loadCategories()
   .then(loadFood)
   .catch(error => showAdminToast(error.message, "error"));

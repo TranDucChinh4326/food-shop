@@ -20,8 +20,7 @@
       <div class="admin-nav-group is-open">
         <a class="admin-nav-btn admin-nav-toggle active" href="admin.html?section=foods" aria-expanded="true"><span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quan ly mon an</span></a>
         <div class="admin-subnav">
-          <a href="admin.html?section=foods&foodCategory=food"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Do an</span></a>
-          <a href="admin.html?section=foods&foodCategory=drink"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nuoc uong</span></a>
+          <a href="admin.html?section=foods&foodCategory=all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Danh sach mon</span></a>
         </div>
       </div>
       <a class="admin-nav-btn" href="admin.html?section=accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
@@ -66,13 +65,13 @@
 
         <div class="announcement-date-grid">
           <label>
-            Nhom mon
+            Muc cha
             <input type="hidden" id="foodType" value="food">
             <input type="text" id="foodTypeLabel" value="Do an" disabled>
           </label>
 
           <label>
-            Danh muc con
+            Phan loai trong muc
             <select id="foodCategory" required>
               <option value="">Dang tai danh muc...</option>
             </select>
