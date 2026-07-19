@@ -362,7 +362,8 @@ nav {
   padding: 0 8%;
 }
 
-nav a {
+nav a,
+.nav-dropdown-toggle {
   border-radius: 0;
   color: #fff;
   display: inline-flex;
@@ -376,9 +377,69 @@ nav a {
   white-space: nowrap;
 }
 
-nav a:hover {
+nav a:hover,
+.nav-dropdown:hover .nav-dropdown-toggle,
+.nav-dropdown:focus-within .nav-dropdown-toggle {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
+}
+
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  gap: 8px;
+}
+
+.nav-dropdown-toggle span {
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.18s ease;
+}
+
+.nav-dropdown:hover .nav-dropdown-toggle span,
+.nav-dropdown:focus-within .nav-dropdown-toggle span {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #f3d7cf;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 18px 36px rgba(62, 29, 14, 0.16);
+  display: grid;
+  gap: 2px;
+  left: 0;
+  min-width: 230px;
+  opacity: 0;
+  padding: 8px;
+  pointer-events: none;
+  position: absolute;
+  top: 100%;
+  transform: translateY(8px);
+  transition: 0.18s ease;
+  z-index: 40;
+}
+
+.nav-dropdown:hover .nav-dropdown-panel,
+.nav-dropdown:focus-within .nav-dropdown-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.nav-dropdown-panel a {
+  border-radius: 8px;
+  color: #334155;
+  justify-content: flex-start;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.nav-dropdown-panel a:hover {
+  background: #fff1eb;
+  color: #ff5722;
 }
 
 .cart-btn {
@@ -1895,7 +1956,8 @@ footer {
     z-index: 130;
   }
 
-  nav a {
+  nav a,
+  .nav-dropdown-toggle {
     align-items: center;
     background: #fff7f1;
     border: 1px solid #f4e5dc;
@@ -1907,9 +1969,44 @@ footer {
     width: 100%;
   }
 
-  nav a:hover {
+  nav a:hover,
+  .nav-dropdown:hover .nav-dropdown-toggle,
+  .nav-dropdown:focus-within .nav-dropdown-toggle {
     background: #fff1eb;
     color: #ff5722;
+  }
+
+  .nav-dropdown {
+    display: grid;
+    gap: 6px;
+  }
+
+  .nav-dropdown-panel {
+    background: transparent;
+    border: 0;
+    border-left: 1px solid #f2d6c9;
+    border-radius: 0;
+    box-shadow: none;
+    display: grid;
+    margin-left: 18px;
+    min-width: 0;
+    opacity: 1;
+    padding: 0 0 0 12px;
+    pointer-events: auto;
+    position: static;
+    transform: none;
+  }
+
+  .nav-dropdown-panel a {
+    background: #fff;
+    border-color: #f4e5dc;
+    color: #475569;
+    font-size: 15px;
+    min-height: 40px;
+  }
+
+  .nav-dropdown-toggle span {
+    margin-left: auto;
   }
 
   header.mobile-menu-open nav {

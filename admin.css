@@ -991,6 +991,35 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.admin-editor-grid {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.4fr);
+  padding: 0 30px 30px;
+}
+
+.admin-editor-grid > form,
+.admin-editor-grid > div {
+  min-width: 0;
+}
+
+.admin-editor-grid .announcement-page-form {
+  align-self: start;
+  background: #fbfdff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  padding: 22px;
+}
+
+.admin-editor-grid .table-toolbar {
+  margin: 0 0 18px;
+}
+
+.admin-editor-grid .table-wrap {
+  margin: 0;
+}
+
 .food-preview {
   align-items: center;
   background: #f8fafc;
@@ -1143,6 +1172,10 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   font-variant-numeric: tabular-nums;
   text-align: left;
   width: 96px;
+}
+
+.table-toolbar.multi-filter #categoryTypeFilter {
+  width: 150px;
 }
 
 .discount-form {
@@ -1570,6 +1603,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
   .food-management-grid,
   .accounts-grid,
+  .admin-editor-grid,
   .overview-grid {
     grid-template-columns: 1fr;
   }

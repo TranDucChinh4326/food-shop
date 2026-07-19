@@ -21,6 +21,7 @@
           <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Danh muc</span>
         </button>
         <div class="admin-subnav">
+          <a href="admin.html?section=categories" data-admin-target="categories"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Quan ly danh muc</span></a>
           <a href="admin.html?section=foods&foodCategory=food" data-admin-target="foods" data-food-category="food"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Do an</span></a>
           <a href="admin.html?section=foods&foodCategory=drink" data-admin-target="foods" data-food-category="drink"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nuoc uong</span></a>
         </div>
@@ -104,6 +105,72 @@
         </div>
 
         <div id="ordersList" class="list-state">Dang tai don hang...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="categories">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quan ly danh muc</h2>
+            <p><a href="index.html">Trang chu</a> <span>/</span> Danh muc web</p>
+          </div>
+          <div class="heading-actions">
+            <button id="resetCategoryFormBtn" type="button" class="primary-btn">+ Them moi</button>
+            <button id="refreshCategoriesBtn" type="button" class="ghost-btn">Tai lai</button>
+          </div>
+        </div>
+
+        <div class="admin-editor-grid">
+          <form id="categoryForm" class="announcement-page-form">
+            <input type="hidden" id="categoryId">
+            <label>
+              Ten danh muc
+              <input id="categoryName" type="text" placeholder="VD: Com, Pho, Banh keo" required>
+            </label>
+            <div class="announcement-date-grid">
+              <label>
+                Nhom tren web
+                <select id="categoryType">
+                  <option value="food">Do an</option>
+                  <option value="drink">Do uong</option>
+                </select>
+              </label>
+              <label>
+                Thuoc danh muc cha
+                <select id="categoryParent">
+                  <option value="">Danh muc cha</option>
+                </select>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Thu tu hien thi
+                <input id="categorySortOrder" type="number" min="0" step="1" value="0">
+              </label>
+              <label class="check-row">
+                <input id="categoryIsActive" type="checkbox" checked>
+                <span>Dang hien thi</span>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Luu danh muc</button>
+              <button type="button" class="ghost-btn" data-reset-category>Nhap lai</button>
+            </div>
+          </form>
+
+          <div>
+            <div class="table-toolbar multi-filter">
+              <input type="search" id="categorySearch" placeholder="Tim kiem">
+              <select id="categoryTypeFilter">
+                <option value="all">Tat ca</option>
+                <option value="food">Do an</option>
+                <option value="drink">Do uong</option>
+              </select>
+            </div>
+            <div id="categoriesList" class="accounts-list table-state">Dang tai danh muc...</div>
+          </div>
+        </div>
       </section>
     </section>
 

@@ -13,6 +13,10 @@ const ordersList = document.getElementById("ordersList");
 const foodsList = document.getElementById("foodsList");
 const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
+const categoriesList = document.getElementById("categoriesList");
+const categoryForm = document.getElementById("categoryForm");
+const categorySearch = document.getElementById("categorySearch");
+const categoryTypeFilter = document.getElementById("categoryTypeFilter");
 const usersList = document.getElementById("usersList");
 const announcementsList = document.getElementById("announcementsList");
 const staffForm = document.getElementById("staffForm");
@@ -54,6 +58,8 @@ const statusLabels = {
 let toastTimer;
 let adminPermissions = [];
 let cachedFoods = [];
+let cachedCategories = [];
+let categorySearchTimer;
 let foodSearchTimer;
 let activeFoodCategory = "all";
 let activeFoodSubcategory = "all";
@@ -109,6 +115,10 @@ function showAdminSection(sectionId) {
   });
 
   if (target === "foods") {
+    setAdminNavGroupOpen("foods-menu", true);
+  }
+
+  if (target === "categories") {
     setAdminNavGroupOpen("foods-menu", true);
   }
 
@@ -811,6 +821,154 @@ async function updateOrderStatus(orderId, status) {
   });
 }
 
+function getCategoryTypeLabel(type) {
+  return String(type).toLowerCase() === "drink" ? "Do uong" : "Do an";
+}
+
+function renderCategoryParentOptions(selectedId = "", editingId = "") {
+  const parentSelect = document.getElementById("categoryParent");
+  if (!parentSelect) return;
+
+  const rootCategories = cachedCategories
+    .filter(category => !category.parentId && String(category.id) !== String(editingId))
+    .sort((first, second) => Number(first.sortOrder || 0) - Number(second.sortOrder || 0));
+
+  parentSelect.innerHTML = `
+    <option value="">Danh muc cha</option>
+    ${rootCategories.map(category => `
+      <option value="${category.id}" ${String(selectedId || "") === String(category.id) ? "selected" : ""}>
+        ${escapeHtml(category.name)} (${getCategoryTypeLabel(category.type)})
+      </option>
+    `).join("")}
+  `;
+}
+
+function resetCategoryForm() {
+  if (!categoryForm) return;
+
+  categoryForm.reset();
+  document.getElementById("categoryId").value = "";
+  document.getElementById("categorySortOrder").value = "0";
+  document.getElementById("categoryIsActive").checked = true;
+  renderCategoryParentOptions();
+}
+
+function fillCategoryForm(category) {
+  if (!categoryForm || !category) return;
+
+  document.getElementById("categoryId").value = category.id;
+  document.getElementById("categoryName").value = category.name || "";
+  document.getElementById("categoryType").value = String(category.type || "food").toLowerCase() === "drink" ? "drink" : "food";
+  document.getElementById("categorySortOrder").value = Number(category.sortOrder || 0);
+  document.getElementById("categoryIsActive").checked = Boolean(Number(category.isActive));
+  renderCategoryParentOptions(category.parentId || "", category.id);
+  showAdminSection("categories");
+}
+
+function getFilteredCategories() {
+  const search = String(categorySearch?.value || "").trim().toLowerCase();
+  const type = categoryTypeFilter?.value || "all";
+
+  return cachedCategories.filter(category => {
+    const matchesType = type === "all" || String(category.type || "").toLowerCase() === type;
+    const matchesSearch = !search
+      || String(category.name || "").toLowerCase().includes(search)
+      || String(category.slug || "").toLowerCase().includes(search)
+      || String(category.parentName || "").toLowerCase().includes(search);
+
+    return matchesType && matchesSearch;
+  });
+}
+
+function renderCategoriesTable() {
+  if (!categoriesList) return;
+
+  renderCategoryParentOptions(document.getElementById("categoryParent")?.value || "", document.getElementById("categoryId")?.value || "");
+  const categories = getFilteredCategories();
+
+  if (!categories.length) {
+    categoriesList.textContent = "Chua co danh muc phu hop.";
+    return;
+  }
+
+  categoriesList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table compact-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Ten danh muc</th>
+            <th>Nhom</th>
+            <th>Danh muc cha</th>
+            <th>Trang thai</th>
+            <th>Chuc nang</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${categories.map((category, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>
+                <strong>${escapeHtml(category.name)}</strong>
+                <small>${escapeHtml(category.slug || "")}</small>
+              </td>
+              <td>${getCategoryTypeLabel(category.type)}</td>
+              <td>${escapeHtml(category.parentName || "Danh muc cha")}</td>
+              <td><span class="account-status ${Number(category.isActive) ? "active" : "locked"}">${Number(category.isActive) ? "Hoat dong" : "Da an"}</span></td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua danh muc" data-edit-category="${category.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="An" aria-label="An danh muc" data-delete-category="${category.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function loadCategories() {
+  if (!categoriesList) return;
+
+  categoriesList.textContent = "Dang tai danh muc...";
+
+  try {
+    cachedCategories = await requestJson(`${ADMIN_API}/categories?includeInactive=1`);
+    renderCategoriesTable();
+  } catch (error) {
+    categoriesList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function saveCategory(event) {
+  event.preventDefault();
+
+  const categoryId = document.getElementById("categoryId").value;
+  const payload = {
+    name: document.getElementById("categoryName").value,
+    type: document.getElementById("categoryType").value,
+    parentId: document.getElementById("categoryParent").value || null,
+    sortOrder: document.getElementById("categorySortOrder").value || 0,
+    isActive: document.getElementById("categoryIsActive").checked ? 1 : 0
+  };
+
+  try {
+    await requestJson(`${ADMIN_API}/categories${categoryId ? `/${categoryId}` : ""}`, {
+      method: categoryId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+    showAdminToast(categoryId ? "Da cap nhat danh muc." : "Da them danh muc.");
+    resetCategoryForm();
+    await loadCategories();
+    await loadFoods();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
 async function loadFoods() {
   if (!foodsList) return;
 
@@ -1089,13 +1247,17 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders);
+document.getElementById("refreshCategoriesBtn")?.addEventListener("click", loadCategories);
 document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDiscounts);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
+document.getElementById("resetCategoryFormBtn")?.addEventListener("click", resetCategoryForm);
 document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
+categoryForm?.addEventListener("submit", saveCategory);
+categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
 navButtons.forEach(button => {
@@ -1124,6 +1286,36 @@ navButtons.forEach(button => {
 
     showAdminSection(button.dataset.adminTarget);
   });
+});
+categoryTypeFilter?.addEventListener("change", renderCategoriesTable);
+categorySearch?.addEventListener("input", () => {
+  clearTimeout(categorySearchTimer);
+  categorySearchTimer = setTimeout(renderCategoriesTable, 250);
+});
+categoriesList?.addEventListener("click", async event => {
+  const editButton = event.target.closest("[data-edit-category]");
+  const deleteButton = event.target.closest("[data-delete-category]");
+
+  try {
+    if (editButton) {
+      const category = cachedCategories.find(item => String(item.id) === String(editButton.dataset.editCategory));
+      fillCategoryForm(category);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("An danh muc nay? Neu la danh muc cha, cac muc con cung se bi an.")) return;
+
+      await requestJson(`${ADMIN_API}/categories/${deleteButton.dataset.deleteCategory}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Da an danh muc.");
+      await loadCategories();
+      await loadFoods();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
 });
 navToggles.forEach(toggle => {
   toggle.addEventListener("click", () => {
@@ -1390,6 +1582,7 @@ showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_ad
 syncAccountView();
 loadAdminPermissions().then(loadUsers);
 loadOrders();
+loadCategories();
 loadFoods();
 loadAnnouncements();
 loadDiscounts();

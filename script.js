@@ -1,5 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 const API_URL = `${API_BASE_URL}/foods`;
+const CATEGORIES_API = `${API_BASE_URL}/foods/categories`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
 const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
@@ -7,6 +8,7 @@ const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
 
 let foods = [];
+let publicCategories = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
 let announcementTimer;
@@ -117,12 +119,81 @@ function getSubCategoryKey(food) {
   return food.category_slug || slugify(food.category_name || food.category_id || "khac");
 }
 
+function getCategoryQueryValue() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("category") || "all";
+}
+
+function getCategoryUrl(value) {
+  return `menu.html?category=${encodeURIComponent(value || "all")}`;
+}
+
+function normalizePublicCategory(category) {
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug || slugify(category.name || category.id),
+    type: String(category.type || "").toLowerCase() === "drink" ? "drink" : "food",
+    parentId: category.parentId ?? category.parent_id ?? null,
+    parentName: category.parentName ?? category.parent_name ?? null,
+    parentSlug: category.parentSlug ?? category.parent_slug ?? null,
+    sortOrder: Number(category.sortOrder ?? category.sort_order ?? category.id ?? 0)
+  };
+}
+
+function getCategoryChildren(type) {
+  const categories = publicCategories
+    .map(normalizePublicCategory)
+    .filter(category => category.type === type);
+  const baseRootSlugs = type === "drink" ? ["nuoc-uong"] : ["do-an"];
+  const customRoots = categories.filter(category => !category.parentId && !baseRootSlugs.includes(category.slug));
+  const childCategories = categories.filter(category => category.parentId);
+
+  return (customRoots.length || childCategories.length ? [...customRoots, ...childCategories] : categories)
+    .sort((first, second) => first.sortOrder - second.sortOrder || first.name.localeCompare(second.name, "vi"));
+}
+
+function renderPublicNavCategory(type) {
+  const menu = document.querySelector(`[data-public-category-menu="${type}"]`);
+  if (!menu) return;
+
+  const label = type === "drink" ? "Do uong" : "Do an";
+  const children = getCategoryChildren(type);
+  const panel = children.length
+    ? children.map(category => `<a href="${getCategoryUrl(category.slug)}">${escapeHtml(category.name)}</a>`).join("")
+    : menu.querySelector(".nav-dropdown-panel")?.innerHTML || "";
+
+  menu.innerHTML = `
+    <a class="nav-dropdown-toggle" href="${getCategoryUrl(type)}">${label} <span aria-hidden="true">&#9662;</span></a>
+    <div class="nav-dropdown-panel">${panel}</div>
+  `;
+}
+
+function renderPublicNavCategories() {
+  renderPublicNavCategory("food");
+  renderPublicNavCategory("drink");
+}
+
+async function loadPublicCategories() {
+  if (!document.querySelector("[data-public-category-menu]")) return;
+
+  try {
+    const response = await fetch(CATEGORIES_API);
+    if (!response.ok) throw new Error("Khong the tai danh muc");
+
+    publicCategories = await response.json();
+    renderPublicNavCategories();
+  } catch (error) {
+    console.error("Loi tai danh muc:", error);
+  }
+}
+
 function renderMenuCategoryOptions() {
   const categoryFilter = document.getElementById("categoryFilter");
 
   if (!categoryFilter) return;
 
-  const oldValue = categoryFilter.value || "all";
+  const oldValue = categoryFilter.value || getCategoryQueryValue() || "all";
   const groups = {
     food: new Map(),
     drink: new Map()
@@ -1159,6 +1230,7 @@ function initChatSupportWidget() {
 }
 
 if (protectCheckoutPage()) {
+  loadPublicCategories();
   loadFoods();
   loadPublicAnnouncements();
   renderCart();
