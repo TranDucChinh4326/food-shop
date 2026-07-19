@@ -34,7 +34,7 @@
     <nav>
       <a href="index.html">Trang chu</a>
       <div class="nav-dropdown" data-public-category-menu="food">
-        <a class="nav-dropdown-toggle" href="menu.html?category=food">Do an <span aria-hidden="true">?</span></a>
+        <a class="nav-dropdown-toggle" href="menu.html?category=food">Do an <span aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel">
           <a href="menu.html?category=com">Com</a>
           <a href="menu.html?category=pho">Pho</a>
@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="nav-dropdown" data-public-category-menu="drink">
-        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Do uong <span aria-hidden="true">?</span></a>
+        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Do uong <span aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel">
           <a href="menu.html?category=tra">Tra</a>
           <a href="menu.html?category=ca-phe">Ca phe</a>
@@ -58,27 +58,15 @@
   </header>
 
   <main class="menu-page">
-    <section class="menu-hero">
-      <div>
-        <span class="badge">Thực đơn hôm nay</span>
-        <h1>Chọn món ngon cho bữa của bạn</h1>
-        <p>Danh sách món được cập nhật từ hệ thống FoodHub, chọn nhanh rồi thêm vào giỏ hàng.</p>
-      </div>
-    </section>
-
     <section class="menu-panel">
       <div class="menu-toolbar">
         <div>
-          <h2>Món ăn nổi bật</h2>
-          <p>Tìm theo tên món hoặc lọc nhanh theo danh mục.</p>
+          <h2 id="menuCategoryHeading">Tất cả món</h2>
+          <p id="menuCategoryDescription">Danh sách món được cập nhật từ hệ thống FoodHub.</p>
         </div>
 
         <div class="filter-box">
           <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="renderFoods()">
-
-          <select id="categoryFilter" onchange="renderFoods()">
-            <option value="all">Tất cả</option>
-          </select>
         </div>
       </div>
 

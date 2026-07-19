@@ -111,6 +111,15 @@ function getCategoryQueryValue() {
   return params.get("category") || "all";
 }
 
+function getMenuCategoryValue() {
+  const value = getCategoryQueryValue();
+
+  if (value === "food") return "do-an";
+  if (value === "drink") return "nuoc-uong";
+
+  return value || "all";
+}
+
 function getCategoryUrl(value) {
   return `menu.html?category=${encodeURIComponent(value || "all")}`;
 }
@@ -204,74 +213,32 @@ async function loadPublicCategories() {
 
     publicCategories = await response.json();
     renderPublicNavCategories();
+    renderMenuCategoryOptions();
+    if (foods.length) renderFoods();
   } catch (error) {
     console.error("Loi tai danh muc:", error);
   }
 }
 
 function renderMenuCategoryOptions() {
-  const categoryFilter = document.getElementById("categoryFilter");
+  const heading = document.getElementById("menuCategoryHeading");
+  const description = document.getElementById("menuCategoryDescription");
 
-  if (!categoryFilter) return;
+  if (!heading && !description) return;
 
-  const rawQueryValue = getCategoryQueryValue();
-  const queryValue = rawQueryValue === "food" ? "do-an" : rawQueryValue === "drink" ? "nuoc-uong" : rawQueryValue;
-  const queryCategory = getPublicCategoryBySlug(queryValue);
-  const queryRoot = getPublicRootCategory(queryCategory);
-  const menuScope = queryValue === "all" ? "all" : queryRoot?.slug || foods.find(food => food.subcategory === queryValue || food.category === queryValue)?.category || "all";
-  const oldValue = queryValue !== "all" ? queryValue : categoryFilter.value || "all";
-  const rootGroups = new Map();
+  const categoryValue = getMenuCategoryValue();
+  const category = getPublicCategoryBySlug(categoryValue);
+  const foodMatch = foods.find(food => food.subcategory === categoryValue || food.category === categoryValue);
+  const label = category?.name
+    || (foodMatch?.subcategory === categoryValue ? foodMatch.categoryName : foodMatch?.parentCategoryName || foodMatch?.categoryName)
+    || (categoryValue === "all" ? "Tất cả món" : categoryValue.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
 
-  foods.forEach(food => {
-    const root = getPublicCategoryBySlug(food.category);
-    const rootSlug = root?.slug || food.category;
+  if (heading) heading.textContent = label;
 
-    if (menuScope !== "all" && rootSlug !== menuScope) return;
-
-    if (!rootGroups.has(rootSlug)) {
-      rootGroups.set(rootSlug, {
-        label: root?.name || food.parentCategoryName || food.categoryName || "Danh muc",
-        children: new Map()
-      });
-    }
-
-    const key = food.subcategory || rootSlug;
-    const label = food.categoryName || rootGroups.get(rootSlug).label;
-
-    if (!rootGroups.get(rootSlug).children.has(key)) {
-      rootGroups.get(rootSlug).children.set(key, label);
-    }
-  });
-
-  if (menuScope !== "all") {
-    const root = getPublicCategoryBySlug(menuScope);
-    const group = rootGroups.get(menuScope);
-    const options = [...(group?.children || new Map()).entries()]
-      .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`)
-      .join("");
-
-    categoryFilter.innerHTML = `
-      <option value="${menuScope}">Tat ca ${escapeHtml(root?.name || group?.label || "mon")}</option>
-      ${options ? `<optgroup label="${escapeHtml(root?.name || group?.label || "Danh muc")}">${options}</optgroup>` : ""}
-    `;
-  } else {
-    categoryFilter.innerHTML = `
-      <option value="all">Tat ca</option>
-      ${[...rootGroups.entries()].map(([rootSlug, group]) => `
-        <option value="${escapeHtml(rootSlug)}">${escapeHtml(group.label)}</option>
-        ${group.children.size ? `
-          <optgroup label="${escapeHtml(group.label)}">
-            ${[...group.children.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
-          </optgroup>
-        ` : ""}
-      `).join("")}
-    `;
-  }
-
-  if ([...categoryFilter.options].some(option => option.value === oldValue)) {
-    categoryFilter.value = oldValue;
-  } else if (menuScope !== "all") {
-    categoryFilter.value = menuScope;
+  if (description) {
+    description.textContent = categoryValue === "all"
+      ? "Hiển thị tất cả món theo thứ tự danh mục."
+      : `Đang hiển thị các món thuộc ${label}.`;
   }
 }
 
@@ -534,17 +501,22 @@ function startAnnouncementTicker(box, itemCount) {
 function renderFoods() {
   const foodList = document.getElementById("food-list");
   const searchInput = document.getElementById("searchInput");
-  const categoryFilter = document.getElementById("categoryFilter");
 
-  if (!foodList || !searchInput || !categoryFilter) return;
+  if (!foodList || !searchInput) return;
 
   const searchValue = searchInput.value.toLowerCase();
-  const categoryValue = categoryFilter.value;
+  const categoryValue = getMenuCategoryValue();
+  renderMenuCategoryOptions();
+
   const filteredFoods = foods.filter(food => {
     const matchSearch = food.name.toLowerCase().includes(searchValue);
     const matchCategory = categoryValue === "all" || food.category === categoryValue || food.subcategory === categoryValue;
     return matchSearch && matchCategory;
-  });
+  }).sort((first, second) =>
+    String(first.category || "").localeCompare(String(second.category || ""), "vi") ||
+    String(first.subcategory || "").localeCompare(String(second.subcategory || ""), "vi") ||
+    String(first.name || "").localeCompare(String(second.name || ""), "vi")
+  );
 
   if (filteredFoods.length === 0) {
     foodList.innerHTML = "<p>Không tìm thấy món ăn phù hợp.</p>";
