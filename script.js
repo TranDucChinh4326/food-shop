@@ -219,7 +219,7 @@ function renderMenuCategoryOptions() {
   const queryCategory = getPublicCategoryBySlug(queryValue);
   const queryRoot = getPublicRootCategory(queryCategory);
   const menuScope = queryValue === "all" ? "all" : queryRoot?.slug || foods.find(food => food.subcategory === queryValue || food.category === queryValue)?.category || "all";
-  const oldValue = categoryFilter.value || queryValue || "all";
+  const oldValue = queryValue !== "all" ? queryValue : categoryFilter.value || "all";
   const rootGroups = new Map();
 
   foods.forEach(food => {
