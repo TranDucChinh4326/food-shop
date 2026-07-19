@@ -1020,6 +1020,51 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   margin: 0;
 }
 
+.category-list-view {
+  padding: 0 30px 30px;
+}
+
+.category-list-view .table-toolbar {
+  margin: 0 0 18px;
+}
+
+.category-list-view .table-wrap {
+  margin: 0;
+}
+
+.category-form-view {
+  margin: 0 auto;
+  max-width: 760px;
+  padding: 0 30px 30px;
+}
+
+.category-form-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.category-form-heading h3 {
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.category-form-heading p:not(.kicker) {
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.category-page-form {
+  background: #fbfdff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  padding: 24px;
+}
+
 .food-preview {
   align-items: center;
   background: #f8fafc;

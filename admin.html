@@ -120,8 +120,28 @@
           </div>
         </div>
 
-        <div class="admin-editor-grid">
-          <form id="categoryForm" class="announcement-page-form">
+        <div id="categoryListView" class="category-list-view">
+          <div class="table-toolbar multi-filter">
+            <input type="search" id="categorySearch" placeholder="Tim kiem">
+            <select id="categoryTypeFilter">
+              <option value="all">Tat ca</option>
+              <option value="root">Danh muc cha</option>
+            </select>
+          </div>
+          <div id="categoriesList" class="accounts-list table-state">Dang tai danh muc...</div>
+        </div>
+
+        <div id="categoryFormView" class="category-form-view" hidden>
+          <div class="form-page-heading category-form-heading">
+            <div>
+              <p class="kicker">Danh muc</p>
+              <h3 id="categoryFormTitle">Them danh muc</h3>
+              <p id="categoryFormSubtitle">Tao danh muc cha hoac danh muc con de hien thi tren web.</p>
+            </div>
+            <button type="button" class="ghost-btn" data-back-category-list>Ve danh sach</button>
+          </div>
+
+          <form id="categoryForm" class="announcement-page-form category-page-form">
             <input type="hidden" id="categoryId">
             <label>
               Ten danh muc
@@ -149,17 +169,6 @@
               <button type="button" class="ghost-btn" data-reset-category>Nhap lai</button>
             </div>
           </form>
-
-          <div>
-            <div class="table-toolbar multi-filter">
-              <input type="search" id="categorySearch" placeholder="Tim kiem">
-              <select id="categoryTypeFilter">
-                <option value="all">Tat ca</option>
-                <option value="root">Danh muc cha</option>
-              </select>
-            </div>
-            <div id="categoriesList" class="accounts-list table-state">Dang tai danh muc...</div>
-          </div>
         </div>
       </section>
     </section>

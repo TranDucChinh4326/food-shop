@@ -15,6 +15,10 @@ const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
 const categoriesList = document.getElementById("categoriesList");
 const categoryForm = document.getElementById("categoryForm");
+const categoryListView = document.getElementById("categoryListView");
+const categoryFormView = document.getElementById("categoryFormView");
+const categoryFormTitle = document.getElementById("categoryFormTitle");
+const categoryFormSubtitle = document.getElementById("categoryFormSubtitle");
 const categorySearch = document.getElementById("categorySearch");
 const categoryTypeFilter = document.getElementById("categoryTypeFilter");
 const usersList = document.getElementById("usersList");
@@ -936,6 +940,26 @@ function renderCategoryFilterOptions() {
   categoryTypeFilter.value = [...categoryTypeFilter.options].some(option => option.value === currentValue) ? currentValue : "all";
 }
 
+function showCategoryListView() {
+  if (categoryListView) categoryListView.hidden = false;
+  if (categoryFormView) categoryFormView.hidden = true;
+}
+
+function showCategoryFormView(mode = "create") {
+  if (categoryListView) categoryListView.hidden = true;
+  if (categoryFormView) categoryFormView.hidden = false;
+
+  if (categoryFormTitle) {
+    categoryFormTitle.textContent = mode === "edit" ? "Cap nhat danh muc" : "Them danh muc";
+  }
+
+  if (categoryFormSubtitle) {
+    categoryFormSubtitle.textContent = mode === "edit"
+      ? "Chinh sua ten, cap danh muc, thu tu hien thi va trang thai."
+      : "Tao danh muc cha nhu Banh keo hoac danh muc con ben trong danh muc cha.";
+  }
+}
+
 function resetCategoryForm() {
   if (!categoryForm) return;
 
@@ -944,6 +968,7 @@ function resetCategoryForm() {
   document.getElementById("categorySortOrder").value = "0";
   document.getElementById("categoryIsActive").checked = true;
   renderCategoryParentOptions();
+  showCategoryFormView("create");
 }
 
 function fillCategoryForm(category) {
@@ -954,6 +979,7 @@ function fillCategoryForm(category) {
   document.getElementById("categorySortOrder").value = Number(category.sortOrder || 0);
   document.getElementById("categoryIsActive").checked = Boolean(Number(category.isActive));
   renderCategoryParentOptions(category.parentId || "", category.id);
+  showCategoryFormView("edit");
   showAdminSection("categories");
 }
 
@@ -1065,6 +1091,7 @@ async function saveCategory(event) {
     resetCategoryForm();
     await loadCategories();
     await loadFoods();
+    showCategoryListView();
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -1341,6 +1368,10 @@ document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDi
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
 document.getElementById("resetCategoryFormBtn")?.addEventListener("click", resetCategoryForm);
+document.querySelector("[data-back-category-list]")?.addEventListener("click", () => {
+  resetCategoryForm();
+  showCategoryListView();
+});
 document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
 categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
