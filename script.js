@@ -193,13 +193,18 @@ function renderMenuCategoryOptions() {
 
   if (!categoryFilter) return;
 
-  const oldValue = categoryFilter.value || getCategoryQueryValue() || "all";
+  const queryValue = getCategoryQueryValue();
+  const queryFood = foods.find(food => food.subcategory === queryValue || food.category === queryValue);
+  const menuScope = queryValue === "food" || queryValue === "drink" ? queryValue : queryFood?.category || "all";
+  const oldValue = categoryFilter.value || queryValue || "all";
   const groups = {
     food: new Map(),
     drink: new Map()
   };
 
   foods.forEach(food => {
+    if (menuScope !== "all" && food.category !== menuScope) return;
+
     const key = food.subcategory || food.category;
     const label = food.categoryName || (food.category === "drink" ? "Do uong" : "Do an");
 
@@ -208,24 +213,39 @@ function renderMenuCategoryOptions() {
     }
   });
 
-  categoryFilter.innerHTML = `
-    <option value="all">Tat ca</option>
-    <option value="food">Do an</option>
-    <option value="drink">Nuoc uong</option>
-    ${groups.food.size ? `
-      <optgroup label="Do an">
-        ${[...groups.food.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
-      </optgroup>
-    ` : ""}
-    ${groups.drink.size ? `
-      <optgroup label="Nuoc uong">
-        ${[...groups.drink.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
-      </optgroup>
-    ` : ""}
-  `;
+  if (menuScope === "food" || menuScope === "drink") {
+    const scopeLabel = menuScope === "drink" ? "Tat ca do uong" : "Tat ca do an";
+    const groupLabel = menuScope === "drink" ? "Nuoc uong" : "Do an";
+    const options = [...groups[menuScope].entries()]
+      .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`)
+      .join("");
+
+    categoryFilter.innerHTML = `
+      <option value="${menuScope}">${scopeLabel}</option>
+      ${options ? `<optgroup label="${groupLabel}">${options}</optgroup>` : ""}
+    `;
+  } else {
+    categoryFilter.innerHTML = `
+      <option value="all">Tat ca</option>
+      <option value="food">Do an</option>
+      <option value="drink">Nuoc uong</option>
+      ${groups.food.size ? `
+        <optgroup label="Do an">
+          ${[...groups.food.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
+        </optgroup>
+      ` : ""}
+      ${groups.drink.size ? `
+        <optgroup label="Nuoc uong">
+          ${[...groups.drink.entries()].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}
+        </optgroup>
+      ` : ""}
+    `;
+  }
 
   if ([...categoryFilter.options].some(option => option.value === oldValue)) {
     categoryFilter.value = oldValue;
+  } else if (menuScope === "food" || menuScope === "drink") {
+    categoryFilter.value = menuScope;
   }
 }
 

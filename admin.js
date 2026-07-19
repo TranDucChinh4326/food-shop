@@ -118,10 +118,6 @@ function showAdminSection(sectionId) {
     setAdminNavGroupOpen("foods-menu", true);
   }
 
-  if (target === "categories") {
-    setAdminNavGroupOpen("foods-menu", true);
-  }
-
   if (target === "accounts") {
     setAdminNavGroupOpen("accounts-menu", true);
   }
