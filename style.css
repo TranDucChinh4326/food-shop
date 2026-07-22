@@ -353,23 +353,23 @@ header.header-compact .header-tools {
   border-radius: 14px;
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
   display: block;
-  height: clamp(230px, 15.5vw, 300px);
+  height: clamp(210px, 14vw, 270px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 60%;
+  top: 62%;
   transform: translateY(-50%);
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: clamp(72px, 4.7vw, 92px);
+  width: clamp(66px, 4.2vw, 84px);
   z-index: 80;
 }
 
 .floating-ad-left {
-  left: 18px;
+  left: 26px;
 }
 
 .floating-ad-right {
-  right: 18px;
+  right: 26px;
 }
 
 .floating-ad img {
@@ -393,7 +393,7 @@ header.header-compact .header-tools {
   display: none;
 }
 
-@media (max-width: 1500px), (max-height: 760px) {
+@media (max-width: 1180px), (max-height: 620px) {
   .floating-ad {
     display: none;
   }
