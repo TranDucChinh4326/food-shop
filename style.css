@@ -350,26 +350,26 @@ header.header-compact .header-tools {
 .floating-ad {
   background: #fff7f2;
   border: 1px solid rgba(255, 79, 37, 0.24);
-  border-radius: 16px;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
   display: block;
-  height: 340px;
+  height: clamp(230px, 15.5vw, 300px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 58%;
+  top: 60%;
   transform: translateY(-50%);
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: 108px;
+  width: clamp(72px, 4.7vw, 92px);
   z-index: 80;
 }
 
 .floating-ad-left {
-  left: 24px;
+  left: 18px;
 }
 
 .floating-ad-right {
-  right: 24px;
+  right: 18px;
 }
 
 .floating-ad img {
@@ -380,7 +380,7 @@ header.header-compact .header-tools {
 }
 
 .floating-ad:hover {
-  box-shadow: 0 22px 52px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.18);
   transform: translateY(-50%) scale(1.025);
 }
 
@@ -393,7 +393,7 @@ header.header-compact .header-tools {
   display: none;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1500px), (max-height: 760px) {
   .floating-ad {
     display: none;
   }
