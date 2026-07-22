@@ -1043,6 +1043,24 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   margin: 0;
 }
 
+.advertisement-admin-layout.is-list-mode {
+  display: block;
+}
+
+.advertisement-admin-layout.is-list-mode .advertisement-form {
+  display: none;
+}
+
+.advertisement-admin-layout.is-form-mode {
+  display: block;
+  margin: 0 auto;
+  max-width: 820px;
+}
+
+.advertisement-admin-layout.is-form-mode .advertisement-list-card {
+  display: none;
+}
+
 .advertisement-form {
   background: #fbfdff;
   border: 1px solid var(--line);
