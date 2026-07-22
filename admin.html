@@ -3,40 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quan tri FoodHub</title>
+  <title>Quản trị FoodHub</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
       <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
-      <span class="sidebar-label">Bang quan tri</span>
+      <span class="sidebar-label">Bảng quản trị</span>
     </div>
 
     <nav class="admin-nav" aria-label="Menu quan tri">
-      <a class="admin-nav-btn active" href="admin.html?section=overview" data-admin-target="overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tong quan</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=orders" data-admin-target="orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Don hang</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=categories" data-admin-target="categories"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quan ly danh muc</span></a>
+      <a class="admin-nav-btn active" href="admin.html?section=overview" data-admin-target="overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tổng quan</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=orders" data-admin-target="orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Đơn hàng</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=categories" data-admin-target="categories"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý danh mục</span></a>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="foods-menu" aria-expanded="false">
-          <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quan ly mon an</span>
+          <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quản lý món ăn</span>
         </button>
         <div class="admin-subnav" data-admin-food-categories>
-          <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tat ca mon</span></a>
+          <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả món</span></a>
         </div>
       </div>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="accounts-menu" aria-expanded="false">
-          <span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span>
+          <span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tài khoản</span>
         </button>
         <div class="admin-subnav">
-          <a href="admin.html?section=accounts&accountType=staff" data-admin-target="accounts" data-account-type="staff"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nhan vien</span></a>
-          <a href="admin.html?section=accounts&accountType=customers" data-admin-target="accounts" data-account-type="customers"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Khach hang</span></a>
+          <a href="admin.html?section=accounts&accountType=staff" data-admin-target="accounts" data-account-type="staff"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nhân viên</span></a>
+          <a href="admin.html?section=accounts&accountType=customers" data-admin-target="accounts" data-account-type="customers"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Khách hàng</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Ma giam gia</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thong ke</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thống kê</span></a>
     </nav>
   </aside>
 
@@ -51,7 +51,7 @@
             <span class="admin-user-name" data-admin-user-name>admin</span>
           </summary>
           <div class="admin-user-dropdown">
-            <button id="logoutBtn" type="button">Dang xuat</button>
+            <button id="logoutBtn" type="button">Đăng xuất</button>
           </div>
         </details>
       </div>
@@ -60,34 +60,34 @@
     <section class="admin-section active" data-admin-section="overview">
       <div class="overview-grid">
         <button class="overview-card" type="button" data-admin-shortcut="orders">
-          <span>Don hang</span>
-          <strong>Xu ly trang thai giao hang</strong>
+          <span>Đơn hàng</span>
+          <strong>Xử lý trạng thái giao hàng</strong>
           <small>Cap nhat xac nhan, dang giao, hoan tat hoac huy don.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="foods">
-          <span>Mon an</span>
-          <strong>Them sua thuc don</strong>
-          <small>Quan ly gia, hinh anh, mo ta va trang thai dang ban.</small>
+          <span>Món ăn</span>
+          <strong>Thêm sửa thực đơn</strong>
+          <small>Quản lý giá, hình ảnh, mô tả và trạng thái đang bán.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="accounts">
-          <span>Tai khoan</span>
-          <strong>Nhan vien va khach hang</strong>
-          <small>Cap quyen dong, khoa tai khoan va dat lai mat khau khi can.</small>
+          <span> Tài khoản</span>
+          <strong>Nhân viên và khách hàng</strong>
+          <small>Quyền hạn đóng, khóa tài khoản và đặt lại mật khẩu khi cần.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="announcements">
-          <span>Thong bao</span>
-          <strong>Dang tin tren trang chu</strong>
-          <small>Quan ly cac thong bao hien thi o dau website cho khach hang.</small>
+          <span>Thông báo</span>
+          <strong>Đăng tin trên trang chủ</strong>
+          <small>Quản lý các thông báo hiển thị ở đầu website cho khách hàng.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="discounts">
-          <span>Ma giam gia</span>
-          <strong>Tao uu dai dat hang</strong>
-          <small>Quan ly ma giam theo phan tram, so tien, han dung va so luot su dung.</small>
+          <span>Mã giảm giá</span>
+          <strong>Tạo ưu đãi đặt hàng</strong>
+          <small>Quản lý mã giảm theo phần trăm, số tiền, hạn dùng và số lượt sử dụng.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="stats">
-          <span>Thong ke</span>
-          <strong>Theo doi doanh thu</strong>
-          <small>Xem tong don, doanh thu, mon ban chay va tinh hinh tai khoan.</small>
+          <span>Thống kê</span>
+          <strong>Theo dõi doanh thu</strong>
+          <small>Xem tổng đơn, doanh thu, món bán chạy và tình hình tài khoản.</small>
         </button>
       </div>
     </section>
@@ -96,14 +96,14 @@
       <section class="panel orders-panel">
         <div class="panel-title">
           <div>
-            <p class="kicker">Don hang</p>
-            <h2>Quan ly don hang</h2>
-            <p>Cap nhat trang thai xu ly cho tung don va xem chi tiet mon da dat.</p>
+            <p class="kicker">Đơn hàng</p>
+            <h2>Quản lý đơn hàng</h2>
+            <p>Cập nhật trạng thái xử lý cho từng đơn và xem chi tiết món đã đặt.</p>
           </div>
-          <button id="refreshOrdersBtn" type="button">Tai lai</button>
+          <button id="refreshOrdersBtn" type="button">Tải lại</button>
         </div>
 
-        <div id="ordersList" class="list-state">Dang tai don hang...</div>
+        <div id="ordersList" class="list-state">Đang tải đơn hàng...</div>
       </section>
     </section>
 
@@ -111,12 +111,12 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Quan ly danh muc</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> Danh muc web</p>
+            <h2>Quản lý danh mục</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Danh mục web</p>
           </div>
           <div class="heading-actions">
-            <button id="resetCategoryFormBtn" type="button" class="primary-btn">+ Them moi</button>
-            <button id="refreshCategoriesBtn" type="button" class="ghost-btn">Tai lai</button>
+            <button id="resetCategoryFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshCategoriesBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
@@ -124,49 +124,49 @@
           <div class="table-toolbar multi-filter">
             <input type="search" id="categorySearch" placeholder="Tim kiem">
             <select id="categoryTypeFilter">
-              <option value="all">Tat ca</option>
-              <option value="root">Danh muc cha</option>
+              <option value="all">Tất cả</option>
+              <option value="root">Danh mục cha</option>
             </select>
           </div>
-          <div id="categoriesList" class="accounts-list table-state">Dang tai danh muc...</div>
+          <div id="categoriesList" class="accounts-list table-state">Đang tải danh mục...</div>
         </div>
 
         <div id="categoryFormView" class="category-form-view" hidden>
           <div class="form-page-heading category-form-heading">
             <div>
-              <p class="kicker">Danh muc</p>
-              <h3 id="categoryFormTitle">Them danh muc</h3>
-              <p id="categoryFormSubtitle">Tao danh muc cha hoac danh muc con de hien thi tren web.</p>
+              <p class="kicker">Danh mục</p>
+              <h3 id="categoryFormTitle">Thêm danh mục</h3>
+              <p id="categoryFormSubtitle">Tạo danh mục cha hoặc danh mục con để hiển thị trên web.</p>
             </div>
-            <button type="button" class="ghost-btn" data-back-category-list>Ve danh sach</button>
+            <button type="button" class="ghost-btn" data-back-category-list> Về danh sách</button>
           </div>
 
           <form id="categoryForm" class="announcement-page-form category-page-form">
             <input type="hidden" id="categoryId">
             <label>
-              Ten danh muc
+              Tên danh mục
               <input id="categoryName" type="text" placeholder="VD: Com, Pho, Banh keo" required>
             </label>
             <label>
-              Cap danh muc
+              Cấp danh mục
               <select id="categoryParent">
-                <option value="">Danh muc cha</option>
+                <option value="">Danh mục cha</option>
               </select>
-              <small class="field-hint">De trong neu muon tao muc cha nhu Do an, Do uong, Banh keo. Chon muc cha neu muon tao muc con.</small>
+              <small class="field-hint">Để trống nếu muốn tao muc cha nhu Do an, Do uong, Banh keo. Chon muc cha neu muon tao muc con.</small>
             </label>
             <div class="announcement-date-grid">
               <label>
-                Thu tu hien thi
+                Thứ tự hiển thị
                 <input id="categorySortOrder" type="number" min="0" step="1" value="0">
               </label>
               <label class="check-row">
                 <input id="categoryIsActive" type="checkbox" checked>
-                <span>Dang hien thi</span>
+                <span>Đang hiển thị</span>
               </label>
             </div>
             <div class="form-actions">
-              <button type="submit" class="primary-btn">Luu danh muc</button>
-              <button type="button" class="ghost-btn" data-reset-category>Nhap lai</button>
+              <button type="submit" class="primary-btn">Lưu danh mục</button>
+              <button type="button" class="ghost-btn" data-reset-category>Nhập lại</button>
             </div>
           </form>
         </div>
@@ -177,12 +177,12 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Quan ly mon an</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> <span id="foodCategoryTitle">Tat ca mon</span></p>
+            <h2>Quản lý món ăn</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> <span id="foodCategoryTitle">ất cả món</span></p>
           </div>
           <div class="heading-actions">
-            <a href="admin-food.html" id="foodCreateLink" class="primary-btn button-link">+ Them moi</a>
-            <button id="refreshFoodsBtn" type="button" class="ghost-btn">Tai lai</button>
+            <a href="admin-food.html" id="foodCreateLink" class="primary-btn button-link">+ Thêm mới</a>
+            <button id="refreshFoodsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
@@ -198,7 +198,7 @@
           </select>
         </div>
 
-        <div id="foodsList" class="accounts-list table-state">Dang tai mon an...</div>
+        <div id="foodsList" class="accounts-list table-state">Đang tải món ăn...</div>
       </section>
     </section>
 
@@ -206,12 +206,12 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Quan ly nguoi dung</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly nguoi dung</p>
+            <h2>Quản lý người dùng</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý người dùng</p>
           </div>
           <div class="heading-actions">
-            <a href="admin-account.html?type=staff" id="accountCreateLink" class="primary-btn button-link">+ Them moi</a>
-            <button id="refreshUsersBtn" type="button" class="ghost-btn">Tai lai</button>
+            <a href="admin-account.html?type=staff" id="accountCreateLink" class="primary-btn button-link">+ Thêm mới</a>
+            <button id="refreshUsersBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
@@ -224,7 +224,7 @@
           </select>
         </div>
 
-        <div id="usersList" class="accounts-list table-state">Dang tai tai khoan...</div>
+        <div id="usersList" class="accounts-list table-state">Đang tải tài khoản...</div>
       </section>
     </section>
 
@@ -232,26 +232,26 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Quan ly thong bao</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> Quan ly thong bao</p>
+            <h2>Quản lý thông báo</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý thông báo</p>
           </div>
           <div class="heading-actions">
-            <a href="admin-announcement.html" class="primary-btn button-link">+ Them moi</a>
-            <button id="refreshAnnouncementsBtn" type="button" class="ghost-btn">Tai lai</button>
+            <a href="admin-announcement.html" class="primary-btn button-link">+ Thêm mới</a>
+            <button id="refreshAnnouncementsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
         <div class="announcement-toolbar table-toolbar multi-filter">
           <input type="search" id="announcementSearch" placeholder="Tim kiem">
           <select id="announcementStatusFilter">
-            <option value="all">Tat ca</option>
-            <option value="active">Dang hien</option>
-            <option value="hidden">Da an</option>
-            <option value="expired">Het han</option>
+            <option value="all">Tất cả</option>
+            <option value="active">Đang hiển thị</option>
+            <option value="hidden">Đã ẩn</option>
+            <option value="expired">Hết hạn</option>
           </select>
         </div>
 
-        <div id="announcementsList" class="accounts-list table-state">Dang tai thong bao...</div>
+        <div id="announcementsList" class="accounts-list table-state">Đang tải thông báo...</div>
       </section>
     </section>
 
@@ -259,12 +259,12 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Quan ly ma giam gia</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> Ma giam gia</p>
+            <h2>Quản lý mã giảm giá</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Mã giảm giá</p>
           </div>
           <div class="heading-actions">
-            <button id="resetDiscountFormBtn" type="button" class="primary-btn">+ Them moi</button>
-            <button id="refreshDiscountsBtn" type="button" class="ghost-btn">Tai lai</button>
+            <button id="resetDiscountFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshDiscountsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
@@ -272,75 +272,75 @@
           <input type="hidden" id="discountId">
           <div class="announcement-date-grid">
             <label>
-              Ma giam gia
+              Mã giảm giá
               <input id="discountCode" type="text" placeholder="VD: FOODHUB10" maxlength="40" required>
             </label>
             <label>
-              Ten chuong trinh
-              <input id="discountName" type="text" placeholder="VD: Giam 10% cho don tu 100.000d" required>
+              Tên chương trình
+              <input id="discountName" type="text" placeholder="VD: Giảm 10% cho đơn từ 100.000d" required>
             </label>
           </div>
           <div class="announcement-date-grid">
             <label>
-              Kieu giam
+              Kiểu giảm
               <select id="discountType">
-                <option value="percent">Phan tram</option>
-                <option value="fixed">So tien</option>
+                <option value="percent">Phần trăm</option>
+                <option value="fixed">Số tiền</option>
               </select>
             </label>
             <label>
-              Gia tri
+              Giá trị
               <input id="discountValue" type="number" min="1" step="1" placeholder="10 hoac 20000" required>
             </label>
           </div>
           <div class="announcement-date-grid">
             <label>
-              Don toi thieu
+              Đơn tối thiểu
               <input id="discountMinOrder" type="number" min="0" step="1000" value="0">
             </label>
             <label>
-              Giam toi da
-              <input id="discountMaxDiscount" type="number" min="0" step="1000" placeholder="Bo trong neu khong gioi han">
+              Giảm tối đa
+              <input id="discountMaxDiscount" type="number" min="0" step="1000" placeholder="Bỏ trong nếu không giới hạn">
             </label>
           </div>
           <div class="announcement-date-grid">
             <label>
-              So luot su dung
+              Số lượt sử dụng
               <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bo trong neu khong gioi han">
             </label>
             <label>
-              Trang thai
+              Trạng thái
               <select id="discountIsActive">
-                <option value="1">Hoat dong</option>
-                <option value="0">Tam an</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Ẩn</option>
               </select>
             </label>
           </div>
           <div class="announcement-date-grid">
             <label>
-              Bat dau
+              Bắt đầu
               <input id="discountStartsAt" type="datetime-local">
             </label>
             <label>
-              Het han
+              Hết hạn
               <input id="discountExpiresAt" type="datetime-local">
             </label>
           </div>
           <div class="account-form-actions form-actions">
-            <button id="saveDiscountBtn" type="submit" class="primary-btn">Luu ma</button>
-            <button type="button" class="ghost-btn" data-reset-discount>Nhap lai</button>
+            <button id="saveDiscountBtn" type="submit" class="primary-btn">Lưu mã</button>
+            <button type="button" class="ghost-btn" data-reset-discount>Nhập lại</button>
           </div>
         </form>
 
         <div class="discount-toolbar table-toolbar multi-filter">
           <input type="search" id="discountSearch" placeholder="Tim kiem">
           <select id="discountStatusFilter">
-            <option value="all">Tat ca</option>
-            <option value="active">Hoat dong</option>
-            <option value="scheduled">Sap dien ra</option>
-            <option value="expired">Het han</option>
-            <option value="soldout">Het luot</option>
-            <option value="hidden">Da an</option>
+            <option value="all">Tất cả</option>
+            <option value="active">Hoạt động</option>
+            <option value="scheduled">Sắp diễn ra</option>
+            <option value="expired">Hết hạn</option>
+            <option value="soldout">Hết lượt</option>
+            <option value="hidden">Đã ẩn</option>
           </select>
           <select id="discountPageSize" aria-label="So dong ma giam gia moi trang">
             <option value="5">5</option>
@@ -349,7 +349,7 @@
           </select>
         </div>
 
-        <div id="discountsList" class="accounts-list table-state">Dang tai ma giam gia...</div>
+        <div id="discountsList" class="accounts-list table-state">Đang tải mã giảm giá...</div>
       </section>
     </section>
 
@@ -357,29 +357,29 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Thong ke he thong</h2>
-            <p><a href="index.html">Trang chu</a> <span>/</span> Thong ke</p>
+            <h2>Thống kê hệ thống</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Thống kê</p>
           </div>
           <div class="heading-actions">
-            <button id="refreshStatsBtn" type="button" class="ghost-btn">Tai lai</button>
+            <button id="refreshStatsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
         <div class="stats-filter table-toolbar multi-filter">
           <input id="statsFromDate" type="date" aria-label="Tu ngay">
           <input id="statsToDate" type="date" aria-label="Den ngay">
-          <button id="applyStatsFilterBtn" type="button" class="primary-btn">Loc</button>
+          <button id="applyStatsFilterBtn" type="button" class="primary-btn">Lọc</button>
         </div>
 
-        <div id="statsSummary" class="stats-grid table-state">Dang tai thong ke...</div>
+        <div id="statsSummary" class="stats-grid table-state">Đang tải thống kê...</div>
         <div class="stats-columns">
           <section>
-            <h3>Mon ban chay</h3>
-            <div id="statsTopFoods" class="table-state compact-state">Dang tai...</div>
+            <h3>Món bán chạy</h3>
+            <div id="statsTopFoods" class="table-state compact-state">Đang tải...</div>
           </section>
           <section>
-            <h3>Doanh thu theo ngay</h3>
-            <div id="statsDaily" class="table-state compact-state">Dang tai...</div>
+            <h3>Doanh thu theo ngày</h3>
+            <div id="statsDaily" class="table-state compact-state">Đang tải...</div>
           </section>
         </div>
       </section>

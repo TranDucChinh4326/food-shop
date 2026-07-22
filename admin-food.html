@@ -10,23 +10,23 @@
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
       <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
-      <span class="sidebar-label">Bang quan tri</span>
+      <span class="sidebar-label">Bảng quản trị</span>
     </div>
 
     <nav class="admin-nav" aria-label="Menu quan tri">
-      <a class="admin-nav-btn" href="admin.html?section=overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tong quan</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Don hang</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=categories"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quan ly danh muc</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tổng quan</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Đơn hàng</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=categories"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý danh mục</span></a>
       <div class="admin-nav-group is-open">
-        <a class="admin-nav-btn admin-nav-toggle active" href="admin.html?section=foods" aria-expanded="true"><span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quan ly mon an</span></a>
+        <a class="admin-nav-btn admin-nav-toggle active" href="admin.html?section=foods" aria-expanded="true"><span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quản lý món ăn</span></a>
         <div class="admin-subnav">
-          <a href="admin.html?section=foods&foodCategory=all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Danh sach mon</span></a>
+          <a href="admin.html?section=foods&foodCategory=all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Danh sách món</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Ma giam gia</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thong ke</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tài khoản</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thống kê</span></a>
     </nav>
   </aside>
 
@@ -41,7 +41,7 @@
             <span class="admin-user-name" data-admin-user-name>admin</span>
           </summary>
           <div class="admin-user-dropdown">
-            <button id="logoutBtn" type="button">Dang xuat</button>
+            <button id="logoutBtn" type="button">Đăng xuất</button>
           </div>
         </details>
       </div>
@@ -50,8 +50,8 @@
     <section class="panel account-form-panel">
       <div class="page-heading form-page-heading">
         <div>
-          <h2 id="foodFormTitle">Them moi mon</h2>
-          <p><a href="admin.html">Quan ly mon an</a> <span>/</span> <span id="foodBreadcrumb">Them moi</span></p>
+          <h2 id="foodFormTitle">Thêm mới món</h2>
+          <p><a href="admin.html">Quản lý món ăn</a> <span>/</span> <span id="foodBreadcrumb">Thêm mới</span></p>
         </div>
       </div>
 
@@ -59,54 +59,54 @@
         <input type="hidden" id="foodId">
 
         <label>
-          Ten mon
+          Tên món
           <input type="text" id="foodName" required>
         </label>
 
         <div class="announcement-date-grid">
           <label>
-            Muc cha
+            Mục cha
             <input type="hidden" id="foodType" value="food">
-            <input type="text" id="foodTypeLabel" value="Do an" disabled>
+            <input type="text" id="foodTypeLabel" value="Đồ ăn" disabled>
           </label>
 
           <label>
-            Phan loai trong muc
+            Phân loại trong mục
             <select id="foodCategory" required>
-              <option value="">Dang tai danh muc...</option>
+              <option value="">Đang tải danh mục...</option>
             </select>
           </label>
         </div>
 
         <div class="announcement-date-grid">
           <label>
-            Gia
+            Giá
             <input type="number" id="foodPrice" min="1000" step="1000" required>
           </label>
         </div>
 
         <label>
-          Hinh anh
+          Hình ảnh
           <input type="file" id="foodImageFile" accept="image/*">
           <input type="hidden" id="foodImage">
-          <small class="field-hint">Chon anh JPG, PNG hoac WebP. Anh se duoc luu tu dong vao he thong.</small>
+          <small class="field-hint">Chọn ảnh JPG, PNG hoặc WebP. Ảnh sẽ được lưu tự động vào hệ thống.</small>
         </label>
 
         <label>
-          Mo ta
+          Mô tả
           <textarea id="foodDescription" rows="4"></textarea>
         </label>
 
         <label class="check-row">
           <input type="checkbox" id="foodActive" checked>
-          Dang ban
+          Đang bán
         </label>
 
         <div id="foodPreview" class="food-preview" hidden></div>
 
         <div class="form-actions account-form-actions">
-          <button type="submit" class="primary-btn">Luu mon</button>
-          <a href="admin.html" class="ghost-btn button-link">Quay ve</a>
+          <button type="submit" class="primary-btn">Lưu món</button>
+          <a href="admin.html" class="ghost-btn button-link">Quay về</a>
         </div>
       </form>
     </section>

@@ -343,6 +343,62 @@ header.header-compact .header-tools {
   opacity: 0.45;
 }
 
+.floating-ads {
+  pointer-events: none;
+}
+
+.floating-ad {
+  background: #fff7f2;
+  border: 1px solid rgba(255, 79, 37, 0.24);
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  display: block;
+  height: 340px;
+  overflow: hidden;
+  pointer-events: auto;
+  position: fixed;
+  top: 58%;
+  transform: translateY(-50%);
+  transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  width: 108px;
+  z-index: 80;
+}
+
+.floating-ad-left {
+  left: 24px;
+}
+
+.floating-ad-right {
+  right: 24px;
+}
+
+.floating-ad img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.floating-ad:hover {
+  box-shadow: 0 22px 52px rgba(15, 23, 42, 0.2);
+  transform: translateY(-50%) scale(1.025);
+}
+
+.floating-ad.is-switching {
+  opacity: 0.4;
+}
+
+.floating-ad[hidden],
+.floating-ads[hidden] {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .floating-ad {
+    display: none;
+  }
+}
+
 .logo {
   font-size: 26px;
   font-weight: bold;

@@ -1,5 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 const ADMIN_API = `${API_BASE_URL}/admin`;
+const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 
@@ -41,6 +42,14 @@ const discountForm = document.getElementById("discountForm");
 const discountSearch = document.getElementById("discountSearch");
 const discountStatusFilter = document.getElementById("discountStatusFilter");
 const discountPageSize = document.getElementById("discountPageSize");
+const advertisementsList = document.getElementById("advertisementsList");
+const advertisementForm = document.getElementById("advertisementForm");
+const advertisementSearch = document.getElementById("advertisementSearch");
+const advertisementPositionFilter = document.getElementById("advertisementPositionFilter");
+const advertisementStatusFilter = document.getElementById("advertisementStatusFilter");
+const advertisementPageSize = document.getElementById("advertisementPageSize");
+const advertisementImageFile = document.getElementById("advertisementImageFile");
+const advertisementPreview = document.getElementById("advertisementPreview");
 const statsSummary = document.getElementById("statsSummary");
 const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
@@ -82,6 +91,11 @@ let discountSearchTimer;
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
+let advertisementSearchTimer;
+let cachedAdvertisements = [];
+let advertisementsPage = 1;
+let advertisementsPerPage = 5;
+let pendingAdvertisementImage = "";
 function refreshAdminNavElements() {
   navButtons = [...document.querySelectorAll("[data-admin-target]")];
   navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
@@ -693,6 +707,221 @@ function renderDiscountsTable() {
           <button type="button" class="${discountsPage === index + 1 ? "active" : ""}" data-discounts-page="${index + 1}">${index + 1}</button>
         `).join("")}
         <button type="button" data-discounts-page="next" ${discountsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+function formatAdvertisementPosition(position) {
+  const labels = {
+    both: "Hai ben",
+    left: "Ben trai",
+    right: "Ben phai"
+  };
+  return labels[position] || "Hai ben";
+}
+
+function formatAdvertisementStatus(status) {
+  const labels = {
+    active: "Hoat dong",
+    scheduled: "Sap hien",
+    expired: "Het han",
+    hidden: "Da an"
+  };
+  return labels[status] || status || "Khong ro";
+}
+
+function getAdvertisementStatusClass(status) {
+  if (status === "active") return "active";
+  if (status === "scheduled") return "pending";
+  return "locked";
+}
+
+function renderAdvertisementPreview(src) {
+  if (!advertisementPreview) return;
+
+  advertisementPreview.innerHTML = src
+    ? `<img src="${escapeHtml(src)}" alt="Xem truoc quang cao">`
+    : "Chua chon anh";
+}
+
+function resetAdvertisementForm() {
+  if (!advertisementForm) return;
+
+  advertisementForm.reset();
+  document.getElementById("advertisementId").value = "";
+  document.getElementById("advertisementPosition").value = "both";
+  document.getElementById("advertisementSortOrder").value = "0";
+  document.getElementById("advertisementIsActive").value = "1";
+  pendingAdvertisementImage = "";
+  renderAdvertisementPreview("");
+  document.getElementById("saveAdvertisementBtn").textContent = "Luu quang cao";
+}
+
+function fillAdvertisementForm(item) {
+  if (!advertisementForm || !item) return;
+
+  document.getElementById("advertisementId").value = item.id || "";
+  document.getElementById("advertisementTitle").value = item.title || "";
+  document.getElementById("advertisementPosition").value = item.position || "both";
+  document.getElementById("advertisementLink").value = item.link_url || item.linkUrl || "";
+  document.getElementById("advertisementSortOrder").value = item.sort_order ?? item.sortOrder ?? 0;
+  document.getElementById("advertisementStartsAt").value = formatDateInputValue(item.starts_at || item.startsAt);
+  document.getElementById("advertisementExpiresAt").value = formatDateInputValue(item.expires_at || item.expiresAt);
+  document.getElementById("advertisementIsActive").value = item.is_active || item.isActive ? "1" : "0";
+  pendingAdvertisementImage = item.image || "";
+  if (advertisementImageFile) advertisementImageFile.value = "";
+  renderAdvertisementPreview(pendingAdvertisementImage);
+  document.getElementById("saveAdvertisementBtn").textContent = "Cap nhat quang cao";
+  advertisementForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function readAdvertisementImageFile() {
+  const file = advertisementImageFile?.files?.[0];
+  if (!file) return Promise.resolve(pendingAdvertisementImage);
+
+  const validTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    return Promise.reject(new Error("Chi ho tro anh JPG, PNG hoac WebP."));
+  }
+
+  if (file.size > 1.5 * 1024 * 1024) {
+    return Promise.reject(new Error("Anh quang cao toi da 1.5MB."));
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Khong the doc tep anh."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function readAdvertisementPayload() {
+  const image = await readAdvertisementImageFile();
+
+  return {
+    title: document.getElementById("advertisementTitle").value,
+    image,
+    linkUrl: document.getElementById("advertisementLink").value,
+    position: document.getElementById("advertisementPosition").value,
+    sortOrder: document.getElementById("advertisementSortOrder").value,
+    startsAt: document.getElementById("advertisementStartsAt").value || null,
+    expiresAt: document.getElementById("advertisementExpiresAt").value || null,
+    isActive: document.getElementById("advertisementIsActive").value === "1"
+  };
+}
+
+async function saveAdvertisement(event) {
+  event.preventDefault();
+
+  const advertisementId = document.getElementById("advertisementId").value;
+
+  try {
+    const payload = await readAdvertisementPayload();
+    await requestJson(`${ADVERTISEMENTS_API}/admin${advertisementId ? `/${advertisementId}` : ""}`, {
+      method: advertisementId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+
+    showAdminToast(advertisementId ? "Da cap nhat quang cao." : "Da tao quang cao.");
+    resetAdvertisementForm();
+    await loadAdvertisements();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function loadAdvertisements() {
+  if (!advertisementsList) return;
+
+  advertisementsList.textContent = "Dang tai quang cao...";
+
+  try {
+    const params = new URLSearchParams({
+      q: advertisementSearch?.value || "",
+      position: advertisementPositionFilter?.value || "all",
+      status: advertisementStatusFilter?.value || "all"
+    });
+    const advertisements = await requestJson(`${ADVERTISEMENTS_API}/admin?${params.toString()}`);
+
+    cachedAdvertisements = advertisements;
+    advertisementsPage = Math.min(advertisementsPage, Math.ceil(cachedAdvertisements.length / advertisementsPerPage)) || 1;
+    renderAdvertisementsTable();
+  } catch (error) {
+    advertisementsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderAdvertisementsTable() {
+  if (!advertisementsList) return;
+
+  advertisementsPerPage = Number(advertisementPageSize?.value || advertisementsPerPage || 5);
+  if (![5, 10, 20].includes(advertisementsPerPage)) advertisementsPerPage = 5;
+
+  const total = cachedAdvertisements.length;
+  const totalPages = Math.max(1, Math.ceil(total / advertisementsPerPage));
+  advertisementsPage = Math.min(Math.max(advertisementsPage, 1), totalPages);
+
+  const startIndex = (advertisementsPage - 1) * advertisementsPerPage;
+  const pageItems = cachedAdvertisements.slice(startIndex, startIndex + advertisementsPerPage);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageItems.length;
+
+  if (total === 0) {
+    advertisementsList.textContent = "Chua co quang cao phu hop.";
+    return;
+  }
+
+  advertisementsList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table advertisements-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Hinh anh</th>
+            <th>Tieu de</th>
+            <th>Vi tri</th>
+            <th>Hieu luc</th>
+            <th>Trang thai</th>
+            <th>Chuc nang</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pageItems.map((item, index) => `
+            <tr>
+              <td>${startIndex + index + 1}</td>
+              <td><img class="ad-thumb" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}"></td>
+              <td>
+                <strong>${escapeHtml(item.title)}</strong>
+                <small>${item.link_url ? escapeHtml(item.link_url) : "Khong gan link"}</small>
+              </td>
+              <td>${formatAdvertisementPosition(item.position)}</td>
+              <td>
+                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bat dau ngay"}</strong>
+                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</small>
+              </td>
+              <td><span class="account-status ${getAdvertisementStatusClass(item.status)}">${formatAdvertisementStatus(item.status)}</span></td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua quang cao" data-edit-advertisement="${item.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa quang cao" data-delete-advertisement="${item.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-advertisements-page="prev" ${advertisementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${advertisementsPage === index + 1 ? "active" : ""}" data-advertisements-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-advertisements-page="next" ${advertisementsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
   `;
@@ -1365,6 +1594,7 @@ document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods)
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDiscounts);
+document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
 document.getElementById("resetCategoryFormBtn")?.addEventListener("click", resetCategoryForm);
@@ -1373,10 +1603,13 @@ document.querySelector("[data-back-category-list]")?.addEventListener("click", (
   showCategoryListView();
 });
 document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
+document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", resetAdvertisementForm);
 categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
+advertisementForm?.addEventListener("submit", saveAdvertisement);
+advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", resetAdvertisementForm);
 document.querySelector(".admin-nav")?.addEventListener("click", event => {
   const button = event.target.closest("[data-admin-target]");
 
@@ -1506,6 +1739,34 @@ discountSearch?.addEventListener("input", () => {
   clearTimeout(discountSearchTimer);
   discountsPage = 1;
   discountSearchTimer = setTimeout(loadDiscounts, 300);
+});
+advertisementPositionFilter?.addEventListener("change", () => {
+  advertisementsPage = 1;
+  loadAdvertisements();
+});
+advertisementStatusFilter?.addEventListener("change", () => {
+  advertisementsPage = 1;
+  loadAdvertisements();
+});
+advertisementPageSize?.addEventListener("change", () => {
+  advertisementsPerPage = Number(advertisementPageSize.value || 5);
+  advertisementsPage = 1;
+  renderAdvertisementsTable();
+});
+advertisementSearch?.addEventListener("input", () => {
+  clearTimeout(advertisementSearchTimer);
+  advertisementsPage = 1;
+  advertisementSearchTimer = setTimeout(loadAdvertisements, 300);
+});
+advertisementImageFile?.addEventListener("change", async () => {
+  try {
+    const src = await readAdvertisementImageFile();
+    pendingAdvertisementImage = src;
+    renderAdvertisementPreview(src);
+  } catch (error) {
+    showAdminToast(error.message, "error");
+    advertisementImageFile.value = "";
+  }
 });
 
 ordersList.addEventListener("change", async event => {
@@ -1668,6 +1929,50 @@ discountsList?.addEventListener("click", async event => {
   }
 });
 
+advertisementsList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-advertisements-page]");
+  const editButton = event.target.closest("[data-edit-advertisement]");
+  const deleteButton = event.target.closest("[data-delete-advertisement]");
+
+  try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.advertisementsPage;
+      const totalPages = Math.max(1, Math.ceil(cachedAdvertisements.length / advertisementsPerPage));
+
+      if (pageAction === "prev") {
+        advertisementsPage -= 1;
+      } else if (pageAction === "next") {
+        advertisementsPage += 1;
+      } else {
+        advertisementsPage = Number(pageAction);
+      }
+
+      advertisementsPage = Math.min(Math.max(advertisementsPage, 1), totalPages);
+      renderAdvertisementsTable();
+      return;
+    }
+
+    if (editButton) {
+      const advertisement = cachedAdvertisements.find(item => String(item.id) === String(editButton.dataset.editAdvertisement))
+        || await requestJson(`${ADVERTISEMENTS_API}/admin/${editButton.dataset.editAdvertisement}`);
+      fillAdvertisementForm(advertisement);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("Xoa vinh vien quang cao nay?")) return;
+
+      await requestJson(`${ADVERTISEMENTS_API}/admin/${deleteButton.dataset.deleteAdvertisement}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Da xoa quang cao.");
+      await loadAdvertisements();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
 const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
@@ -1703,4 +2008,5 @@ loadCategories();
 loadFoods();
 loadAnnouncements();
 loadDiscounts();
+loadAdvertisements();
 loadStats();

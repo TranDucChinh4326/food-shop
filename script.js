@@ -3,6 +3,7 @@ const API_URL = `${API_BASE_URL}/foods`;
 const CATEGORIES_API = `${API_BASE_URL}/foods/categories`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
 const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
+const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
@@ -12,6 +13,7 @@ let publicCategories = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
 let announcementTimer;
+let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
 
@@ -313,6 +315,103 @@ async function loadPublicAnnouncements() {
   } catch (error) {
     box.innerHTML = `<span class="announcement-empty">Khong the tai thong bao.</span>`;
     console.error(error);
+  }
+}
+
+function clearFloatingAdTimers() {
+  floatingAdTimers.forEach(timer => clearInterval(timer));
+  floatingAdTimers = [];
+}
+
+function getFloatingAdvertisementsShell() {
+  let shell = document.querySelector("[data-floating-ads]");
+
+  if (shell) return shell;
+
+  shell = document.createElement("div");
+  shell.className = "floating-ads";
+  shell.dataset.floatingAds = "true";
+  shell.hidden = true;
+  shell.innerHTML = `
+    <a class="floating-ad floating-ad-left" data-floating-ad-slot="left" aria-label="Quang cao ben trai" hidden></a>
+    <a class="floating-ad floating-ad-right" data-floating-ad-slot="right" aria-label="Quang cao ben phai" hidden></a>
+  `;
+  document.body.appendChild(shell);
+
+  return shell;
+}
+
+function renderFloatingAdItem(slot, advertisement) {
+  const linkUrl = advertisement.link_url || advertisement.linkUrl || "";
+
+  if (linkUrl) {
+    slot.href = linkUrl;
+    slot.target = "_blank";
+    slot.rel = "noopener noreferrer";
+  } else {
+    slot.removeAttribute("href");
+    slot.removeAttribute("target");
+    slot.removeAttribute("rel");
+  }
+
+  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quang cao FoodHub")}">`;
+  slot.hidden = false;
+}
+
+function setFloatingAdSlot(shell, side, advertisements) {
+  const slot = shell.querySelector(`[data-floating-ad-slot="${side}"]`);
+
+  if (!slot) return;
+
+  if (!advertisements.length) {
+    slot.hidden = true;
+    slot.innerHTML = "";
+    return;
+  }
+
+  let activeIndex = 0;
+  renderFloatingAdItem(slot, advertisements[activeIndex]);
+
+  if (advertisements.length > 1) {
+    const timer = setInterval(() => {
+      activeIndex = (activeIndex + 1) % advertisements.length;
+      slot.classList.add("is-switching");
+
+      setTimeout(() => {
+        renderFloatingAdItem(slot, advertisements[activeIndex]);
+        slot.classList.remove("is-switching");
+      }, 180);
+    }, 4500);
+
+    floatingAdTimers.push(timer);
+  }
+}
+
+async function loadFloatingAdvertisements() {
+  clearFloatingAdTimers();
+
+  const shell = getFloatingAdvertisementsShell();
+  shell.hidden = true;
+
+  try {
+    const response = await fetch(`${ADVERTISEMENTS_API}?limit=20`);
+    const advertisements = await response.json();
+
+    if (!response.ok || !Array.isArray(advertisements) || !advertisements.length) {
+      return;
+    }
+
+    const leftAdvertisements = advertisements.filter(item => item.position === "left" || item.position === "both");
+    const rightAdvertisements = advertisements.filter(item => item.position === "right" || item.position === "both");
+
+    if (!leftAdvertisements.length && !rightAdvertisements.length) return;
+
+    shell.hidden = false;
+    setFloatingAdSlot(shell, "left", leftAdvertisements);
+    setFloatingAdSlot(shell, "right", rightAdvertisements);
+  } catch (error) {
+    shell.hidden = true;
+    console.error("Loi tai quang cao:", error);
   }
 }
 
@@ -1251,6 +1350,7 @@ if (protectCheckoutPage()) {
   loadPublicCategories();
   loadFoods();
   loadPublicAnnouncements();
+  loadFloatingAdvertisements();
   renderCart();
   renderUser();
   initAccountMenu();

@@ -10,7 +10,7 @@
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
       <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
-      <span class="sidebar-label">Bang quan tri</span>
+      <span class="sidebar-label">Bảng quản trị</span>
     </div>
 
     <nav class="admin-nav" aria-label="Menu quan tri">
@@ -26,6 +26,7 @@
       </div>
       <a class="admin-nav-btn" href="admin.html?section=accounts"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tai khoan</span></a>
       <a class="admin-nav-btn active" href="admin.html?section=announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thong bao</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quang cao</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Ma giam gia</span></a>
       <a class="admin-nav-btn" href="admin.html?section=stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thong ke</span></a>
     </nav>
@@ -42,7 +43,7 @@
             <span class="admin-user-name" data-admin-user-name>admin</span>
           </summary>
           <div class="admin-user-dropdown">
-            <button id="logoutBtn" type="button">Dang xuat</button>
+            <button id="logoutBtn" type="button">Đăng xuất</button>
           </div>
         </details>
       </div>
@@ -51,35 +52,35 @@
     <section class="panel account-form-panel">
       <div class="page-heading form-page-heading">
         <div>
-          <h2 id="announcementFormTitle">Them moi thong bao</h2>
-          <p><a href="admin.html">Quan ly thong bao</a> <span>/</span> <span id="announcementBreadcrumb">Them moi</span></p>
+          <h2 id="announcementFormTitle">Thêm mới thông báo</h2>
+          <p><a href="admin.html">Quản lý thông báo</a> <span>/</span> <span id="announcementBreadcrumb">Thêm mới</span></p>
         </div>
       </div>
 
       <form id="announcementForm" class="account-page-form announcement-page-form">
         <label>
-          Tieu de
+          Tiêu đề
           <input type="text" id="announcementTitle" maxlength="255" required>
         </label>
 
         <label>
-          Noi dung ngan
-          <textarea id="announcementContent" rows="4" placeholder="Nhap noi dung hien thi ben duoi tieu de"></textarea>
+          Nội dung ngắn
+          <textarea id="announcementContent" rows="4" placeholder="Nhập nội dung hiển thị bên dưới tiêu đề"></textarea>
         </label>
 
         <label>
-          Ngay dang
+          Ngày đăng
           <input type="datetime-local" id="announcementPublishedAt">
         </label>
 
         <div class="announcement-date-grid">
           <label>
-            So ngay hieu luc
-            <input type="number" id="announcementValidityDays" min="1" step="1" placeholder="Bo trong neu khong het han">
+            Số ngày hiệu lực
+            <input type="number" id="announcementValidityDays" min="1" step="1" placeholder="Bỏ trống nếu không hết hạn">
           </label>
 
           <label>
-            Ngay het hieu luc
+            Ngày hết hiệu lực
             <input type="datetime-local" id="announcementExpiresAt" readonly>
           </label>
         </div>
@@ -87,13 +88,13 @@
         <div class="announcement-checks">
           <label class="check-row">
             <input type="checkbox" id="announcementActive" checked>
-            Hien thi tren trang chu
+            Hiển thị trên trang chủ
           </label>
         </div>
 
         <div class="form-actions account-form-actions">
-          <button type="submit" class="primary-btn">Luu thong bao</button>
-          <a href="admin.html" class="ghost-btn button-link">Quay ve</a>
+          <button type="submit" class="primary-btn">Lưu thông báo</button>
+          <a href="admin.html" class="ghost-btn button-link">Quay về</a>
         </div>
       </form>
     </section>
