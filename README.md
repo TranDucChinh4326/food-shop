@@ -2,6 +2,27 @@
 
 Frontend HTML/CSS/JavaScript tinh cho FoodHub.
 
+## Cau truc file
+
+```text
+food-shop/
+  index.html                 Trang chu
+  menu.html                  Thuc don
+  cart.html                  Gio hang
+  track.html                 Lich su don hang
+  announcements.html         Danh sach thong bao
+  login.html/register.html   Dang nhap, dang ky
+  admin*.html                Cac trang quan tri
+  config.js                  Cau hinh API va OAuth
+  assets/
+    css/                     CSS chung, auth, admin
+    js/                      JS chung, auth, profile
+    js/admin/                JS rieng cho trang quan tri
+  docs/                      Ghi chu cau truc va van hanh
+```
+
+Giu cac file `.html` o thu muc goc de URL Cloudflare Pages khong bi doi.
+
 ## Chay local
 
 Mo truc tiep `index.html` hoac dung Live Server.
