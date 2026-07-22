@@ -1020,6 +1020,29 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   margin: 0;
 }
 
+.admin-split-layout {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.45fr);
+  padding: 0 30px 30px;
+}
+
+.admin-split-layout > * {
+  min-width: 0;
+}
+
+.admin-list-card {
+  min-width: 0;
+}
+
+.admin-list-card .table-toolbar {
+  margin: 0 0 18px;
+}
+
+.admin-list-card .table-wrap {
+  margin: 0;
+}
+
 .advertisement-form {
   background: #fbfdff;
   border: 1px solid var(--line);
@@ -1078,6 +1101,12 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .table-toolbar.multi-filter #advertisementPageSize {
   max-width: 112px;
+}
+
+@media (max-width: 1180px) {
+  .admin-split-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .category-list-view {
