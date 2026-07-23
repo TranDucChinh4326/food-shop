@@ -753,12 +753,64 @@ h2 {
   padding: 0 18px;
 }
 
-.food-card span {
-  display: block;
-  margin: 16px 18px;
+.food-price-row {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin: 16px 18px 10px;
+}
+
+.food-price-row span:first-child {
   color: #ff5722;
+  display: block;
   font-size: 20px;
   font-weight: bold;
+}
+
+.food-stock-badge {
+  background: #fff3ed;
+  border: 1px solid #ffd0bb;
+  border-radius: 999px;
+  color: #ff5722;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.food-stock-badge.in-stock {
+  background: #edfff5;
+  border-color: #9fddb7;
+  color: #157347;
+}
+
+.food-stock-badge.out-stock {
+  background: #fff1f1;
+  border-color: #f2b5b5;
+  color: #b42318;
+}
+
+.food-qty-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  margin: 0 18px 14px;
+}
+
+.food-qty-row label {
+  color: #555;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.food-qty-row input {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  padding: 10px 12px;
+  width: 100%;
 }
 
 .food-card button {
@@ -766,6 +818,11 @@ h2 {
   margin-top: auto;
   padding: 14px 18px;
   width: 100%;
+}
+
+.food-card button:disabled {
+  background: #c5c5c5;
+  cursor: not-allowed;
 }
 
 .cart-section {
