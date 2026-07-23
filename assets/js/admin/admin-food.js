@@ -20,6 +20,7 @@ const foodType = document.getElementById("foodType");
 const foodTypeLabel = document.getElementById("foodTypeLabel");
 const foodCategory = document.getElementById("foodCategory");
 const foodPrice = document.getElementById("foodPrice");
+const foodStockQuantity = document.getElementById("foodStockQuantity");
 const foodImage = document.getElementById("foodImage");
 const foodImageFile = document.getElementById("foodImageFile");
 const foodDescription = document.getElementById("foodDescription");
@@ -301,6 +302,7 @@ async function loadFood() {
   foodCategory.value = food.category_id || foodCategory.value;
   foodName.value = food.name || "";
   foodPrice.value = food.price || "";
+  foodStockQuantity.value = food.stock_quantity ?? food.stockQuantity ?? 0;
   foodImage.value = food.image || "";
   foodDescription.value = food.description || "";
   foodActive.checked = Boolean(food.is_active);
@@ -315,6 +317,7 @@ async function saveFood(event) {
     name: foodName.value.trim(),
     categoryId: foodCategory.value,
     price: foodPrice.value,
+    stockQuantity: foodStockQuantity.value,
     image: foodImage.value.trim(),
     description: foodDescription.value.trim(),
     isActive: foodActive.checked ? 1 : 0

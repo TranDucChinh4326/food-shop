@@ -270,6 +270,7 @@ async function loadFoods() {
       categoryName: food.category_name,
       parentCategoryName: food.parent_category_name,
       price: food.price,
+      stockQuantity: Number(food.stock_quantity ?? food.quantity ?? 0),
       desc: food.description,
       image: food.image
     }));
@@ -622,15 +623,29 @@ function renderFoods() {
     return;
   }
 
-  foodList.innerHTML = filteredFoods.map(food => `
-    <div class="food-card">
-      <img src="${food.image}" alt="${food.name}">
-      <h3>${food.name}</h3>
-      <p>${food.desc || ""}</p>
-      <span>${formatMoney(food.price)}</span>
-      <button onclick="addToCart(${food.id})">Thêm vào giỏ</button>
-    </div>
-  `).join("");
+  foodList.innerHTML = filteredFoods.map(food => {
+    const stock = Number(food.stockQuantity || 0);
+    const quantityInput = `<input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>`;
+    const buttonLabel = stock > 0 ? "Thêm vào giỏ" : "Hết hàng";
+    const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
+
+    return `
+      <div class="food-card">
+        <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+        <h3>${escapeHtml(food.name)}</h3>
+        <p>${escapeHtml(food.desc || "")}</p>
+        <div class="food-price-row">
+          <span>${formatMoney(food.price)}</span>
+          <span class="food-stock-badge ${stock > 0 ? "in-stock" : "out-stock"}">${stockLabel}</span>
+        </div>
+        <div class="food-qty-row">
+          <label for="food-qty-${food.id}">Số lượng</label>
+          ${quantityInput}
+        </div>
+        <button type="button" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
+      </div>
+    `;
+  }).join("");
 }
 
 function addToCart(foodId) {
@@ -646,23 +661,47 @@ function addToCart(foodId) {
     return;
   }
 
+  const stock = Number(food.stockQuantity || 0);
+  if (stock <= 0) {
+    showSiteToast("Món này hiện đã hết hàng.", "error");
+    return;
+  }
+
+  const requestedInput = document.querySelector(`[data-food-qty="${foodId}"]`);
+  const requestedQuantity = Math.max(1, Math.round(Number(requestedInput?.value || 1)));
+  const cappedQuantity = Math.min(requestedQuantity, stock);
+
+  if (requestedQuantity > stock) {
+    showSiteToast(`Chỉ còn ${stock} phần cho món ${food.name}.`, "error");
+    if (requestedInput) {
+      requestedInput.value = String(stock);
+    }
+    return;
+  }
+
   const itemInCart = cart.find(item => item.id === foodId);
+  const totalRequestedQuantity = (itemInCart?.quantity || 0) + cappedQuantity;
+
+  if (totalRequestedQuantity > stock) {
+    showSiteToast(`Bạn đang đặt quá số lượng còn của ${food.name}.`, "error");
+    return;
+  }
 
   if (itemInCart) {
-    itemInCart.quantity++;
+    itemInCart.quantity = totalRequestedQuantity;
   } else {
     cart.push({
       id: food.id,
       name: food.name,
       price: food.price,
-      quantity: 1
+      quantity: cappedQuantity
     });
   }
 
   saveCart();
   renderCart();
   updateCartCount();
-  showSiteToast(`Đã thêm ${food.name} vào giỏ hàng`);
+  showSiteToast(`Đã thêm ${food.name} x ${cappedQuantity} vào giỏ hàng`);
 }
 
 function renderCart() {
@@ -712,7 +751,16 @@ function changeQuantity(foodId, amount) {
 
   if (!item) return;
 
-  item.quantity += amount;
+  const food = foods.find(entry => entry.id === foodId);
+  const stock = Number(food?.stockQuantity ?? Number.MAX_SAFE_INTEGER);
+  const nextQuantity = item.quantity + amount;
+
+  if (nextQuantity > stock) {
+    showSiteToast(`Số lượng tối đa còn lại cho món này là ${stock}.`, "error");
+    return;
+  }
+
+  item.quantity = nextQuantity;
 
   if (item.quantity <= 0) {
     cart = cart.filter(cartItem => cartItem.id !== foodId);
@@ -738,6 +786,18 @@ async function submitOrder(event) {
 
   if (cart.length === 0) {
     showSiteToast("Giỏ hàng đang trống. Vui lòng chọn món trước.", "error");
+    return;
+  }
+
+  const stockIssue = foods.length
+    ? cart.some(item => {
+        const food = foods.find(entry => entry.id === item.id);
+        return !food || Number(food.stockQuantity || 0) < Number(item.quantity);
+      })
+    : false;
+
+  if (stockIssue) {
+    showSiteToast("Một số món trong giỏ hàng vượt quá số lượng còn. Vui lòng cập nhật lại.", "error");
     return;
   }
 

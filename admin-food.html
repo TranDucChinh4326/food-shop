@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon an - FoodHub Admin</title>
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -83,6 +83,11 @@
             Giá
             <input type="number" id="foodPrice" min="1000" step="1000" required>
           </label>
+
+          <label>
+            Số lượng còn
+            <input type="number" id="foodStockQuantity" min="0" step="1" value="0" required>
+          </label>
         </div>
 
         <label>
@@ -115,7 +120,7 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="admin-sidebar.js"></script>
-  <script src="admin-food.js"></script>
+  <script src="assets/js/admin/admin-sidebar.js"></script>
+  <script src="assets/js/admin/admin-food.js"></script>
 </body>
 </html>

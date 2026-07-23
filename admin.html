@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -35,6 +35,7 @@
         </div>
       </div>
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
       <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thống kê</span></a>
     </nav>
@@ -78,6 +79,11 @@
           <span>Thông báo</span>
           <strong>Đăng tin trên trang chủ</strong>
           <small>Quản lý các thông báo hiển thị ở đầu website cho khách hàng.</small>
+        </button>
+        <button class="overview-card" type="button" data-admin-shortcut="advertisements">
+          <span>Quảng cáo</span>
+          <strong>Banner nổi hai bên</strong>
+          <small>Quản lý hình quảng cáo cố định bên trái và bên phải website.</small>
         </button>
         <button class="overview-card" type="button" data-admin-shortcut="discounts">
           <span>Mã giảm giá</span>
@@ -255,6 +261,101 @@
       </section>
     </section>
 
+    <section class="admin-section" data-admin-section="advertisements">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quản lý quảng cáo</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quảng cáo</p>
+          </div>
+          <div class="heading-actions">
+            <button id="resetAdvertisementFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshAdvertisementsBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div class="admin-split-layout advertisement-admin-layout">
+          <form id="advertisementForm" class="announcement-page-form advertisement-form">
+            <input type="hidden" id="advertisementId">
+            <label>
+              Tiêu đề
+              <input id="advertisementTitle" type="text" placeholder="VD: Món mới tuần này" required>
+            </label>
+            <div class="announcement-date-grid">
+              <label>
+                Vị trí hiển thị
+                <select id="advertisementPosition">
+                  <option value="both">Hai bên</option>
+                  <option value="left">Bên trái</option>
+                  <option value="right">Bên phải</option>
+                </select>
+              </label>
+              <label>
+                Thứ tự
+                <input id="advertisementSortOrder" type="number" min="0" step="1" value="0">
+              </label>
+            </div>
+            <label>
+              Hình ảnh
+              <input id="advertisementImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+              <span class="form-hint">Chọn ảnh dọc JPG, PNG hoặc WebP. Ảnh sẽ được lưu tự động vào hệ thống.</span>
+            </label>
+            <div id="advertisementPreview" class="advertisement-preview">Chưa chọn ảnh</div>
+            <label>
+              Link khi bấm vào ảnh
+              <input id="advertisementLink" type="url" placeholder="Bỏ trống nếu không cần link">
+            </label>
+            <div class="announcement-date-grid">
+              <label>
+                Bắt đầu
+                <input id="advertisementStartsAt" type="datetime-local">
+              </label>
+              <label>
+                Hết hạn
+                <input id="advertisementExpiresAt" type="datetime-local">
+              </label>
+            </div>
+            <label>
+              Trạng thái
+              <select id="advertisementIsActive">
+                <option value="1">Hoạt động</option>
+                <option value="0">Ẩn</option>
+              </select>
+            </label>
+            <div class="account-form-actions form-actions">
+              <button id="saveAdvertisementBtn" type="submit" class="primary-btn">Lưu quảng cáo</button>
+              <button type="button" class="ghost-btn" data-reset-advertisement>Về danh sách</button>
+            </div>
+          </form>
+
+          <div class="admin-list-card advertisement-list-card">
+            <div class="advertisement-toolbar table-toolbar multi-filter">
+              <input type="search" id="advertisementSearch" placeholder="Tìm kiếm">
+              <select id="advertisementPositionFilter">
+                <option value="all">Tất cả vị trí</option>
+                <option value="both">Hai bên</option>
+                <option value="left">Bên trái</option>
+                <option value="right">Bên phải</option>
+              </select>
+              <select id="advertisementStatusFilter">
+                <option value="all">Tất cả</option>
+                <option value="active">Hoạt động</option>
+                <option value="scheduled">Sắp hiển thị</option>
+                <option value="expired">Hết hạn</option>
+                <option value="hidden">Đã ẩn</option>
+              </select>
+              <select id="advertisementPageSize" aria-label="So dong quang cao moi trang">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </select>
+            </div>
+            <div id="advertisementsList" class="accounts-list table-state">Đang tải quảng cáo...</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
     <section class="admin-section" data-admin-section="discounts">
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
@@ -389,7 +490,7 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="admin-sidebar.js"></script>
-  <script src="admin.js"></script>
+  <script src="assets/js/admin/admin-sidebar.js"></script>
+  <script src="assets/js/admin/admin.js"></script>
 </body>
 </html>

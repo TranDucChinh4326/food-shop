@@ -44,6 +44,7 @@ const discountStatusFilter = document.getElementById("discountStatusFilter");
 const discountPageSize = document.getElementById("discountPageSize");
 const advertisementsList = document.getElementById("advertisementsList");
 const advertisementForm = document.getElementById("advertisementForm");
+const advertisementLayout = document.querySelector(".advertisement-admin-layout");
 const advertisementSearch = document.getElementById("advertisementSearch");
 const advertisementPositionFilter = document.getElementById("advertisementPositionFilter");
 const advertisementStatusFilter = document.getElementById("advertisementStatusFilter");
@@ -745,6 +746,21 @@ function renderAdvertisementPreview(src) {
     : "Chua chon anh";
 }
 
+function showAdvertisementListView() {
+  if (!advertisementLayout) return;
+
+  advertisementLayout.classList.add("is-list-mode");
+  advertisementLayout.classList.remove("is-form-mode");
+}
+
+function showAdvertisementFormView() {
+  if (!advertisementLayout) return;
+
+  advertisementLayout.classList.add("is-form-mode");
+  advertisementLayout.classList.remove("is-list-mode");
+  advertisementLayout.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function resetAdvertisementForm() {
   if (!advertisementForm) return;
 
@@ -773,7 +789,7 @@ function fillAdvertisementForm(item) {
   if (advertisementImageFile) advertisementImageFile.value = "";
   renderAdvertisementPreview(pendingAdvertisementImage);
   document.getElementById("saveAdvertisementBtn").textContent = "Cap nhat quang cao";
-  advertisementForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  showAdvertisementFormView();
 }
 
 function readAdvertisementImageFile() {
@@ -827,6 +843,7 @@ async function saveAdvertisement(event) {
     showAdminToast(advertisementId ? "Da cap nhat quang cao." : "Da tao quang cao.");
     resetAdvertisementForm();
     await loadAdvertisements();
+    showAdvertisementListView();
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -1416,7 +1433,8 @@ function getFilteredFoods() {
     const matchesSearch = !search
       || String(food.name || "").toLowerCase().includes(search)
       || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
-      || String(food.price || "").includes(search);
+      || String(food.price || "").includes(search)
+      || String(food.stock_quantity ?? food.stockQuantity ?? 0).includes(search);
 
     return matchesCategory && matchesSearch;
   });
@@ -1468,6 +1486,7 @@ function renderFoodsTable() {
             <th>Hinh anh</th>
             <th>Ten mon</th>
             <th>Gia</th>
+            <th>So luong con</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -1483,6 +1502,7 @@ function renderFoodsTable() {
                 <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Dang ban" : "Da an"}</small>
               </td>
               <td>${formatMoney(food.price)}</td>
+              <td>${Number(food.stock_quantity ?? food.stockQuantity ?? 0).toLocaleString("vi-VN")}</td>
               <td>
                 <div class="table-actions">
                   <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
@@ -1603,13 +1623,19 @@ document.querySelector("[data-back-category-list]")?.addEventListener("click", (
   showCategoryListView();
 });
 document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
-document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", resetAdvertisementForm);
+document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", () => {
+  resetAdvertisementForm();
+  showAdvertisementFormView();
+});
 categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
 advertisementForm?.addEventListener("submit", saveAdvertisement);
-advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", resetAdvertisementForm);
+advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", () => {
+  resetAdvertisementForm();
+  showAdvertisementListView();
+});
 document.querySelector(".admin-nav")?.addEventListener("click", event => {
   const button = event.target.closest("[data-admin-target]");
 
@@ -2002,6 +2028,7 @@ if ([5, 10, 20].includes(initialUsersPageSize) && userPageSize) {
 
 showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || "overview");
 syncAccountView();
+showAdvertisementListView();
 loadAdminPermissions().then(loadUsers);
 loadOrders();
 loadCategories();

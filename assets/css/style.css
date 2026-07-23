@@ -350,26 +350,26 @@ header.header-compact .header-tools {
 .floating-ad {
   background: #fff7f2;
   border: 1px solid rgba(255, 79, 37, 0.24);
-  border-radius: 16px;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
   display: block;
-  height: 340px;
+  height: clamp(210px, 14vw, 270px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 58%;
+  top: 62%;
   transform: translateY(-50%);
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: 108px;
+  width: clamp(66px, 4.2vw, 84px);
   z-index: 80;
 }
 
 .floating-ad-left {
-  left: 24px;
+  left: 26px;
 }
 
 .floating-ad-right {
-  right: 24px;
+  right: 26px;
 }
 
 .floating-ad img {
@@ -380,7 +380,7 @@ header.header-compact .header-tools {
 }
 
 .floating-ad:hover {
-  box-shadow: 0 22px 52px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.18);
   transform: translateY(-50%) scale(1.025);
 }
 
@@ -393,7 +393,7 @@ header.header-compact .header-tools {
   display: none;
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1180px), (max-height: 620px) {
   .floating-ad {
     display: none;
   }
@@ -753,12 +753,64 @@ h2 {
   padding: 0 18px;
 }
 
-.food-card span {
-  display: block;
-  margin: 16px 18px;
+.food-price-row {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin: 16px 18px 10px;
+}
+
+.food-price-row span:first-child {
   color: #ff5722;
+  display: block;
   font-size: 20px;
   font-weight: bold;
+}
+
+.food-stock-badge {
+  background: #fff3ed;
+  border: 1px solid #ffd0bb;
+  border-radius: 999px;
+  color: #ff5722;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+.food-stock-badge.in-stock {
+  background: #edfff5;
+  border-color: #9fddb7;
+  color: #157347;
+}
+
+.food-stock-badge.out-stock {
+  background: #fff1f1;
+  border-color: #f2b5b5;
+  color: #b42318;
+}
+
+.food-qty-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  margin: 0 18px 14px;
+}
+
+.food-qty-row label {
+  color: #555;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.food-qty-row input {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  padding: 10px 12px;
+  width: 100%;
 }
 
 .food-card button {
@@ -766,6 +818,11 @@ h2 {
   margin-top: auto;
   padding: 14px 18px;
   width: 100%;
+}
+
+.food-card button:disabled {
+  background: #c5c5c5;
+  cursor: not-allowed;
 }
 
 .cart-section {
