@@ -1433,7 +1433,8 @@ function getFilteredFoods() {
     const matchesSearch = !search
       || String(food.name || "").toLowerCase().includes(search)
       || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
-      || String(food.price || "").includes(search);
+      || String(food.price || "").includes(search)
+      || String(food.stock_quantity ?? food.stockQuantity ?? 0).includes(search);
 
     return matchesCategory && matchesSearch;
   });
@@ -1485,6 +1486,7 @@ function renderFoodsTable() {
             <th>Hinh anh</th>
             <th>Ten mon</th>
             <th>Gia</th>
+            <th>So luong con</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -1500,6 +1502,7 @@ function renderFoodsTable() {
                 <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Dang ban" : "Da an"}</small>
               </td>
               <td>${formatMoney(food.price)}</td>
+              <td>${Number(food.stock_quantity ?? food.stockQuantity ?? 0).toLocaleString("vi-VN")}</td>
               <td>
                 <div class="table-actions">
                   <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
