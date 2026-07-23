@@ -22,8 +22,10 @@ const categoryFormTitle = document.getElementById("categoryFormTitle");
 const categoryFormSubtitle = document.getElementById("categoryFormSubtitle");
 const categorySearch = document.getElementById("categorySearch");
 const categoryTypeFilter = document.getElementById("categoryTypeFilter");
+const categoryPageSize = document.getElementById("categoryPageSize");
 const usersList = document.getElementById("usersList");
 const announcementsList = document.getElementById("announcementsList");
+const announcementPageSize = document.getElementById("announcementPageSize");
 const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
 const foodSearch = document.getElementById("foodSearch");
@@ -74,6 +76,8 @@ let adminPermissions = [];
 let cachedFoods = [];
 let cachedCategories = [];
 let categorySearchTimer;
+let categoriesPage = 1;
+let categoriesPerPage = 5;
 let foodSearchTimer;
 let activeFoodCategory = "all";
 let activeFoodSubcategory = "all";
@@ -87,7 +91,7 @@ let activeAccountType = "staff";
 let announcementSearchTimer;
 let cachedAnnouncements = [];
 let announcementsPage = 1;
-const ANNOUNCEMENTS_PER_PAGE = 5;
+let announcementsPerPage = 5;
 let discountSearchTimer;
 let cachedDiscounts = [];
 let discountsPage = 1;
@@ -482,7 +486,7 @@ async function loadAnnouncements() {
 
     cachedAnnouncements = announcements;
     if (announcementsCount) announcementsCount.textContent = announcements.length;
-    announcementsPage = Math.min(announcementsPage, Math.ceil(cachedAnnouncements.length / ANNOUNCEMENTS_PER_PAGE)) || 1;
+    announcementsPage = Math.min(announcementsPage, Math.ceil(cachedAnnouncements.length / announcementsPerPage)) || 1;
     renderAnnouncementsTable();
   } catch (error) {
     announcementsList.textContent = error.message;
@@ -493,12 +497,15 @@ async function loadAnnouncements() {
 function renderAnnouncementsTable() {
   if (!announcementsList) return;
 
+  announcementsPerPage = Number(announcementPageSize?.value || announcementsPerPage || 5);
+  if (![5, 10, 20].includes(announcementsPerPage)) announcementsPerPage = 5;
+
   const total = cachedAnnouncements.length;
-  const totalPages = Math.max(1, Math.ceil(total / ANNOUNCEMENTS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(total / announcementsPerPage));
   announcementsPage = Math.min(Math.max(announcementsPage, 1), totalPages);
 
-  const startIndex = (announcementsPage - 1) * ANNOUNCEMENTS_PER_PAGE;
-  const pageItems = cachedAnnouncements.slice(startIndex, startIndex + ANNOUNCEMENTS_PER_PAGE);
+  const startIndex = (announcementsPage - 1) * announcementsPerPage;
+  const pageItems = cachedAnnouncements.slice(startIndex, startIndex + announcementsPerPage);
   const from = total === 0 ? 0 : startIndex + 1;
   const to = startIndex + pageItems.length;
 
@@ -1257,9 +1264,21 @@ function renderCategoriesTable() {
   renderCategoryParentOptions(document.getElementById("categoryParent")?.value || "", document.getElementById("categoryId")?.value || "");
   renderCategoryFilterOptions();
   renderAdminFoodCategoryNav();
-  const categories = getFilteredCategories();
 
-  if (!categories.length) {
+  categoriesPerPage = Number(categoryPageSize?.value || categoriesPerPage || 5);
+  if (![5, 10, 20].includes(categoriesPerPage)) categoriesPerPage = 5;
+
+  const categories = getFilteredCategories();
+  const total = categories.length;
+  const totalPages = Math.max(1, Math.ceil(total / categoriesPerPage));
+  categoriesPage = Math.min(Math.max(categoriesPage, 1), totalPages);
+
+  const startIndex = (categoriesPage - 1) * categoriesPerPage;
+  const pageItems = categories.slice(startIndex, startIndex + categoriesPerPage);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageItems.length;
+
+  if (!total) {
     categoriesList.textContent = "Chua co danh muc phu hop.";
     return;
   }
@@ -1278,9 +1297,9 @@ function renderCategoriesTable() {
           </tr>
         </thead>
         <tbody>
-          ${categories.map((category, index) => `
+          ${pageItems.map((category, index) => `
             <tr>
-              <td>${index + 1}</td>
+              <td>${startIndex + index + 1}</td>
               <td>
                 <strong>${escapeHtml(category.name)}</strong>
                 <small>${escapeHtml(category.slug || "")}</small>
@@ -1299,6 +1318,16 @@ function renderCategoriesTable() {
         </tbody>
       </table>
     </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-categories-page="prev" ${categoriesPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${categoriesPage === index + 1 ? "active" : ""}" data-categories-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-categories-page="next" ${categoriesPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
   `;
 }
 
@@ -1309,6 +1338,7 @@ async function loadCategories() {
 
   try {
     cachedCategories = (await requestJson(`${ADMIN_API}/categories?includeInactive=1`)).map(normalizeAdminCategory);
+    categoriesPage = Math.min(categoriesPage, Math.ceil(cachedCategories.length / categoriesPerPage)) || 1;
     renderAdminFoodCategoryNav();
     renderCategoriesTable();
   } catch (error) {
@@ -1661,16 +1691,43 @@ document.querySelector(".admin-nav")?.addEventListener("click", event => {
 
   showAdminSection(button.dataset.adminTarget);
 });
-categoryTypeFilter?.addEventListener("change", renderCategoriesTable);
+categoryTypeFilter?.addEventListener("change", () => {
+  categoriesPage = 1;
+  renderCategoriesTable();
+});
+categoryPageSize?.addEventListener("change", () => {
+  categoriesPerPage = Number(categoryPageSize.value || 5);
+  categoriesPage = 1;
+  renderCategoriesTable();
+});
 categorySearch?.addEventListener("input", () => {
   clearTimeout(categorySearchTimer);
+  categoriesPage = 1;
   categorySearchTimer = setTimeout(renderCategoriesTable, 250);
 });
 categoriesList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-categories-page]");
   const editButton = event.target.closest("[data-edit-category]");
   const deleteButton = event.target.closest("[data-delete-category]");
 
   try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.categoriesPage;
+      const totalPages = Math.max(1, Math.ceil(getFilteredCategories().length / categoriesPerPage));
+
+      if (pageAction === "prev") {
+        categoriesPage -= 1;
+      } else if (pageAction === "next") {
+        categoriesPage += 1;
+      } else {
+        categoriesPage = Number(pageAction);
+      }
+
+      categoriesPage = Math.min(Math.max(categoriesPage, 1), totalPages);
+      renderCategoriesTable();
+      return;
+    }
+
     if (editButton) {
       const category = cachedCategories.find(item => String(item.id) === String(editButton.dataset.editCategory));
       fillCategoryForm(category);
@@ -1746,6 +1803,11 @@ userSearch?.addEventListener("input", () => {
 announcementStatusFilter?.addEventListener("change", () => {
   announcementsPage = 1;
   loadAnnouncements();
+});
+announcementPageSize?.addEventListener("change", () => {
+  announcementsPerPage = Number(announcementPageSize.value || 5);
+  announcementsPage = 1;
+  renderAnnouncementsTable();
 });
 announcementSearch?.addEventListener("input", () => {
   clearTimeout(announcementSearchTimer);
@@ -1882,7 +1944,7 @@ announcementsList?.addEventListener("click", async event => {
   try {
     if (pageButton) {
       const pageAction = pageButton.dataset.announcementsPage;
-      const totalPages = Math.max(1, Math.ceil(cachedAnnouncements.length / ANNOUNCEMENTS_PER_PAGE));
+      const totalPages = Math.max(1, Math.ceil(cachedAnnouncements.length / announcementsPerPage));
 
       if (pageAction === "prev") {
         announcementsPage -= 1;
