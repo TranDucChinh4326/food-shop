@@ -100,10 +100,32 @@
             <input type="tel" id="customerPhone" placeholder="0900 000 000" required>
           </label>
 
+          <div class="address-input-grid">
+            <label>
+              Thành phố / Tỉnh
+              <select id="customerCity" required>
+                <option value="">Chọn thành phố</option>
+              </select>
+            </label>
+            <label>
+              Quận / Huyện
+              <select id="customerDistrict" required>
+                <option value="">Chọn quận huyện</option>
+              </select>
+            </label>
+            <label>
+              Phường / Xã
+              <select id="customerWard" required>
+                <option value="">Chọn phường xã</option>
+              </select>
+            </label>
+          </div>
+
           <label>
-            Địa chỉ giao hàng
-            <input type="text" id="customerAddress" placeholder="Số nhà, đường, quận/huyện" required>
+            Địa chỉ cụ thể
+            <input type="text" id="customerAddress" placeholder="Số nhà, tên đường, tòa nhà" list="customerAddressSuggestions" required>
           </label>
+          <datalist id="customerAddressSuggestions"></datalist>
 
           <label>
             Ghi chú

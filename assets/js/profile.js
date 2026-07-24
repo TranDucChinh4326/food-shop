@@ -278,9 +278,17 @@ async function loadProfile() {
   }
 
   try {
+    initAddressSelectors();
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
     document.getElementById("profileFullname").value = data.user.fullname || "";
     document.getElementById("profileEmail").value = data.user.email || "";
+    document.getElementById("profilePhone").value = data.user.phone || "";
+    fillAddressForm({
+      cityId: "profileCity",
+      districtId: "profileDistrict",
+      wardId: "profileWard",
+      detailId: "profileAddressDetail"
+    }, data.user.address);
     renderEmailVerifyStatus(data.user);
     renderPasswordMode(data.user);
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
@@ -296,7 +304,14 @@ async function saveProfile(event) {
 
   const payload = {
     fullname: document.getElementById("profileFullname").value,
-    email: document.getElementById("profileEmail").value
+    email: document.getElementById("profileEmail").value,
+    phone: document.getElementById("profilePhone").value,
+    address: buildAddressString(
+      document.getElementById("profileCity")?.value || "",
+      document.getElementById("profileDistrict")?.value || "",
+      document.getElementById("profileWard")?.value || "",
+      document.getElementById("profileAddressDetail")?.value || ""
+    )
   };
 
   try {

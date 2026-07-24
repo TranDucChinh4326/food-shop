@@ -61,7 +61,7 @@
     <section class="profile-hero">
       <span class="badge">Tài khoản</span>
       <h1>Thông tin cá nhân</h1>
-      <p>Cập nhật họ tên, email và đổi mật khẩu đăng nhập FoodHub.</p>
+      <p>Cập nhật họ tên, email, số điện thoại và địa chỉ giao hàng cho tài khoản FoodHub.</p>
     </section>
 
     <section class="profile-grid">
@@ -69,7 +69,7 @@
         <div class="section-heading">
           <div>
             <h2>Hồ sơ</h2>
-            <p>Thông tin này dùng cho đăng nhập và hiển thị trong tài khoản.</p>
+            <p>Thông tin này dùng cho đăng nhập, giao hàng và lưu trữ địa chỉ khách hàng.</p>
           </div>
         </div>
 
@@ -82,6 +82,38 @@
           Email
           <input type="email" id="profileEmail" required>
         </label>
+
+        <label>
+          Số điện thoại
+          <input type="tel" id="profilePhone" placeholder="0900 000 000" required>
+        </label>
+
+        <div class="address-input-grid">
+          <label>
+            Thành phố / Tỉnh
+            <select id="profileCity" required>
+              <option value="">Chọn thành phố</option>
+            </select>
+          </label>
+          <label>
+            Quận / Huyện
+            <select id="profileDistrict" required>
+              <option value="">Chọn quận huyện</option>
+            </select>
+          </label>
+          <label>
+            Phường / Xã
+            <select id="profileWard" required>
+              <option value="">Chọn phường xã</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Địa chỉ cụ thể
+          <input type="text" id="profileAddressDetail" placeholder="Số nhà, tên đường, tòa nhà" list="profileAddressSuggestions" required>
+        </label>
+        <datalist id="profileAddressSuggestions"></datalist>
         <p id="emailVerifyStatus" class="verify-status"></p>
 
         <button type="submit" class="btn">Lưu thông tin</button>

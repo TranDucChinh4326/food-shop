@@ -17,6 +17,35 @@ let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
 
+const ADDRESS_LOOKUP = {
+  "Hà Nội": {
+    "Quận Ba Đình": ["Phường Phúc Xá", "Phường Trúc Bạch", "Phường Kim Mã", "Phường Cống Vị"],
+    "Quận Hoàn Kiếm": ["Phường Chương Dương Độ", "Phường Hàng Trống", "Phường Hàng Bạc", "Phường Lý Thái Tổ"],
+    "Quận Đống Đa": ["Phường Nam Đồng", "Phường Trung Liệt", "Phường Khâm Thiên", "Phường Cát Linh"]
+  },
+  "Hồ Chí Minh": {
+    "Quận 1": ["Phường Bến Nghé", "Phường Đa Kao", "Phường Tân Định", "Phường Nguyễn Thái Bình"],
+    "Quận 3": ["Phường Võ Thị Sáu", "Phường Nguyễn Cư Trinh", "Phường Phạm Ngũ Lão", "Phường Đa Kao"],
+    "Quận 7": ["Phường Tân Phú", "Phường Tân Hưng", "Phường Tân Thuận Đông", "Phường Tân Quy"]
+  },
+  "Đà Nẵng": {
+    "Quận Hải Châu": ["Phường Thạch Thang", "Phường Bình Hiên", "Phường Nam Dương", "Phường Thanh Bình"],
+    "Quận Cẩm Lệ": ["Phường Hòa An", "Phường Hòa Thọ Tây", "Phường Hòa Xuân", "Phường Khuê Trung"],
+    "Quận Ngũ Hành Sơn": ["Phường Hòa Hải", "Phường Mỹ An", "Phường Khuê Mỹ", "Phường Mân Thái"]
+  },
+  "Hải Phòng": {
+    "Quận Hồng Bàng": ["Phường Sở Dầu", "Phường Quán Toan", "Phường Phan Bội Châu", "Phường Gia Viễn"],
+    "Quận Ngô Quyền": ["Phường Lạch Tray", "Phường Máy Chai", "Phường Cầu Tre", "Phường Vĩnh Niệm"],
+    "Quận Lê Chân": ["Phường Trại Cau", "Phường Kênh Dương", "Phường Lam Sơn", "Phường An Biên"]
+  }
+};
+
+const DEFAULT_ADDRESS_SUGGESTIONS = [
+  "Số nhà, tên đường, khu phố",
+  "Tòa nhà, lầu, số phòng",
+  "Ngõ, ngách, hẻm gần khu vực"
+];
+
 localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
 localStorage.removeItem(CART_KEY);
@@ -241,6 +270,120 @@ function renderMenuCategoryOptions() {
     description.textContent = categoryValue === "all"
       ? "Hiển thị tất cả món theo thứ tự danh mục."
       : `Đang hiển thị các món thuộc ${label}.`;
+  }
+}
+
+function setSelectOptions(select, options, placeholder) {
+  if (!select) return;
+
+  const optionList = [
+    { value: "", label: placeholder },
+    ...options.map(option => typeof option === "string"
+      ? { value: option, label: option }
+      : { value: String(option.value || ""), label: option.label || option.value || "" })
+  ];
+
+  select.innerHTML = optionList.map((option, index) => {
+    const value = String(option.value || "");
+    const label = String(option.label || value || "");
+    return `<option value="${escapeHtml(value)}" ${index === 0 ? "selected" : ""}>${escapeHtml(label)}</option>`;
+  }).join("");
+}
+
+function parseAddressString(address) {
+  const parts = String(address || "").split("|").map(part => part.trim());
+
+  return {
+    city: parts[0] || "",
+    district: parts[1] || "",
+    ward: parts[2] || "",
+    detail: parts[3] || ""
+  };
+}
+
+function buildAddressString(city, district, ward, detail) {
+  return [city, district, ward, detail]
+    .map(value => String(value || "").trim())
+    .filter(Boolean)
+    .join("|");
+}
+
+function initAddressSelectors() {
+  const addressConfigs = [
+    {
+      cityId: "customerCity",
+      districtId: "customerDistrict",
+      wardId: "customerWard",
+      detailId: "customerAddress",
+      datalistId: "customerAddressSuggestions"
+    },
+    {
+      cityId: "profileCity",
+      districtId: "profileDistrict",
+      wardId: "profileWard",
+      detailId: "profileAddressDetail",
+      datalistId: "profileAddressSuggestions"
+    }
+  ];
+
+  const cityNames = Object.keys(ADDRESS_LOOKUP);
+
+  addressConfigs.forEach(config => {
+    const citySelect = document.getElementById(config.cityId);
+    const districtSelect = document.getElementById(config.districtId);
+    const wardSelect = document.getElementById(config.wardId);
+    const detailInput = document.getElementById(config.detailId);
+    const datalist = document.getElementById(config.datalistId);
+
+    if (!citySelect) return;
+
+    setSelectOptions(citySelect, cityNames, "Chọn thành phố");
+    setSelectOptions(districtSelect, [], "Chọn quận huyện");
+    setSelectOptions(wardSelect, [], "Chọn phường xã");
+
+    if (datalist) {
+      datalist.innerHTML = DEFAULT_ADDRESS_SUGGESTIONS.map(suggestion => `<option value="${escapeHtml(suggestion)}"></option>`).join("");
+    }
+
+    citySelect.addEventListener("change", () => {
+      const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
+      setSelectOptions(districtSelect, districts, "Chọn quận huyện");
+      setSelectOptions(wardSelect, [], "Chọn phường xã");
+      if (detailInput) detailInput.value = "";
+    });
+
+    districtSelect?.addEventListener("change", () => {
+      const wards = ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [];
+      setSelectOptions(wardSelect, wards, "Chọn phường xã");
+    });
+  });
+}
+
+function fillAddressForm(addressConfig, userAddress) {
+  const citySelect = document.getElementById(addressConfig.cityId);
+  const districtSelect = document.getElementById(addressConfig.districtId);
+  const wardSelect = document.getElementById(addressConfig.wardId);
+  const detailInput = document.getElementById(addressConfig.detailId);
+
+  if (!citySelect || !districtSelect || !wardSelect) return;
+
+  const parsedAddress = parseAddressString(userAddress);
+  const cityList = Object.keys(ADDRESS_LOOKUP);
+  const hasCityOption = cityList.includes(parsedAddress.city);
+
+  if (hasCityOption) {
+    citySelect.value = parsedAddress.city;
+    const districtList = Object.keys(ADDRESS_LOOKUP[parsedAddress.city] || {});
+    setSelectOptions(districtSelect, districtList, "Chọn quận huyện");
+    districtSelect.value = parsedAddress.district || "";
+
+    const wardList = ADDRESS_LOOKUP[parsedAddress.city]?.[parsedAddress.district] || [];
+    setSelectOptions(wardSelect, wardList, "Chọn phường xã");
+    wardSelect.value = parsedAddress.ward || "";
+  }
+
+  if (detailInput) {
+    detailInput.value = parsedAddress.detail || "";
   }
 }
 
@@ -803,7 +946,11 @@ async function submitOrder(event) {
 
   const name = document.getElementById("customerName").value;
   const phone = document.getElementById("customerPhone").value;
-  const address = document.getElementById("customerAddress").value;
+  const cityName = document.getElementById("customerCity")?.value || "";
+  const districtName = document.getElementById("customerDistrict")?.value || "";
+  const wardName = document.getElementById("customerWard")?.value || "";
+  const addressDetail = document.getElementById("customerAddress").value;
+  const address = buildAddressString(cityName, districtName, wardName, addressDetail);
   const note = document.getElementById("customerNote").value;
   const submitButton = document.querySelector("#orderForm button[type='submit']");
   const token = getAuthToken();
@@ -1407,6 +1554,18 @@ function initChatSupportWidget() {
 }
 
 if (protectCheckoutPage()) {
+  initAddressSelectors();
+  const currentUser = getCurrentUser();
+
+  if (currentUser?.address) {
+    fillAddressForm({
+      cityId: "customerCity",
+      districtId: "customerDistrict",
+      wardId: "customerWard",
+      detailId: "customerAddress"
+    }, currentUser.address);
+  }
+
   loadPublicCategories();
   loadFoods();
   loadPublicAnnouncements();
