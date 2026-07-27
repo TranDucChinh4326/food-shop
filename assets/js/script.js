@@ -336,6 +336,9 @@ function initAddressSelectors() {
     const datalist = document.getElementById(config.datalistId);
 
     if (!citySelect) return;
+    if (citySelect.dataset.addressSelectorInitialized === "true") return;
+
+    citySelect.dataset.addressSelectorInitialized = "true";
 
     setSelectOptions(citySelect, cityNames, "Chọn thành phố");
     setSelectOptions(districtSelect, [], "Chọn quận huyện");
@@ -1371,6 +1374,16 @@ function initChatSupportWidget() {
 
   const user = getCurrentUser();
   const displayName = user?.fullname || "ban";
+  const robotIcon = `
+    <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
+      <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
+      <path class="robot-antenna" d="M32 18v-7"></path>
+      <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
+      <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
+      <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
+      <path class="robot-mouth" d="M26 42h12"></path>
+    </svg>
+  `;
   const widget = document.createElement("div");
   widget.id = "support-widget";
   widget.className = "support-widget";
@@ -1379,14 +1392,7 @@ function initChatSupportWidget() {
       <div class="chat-header">
         <div class="chat-agent">
           <span class="chat-avatar" aria-hidden="true">
-            <svg viewBox="0 0 64 64" focusable="false">
-              <rect x="13" y="18" width="38" height="32" rx="14"></rect>
-              <path d="M32 18v-7"></path>
-              <circle cx="32" cy="8" r="3"></circle>
-              <circle cx="25" cy="33" r="3"></circle>
-              <circle cx="39" cy="33" r="3"></circle>
-              <path d="M26 42h12"></path>
-            </svg>
+            ${robotIcon}
           </span>
           <div>
             <strong>FoodHub</strong>
@@ -1397,7 +1403,7 @@ function initChatSupportWidget() {
           <button type="button" class="chat-menu" aria-label="Menu ho tro">
             <span></span><span></span><span></span>
           </button>
-          <button type="button" class="chat-close" aria-label="Dong ho tro">x</button>
+          <button type="button" class="chat-close" aria-label="Dong ho tro">&times;</button>
         </div>
       </div>
       <div class="chat-quick-menu" hidden>
@@ -1450,14 +1456,7 @@ function initChatSupportWidget() {
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
       <span aria-hidden="true">
-        <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
-          <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
-          <path class="robot-antenna" d="M32 18v-7"></path>
-          <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
-          <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
-          <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
-          <path class="robot-mouth" d="M26 42h12"></path>
-        </svg>
+        ${robotIcon}
       </span>
     </button>
   `;
@@ -1475,24 +1474,36 @@ function initChatSupportWidget() {
   const likeButton = widget.querySelector(".chat-like");
   const chatMessages = widget.querySelector(".chat-messages");
 
+  const hideChatPopovers = () => {
+    quickMenu.hidden = true;
+    emojiPicker.hidden = true;
+  };
+
   button.addEventListener("click", () => {
     const isOpen = widget.classList.toggle("open");
     button.setAttribute("aria-expanded", String(isOpen));
-    if (isOpen) chatInput.focus();
+    if (isOpen) {
+      chatInput.focus();
+    } else {
+      hideChatPopovers();
+    }
   });
 
   closeButton.addEventListener("click", () => {
     widget.classList.remove("open");
     button.setAttribute("aria-expanded", "false");
-    quickMenu.hidden = true;
-    emojiPicker.hidden = true;
+    hideChatPopovers();
   });
 
-  menuButton.addEventListener("click", () => {
-    quickMenu.hidden = !quickMenu.hidden;
+  menuButton.addEventListener("click", event => {
+    event.stopPropagation();
+    const willOpen = quickMenu.hidden;
+    hideChatPopovers();
+    quickMenu.hidden = !willOpen;
   });
 
   attachButton.addEventListener("click", () => {
+    hideChatPopovers();
     chatFile.click();
   });
 
@@ -1505,14 +1516,19 @@ function initChatSupportWidget() {
       <div class="chat-message bot muted">FoodHub da nhan thong tin tep. Tinh nang gui tep that se duoc ket noi sau.</div>
     `);
     chatFile.value = "";
+    hideChatPopovers();
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
-  emojiButton.addEventListener("click", () => {
-    emojiPicker.hidden = !emojiPicker.hidden;
+  emojiButton.addEventListener("click", event => {
+    event.stopPropagation();
+    const willOpen = emojiPicker.hidden;
+    hideChatPopovers();
+    emojiPicker.hidden = !willOpen;
   });
 
   emojiPicker.addEventListener("click", event => {
+    event.stopPropagation();
     const emojiOption = event.target.closest("button[data-code]");
     if (!emojiOption) return;
 
@@ -1522,6 +1538,7 @@ function initChatSupportWidget() {
   });
 
   likeButton.addEventListener("click", () => {
+    hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
       <div class="chat-message bot muted">Cam on ${escapeHtml(displayName)}, FoodHub da nhan phan hoi cua ban.</div>
@@ -1540,14 +1557,18 @@ function initChatSupportWidget() {
       <div class="chat-message bot muted">FoodHub da nhan tin nhan cua ban. Chuc nang tra loi tu dong se duoc cap nhat sau.</div>
     `);
     chatInput.value = "";
-    emojiPicker.hidden = true;
+    hideChatPopovers();
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
   document.addEventListener("click", event => {
-    if (emojiPicker.hidden) return;
-    if (emojiPicker.contains(event.target) || emojiButton.contains(event.target)) return;
-    emojiPicker.hidden = true;
+    if (!quickMenu.hidden && !quickMenu.contains(event.target) && !menuButton.contains(event.target)) {
+      quickMenu.hidden = true;
+    }
+
+    if (!emojiPicker.hidden && !emojiPicker.contains(event.target) && !emojiButton.contains(event.target)) {
+      emojiPicker.hidden = true;
+    }
   });
 
   document.body.appendChild(widget);

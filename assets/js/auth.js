@@ -310,6 +310,18 @@ async function login(event) {
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
+  const robotIcon = `
+    <svg class="support-robot-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path class="robot-antenna" d="M32 14v-6" />
+      <circle class="robot-dot" cx="32" cy="7" r="3" />
+      <rect class="robot-face" x="15" y="20" width="34" height="30" rx="12" />
+      <circle class="robot-eye" cx="26" cy="34" r="3" />
+      <circle class="robot-eye" cx="38" cy="34" r="3" />
+      <path class="robot-mouth" d="M27 43h10" />
+      <path class="robot-antenna" d="M15 35h-5M54 35h-5" />
+    </svg>
+  `;
+
   const widget = document.createElement("div");
   widget.id = "support-widget";
   widget.className = "support-widget";
@@ -333,8 +345,7 @@ function initSupportWidget() {
       </a>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span>?</span>
-      Ho tro
+      <span>${robotIcon}</span>
     </button>
   `;
 

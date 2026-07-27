@@ -246,41 +246,74 @@ body {
   bottom: 22px;
   position: fixed;
   right: 22px;
-  z-index: 60;
+  z-index: 1200;
 }
 
 .support-toggle {
   align-items: center;
-  background: #ff5722;
-  border: 0;
-  border-radius: 999px;
-  box-shadow: 0 16px 36px rgba(57, 28, 16, 0.28);
+  background: linear-gradient(145deg, #ff5a28 0%, #f0341f 100%);
+  border: 3px solid rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+  box-shadow: 0 14px 30px rgba(255, 87, 34, 0.34), 0 6px 18px rgba(69, 23, 12, 0.16);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
-  font-size: 15px;
+  font-size: 0;
   font-weight: 900;
-  gap: 8px;
-  min-height: 52px;
-  padding: 0 18px 0 10px;
+  gap: 0;
+  height: 58px;
+  justify-content: center;
+  min-height: 58px;
+  padding: 0;
+  transition: 0.2s ease;
+  width: 58px;
+}
+
+.support-toggle:hover {
+  box-shadow: 0 18px 34px rgba(255, 87, 34, 0.38), 0 8px 22px rgba(69, 23, 12, 0.18);
+  transform: translateY(-2px);
 }
 
 .support-toggle span {
   align-items: center;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 50%;
   display: inline-flex;
-  font-size: 18px;
-  height: 34px;
+  font-size: 0;
+  height: 42px;
   justify-content: center;
+  width: 42px;
+}
+
+.support-robot-icon {
+  display: block;
+  height: 34px;
   width: 34px;
+}
+
+.robot-face {
+  fill: #fff;
+}
+
+.robot-antenna,
+.robot-mouth {
+  fill: none;
+  stroke: #ff5722;
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.robot-dot,
+.robot-eye {
+  fill: #ff5722;
 }
 
 .support-panel {
   background: #fff;
   border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 8px;
-  bottom: 66px;
+  border-radius: 14px;
+  bottom: 70px;
   box-shadow: 0 18px 48px rgba(39, 24, 15, 0.2);
   display: grid;
   gap: 8px;
@@ -290,14 +323,21 @@ body {
   pointer-events: none;
   position: absolute;
   right: 0;
-  transform: translateY(10px);
+  transform: translateY(12px) scale(0.98);
+  transform-origin: bottom right;
   transition: 0.2s ease;
 }
 
 .support-widget.open .support-panel {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+}
+
+.support-widget.open .support-toggle {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.84);
 }
 
 .support-link {
@@ -364,5 +404,6 @@ body {
 
   .support-panel {
     max-width: calc(100vw - 32px);
+    right: 0;
   }
 }

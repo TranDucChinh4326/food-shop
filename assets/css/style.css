@@ -923,6 +923,12 @@ h2 {
   align-items: start;
 }
 
+.address-input-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .profile-card {
   display: grid;
   gap: 16px;
@@ -936,7 +942,9 @@ h2 {
   gap: 8px;
 }
 
-.profile-card input {
+.profile-card input,
+.profile-card select,
+.profile-card textarea {
   border: 1px solid #ddd;
   border-radius: 12px;
   font-size: 16px;
@@ -946,9 +954,30 @@ h2 {
   width: 100%;
 }
 
-.profile-card input:focus {
+.profile-card select,
+.order-form select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #ff5722 50%), linear-gradient(135deg, #ff5722 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(50% - 3px), calc(100% - 14px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.profile-card input:focus,
+.profile-card select:focus,
+.profile-card textarea:focus,
+.order-form input:focus,
+.order-form select:focus,
+.order-form textarea:focus {
   border-color: #ff8a65;
   box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.12);
+}
+
+.address-input-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .verify-status {
@@ -1152,10 +1181,23 @@ h2 {
   gap: 8px;
 }
 
+.order-form input,
+.order-form textarea,
+.order-form select {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  min-height: 50px;
+  outline: none;
+  padding: 0 15px;
+  width: 100%;
+}
+
 .order-section textarea,
 .order-form textarea {
   height: 120px;
   resize: none;
+  padding: 14px 15px;
 }
 
 .track-form {
@@ -1378,26 +1420,26 @@ footer {
   bottom: 22px;
   position: fixed;
   right: 22px;
-  z-index: 180;
+  z-index: 1200;
 }
 
 .support-toggle {
   align-items: center;
   background: linear-gradient(145deg, #ff5a28 0%, #f0341f 100%);
-  border: 4px solid rgba(255, 255, 255, 0.88);
+  border: 3px solid rgba(255, 255, 255, 0.92);
   border-radius: 50%;
-  box-shadow: 0 16px 34px rgba(255, 87, 34, 0.32), 0 4px 12px rgba(30, 15, 8, 0.14);
+  box-shadow: 0 18px 34px rgba(255, 87, 34, 0.28), 0 6px 16px rgba(30, 15, 8, 0.14);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-size: 0;
   font-weight: 900;
-  height: 62px;
+  height: 58px;
   justify-content: center;
-  min-height: 62px;
+  min-height: 58px;
   padding: 0;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  width: 62px;
+  width: 58px;
 }
 
 .support-toggle:hover {
@@ -1410,15 +1452,15 @@ footer {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: inline-flex;
-  height: 44px;
+  height: 42px;
   justify-content: center;
-  width: 44px;
+  width: 42px;
 }
 
 .support-robot-icon {
   display: block;
-  height: 38px;
-  width: 38px;
+  height: 34px;
+  width: 34px;
 }
 
 .robot-face {
@@ -1441,7 +1483,7 @@ footer {
 .support-panel {
   background: #fff;
   border: 1px solid #f0e5dc;
-  border-radius: 8px;
+  border-radius: 16px;
   bottom: 76px;
   box-shadow: 0 18px 48px rgba(39, 24, 15, 0.18);
   display: grid;
@@ -1452,15 +1494,16 @@ footer {
   pointer-events: none;
   position: absolute;
   right: 0;
-  transform: translateY(10px);
+  transform: translateY(12px) scale(0.98);
+  transform-origin: bottom right;
   transition: 0.2s ease;
 }
 
 .support-widget.open .support-panel {
-  bottom: 0;
+  bottom: 76px;
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .support-widget.open .support-toggle {
@@ -1473,11 +1516,11 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: min(430px, calc(100vh - 44px));
-  min-width: 340px;
+  height: min(500px, calc(100vh - 118px));
+  min-width: min(360px, calc(100vw - 28px));
   overflow: hidden;
   padding: 0;
-  width: min(360px, calc(100vw - 28px));
+  width: min(380px, calc(100vw - 28px));
 }
 
 .chat-header {
@@ -1486,8 +1529,8 @@ footer {
   color: #fff;
   display: flex;
   justify-content: space-between;
-  min-height: 78px;
-  padding: 14px 16px;
+  min-height: 68px;
+  padding: 12px 14px;
 }
 
 .chat-agent {
@@ -1503,36 +1546,38 @@ footer {
   border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 50%;
   display: inline-flex;
-  flex: 0 0 44px;
-  height: 44px;
+  flex: 0 0 42px;
+  height: 42px;
   justify-content: center;
-  width: 44px;
+  width: 42px;
 }
 
 .chat-avatar svg {
-  height: 34px;
-  width: 34px;
+  height: 32px;
+  width: 32px;
 }
 
-.chat-avatar rect {
+.chat-avatar .robot-face {
   fill: #fff;
 }
 
-.chat-avatar path {
+.chat-avatar .robot-antenna,
+.chat-avatar .robot-mouth {
   fill: none;
   stroke: #ff5722;
   stroke-linecap: round;
   stroke-width: 4;
 }
 
-.chat-avatar circle {
+.chat-avatar .robot-dot,
+.chat-avatar .robot-eye {
   fill: #ff5722;
 }
 
 .chat-header-actions {
   align-items: center;
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chat-header strong,
@@ -1554,11 +1599,12 @@ footer {
   color: #fff;
   cursor: pointer;
   display: inline-flex;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
-  height: 34px;
+  height: 32px;
   justify-content: center;
-  width: 34px;
+  line-height: 1;
+  width: 32px;
 }
 
 .chat-menu {
@@ -1569,10 +1615,10 @@ footer {
   display: inline-flex;
   flex-direction: column;
   gap: 4px;
-  height: 34px;
+  height: 32px;
   justify-content: center;
   padding: 0;
-  width: 34px;
+  width: 32px;
 }
 
 .chat-menu span {
@@ -1600,7 +1646,7 @@ footer {
   align-items: center;
   background: #fff;
   border: 1px solid #f0e5dc;
-  border-radius: 6px;
+  border-radius: 10px;
   color: #332822;
   display: inline-flex;
   font-size: 12px;
@@ -1659,24 +1705,25 @@ footer {
   border-top: 1px solid #f0e5dc;
   display: block;
   flex: 0 0 auto;
-  min-height: 64px;
+  min-height: 58px;
   padding: 0;
   position: relative;
 }
 
 .chat-form-main {
   align-items: center;
-  display: grid;
+  display: flex;
   gap: 8px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 
 .chat-input {
   border: 0;
   border-radius: 0;
+  flex: 1 1 auto;
   font-size: 14px;
-  min-height: 42px;
+  min-height: 40px;
+  min-width: 0;
   padding: 0 6px;
 }
 
@@ -1687,7 +1734,8 @@ footer {
 .chat-tools {
   align-items: center;
   display: flex;
-  gap: 3px;
+  flex: 0 0 auto;
+  gap: 2px;
 }
 
 .chat-tool,
@@ -1699,10 +1747,10 @@ footer {
   color: #777;
   cursor: pointer;
   display: inline-flex;
-  height: 34px;
+  height: 32px;
   justify-content: center;
   padding: 0;
-  width: 34px;
+  width: 32px;
 }
 
 .chat-tool:hover,
@@ -1713,8 +1761,8 @@ footer {
 
 .chat-tool svg,
 .chat-send svg {
-  height: 22px;
-  width: 22px;
+  height: 20px;
+  width: 20px;
 }
 
 .chat-tool path,
@@ -1748,13 +1796,14 @@ footer {
   background: #fff;
   border: 1px solid #ecd7cc;
   border-radius: 999px;
-  bottom: 58px;
+  bottom: 54px;
   box-shadow: 0 12px 28px rgba(39, 24, 15, 0.14);
   display: flex;
   gap: 2px;
   padding: 5px;
   position: absolute;
-  right: 42px;
+  right: 48px;
+  z-index: 3;
 }
 
 .chat-emoji-picker[hidden] {
@@ -1963,6 +2012,39 @@ footer {
 
   .support-panel {
     max-width: calc(100vw - 32px);
+  }
+
+  .support-widget.open .support-panel {
+    bottom: 72px;
+  }
+
+  .chat-panel {
+    height: min(460px, calc(100vh - 104px));
+    min-width: 0;
+    width: min(380px, calc(100vw - 32px));
+  }
+
+  .chat-header {
+    min-height: 64px;
+    padding: 10px 12px;
+  }
+
+  .chat-messages {
+    padding: 14px;
+  }
+
+  .chat-message {
+    max-width: 90%;
+  }
+
+  .chat-quick-menu {
+    grid-template-columns: 1fr;
+    max-width: calc(100vw - 64px);
+  }
+
+  .chat-emoji-picker {
+    max-width: calc(100vw - 84px);
+    right: 42px;
   }
 }
 
@@ -2368,6 +2450,29 @@ footer {
   .support-panel {
     bottom: 64px;
     right: 0;
+  }
+
+  .support-widget.open .support-panel {
+    bottom: 70px;
+  }
+
+  .chat-panel {
+    height: min(430px, calc(100vh - 96px));
+    min-width: 0;
+    width: calc(100vw - 28px);
+  }
+
+  .chat-form-main {
+    padding: 8px;
+  }
+
+  .chat-input {
+    font-size: 15px;
+  }
+
+  .chat-tools button {
+    height: 30px;
+    width: 30px;
   }
 
   .announcement-filters,
