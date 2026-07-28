@@ -1383,10 +1383,151 @@ h2 {
 }
 
 footer {
+  background: #3a291f;
+  color: #fff7ed;
+}
+
+.site-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-inner {
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 46px 24px 30px;
+}
+
+.footer-brand {
+  max-width: 560px;
+}
+
+.footer-logo {
+  color: #fff7ed;
+  display: inline-flex;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.footer-brand p {
+  color: rgba(255, 247, 237, 0.88);
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 34px;
+}
+
+.footer-socials a {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: inline-flex;
+  height: 48px;
+  justify-content: center;
+  transition: 0.2s ease;
+  width: 48px;
+}
+
+.footer-socials a:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+.footer-socials svg {
+  fill: none;
+  height: 22px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 22px;
+}
+
+.footer-links {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  margin-bottom: 36px;
+  max-width: 560px;
+}
+
+.footer-links h3 {
+  color: #fff7ed;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0 0 18px;
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  color: rgba(255, 247, 237, 0.86);
+  display: block;
+  font-size: 17px;
+  margin: 0 0 14px;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 247, 237, 0.9);
+  padding-top: 26px;
   text-align: center;
-  padding: 25px;
-  background: #222;
-  color: white;
+}
+
+.footer-bottom p {
+  margin: 0 0 12px;
+}
+
+@media (min-width: 820px) {
+  .footer-inner {
+    column-gap: 80px;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(360px, 0.9fr);
+  }
+
+  .footer-brand,
+  .footer-links {
+    margin-bottom: 0;
+  }
+
+  .footer-bottom {
+    grid-column: 1 / -1;
+    margin-top: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-inner {
+    padding: 38px 26px 28px;
+  }
+
+  .footer-brand p {
+    font-size: 17px;
+  }
+
+  .footer-links {
+    gap: 24px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-links h3,
+  .footer-links a {
+    font-size: 16px;
+  }
 }
 
 .site-toast {
