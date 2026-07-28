@@ -1244,16 +1244,38 @@ function initMobileMenu() {
   const overlay = document.createElement("div");
   overlay.className = "mobile-menu-overlay";
 
+  const isMobile = () => window.matchMedia("(max-width: 560px)").matches;
+  const closeMenu = () => {
+    header.classList.remove("mobile-menu-open");
+    document.body.classList.remove("menu-lock");
+    toggle.setAttribute("aria-expanded", "false");
+  };
+
   toggle.addEventListener("click", () => {
     const isOpen = header.classList.toggle("mobile-menu-open");
     document.body.classList.toggle("menu-lock", isOpen);
     toggle.setAttribute("aria-expanded", String(isOpen));
   });
 
-  overlay.addEventListener("click", () => {
-    header.classList.remove("mobile-menu-open");
-    document.body.classList.remove("menu-lock");
-    toggle.setAttribute("aria-expanded", "false");
+  overlay.addEventListener("click", closeMenu);
+
+  header.querySelectorAll(".nav-dropdown-toggle").forEach(dropdownToggle => {
+    dropdownToggle.addEventListener("click", event => {
+      if (!isMobile()) return;
+      event.preventDefault();
+      event.stopPropagation();
+      dropdownToggle.closest(".nav-dropdown")?.classList.toggle("open");
+    });
+  });
+
+  header.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", () => {
+      if (isMobile() && !link.classList.contains("nav-dropdown-toggle")) closeMenu();
+    });
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
   });
 
   (headerTop || header).prepend(toggle);

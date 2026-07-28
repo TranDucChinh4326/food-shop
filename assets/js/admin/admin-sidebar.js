@@ -1,4 +1,5 @@
 const ADMIN_SIDEBAR_COLLAPSED_KEY = "foodhub_admin_sidebar_collapsed";
+const ADMIN_MOBILE_QUERY = "(max-width: 1100px)";
 
 const ADMIN_ICONS = {
   menu: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg>',
@@ -49,17 +50,75 @@ function initAdminSidebar() {
 
   if (!sidebar || !toggle) return;
 
+  const media = window.matchMedia(ADMIN_MOBILE_QUERY);
+  let backdrop = document.querySelector(".admin-mobile-backdrop");
+
+  if (!backdrop) {
+    backdrop = document.createElement("div");
+    backdrop.className = "admin-mobile-backdrop";
+    document.body.appendChild(backdrop);
+  }
+
+  const closeMobileMenu = () => {
+    document.body.classList.remove("sidebar-mobile-open", "admin-menu-lock");
+    toggle.setAttribute("aria-expanded", "false");
+  };
+
+  const openMobileMenu = () => {
+    document.body.classList.add("sidebar-mobile-open", "admin-menu-lock");
+    toggle.setAttribute("aria-expanded", "true");
+  };
+
   const setCollapsed = collapsed => {
+    if (media.matches) return;
     document.body.classList.toggle("sidebar-collapsed", collapsed);
     toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
     sessionStorage.setItem(ADMIN_SIDEBAR_COLLAPSED_KEY, collapsed ? "1" : "0");
   };
 
-  setCollapsed(sessionStorage.getItem(ADMIN_SIDEBAR_COLLAPSED_KEY) === "1");
+  const syncMode = () => {
+    if (media.matches) {
+      document.body.classList.remove("sidebar-collapsed");
+      closeMobileMenu();
+      return;
+    }
+
+    closeMobileMenu();
+    setCollapsed(sessionStorage.getItem(ADMIN_SIDEBAR_COLLAPSED_KEY) === "1");
+  };
+
+  syncMode();
 
   toggle.addEventListener("click", () => {
+    if (media.matches) {
+      if (document.body.classList.contains("sidebar-mobile-open")) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+      return;
+    }
+
     setCollapsed(!document.body.classList.contains("sidebar-collapsed"));
   });
+
+  backdrop.addEventListener("click", closeMobileMenu);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMobileMenu();
+  });
+
+  sidebar.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      if (media.matches) closeMobileMenu();
+    });
+  });
+
+  if (typeof media.addEventListener === "function") {
+    media.addEventListener("change", syncMode);
+  } else if (typeof media.addListener === "function") {
+    media.addListener(syncMode);
+  }
 }
 
 initAdminSidebar();
