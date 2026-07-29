@@ -5,6 +5,7 @@ const PROFILE_FACEBOOK_SDK_VERSION = "v25.0";
 
 let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
+let savedAddresses = [];
 
 function getProfileAuthHeaders() {
   return {
@@ -177,6 +178,109 @@ async function loadSocialAccounts() {
   }
 }
 
+function setProfileTab(tab) {
+  document.querySelectorAll("[data-profile-tab]").forEach(button => {
+    button.classList.toggle("active", button.dataset.profileTab === tab);
+  });
+
+  document.querySelectorAll("[data-profile-panel]").forEach(panel => {
+    panel.hidden = panel.dataset.profilePanel !== tab;
+  });
+}
+
+function renderSavedAddresses() {
+  const container = document.getElementById("savedAddressList");
+  if (!container) return;
+
+  if (!savedAddresses.length) {
+    container.innerHTML = `<p class="empty-cart">Chưa có địa chỉ giao hàng nào.</p>`;
+    return;
+  }
+
+  container.innerHTML = savedAddresses.map(address => `
+    <article class="saved-address-card">
+      <div>
+        <h3>${escapeHtml(address.label || "Địa chỉ giao hàng")} ${address.isDefault ? "<span>Mặc định</span>" : ""}</h3>
+        <p>${escapeHtml(address.receiverName || "")}${address.phone ? ` - ${escapeHtml(address.phone)}` : ""}</p>
+        <small>${escapeHtml(address.address)}</small>
+      </div>
+      <div class="saved-address-actions">
+        <button type="button" data-edit-address="${address.id}">Sửa</button>
+        <button type="button" data-delete-address="${address.id}">Xóa</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+async function loadSavedAddresses() {
+  try {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/addresses`);
+    savedAddresses = data.addresses || [];
+    renderSavedAddresses();
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
+function resetAddressForm() {
+  document.getElementById("addressBookId").value = "";
+  document.getElementById("addressBookForm")?.reset();
+}
+
+async function saveAddressBook(event) {
+  event.preventDefault();
+
+  const addressId = document.getElementById("addressBookId").value;
+  const payload = {
+    label: document.getElementById("addressBookLabel").value,
+    receiverName: document.getElementById("addressBookReceiver").value,
+    phone: document.getElementById("addressBookPhone").value,
+    address: document.getElementById("addressBookAddress").value,
+    isDefault: document.getElementById("addressBookDefault").checked
+  };
+  const url = addressId
+    ? `${PROFILE_AUTH_API}/addresses/${addressId}`
+    : `${PROFILE_AUTH_API}/addresses`;
+
+  try {
+    const data = await requestProfileJson(url, {
+      method: addressId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+    resetAddressForm();
+    await loadSavedAddresses();
+    await loadProfile();
+    showSiteToast(data.message || "Da luu dia chi.");
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
+async function deleteAddress(addressId) {
+  try {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/addresses/${addressId}`, {
+      method: "DELETE"
+    });
+    await loadSavedAddresses();
+    await loadProfile();
+    showSiteToast(data.message || "Da xoa dia chi.");
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
+function editAddress(addressId) {
+  const address = savedAddresses.find(item => String(item.id) === String(addressId));
+  if (!address) return;
+
+  document.getElementById("addressBookId").value = address.id;
+  document.getElementById("addressBookLabel").value = address.label || "";
+  document.getElementById("addressBookReceiver").value = address.receiverName || "";
+  document.getElementById("addressBookPhone").value = address.phone || "";
+  document.getElementById("addressBookAddress").value = address.address || "";
+  document.getElementById("addressBookDefault").checked = Boolean(address.isDefault);
+}
+
 async function postSocialLink(provider, accessToken) {
   const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/link/${provider}`, {
     method: "POST",
@@ -322,6 +426,7 @@ async function loadProfile() {
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
     await loadSocialAccounts();
+    await loadSavedAddresses();
   } catch (error) {
     showSiteToast(error.message, "error");
   }
@@ -390,4 +495,16 @@ document.getElementById("profileForm").addEventListener("submit", saveProfile);
 document.getElementById("passwordForm").addEventListener("submit", changePassword);
 document.getElementById("linkGoogleButton").addEventListener("click", linkGoogleAccount);
 document.getElementById("linkFacebookButton").addEventListener("click", linkFacebookAccount);
+document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);
+document.getElementById("cancelAddressEdit")?.addEventListener("click", resetAddressForm);
+document.getElementById("savedAddressList")?.addEventListener("click", event => {
+  const editButton = event.target.closest("[data-edit-address]");
+  const deleteButton = event.target.closest("[data-delete-address]");
+
+  if (editButton) editAddress(editButton.dataset.editAddress);
+  if (deleteButton) deleteAddress(deleteButton.dataset.deleteAddress);
+});
+document.querySelectorAll("[data-profile-tab]").forEach(button => {
+  button.addEventListener("click", () => setProfileTab(button.dataset.profileTab));
+});
 loadProfile();

@@ -90,6 +90,13 @@
         </div>
 
         <form id="orderForm" class="order-form" onsubmit="submitOrder(event)">
+          <label id="savedAddressSelectWrap" hidden>
+            Chọn địa chỉ đã lưu
+            <select id="savedAddressSelect">
+              <option value="">Nhập địa chỉ mới</option>
+            </select>
+          </label>
+
           <label>
             Họ và tên
             <input type="text" id="customerName" placeholder="Nguyễn Văn A" required>

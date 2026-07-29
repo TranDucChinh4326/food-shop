@@ -390,6 +390,66 @@ function fillAddressForm(addressConfig, userAddress) {
   }
 }
 
+async function loadCheckoutSavedAddresses() {
+  const select = document.getElementById("savedAddressSelect");
+  const wrap = document.getElementById("savedAddressSelectWrap");
+
+  if (!select || !wrap || !isLoggedIn()) return;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/addresses`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json();
+
+    if (!response.ok || !Array.isArray(data.addresses) || data.addresses.length === 0) return;
+
+    wrap.hidden = false;
+    select.innerHTML = `<option value="">Nhập địa chỉ mới</option>` + data.addresses.map(address => (
+      `<option value="${address.id}" data-address="${escapeHtml(address.address)}" data-name="${escapeHtml(address.receiverName || "")}" data-phone="${escapeHtml(address.phone || "")}">
+        ${escapeHtml(address.label || "Địa chỉ giao hàng")}${address.isDefault ? " - Mặc định" : ""}
+      </option>`
+    )).join("");
+
+    const defaultAddress = data.addresses.find(address => address.isDefault) || data.addresses[0];
+    if (defaultAddress) {
+      select.value = String(defaultAddress.id);
+      applySavedCheckoutAddress(defaultAddress);
+    }
+
+    select.addEventListener("change", () => {
+      const option = select.selectedOptions[0];
+      if (!option?.value) return;
+      applySavedCheckoutAddress({
+        address: option.dataset.address || "",
+        receiverName: option.dataset.name || "",
+        phone: option.dataset.phone || ""
+      });
+    });
+  } catch (error) {
+    console.error("Khong tai duoc dia chi da luu:", error);
+  }
+}
+
+function applySavedCheckoutAddress(address) {
+  if (address.receiverName && document.getElementById("customerName")) {
+    document.getElementById("customerName").value = address.receiverName;
+  }
+
+  if (address.phone && document.getElementById("customerPhone")) {
+    document.getElementById("customerPhone").value = address.phone;
+  }
+
+  fillAddressForm({
+    cityId: "customerCity",
+    districtId: "customerDistrict",
+    wardId: "customerWard",
+    detailId: "customerAddress"
+  }, address.address);
+}
+
 function updateCartCount() {
   const cartCount = document.getElementById("cart-count");
 
@@ -1608,6 +1668,7 @@ if (protectCheckoutPage()) {
       detailId: "customerAddress"
     }, currentUser.address);
   }
+  loadCheckoutSavedAddresses();
 
   loadPublicCategories();
   loadFoods();

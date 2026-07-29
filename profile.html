@@ -65,11 +65,11 @@
     </section>
 
     <aside class="account-sidebar" aria-label="Tài khoản">
-      <a class="account-nav-item active" href="#profileForm">♙ Thông tin cá nhân</a>
+      <button type="button" class="account-nav-item active" data-profile-tab="profile">♙ Thông tin cá nhân</button>
       <a class="account-nav-item" href="track.html">▤ Đơn hàng của tôi</a>
-      <a class="account-nav-item" href="#profileAddressDetail">⌖ Địa chỉ đã lưu</a>
-      <a class="account-nav-item" href="#socialAccounts">▣ Đăng nhập liên kết</a>
-      <button type="button" class="account-nav-item danger" onclick="logout()">↪ Đăng xuất</button>
+      <button type="button" class="account-nav-item" data-profile-tab="addresses">⌖ Địa chỉ đã lưu</button>
+      <button type="button" class="account-nav-item" data-profile-tab="wallet">▣ Nạp tiền</button>
+      <button type="button" class="account-nav-item" data-profile-tab="linked">◇ Đăng nhập liên kết</button>
     </aside>
 
     <section class="account-summary-card">
@@ -88,7 +88,7 @@
     </section>
 
     <section class="profile-grid">
-      <form id="profileForm" class="profile-card">
+      <form id="profileForm" class="profile-card" data-profile-panel="profile">
         <div class="section-heading">
           <div>
             <h2>Hồ sơ</h2>
@@ -147,7 +147,60 @@
         <button type="submit" class="btn">Lưu thông tin</button>
       </form>
 
-      <form id="passwordForm" class="profile-card">
+      <section class="profile-card" data-profile-panel="addresses" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>Địa chỉ đã lưu</h2>
+            <p>Tạo nhiều địa chỉ giao hàng và chọn một địa chỉ mặc định khi đặt món.</p>
+          </div>
+        </div>
+
+        <div id="savedAddressList" class="saved-address-list"></div>
+
+        <form id="addressBookForm" class="address-book-form">
+          <input type="hidden" id="addressBookId">
+          <label>
+            Tên địa chỉ
+            <input type="text" id="addressBookLabel" placeholder="Nhà riêng, công ty...">
+          </label>
+          <label>
+            Người nhận
+            <input type="text" id="addressBookReceiver" placeholder="Nguyễn Văn A">
+          </label>
+          <label>
+            Số điện thoại
+            <input type="tel" id="addressBookPhone" placeholder="0900 000 000">
+          </label>
+          <label>
+            Địa chỉ
+            <input type="text" id="addressBookAddress" placeholder="Thành phố | Quận | Phường | Số nhà..." required>
+          </label>
+          <label class="address-default-check">
+            <input type="checkbox" id="addressBookDefault">
+            Đặt làm địa chỉ mặc định
+          </label>
+          <div class="social-link-actions">
+            <button type="button" id="cancelAddressEdit" class="social-link-btn">Hủy</button>
+            <button type="submit" class="btn">Lưu địa chỉ</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="profile-card wallet-panel" data-profile-panel="wallet" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>Ví FoodHub</h2>
+            <p>Chức năng nạp tiền sẽ được bổ sung sau.</p>
+          </div>
+        </div>
+        <div class="wallet-balance">
+          <span>Số dư hiện tại</span>
+          <strong>0đ</strong>
+        </div>
+        <button type="button" class="btn" disabled>Nạp tiền</button>
+      </section>
+
+      <form id="passwordForm" class="profile-card" data-profile-panel="profile">
         <div class="section-heading">
           <div>
             <h2>Đổi mật khẩu</h2>
@@ -168,7 +221,7 @@
         <button type="submit" class="btn">Đổi mật khẩu</button>
       </form>
 
-      <section class="profile-card social-link-card">
+      <section class="profile-card social-link-card" data-profile-panel="linked" hidden>
         <div class="section-heading">
           <div>
             <h2>Tài khoản liên kết</h2>

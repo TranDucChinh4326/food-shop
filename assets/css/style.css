@@ -1306,6 +1306,110 @@ h2 {
   grid-column: auto;
 }
 
+.profile-page [hidden] {
+  display: none !important;
+}
+
+.saved-address-list {
+  display: grid;
+  gap: 12px;
+}
+
+.saved-address-card {
+  align-items: center;
+  background: #fff8f0;
+  border: 1px solid #f1dfd3;
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.saved-address-card h3 {
+  color: #2a211d;
+  font-size: 16px;
+  margin: 0 0 5px;
+}
+
+.saved-address-card h3 span {
+  background: #ffe8d8;
+  border-radius: 999px;
+  color: #9a4300;
+  font-size: 12px;
+  margin-left: 8px;
+  padding: 4px 8px;
+}
+
+.saved-address-card p,
+.saved-address-card small {
+  color: #6b5b52;
+  display: block;
+  line-height: 1.5;
+}
+
+.saved-address-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.saved-address-actions button {
+  background: #fff;
+  border: 1px solid #e7cfc0;
+  border-radius: 6px;
+  color: #8f3c00;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.address-book-form {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.address-book-form label:nth-child(5),
+.address-book-form .social-link-actions {
+  grid-column: 1 / -1;
+}
+
+.address-default-check {
+  align-items: center;
+  display: flex !important;
+  flex-direction: row;
+}
+
+.address-default-check input {
+  min-height: 0 !important;
+  width: auto !important;
+}
+
+.wallet-panel .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.wallet-balance {
+  background: #fff8f0;
+  border: 1px solid #f1dfd3;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+}
+
+.wallet-balance span {
+  color: #7a6b64;
+  font-weight: 700;
+}
+
+.wallet-balance strong {
+  color: #9a4300;
+  font-size: 32px;
+}
+
 @media (max-width: 900px) {
   .profile-page {
     grid-template-columns: 1fr;
@@ -1342,6 +1446,16 @@ h2 {
 
   .profile-page #profileForm {
     grid-template-columns: 1fr;
+  }
+
+  .address-book-form,
+  .saved-address-card {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-address-card {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 
