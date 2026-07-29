@@ -2217,6 +2217,49 @@ footer {
   z-index: 1200;
 }
 
+.chat-bubble-tip {
+  background: #fff;
+  border: 1px solid #f0dfd5;
+  border-radius: 16px;
+  bottom: 8px;
+  box-shadow: 0 14px 34px rgba(39, 24, 15, 0.16);
+  color: #3a2a22;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  max-width: 230px;
+  opacity: 0;
+  padding: 12px 14px;
+  pointer-events: none;
+  position: absolute;
+  right: 76px;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  width: max-content;
+}
+
+.chat-bubble-tip::after {
+  background: #fff;
+  border-right: 1px solid #f0dfd5;
+  border-top: 1px solid #f0dfd5;
+  content: "";
+  height: 12px;
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 12px;
+}
+
+.chat-bubble-tip.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.chat-bubble-tip[hidden] {
+  display: none;
+}
+
 .support-toggle {
   align-items: center;
   background: #ff7900;
@@ -3260,6 +3303,19 @@ footer {
   .support-widget {
     bottom: 18px;
     right: 14px;
+  }
+
+  .chat-bubble-tip {
+    bottom: 72px;
+    max-width: calc(100vw - 40px);
+    right: 0;
+  }
+
+  .chat-bubble-tip::after {
+    bottom: -7px;
+    right: 24px;
+    top: auto;
+    transform: rotate(135deg);
   }
 
   .support-toggle {

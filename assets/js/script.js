@@ -1593,6 +1593,7 @@ function initSupportWidget() {
         <strong>Email</strong>
       </a>
     </div>
+    <div class="chat-bubble-tip" hidden>Ban co can toi ho tro gi khong?</div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
       <span aria-hidden="true">${robotIcon}</span>
     </button>
@@ -1605,6 +1606,7 @@ function initSupportWidget() {
   });
 
   document.body.appendChild(widget);
+  maybeShowChatBubble(widget);
 }
 
 function getFoodHubRobotIcon(showWordmark = false) {
@@ -1705,6 +1707,7 @@ function initChatSupportWidget() {
         </div>
       </form>
     </div>
+    <div class="chat-bubble-tip" hidden>Ban co can toi ho tro gi khong?</div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
       <span aria-hidden="true">${robotLogo}</span>
     </button>
@@ -1821,6 +1824,38 @@ function initChatSupportWidget() {
   });
 
   document.body.appendChild(widget);
+  maybeShowChatBubble(widget);
+}
+
+function maybeShowChatBubble(widget) {
+  const bubble = widget.querySelector(".chat-bubble-tip");
+  if (!bubble) return;
+
+  const isHomePage = /(^|\/)index\.html$/.test(window.location.pathname) || window.location.pathname.endsWith("/");
+  const shouldShowAfterLogin = sessionStorage.getItem("foodhub_show_chat_bubble") === "1";
+  const shouldShowFirstHome = isHomePage && localStorage.getItem("foodhub_home_chat_bubble_seen") !== "1";
+
+  if (!shouldShowAfterLogin && !shouldShowFirstHome) return;
+
+  if (shouldShowAfterLogin) {
+    sessionStorage.removeItem("foodhub_show_chat_bubble");
+  }
+
+  if (shouldShowFirstHome) {
+    localStorage.setItem("foodhub_home_chat_bubble_seen", "1");
+  }
+
+  bubble.hidden = false;
+  requestAnimationFrame(() => {
+    bubble.classList.add("show");
+  });
+
+  setTimeout(() => {
+    bubble.classList.remove("show");
+    setTimeout(() => {
+      bubble.hidden = true;
+    }, 220);
+  }, 5000);
 }
 
 if (protectCheckoutPage()) {

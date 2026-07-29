@@ -78,6 +78,7 @@ function finishLogin(data) {
 
   sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+  sessionStorage.setItem("foodhub_show_chat_bubble", "1");
   showToast("Dang nhap thanh cong. Dang vao FoodHub...", "success");
 
   setTimeout(() => {
