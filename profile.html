@@ -69,7 +69,7 @@
       <a class="account-nav-item" href="track.html">▤ Đơn hàng của tôi</a>
       <button type="button" class="account-nav-item" data-profile-tab="addresses">⌖ Địa chỉ đã lưu</button>
       <button type="button" class="account-nav-item" data-profile-tab="wallet">▣ Nạp tiền</button>
-      <button type="button" class="account-nav-item" data-profile-tab="linked">◇ Đăng nhập liên kết</button>
+      <button type="button" class="account-nav-item" data-profile-tab="password">◇ Đổi mật khẩu</button>
     </aside>
 
     <section class="account-summary-card">
@@ -84,6 +84,13 @@
         <div class="account-badges">
           <span>✪ 450 points</span>
           <span>Thành viên Vàng</span>
+        </div>
+      </div>
+      <div class="summary-social-links">
+        <div id="socialAccounts" class="social-account-list compact"></div>
+        <div class="social-link-actions">
+          <button type="button" id="linkGoogleButton" class="social-link-btn google">G Google</button>
+          <button type="button" id="linkFacebookButton" class="social-link-btn facebook">f Facebook</button>
         </div>
       </div>
     </section>
@@ -210,11 +217,11 @@
         <button type="button" class="btn" disabled>Nạp tiền</button>
       </section>
 
-      <form id="passwordForm" class="profile-card" data-profile-panel="profile">
+      <form id="passwordForm" class="profile-card password-card" data-profile-panel="password" hidden>
         <div class="section-heading">
           <div>
             <h2>Đổi mật khẩu</h2>
-            <p>Áp dụng cho tài khoản đăng ký bằng email và mật khẩu.</p>
+            <p>Xác nhận mật khẩu hiện tại và captcha trước khi đổi mật khẩu mới.</p>
           </div>
         </div>
 
@@ -228,24 +235,26 @@
           <input type="password" id="newPassword" autocomplete="new-password" minlength="6" required>
         </label>
 
+        <label>
+          Nhập lại mật khẩu mới
+          <input type="password" id="confirmNewPassword" autocomplete="new-password" minlength="6" required>
+        </label>
+
+        <div class="captcha-row">
+          <div>
+            <span>Mã captcha</span>
+            <strong id="passwordCaptchaQuestion">0 + 0</strong>
+          </div>
+          <button type="button" id="refreshPasswordCaptcha" class="social-link-btn">Đổi mã</button>
+        </div>
+
+        <label>
+          Nhập mã captcha
+          <input type="text" id="passwordCaptchaAnswer" inputmode="numeric" autocomplete="off" required>
+        </label>
+
         <button type="submit" class="btn">Đổi mật khẩu</button>
       </form>
-
-      <section class="profile-card social-link-card" data-profile-panel="linked" hidden>
-        <div class="section-heading">
-          <div>
-            <h2>Tài khoản liên kết</h2>
-            <p>Gắn Google hoặc Facebook vào cùng một tài khoản FoodHub để lần sau đăng nhập nhanh hơn.</p>
-          </div>
-        </div>
-
-        <div id="socialAccounts" class="social-account-list"></div>
-
-        <div class="social-link-actions">
-          <button type="button" id="linkGoogleButton" class="social-link-btn google">G Google</button>
-          <button type="button" id="linkFacebookButton" class="social-link-btn facebook">f Facebook</button>
-        </div>
-      </section>
     </section>
   </main>
 

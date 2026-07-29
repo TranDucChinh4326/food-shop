@@ -7,6 +7,7 @@ let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
 let savedAddresses = [];
 let selectedAvatarData = "";
+let passwordCaptchaAnswer = "";
 
 function getProfileAuthHeaders() {
   return {
@@ -118,8 +119,9 @@ function renderPasswordMode(user) {
   const form = document.getElementById("passwordForm");
   const currentPassword = document.getElementById("currentPassword");
   const newPassword = document.getElementById("newPassword");
+  const confirmNewPassword = document.getElementById("confirmNewPassword");
 
-  if (!form || !currentPassword || !newPassword) return;
+  if (!form || !currentPassword || !newPassword || !confirmNewPassword) return;
 
   const title = form.querySelector(".section-heading h2");
   const hint = form.querySelector(".section-heading p");
@@ -128,6 +130,7 @@ function renderPasswordMode(user) {
   const hasPasswordSet = Boolean(user?.passwordSet);
 
   currentPassword.required = hasPasswordSet;
+  confirmNewPassword.required = true;
   if (currentLabel) {
     currentLabel.hidden = !hasPasswordSet;
   }
@@ -145,6 +148,17 @@ function renderPasswordMode(user) {
   if (button) {
     button.textContent = hasPasswordSet ? "Doi mat khau" : "Tao mat khau";
   }
+}
+
+function refreshPasswordCaptcha() {
+  const question = document.getElementById("passwordCaptchaQuestion");
+  const answerInput = document.getElementById("passwordCaptchaAnswer");
+  const left = Math.floor(Math.random() * 8) + 2;
+  const right = Math.floor(Math.random() * 8) + 2;
+
+  passwordCaptchaAnswer = String(left + right);
+  if (question) question.textContent = `${left} + ${right}`;
+  if (answerInput) answerInput.value = "";
 }
 
 function renderAccountSummary(user) {
@@ -568,9 +582,28 @@ function compressAvatarImage(file) {
 async function changePassword(event) {
   event.preventDefault();
 
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmNewPassword").value;
+  const captchaAnswer = document.getElementById("passwordCaptchaAnswer").value.trim();
+
+  if (newPassword !== confirmPassword) {
+    showSiteToast("Mat khau moi nhap lai khong khop.", "error");
+    return;
+  }
+
+  if (captchaAnswer !== passwordCaptchaAnswer) {
+    showSiteToast("Ma captcha khong dung.", "error");
+    refreshPasswordCaptcha();
+    return;
+  }
+
   const payload = {
-    currentPassword: document.getElementById("currentPassword").value,
-    newPassword: document.getElementById("newPassword").value
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    captchaAnswer,
+    captchaExpected: passwordCaptchaAnswer
   };
 
   try {
@@ -579,9 +612,11 @@ async function changePassword(event) {
       body: JSON.stringify(payload)
     });
     event.currentTarget.reset();
+    refreshPasswordCaptcha();
     await loadProfile();
     showSiteToast("Da doi mat khau.");
   } catch (error) {
+    refreshPasswordCaptcha();
     showSiteToast(error.message, "error");
   }
 }
@@ -593,6 +628,7 @@ document.getElementById("linkFacebookButton").addEventListener("click", linkFace
 initAvatarUpload();
 document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);
 document.getElementById("cancelAddressEdit")?.addEventListener("click", resetAddressForm);
+document.getElementById("refreshPasswordCaptcha")?.addEventListener("click", refreshPasswordCaptcha);
 document.getElementById("savedAddressList")?.addEventListener("click", event => {
   const editButton = event.target.closest("[data-edit-address]");
   const deleteButton = event.target.closest("[data-delete-address]");
@@ -603,4 +639,5 @@ document.getElementById("savedAddressList")?.addEventListener("click", event => 
 document.querySelectorAll("[data-profile-tab]").forEach(button => {
   button.addEventListener("click", () => setProfileTab(button.dataset.profileTab));
 });
+refreshPasswordCaptcha();
 loadProfile();

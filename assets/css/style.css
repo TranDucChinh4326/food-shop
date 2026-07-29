@@ -1159,10 +1159,11 @@ h2 {
   border: 1px solid #f0dfd5;
   border-radius: 8px;
   box-shadow: 0 14px 34px rgba(64, 34, 18, 0.06);
-  display: flex;
+  display: grid;
   gap: 20px;
   grid-column: 2;
   grid-row: 1;
+  grid-template-columns: auto minmax(220px, 1fr) minmax(360px, 0.9fr);
   min-height: 96px;
   padding: 16px 24px;
 }
@@ -1241,6 +1242,55 @@ button.account-photo-badge {
   padding: 6px 10px;
 }
 
+.summary-social-links {
+  border-left: 1px solid #f0dfd5;
+  display: grid;
+  gap: 10px;
+  justify-self: stretch;
+  padding-left: 20px;
+}
+
+.summary-social-links .social-account-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-social-links .social-account-item {
+  align-items: flex-start;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.summary-social-links .social-account-name {
+  gap: 8px;
+}
+
+.summary-social-links .social-account-icon {
+  height: 26px;
+  width: 26px;
+}
+
+.summary-social-links .social-account-meta {
+  display: none;
+}
+
+.summary-social-links .social-account-status {
+  justify-self: start;
+  padding: 5px 9px;
+}
+
+.summary-social-links .social-link-actions {
+  gap: 8px;
+}
+
+.summary-social-links .social-link-btn {
+  border-color: #f0dfd5;
+  border-radius: 8px;
+  font-size: 14px;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
 .profile-page .profile-grid {
   display: grid;
   gap: 14px;
@@ -1308,6 +1358,39 @@ button.account-photo-badge {
 
 .profile-page .profile-card .btn:hover {
   background: #7d3600;
+}
+
+.profile-page .password-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile-page .password-card .section-heading,
+.profile-page .password-card .captcha-row,
+.profile-page .password-card .btn {
+  grid-column: 1 / -1;
+}
+
+.captcha-row {
+  align-items: center;
+  background: #fff8f0;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+}
+
+.captcha-row span {
+  color: #7a6b64;
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.captcha-row strong {
+  color: #2a211d;
+  font-size: 20px;
 }
 
 .profile-page .social-link-card {
@@ -1442,6 +1525,18 @@ button.account-photo-badge {
     flex: 0 0 auto;
     white-space: nowrap;
   }
+
+  .account-summary-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .summary-social-links {
+    border-left: 0;
+    border-top: 1px solid #f0dfd5;
+    grid-column: 1 / -1;
+    padding-left: 0;
+    padding-top: 14px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1451,7 +1546,13 @@ button.account-photo-badge {
 
   .account-summary-card {
     align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+
+  .summary-social-links,
+  .summary-social-links .social-account-list,
+  .profile-page .password-card {
+    grid-template-columns: 1fr;
   }
 
   .profile-page #profileForm {
