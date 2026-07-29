@@ -64,6 +64,29 @@
       <p>Cập nhật họ tên, email, số điện thoại và địa chỉ giao hàng cho tài khoản FoodHub.</p>
     </section>
 
+    <aside class="account-sidebar" aria-label="Tài khoản">
+      <a class="account-nav-item active" href="#profileForm">♙ Thông tin cá nhân</a>
+      <a class="account-nav-item" href="track.html">▤ Đơn hàng của tôi</a>
+      <a class="account-nav-item" href="#profileAddressDetail">⌖ Địa chỉ đã lưu</a>
+      <a class="account-nav-item" href="#socialAccounts">▣ Đăng nhập liên kết</a>
+      <button type="button" class="account-nav-item danger" onclick="logout()">↪ Đăng xuất</button>
+    </aside>
+
+    <section class="account-summary-card">
+      <div class="account-photo-wrap">
+        <div id="profileAvatar" class="account-photo">FH</div>
+        <span class="account-photo-badge">☰</span>
+      </div>
+      <div>
+        <h1 id="profileDisplayName">FoodHub User</h1>
+        <p id="profileDisplayEmail">user@email.com</p>
+        <div class="account-badges">
+          <span>✪ 450 points</span>
+          <span>Thành viên Vàng</span>
+        </div>
+      </div>
+    </section>
+
     <section class="profile-grid">
       <form id="profileForm" class="profile-card">
         <div class="section-heading">

@@ -145,6 +145,29 @@ function renderPasswordMode(user) {
   }
 }
 
+function renderAccountSummary(user) {
+  const name = document.getElementById("profileDisplayName");
+  const email = document.getElementById("profileDisplayEmail");
+  const avatar = document.getElementById("profileAvatar");
+
+  if (name) name.textContent = user?.fullname || "FoodHub User";
+  if (email) email.textContent = user?.email || "";
+
+  if (avatar) {
+    if (user?.avatar) {
+      avatar.innerHTML = `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.fullname || "FoodHub User")}">`;
+    } else {
+      const initials = String(user?.fullname || user?.email || "FH")
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join("") || "FH";
+      avatar.textContent = initials;
+    }
+  }
+}
+
 async function loadSocialAccounts() {
   try {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/accounts`);
@@ -292,6 +315,7 @@ async function loadProfile() {
     }, data.user.address);
     renderEmailVerifyStatus(data.user);
     renderPasswordMode(data.user);
+    renderAccountSummary(data.user);
     if (data.user.requiresAccountSetup || new URLSearchParams(window.location.search).get("setup") === "1") {
       showSiteToast("Vui long tao username va mat khau de hoan tat tai khoan.", "info");
     }
