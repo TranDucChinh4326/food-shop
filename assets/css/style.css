@@ -2218,28 +2218,40 @@ footer {
 }
 
 .chat-bubble-tip {
-  background: #fff;
-  border: 1px solid #f0dfd5;
-  border-radius: 16px;
-  bottom: 8px;
-  box-shadow: 0 14px 34px rgba(39, 24, 15, 0.16);
-  color: #3a2a22;
-  font-size: 15px;
-  font-weight: 800;
+  background: linear-gradient(180deg, #fff 0%, #fff8f3 100%);
+  border: 1px solid #f3d9ca;
+  border-radius: 14px;
+  bottom: 10px;
+  box-shadow: 0 16px 34px rgba(50, 28, 18, 0.14);
+  color: #3c2a21;
+  display: grid;
+  gap: 3px;
   line-height: 1.35;
-  max-width: 230px;
+  max-width: 240px;
   opacity: 0;
-  padding: 12px 14px;
+  padding: 11px 14px 12px;
   pointer-events: none;
   position: absolute;
   right: 76px;
-  transform: translateY(8px) scale(0.98);
+  transform: translateX(8px) scale(0.98);
   transition: opacity 0.22s ease, transform 0.22s ease;
   width: max-content;
 }
 
+.chat-bubble-tip strong {
+  color: #ff6f00;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.chat-bubble-tip span {
+  color: #3c2a21;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .chat-bubble-tip::after {
-  background: #fff;
+  background: #fff8f3;
   border-right: 1px solid #f0dfd5;
   border-top: 1px solid #f0dfd5;
   content: "";
@@ -2253,7 +2265,7 @@ footer {
 
 .chat-bubble-tip.show {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateX(0) scale(1);
 }
 
 .chat-bubble-tip[hidden] {

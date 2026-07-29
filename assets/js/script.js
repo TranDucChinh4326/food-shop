@@ -1593,7 +1593,10 @@ function initSupportWidget() {
         <strong>Email</strong>
       </a>
     </div>
-    <div class="chat-bubble-tip" hidden>Ban co can toi ho tro gi khong?</div>
+    <div class="chat-bubble-tip" hidden>
+      <strong>FoodHub đây!</strong>
+      <span>Bạn có cần tôi hỗ trợ gì không?</span>
+    </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
       <span aria-hidden="true">${robotIcon}</span>
     </button>
@@ -1707,7 +1710,10 @@ function initChatSupportWidget() {
         </div>
       </form>
     </div>
-    <div class="chat-bubble-tip" hidden>Ban co can toi ho tro gi khong?</div>
+    <div class="chat-bubble-tip" hidden>
+      <strong>FoodHub đây!</strong>
+      <span>Bạn có cần tôi hỗ trợ gì không?</span>
+    </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
       <span aria-hidden="true">${robotLogo}</span>
     </button>
