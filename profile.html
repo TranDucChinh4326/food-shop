@@ -65,11 +65,26 @@
     </section>
 
     <aside class="account-sidebar" aria-label="Tài khoản">
-      <button type="button" class="account-nav-item active" data-profile-tab="profile">♙ Thông tin cá nhân</button>
-      <a class="account-nav-item" href="track.html">▤ Đơn hàng của tôi</a>
-      <button type="button" class="account-nav-item" data-profile-tab="addresses">⌖ Địa chỉ đã lưu</button>
-      <button type="button" class="account-nav-item" data-profile-tab="wallet">▣ Nạp tiền</button>
-      <button type="button" class="account-nav-item" data-profile-tab="password">◇ Đổi mật khẩu</button>
+      <button type="button" class="account-nav-item active" data-profile-tab="profile">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>
+        <span>Thông tin cá nhân</span>
+      </button>
+      <a class="account-nav-item" href="track.html">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18H7z"/><path d="M9 7h6M9 11h6M9 15h4"/><path d="M5 5h2M5 9h2M5 13h2M5 17h2"/></svg></span>
+        <span>Đơn hàng của tôi</span>
+      </a>
+      <button type="button" class="account-nav-item" data-profile-tab="addresses">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z"/><path d="M12 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span>
+        <span>Địa chỉ đã lưu</span>
+      </button>
+      <button type="button" class="account-nav-item" data-profile-tab="wallet">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"/><path d="M4 9l3-4h10l3 4"/><path d="M16 13h3"/></svg></span>
+        <span>Thanh toán</span>
+      </button>
+      <button type="button" class="account-nav-item" data-profile-tab="password">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><path d="M5 11h14v10H5z"/><path d="M12 15v2"/></svg></span>
+        <span>Đổi mật khẩu</span>
+      </button>
     </aside>
 
     <section class="account-summary-card">
@@ -88,10 +103,6 @@
       </div>
       <div class="summary-social-links">
         <div id="socialAccounts" class="social-account-list compact"></div>
-        <div class="social-link-actions">
-          <button type="button" id="linkGoogleButton" class="social-link-btn google">G Google</button>
-          <button type="button" id="linkFacebookButton" class="social-link-btn facebook">f Facebook</button>
-        </div>
       </div>
     </section>
 
@@ -100,7 +111,7 @@
         <div class="section-heading">
           <div>
             <h2>Hồ sơ</h2>
-            <p>Thông tin này dùng cho đăng nhập, giao hàng và lưu trữ địa chỉ khách hàng.</p>
+            <p>Thông tin định danh tài khoản. Địa chỉ giao hàng được quản lý riêng ở mục Địa chỉ đã lưu.</p>
           </div>
         </div>
 
@@ -124,26 +135,6 @@
           <input type="tel" id="profilePhone" placeholder="0900 000 000" required>
         </label>
 
-        <div class="address-input-grid">
-          <label>
-            Thành phố / Tỉnh
-            <select id="profileCity" required>
-              <option value="">Chọn thành phố</option>
-            </select>
-          </label>
-          <label>
-            Phường / Xã
-            <select id="profileWard" required>
-              <option value="">Chọn phường xã</option>
-            </select>
-          </label>
-        </div>
-
-        <label>
-          Địa chỉ cụ thể
-          <input type="text" id="profileAddressDetail" placeholder="Số nhà, tên đường, tòa nhà" list="profileAddressSuggestions" required>
-        </label>
-        <datalist id="profileAddressSuggestions"></datalist>
         <p id="emailVerifyStatus" class="verify-status"></p>
 
         <button type="submit" class="btn">Lưu thông tin</button>
@@ -206,8 +197,8 @@
       <section class="profile-card wallet-panel" data-profile-panel="wallet" hidden>
         <div class="section-heading">
           <div>
-            <h2>Ví FoodHub</h2>
-            <p>Chức năng nạp tiền sẽ được bổ sung sau.</p>
+            <h2>Thanh toán</h2>
+            <p>Quản lý số dư và phương thức thanh toán của tài khoản FoodHub.</p>
           </div>
         </div>
         <div class="wallet-balance">

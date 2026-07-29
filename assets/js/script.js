@@ -428,12 +428,6 @@ async function legacyInitAddressSelectors() {
       datalistId: "customerAddressSuggestions"
     },
     {
-      cityId: "profileCity",
-      wardId: "profileWard",
-      detailId: "profileAddressDetail",
-      datalistId: "profileAddressSuggestions"
-    },
-    {
       cityId: "addressBookCity",
       wardId: "addressBookWard",
       detailId: "addressBookDetail",
@@ -514,12 +508,6 @@ async function initAddressSelectors() {
       wardId: "customerWard",
       detailId: "customerAddress",
       datalistId: "customerAddressSuggestions"
-    },
-    {
-      cityId: "profileCity",
-      wardId: "profileWard",
-      detailId: "profileAddressDetail",
-      datalistId: "profileAddressSuggestions"
     },
     {
       cityId: "addressBookCity",
@@ -1581,6 +1569,8 @@ function protectCheckoutPage() {
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
+  const robotIcon = getFoodHubRobotIcon(true);
+
   const widget = document.createElement("div");
   widget.id = "support-widget";
   widget.className = "support-widget";
@@ -1604,16 +1594,7 @@ function initSupportWidget() {
       </a>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span aria-hidden="true">
-        <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
-          <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
-          <path class="robot-antenna" d="M32 18v-7"></path>
-          <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
-          <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
-          <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
-          <path class="robot-mouth" d="M26 42h12"></path>
-        </svg>
-      </span>
+      <span aria-hidden="true">${robotIcon}</span>
     </button>
   `;
 
@@ -1626,21 +1607,32 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+function getFoodHubRobotIcon(showWordmark = false) {
+  return `
+    <svg class="support-robot-icon ${showWordmark ? "with-wordmark" : ""}" viewBox="0 0 160 160" focusable="false">
+      <g class="foodhub-robot-mark">
+        <path class="robot-antenna" d="M80 42V25"></path>
+        <circle class="robot-ring" cx="80" cy="19" r="8"></circle>
+        <path class="robot-ear" d="M39 70h-9a9 9 0 0 0-9 9v20a9 9 0 0 0 9 9h9Z"></path>
+        <path class="robot-ear" d="M121 70h9a9 9 0 0 1 9 9v20a9 9 0 0 1-9 9h-9Z"></path>
+        <path class="robot-face" d="M42 61h76c13 0 23 10 23 23v12c0 13-10 23-23 23H81l-24 18v-18H42c-13 0-23-10-23-23V84c0-13 10-23 23-23Z"></path>
+        <rect class="robot-screen" x="55" y="77" width="50" height="30" rx="14"></rect>
+        <circle class="robot-eye" cx="66" cy="92" r="5"></circle>
+        <circle class="robot-eye" cx="94" cy="92" r="5"></circle>
+        <path class="robot-mouth" d="M71 101c4 5 14 5 18 0"></path>
+      </g>
+      ${showWordmark ? `<text class="foodhub-wordmark" x="80" y="151" text-anchor="middle">FoodHub</text>` : ""}
+    </svg>
+  `;
+}
+
 function initChatSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
   const user = getCurrentUser();
   const displayName = user?.fullname || "ban";
-  const robotIcon = `
-    <svg class="support-robot-icon" viewBox="0 0 64 64" focusable="false">
-      <rect class="robot-face" x="13" y="18" width="38" height="32" rx="14"></rect>
-      <path class="robot-antenna" d="M32 18v-7"></path>
-      <circle class="robot-dot" cx="32" cy="8" r="3"></circle>
-      <circle class="robot-eye" cx="25" cy="33" r="3"></circle>
-      <circle class="robot-eye" cx="39" cy="33" r="3"></circle>
-      <path class="robot-mouth" d="M26 42h12"></path>
-    </svg>
-  `;
+  const robotIcon = getFoodHubRobotIcon(false);
+  const robotLogo = getFoodHubRobotIcon(true);
   const widget = document.createElement("div");
   widget.id = "support-widget";
   widget.className = "support-widget";
@@ -1712,9 +1704,7 @@ function initChatSupportWidget() {
       </form>
     </div>
     <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
-      <span aria-hidden="true">
-        ${robotIcon}
-      </span>
+      <span aria-hidden="true">${robotLogo}</span>
     </button>
   `;
 

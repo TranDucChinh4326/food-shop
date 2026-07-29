@@ -84,21 +84,23 @@ function renderSocialAccounts(accounts = []) {
   container.innerHTML = providers.map(provider => {
     const account = linked[provider.id];
     const statusClass = account ? "linked" : "missing";
-    const statusText = account ? "Da lien ket" : "Chua lien ket";
-    const meta = escapeHtml(account
-      ? account.provider_email || account.provider_name || "Tai khoan social da xac thuc"
-      : "Bam nut ben duoi de lien ket");
+    const statusText = account ? "DA LIEN KET" : "CHUA LIEN KET";
+    const actionLabel = account ? "Huy lien ket" : "Lien ket ngay";
 
     return `
       <div class="social-account-item">
-        <div>
-          <div class="social-account-name">
-            <span class="social-account-icon">${provider.icon}</span>
+        <div class="social-account-main">
+          <span class="social-account-icon ${provider.id}">${provider.icon}</span>
+          <div>
+            <div class="social-account-name">
             ${provider.label}
+            </div>
+            <span class="social-account-status ${statusClass}">${statusText}</span>
           </div>
-          <div class="social-account-meta">${meta}</div>
         </div>
-        <span class="social-account-status ${statusClass}">${statusText}</span>
+        <button type="button" class="social-provider-action ${statusClass} ${provider.id}" data-social-provider="${provider.id}" data-social-action="${account ? "unlink" : "link"}">
+          ${actionLabel}
+        </button>
       </div>
     `;
   }).join("");
@@ -237,6 +239,35 @@ async function loadSavedAddresses() {
   } catch (error) {
     showSiteToast(error.message, "error");
   }
+}
+
+async function unlinkSocialAccount(provider) {
+  try {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/unlink/${provider}`, {
+      method: "DELETE"
+    });
+    renderSocialAccounts(data.accounts || []);
+    await loadProfile();
+    showSiteToast(data.message || "Da huy lien ket tai khoan.");
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
+function handleSocialProviderAction(event) {
+  const button = event.target.closest("[data-social-provider][data-social-action]");
+  if (!button) return;
+
+  const provider = button.dataset.socialProvider;
+  const action = button.dataset.socialAction;
+
+  if (action === "unlink") {
+    unlinkSocialAccount(provider);
+    return;
+  }
+
+  if (provider === "google") linkGoogleAccount();
+  if (provider === "facebook") linkFacebookAccount();
 }
 
 function resetAddressForm() {
@@ -443,11 +474,6 @@ async function loadProfile() {
     document.getElementById("profileUsername").value = data.user.username || "";
     document.getElementById("profileEmail").value = data.user.email || "";
     document.getElementById("profilePhone").value = data.user.phone || "";
-    fillAddressForm({
-      cityId: "profileCity",
-      wardId: "profileWard",
-      detailId: "profileAddressDetail"
-    }, data.user.address);
     renderEmailVerifyStatus(data.user);
     renderPasswordMode(data.user);
     renderAccountSummary(data.user);
@@ -471,13 +497,7 @@ async function saveProfile(event) {
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
     avatar: selectedAvatarData || document.querySelector("#profileAvatar img")?.getAttribute("src") || "",
-    phone: document.getElementById("profilePhone").value,
-    address: buildAddressString(
-      document.getElementById("profileCity")?.value || "",
-      "",
-      document.getElementById("profileWard")?.value || "",
-      document.getElementById("profileAddressDetail")?.value || ""
-    )
+    phone: document.getElementById("profilePhone").value
   };
 
   try {
@@ -623,8 +643,7 @@ async function changePassword(event) {
 
 document.getElementById("profileForm").addEventListener("submit", saveProfile);
 document.getElementById("passwordForm").addEventListener("submit", changePassword);
-document.getElementById("linkGoogleButton").addEventListener("click", linkGoogleAccount);
-document.getElementById("linkFacebookButton").addEventListener("click", linkFacebookAccount);
+document.getElementById("socialAccounts")?.addEventListener("click", handleSocialProviderAction);
 initAvatarUpload();
 document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);
 document.getElementById("cancelAddressEdit")?.addEventListener("click", resetAddressForm);
