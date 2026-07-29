@@ -1378,7 +1378,8 @@ button.account-photo-badge {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.address-book-form label:nth-child(5),
+.address-book-form > .address-input-grid,
+.address-book-form .address-book-detail-label,
 .address-book-form .social-link-actions {
   grid-column: 1 / -1;
 }

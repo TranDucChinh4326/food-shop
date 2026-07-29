@@ -172,10 +172,31 @@
             Số điện thoại
             <input type="tel" id="addressBookPhone" placeholder="0900 000 000">
           </label>
-          <label>
-            Địa chỉ
-            <input type="text" id="addressBookAddress" placeholder="Thành phố | Quận | Phường | Số nhà..." required>
+          <div class="address-input-grid">
+            <label>
+              Thành phố / Tỉnh
+              <select id="addressBookCity" required>
+                <option value="">Chọn thành phố</option>
+              </select>
+            </label>
+            <label>
+              Quận / Huyện
+              <select id="addressBookDistrict" required>
+                <option value="">Chọn quận huyện</option>
+              </select>
+            </label>
+            <label>
+              Phường / Xã
+              <select id="addressBookWard" required>
+                <option value="">Chọn phường xã</option>
+              </select>
+            </label>
+          </div>
+          <label class="address-book-detail-label">
+            Địa chỉ cụ thể
+            <input type="text" id="addressBookDetail" placeholder="Số nhà, tên đường, tòa nhà" list="addressBookSuggestions" required>
           </label>
+          <datalist id="addressBookSuggestions"></datalist>
           <label class="address-default-check">
             <input type="checkbox" id="addressBookDefault">
             Đặt làm địa chỉ mặc định

@@ -17,7 +17,7 @@ let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
 
-const ADDRESS_LOOKUP = {
+const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
     "Quận Ba Đình": ["Phường Phúc Xá", "Phường Trúc Bạch", "Phường Kim Mã", "Phường Cống Vị"],
     "Quận Hoàn Kiếm": ["Phường Chương Dương Độ", "Phường Hàng Trống", "Phường Hàng Bạc", "Phường Lý Thái Tổ"],
@@ -39,6 +39,11 @@ const ADDRESS_LOOKUP = {
     "Quận Lê Chân": ["Phường Trại Cau", "Phường Kênh Dương", "Phường Lam Sơn", "Phường An Biên"]
   }
 };
+
+const VIETNAM_ADDRESS_API = "https://provinces.open-api.vn/api/v2/?depth=2";
+const ADDRESS_CACHE_KEY = "foodhub_vietnam_addresses_v2";
+let ADDRESS_LOOKUP = {};
+let addressLookupPromise;
 
 const DEFAULT_ADDRESS_SUGGESTIONS = [
   "Số nhà, tên đường, khu phố",
@@ -308,7 +313,109 @@ function buildAddressString(city, district, ward, detail) {
     .join("|");
 }
 
-function initAddressSelectors() {
+function normalizeVietnamAddressData(provinces) {
+  return provinces.reduce((lookup, province) => {
+    const provinceName = String(province.name || "").trim();
+    if (!provinceName) return lookup;
+
+    if (Array.isArray(province.wards)) {
+      lookup[provinceName] = {
+        "Không dùng cấp huyện": province.wards
+          .map(ward => String(ward.name || "").trim())
+          .filter(Boolean)
+      };
+      return lookup;
+    }
+
+    lookup[provinceName] = (province.districts || []).reduce((districtLookup, district) => {
+      const districtName = String(district.name || "").trim();
+      if (!districtName) return districtLookup;
+
+      districtLookup[districtName] = (district.wards || [])
+        .map(ward => String(ward.name || "").trim())
+        .filter(Boolean);
+      return districtLookup;
+    }, {});
+
+    return lookup;
+  }, {});
+}
+
+async function loadVietnamAddressLookup() {
+  if (Object.keys(ADDRESS_LOOKUP).length > 0) return ADDRESS_LOOKUP;
+  if (addressLookupPromise) return addressLookupPromise;
+
+  addressLookupPromise = (async () => {
+    try {
+      const cached = JSON.parse(sessionStorage.getItem(ADDRESS_CACHE_KEY) || "null");
+      if (cached?.savedAt && cached?.lookup && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
+        ADDRESS_LOOKUP = cached.lookup;
+        return ADDRESS_LOOKUP;
+      }
+    } catch (error) {
+      sessionStorage.removeItem(ADDRESS_CACHE_KEY);
+    }
+
+    try {
+      const response = await fetch(VIETNAM_ADDRESS_API);
+      if (!response.ok) throw new Error("Khong tai duoc danh sach tinh thanh.");
+
+      const provinces = await response.json();
+      const lookup = normalizeVietnamAddressData(Array.isArray(provinces) ? provinces : []);
+      if (Object.keys(lookup).length === 0) throw new Error("Danh sach tinh thanh khong hop le.");
+
+      ADDRESS_LOOKUP = lookup;
+      sessionStorage.setItem(ADDRESS_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), lookup }));
+    } catch (error) {
+      console.warn(error);
+      ADDRESS_LOOKUP = LEGACY_ADDRESS_LOOKUP;
+      showSiteToast("Tam thoi dung danh sach dia chi du phong.", "info");
+    }
+
+    return ADDRESS_LOOKUP;
+  })();
+
+  return addressLookupPromise;
+}
+
+function refreshAddressSelectorOptions(config, selectedAddress = "") {
+  const citySelect = document.getElementById(config.cityId);
+  const districtSelect = document.getElementById(config.districtId);
+  const wardSelect = document.getElementById(config.wardId);
+  const detailInput = document.getElementById(config.detailId);
+
+  if (!citySelect || !districtSelect || !wardSelect) return;
+
+  const parsedAddress = parseAddressString(selectedAddress);
+  const cityNames = Object.keys(ADDRESS_LOOKUP);
+  setSelectOptions(citySelect, cityNames, "Chon thanh pho");
+
+  if (cityNames.includes(parsedAddress.city)) {
+    citySelect.value = parsedAddress.city;
+  }
+
+  const districtNames = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
+  setSelectOptions(districtSelect, districtNames, "Chon quan huyen");
+  if (districtNames.includes(parsedAddress.district)) {
+    districtSelect.value = parsedAddress.district;
+  } else if (districtNames.length === 1) {
+    districtSelect.value = districtNames[0];
+  }
+
+  const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [];
+  setSelectOptions(wardSelect, wardNames, "Chon phuong xa");
+  if (wardNames.includes(parsedAddress.ward)) {
+    wardSelect.value = parsedAddress.ward;
+  }
+
+  if (detailInput && selectedAddress) {
+    detailInput.value = parsedAddress.detail || "";
+  }
+}
+
+async function legacyInitAddressSelectors() {
+  await loadVietnamAddressLookup();
+
   const addressConfigs = [
     {
       cityId: "customerCity",
@@ -323,6 +430,13 @@ function initAddressSelectors() {
       wardId: "profileWard",
       detailId: "profileAddressDetail",
       datalistId: "profileAddressSuggestions"
+    },
+    {
+      cityId: "addressBookCity",
+      districtId: "addressBookDistrict",
+      wardId: "addressBookWard",
+      detailId: "addressBookDetail",
+      datalistId: "addressBookSuggestions"
     }
   ];
 
@@ -362,7 +476,7 @@ function initAddressSelectors() {
   });
 }
 
-function fillAddressForm(addressConfig, userAddress) {
+function legacyFillAddressForm(addressConfig, userAddress) {
   const citySelect = document.getElementById(addressConfig.cityId);
   const districtSelect = document.getElementById(addressConfig.districtId);
   const wardSelect = document.getElementById(addressConfig.wardId);
@@ -388,6 +502,72 @@ function fillAddressForm(addressConfig, userAddress) {
   if (detailInput) {
     detailInput.value = parsedAddress.detail || "";
   }
+}
+
+async function initAddressSelectors() {
+  await loadVietnamAddressLookup();
+
+  const addressConfigs = [
+    {
+      cityId: "customerCity",
+      districtId: "customerDistrict",
+      wardId: "customerWard",
+      detailId: "customerAddress",
+      datalistId: "customerAddressSuggestions"
+    },
+    {
+      cityId: "profileCity",
+      districtId: "profileDistrict",
+      wardId: "profileWard",
+      detailId: "profileAddressDetail",
+      datalistId: "profileAddressSuggestions"
+    },
+    {
+      cityId: "addressBookCity",
+      districtId: "addressBookDistrict",
+      wardId: "addressBookWard",
+      detailId: "addressBookDetail",
+      datalistId: "addressBookSuggestions"
+    }
+  ];
+
+  addressConfigs.forEach(config => {
+    const citySelect = document.getElementById(config.cityId);
+    const districtSelect = document.getElementById(config.districtId);
+    const wardSelect = document.getElementById(config.wardId);
+    const detailInput = document.getElementById(config.detailId);
+    const datalist = document.getElementById(config.datalistId);
+
+    if (!citySelect || !districtSelect || !wardSelect) return;
+    if (citySelect.dataset.addressSelectorInitialized === "true") return;
+
+    citySelect.dataset.addressSelectorInitialized = "true";
+    refreshAddressSelectorOptions(config);
+
+    if (datalist) {
+      datalist.innerHTML = DEFAULT_ADDRESS_SUGGESTIONS.map(suggestion => `<option value="${escapeHtml(suggestion)}"></option>`).join("");
+    }
+
+    citySelect.addEventListener("change", () => {
+      const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
+      setSelectOptions(districtSelect, districts, "Chon quan huyen");
+      if (districts.length === 1) {
+        districtSelect.value = districts[0];
+        setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chon phuong xa");
+      } else {
+        setSelectOptions(wardSelect, [], "Chon phuong xa");
+      }
+      if (detailInput) detailInput.value = "";
+    });
+
+    districtSelect.addEventListener("change", () => {
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chon phuong xa");
+    });
+  });
+}
+
+function fillAddressForm(addressConfig, userAddress) {
+  refreshAddressSelectorOptions(addressConfig, userAddress);
 }
 
 async function loadCheckoutSavedAddresses() {
@@ -1657,7 +1837,8 @@ function initChatSupportWidget() {
 }
 
 if (protectCheckoutPage()) {
-  initAddressSelectors();
+  (async () => {
+    await initAddressSelectors();
   const currentUser = getCurrentUser();
 
   if (currentUser?.address) {
@@ -1683,4 +1864,5 @@ if (protectCheckoutPage()) {
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
   initChatSupportWidget();
+  })();
 }

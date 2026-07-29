@@ -228,6 +228,12 @@ async function loadSavedAddresses() {
 function resetAddressForm() {
   document.getElementById("addressBookId").value = "";
   document.getElementById("addressBookForm")?.reset();
+  fillAddressForm({
+    cityId: "addressBookCity",
+    districtId: "addressBookDistrict",
+    wardId: "addressBookWard",
+    detailId: "addressBookDetail"
+  }, "");
 }
 
 async function saveAddressBook(event) {
@@ -238,7 +244,12 @@ async function saveAddressBook(event) {
     label: document.getElementById("addressBookLabel").value,
     receiverName: document.getElementById("addressBookReceiver").value,
     phone: document.getElementById("addressBookPhone").value,
-    address: document.getElementById("addressBookAddress").value,
+    address: buildAddressString(
+      document.getElementById("addressBookCity")?.value || "",
+      document.getElementById("addressBookDistrict")?.value || "",
+      document.getElementById("addressBookWard")?.value || "",
+      document.getElementById("addressBookDetail")?.value || ""
+    ),
     isDefault: document.getElementById("addressBookDefault").checked
   };
   const url = addressId
@@ -280,7 +291,12 @@ function editAddress(addressId) {
   document.getElementById("addressBookLabel").value = address.label || "";
   document.getElementById("addressBookReceiver").value = address.receiverName || "";
   document.getElementById("addressBookPhone").value = address.phone || "";
-  document.getElementById("addressBookAddress").value = address.address || "";
+  fillAddressForm({
+    cityId: "addressBookCity",
+    districtId: "addressBookDistrict",
+    wardId: "addressBookWard",
+    detailId: "addressBookDetail"
+  }, address.address || "");
   document.getElementById("addressBookDefault").checked = Boolean(address.isDefault);
 }
 
@@ -408,7 +424,7 @@ async function loadProfile() {
   }
 
   try {
-    initAddressSelectors();
+    await initAddressSelectors();
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
     selectedAvatarData = "";
     document.getElementById("profileFullname").value = data.user.fullname || "";
