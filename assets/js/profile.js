@@ -6,6 +6,7 @@ const PROFILE_FACEBOOK_SDK_VERSION = "v25.0";
 let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
 let savedAddresses = [];
+let selectedAvatarData = "";
 
 function getProfileAuthHeaders() {
   return {
@@ -155,8 +156,10 @@ function renderAccountSummary(user) {
   if (email) email.textContent = user?.email || "";
 
   if (avatar) {
-    if (user?.avatar) {
-      avatar.innerHTML = `<img src="${escapeHtml(user.avatar)}" alt="${escapeHtml(user.fullname || "FoodHub User")}">`;
+    const avatarSource = selectedAvatarData || user?.avatar;
+
+    if (avatarSource) {
+      avatar.innerHTML = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}">`;
     } else {
       const initials = String(user?.fullname || user?.email || "FH")
         .trim()
@@ -407,6 +410,7 @@ async function loadProfile() {
   try {
     initAddressSelectors();
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
+    selectedAvatarData = "";
     document.getElementById("profileFullname").value = data.user.fullname || "";
     document.getElementById("profileUsername").value = data.user.username || "";
     document.getElementById("profileEmail").value = data.user.email || "";
@@ -439,6 +443,7 @@ async function saveProfile(event) {
     username: document.getElementById("profileUsername").value,
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
+    avatar: selectedAvatarData || document.querySelector("#profileAvatar img")?.getAttribute("src") || "",
     phone: document.getElementById("profilePhone").value,
     address: buildAddressString(
       document.getElementById("profileCity")?.value || "",
@@ -454,7 +459,9 @@ async function saveProfile(event) {
       body: JSON.stringify(payload)
     });
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+    selectedAvatarData = "";
     renderEmailVerifyStatus(data.user);
+    renderAccountSummary(data.user);
     renderUser();
     if (data.verificationUrl) {
       showSiteToast(data.message || "Vui long xac thuc email moi.");
@@ -468,6 +475,43 @@ async function saveProfile(event) {
   } catch (error) {
     showSiteToast(error.message, "error");
   }
+}
+
+function initAvatarUpload() {
+  const button = document.getElementById("avatarUploadButton");
+  const input = document.getElementById("avatarUploadInput");
+
+  if (!button || !input) return;
+
+  button.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => {
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showSiteToast("Vui long chon tep hinh anh.", "error");
+      input.value = "";
+      return;
+    }
+
+    if (file.size > 450 * 1024) {
+      showSiteToast("Anh dai dien nen nho hon 450KB.", "error");
+      input.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      selectedAvatarData = String(reader.result || "");
+      renderAccountSummary({
+        fullname: document.getElementById("profileFullname")?.value,
+        email: document.getElementById("profileEmail")?.value,
+        avatar: selectedAvatarData
+      });
+      showSiteToast("Da chon anh dai dien. Bam Luu thay doi de cap nhat.");
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 async function changePassword(event) {
@@ -495,6 +539,7 @@ document.getElementById("profileForm").addEventListener("submit", saveProfile);
 document.getElementById("passwordForm").addEventListener("submit", changePassword);
 document.getElementById("linkGoogleButton").addEventListener("click", linkGoogleAccount);
 document.getElementById("linkFacebookButton").addEventListener("click", linkFacebookAccount);
+initAvatarUpload();
 document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);
 document.getElementById("cancelAddressEdit")?.addEventListener("click", resetAddressForm);
 document.getElementById("savedAddressList")?.addEventListener("click", event => {
