@@ -1615,15 +1615,14 @@ function getFoodHubRobotIcon(showWordmark = false) {
         <circle class="robot-badge-ring" cx="80" cy="80" r="70"></circle>
       ` : ""}
       <g class="foodhub-robot-mark">
-        <path class="robot-antenna" d="M80 42V25"></path>
-        <circle class="robot-ring" cx="80" cy="19" r="8"></circle>
-        <path class="robot-ear" d="M39 70h-9a9 9 0 0 0-9 9v20a9 9 0 0 0 9 9h9Z"></path>
-        <path class="robot-ear" d="M121 70h9a9 9 0 0 1 9 9v20a9 9 0 0 1-9 9h-9Z"></path>
-        <path class="robot-face" d="M42 61h76c13 0 23 10 23 23v12c0 13-10 23-23 23H81l-24 18v-18H42c-13 0-23-10-23-23V84c0-13 10-23 23-23Z"></path>
-        <rect class="robot-screen" x="55" y="77" width="50" height="30" rx="14"></rect>
-        <circle class="robot-eye" cx="66" cy="92" r="5"></circle>
-        <circle class="robot-eye" cx="94" cy="92" r="5"></circle>
-        <path class="robot-mouth" d="M71 101c4 5 14 5 18 0"></path>
+        <path class="robot-antenna" d="M80 48V33"></path>
+        <circle class="robot-ring" cx="80" cy="28" r="8"></circle>
+        <rect class="robot-ear" x="29" y="73" width="18" height="38" rx="9"></rect>
+        <rect class="robot-ear" x="113" y="73" width="18" height="38" rx="9"></rect>
+        <rect class="robot-face" x="43" y="58" width="74" height="62" rx="24"></rect>
+        <circle class="robot-eye" cx="68" cy="88" r="7"></circle>
+        <circle class="robot-eye" cx="92" cy="88" r="7"></circle>
+        <path class="robot-mouth" d="M66 101c7 8 21 8 28 0"></path>
       </g>
     </svg>
   `;

@@ -2286,7 +2286,7 @@ footer {
 }
 
 .robot-eye {
-  fill: #fff;
+  fill: #ff7900;
 }
 
 .robot-badge-bg {
@@ -2378,12 +2378,11 @@ footer {
 
 .chat-avatar .robot-face,
 .chat-avatar .robot-ear,
-.chat-avatar .robot-ring,
-.chat-avatar .robot-eye {
+.chat-avatar .robot-ring {
   fill: #fff;
 }
 
-.chat-avatar .robot-screen {
+.chat-avatar .robot-eye {
   fill: #ff7900;
 }
 
