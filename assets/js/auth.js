@@ -358,4 +358,3 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
-initSupportWidget();
