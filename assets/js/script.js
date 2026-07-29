@@ -297,17 +297,21 @@ function setSelectOptions(select, options, placeholder) {
 
 function parseAddressString(address) {
   const parts = String(address || "").split("|").map(part => part.trim());
+  const city = parts[0] || "";
+  const district = parts.length >= 4 ? parts[1] || "" : "";
+  const ward = parts.length >= 4 ? parts[2] || "" : parts[1] || "";
+  const detail = parts.length >= 4 ? parts[3] || "" : parts[2] || "";
 
   return {
-    city: parts[0] || "",
-    district: parts[1] || "",
-    ward: parts[2] || "",
-    detail: parts[3] || ""
+    city,
+    district,
+    ward,
+    detail
   };
 }
 
 function buildAddressString(city, district, ward, detail) {
-  return [city, district, ward, detail]
+  return [city, ward, detail]
     .map(value => String(value || "").trim())
     .filter(Boolean)
     .join("|");
@@ -380,11 +384,11 @@ async function loadVietnamAddressLookup() {
 
 function refreshAddressSelectorOptions(config, selectedAddress = "") {
   const citySelect = document.getElementById(config.cityId);
-  const districtSelect = document.getElementById(config.districtId);
+  const districtSelect = config.districtId ? document.getElementById(config.districtId) : null;
   const wardSelect = document.getElementById(config.wardId);
   const detailInput = document.getElementById(config.detailId);
 
-  if (!citySelect || !districtSelect || !wardSelect) return;
+  if (!citySelect || !wardSelect) return;
 
   const parsedAddress = parseAddressString(selectedAddress);
   const cityNames = Object.keys(ADDRESS_LOOKUP);
@@ -395,14 +399,14 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
   }
 
   const districtNames = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
-  setSelectOptions(districtSelect, districtNames, "Chon quan huyen");
-  if (districtNames.includes(parsedAddress.district)) {
-    districtSelect.value = parsedAddress.district;
-  } else if (districtNames.length === 1) {
-    districtSelect.value = districtNames[0];
+  const selectedDistrict = districtNames.includes(parsedAddress.district) ? parsedAddress.district : districtNames[0] || "";
+
+  if (districtSelect) {
+    setSelectOptions(districtSelect, districtNames, "Chon quan huyen");
+    districtSelect.value = selectedDistrict;
   }
 
-  const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [];
+  const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [];
   setSelectOptions(wardSelect, wardNames, "Chon phuong xa");
   if (wardNames.includes(parsedAddress.ward)) {
     wardSelect.value = parsedAddress.ward;
@@ -419,21 +423,18 @@ async function legacyInitAddressSelectors() {
   const addressConfigs = [
     {
       cityId: "customerCity",
-      districtId: "customerDistrict",
       wardId: "customerWard",
       detailId: "customerAddress",
       datalistId: "customerAddressSuggestions"
     },
     {
       cityId: "profileCity",
-      districtId: "profileDistrict",
       wardId: "profileWard",
       detailId: "profileAddressDetail",
       datalistId: "profileAddressSuggestions"
     },
     {
       cityId: "addressBookCity",
-      districtId: "addressBookDistrict",
       wardId: "addressBookWard",
       detailId: "addressBookDetail",
       datalistId: "addressBookSuggestions"
@@ -510,21 +511,18 @@ async function initAddressSelectors() {
   const addressConfigs = [
     {
       cityId: "customerCity",
-      districtId: "customerDistrict",
       wardId: "customerWard",
       detailId: "customerAddress",
       datalistId: "customerAddressSuggestions"
     },
     {
       cityId: "profileCity",
-      districtId: "profileDistrict",
       wardId: "profileWard",
       detailId: "profileAddressDetail",
       datalistId: "profileAddressSuggestions"
     },
     {
       cityId: "addressBookCity",
-      districtId: "addressBookDistrict",
       wardId: "addressBookWard",
       detailId: "addressBookDetail",
       datalistId: "addressBookSuggestions"
@@ -533,12 +531,12 @@ async function initAddressSelectors() {
 
   addressConfigs.forEach(config => {
     const citySelect = document.getElementById(config.cityId);
-    const districtSelect = document.getElementById(config.districtId);
+    const districtSelect = config.districtId ? document.getElementById(config.districtId) : null;
     const wardSelect = document.getElementById(config.wardId);
     const detailInput = document.getElementById(config.detailId);
     const datalist = document.getElementById(config.datalistId);
 
-    if (!citySelect || !districtSelect || !wardSelect) return;
+    if (!citySelect || !wardSelect) return;
     if (citySelect.dataset.addressSelectorInitialized === "true") return;
 
     citySelect.dataset.addressSelectorInitialized = "true";
@@ -550,17 +548,16 @@ async function initAddressSelectors() {
 
     citySelect.addEventListener("change", () => {
       const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
-      setSelectOptions(districtSelect, districts, "Chon quan huyen");
-      if (districts.length === 1) {
-        districtSelect.value = districts[0];
-        setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chon phuong xa");
-      } else {
-        setSelectOptions(wardSelect, [], "Chon phuong xa");
+      const selectedDistrict = districts[0] || "";
+      if (districtSelect) {
+        setSelectOptions(districtSelect, districts, "Chon quan huyen");
+        districtSelect.value = selectedDistrict;
       }
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chon phuong xa");
       if (detailInput) detailInput.value = "";
     });
 
-    districtSelect.addEventListener("change", () => {
+    districtSelect?.addEventListener("change", () => {
       setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chon phuong xa");
     });
   });
@@ -624,7 +621,6 @@ function applySavedCheckoutAddress(address) {
 
   fillAddressForm({
     cityId: "customerCity",
-    districtId: "customerDistrict",
     wardId: "customerWard",
     detailId: "customerAddress"
   }, address.address);
@@ -1190,10 +1186,9 @@ async function submitOrder(event) {
   const name = document.getElementById("customerName").value;
   const phone = document.getElementById("customerPhone").value;
   const cityName = document.getElementById("customerCity")?.value || "";
-  const districtName = document.getElementById("customerDistrict")?.value || "";
   const wardName = document.getElementById("customerWard")?.value || "";
   const addressDetail = document.getElementById("customerAddress").value;
-  const address = buildAddressString(cityName, districtName, wardName, addressDetail);
+  const address = buildAddressString(cityName, "", wardName, addressDetail);
   const note = document.getElementById("customerNote").value;
   const submitButton = document.querySelector("#orderForm button[type='submit']");
   const token = getAuthToken();
@@ -1844,7 +1839,6 @@ if (protectCheckoutPage()) {
   if (currentUser?.address) {
     fillAddressForm({
       cityId: "customerCity",
-      districtId: "customerDistrict",
       wardId: "customerWard",
       detailId: "customerAddress"
     }, currentUser.address);

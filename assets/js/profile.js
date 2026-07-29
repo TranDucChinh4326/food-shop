@@ -230,7 +230,6 @@ function resetAddressForm() {
   document.getElementById("addressBookForm")?.reset();
   fillAddressForm({
     cityId: "addressBookCity",
-    districtId: "addressBookDistrict",
     wardId: "addressBookWard",
     detailId: "addressBookDetail"
   }, "");
@@ -246,7 +245,7 @@ async function saveAddressBook(event) {
     phone: document.getElementById("addressBookPhone").value,
     address: buildAddressString(
       document.getElementById("addressBookCity")?.value || "",
-      document.getElementById("addressBookDistrict")?.value || "",
+      "",
       document.getElementById("addressBookWard")?.value || "",
       document.getElementById("addressBookDetail")?.value || ""
     ),
@@ -293,7 +292,6 @@ function editAddress(addressId) {
   document.getElementById("addressBookPhone").value = address.phone || "";
   fillAddressForm({
     cityId: "addressBookCity",
-    districtId: "addressBookDistrict",
     wardId: "addressBookWard",
     detailId: "addressBookDetail"
   }, address.address || "");
@@ -433,7 +431,6 @@ async function loadProfile() {
     document.getElementById("profilePhone").value = data.user.phone || "";
     fillAddressForm({
       cityId: "profileCity",
-      districtId: "profileDistrict",
       wardId: "profileWard",
       detailId: "profileAddressDetail"
     }, data.user.address);
@@ -463,7 +460,7 @@ async function saveProfile(event) {
     phone: document.getElementById("profilePhone").value,
     address: buildAddressString(
       document.getElementById("profileCity")?.value || "",
-      document.getElementById("profileDistrict")?.value || "",
+      "",
       document.getElementById("profileWard")?.value || "",
       document.getElementById("profileAddressDetail")?.value || ""
     )
