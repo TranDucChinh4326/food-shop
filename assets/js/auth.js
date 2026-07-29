@@ -2,6 +2,7 @@ const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:30
 const AUTH_API = `${API_BASE_URL}/auth`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
+const PENDING_SOCIAL_KEY = "foodhub_pending_social";
 const GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
 const FACEBOOK_APP_ID = window.FOODHUB_CONFIG?.FACEBOOK_APP_ID || "";
 const FACEBOOK_SDK_VERSION = "v25.0";
@@ -70,6 +71,11 @@ function getSafeRedirectUrl() {
 }
 
 function finishLogin(data) {
+  if (!data.token || !data.user) {
+    showToast(data.message || "Thieu thong tin dang nhap.", "error");
+    return;
+  }
+
   sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
   showToast("Dang nhap thanh cong. Dang vao FoodHub...", "success");
@@ -156,6 +162,21 @@ async function postSocialToken(provider, accessToken) {
   });
   const data = await response.json();
 
+  if (response.status === 202 && data.requiresAccountSetup) {
+    sessionStorage.setItem(PENDING_SOCIAL_KEY, JSON.stringify({
+      provider,
+      accessToken,
+      email: data.providerEmail || "",
+      fullname: data.fullname || "",
+      avatar: data.avatar || ""
+    }));
+    showToast(data.message || "Vui long hoan tat tai khoan.", "info");
+    setTimeout(() => {
+      window.location.href = "register.html?socialSetup=1";
+    }, 900);
+    return;
+  }
+
   if (!response.ok) {
     throw new Error(data.message || "Khong the dang nhap social.");
   }
@@ -233,20 +254,32 @@ async function register(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
+  const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
   const fullname = document.getElementById("fullname").value;
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  setSubmitState(form, true, "Dang tao tai khoan...");
+  if (!pendingSocial?.provider || !pendingSocial?.accessToken) {
+    showToast("Vui long xac thuc bang Google hoac Facebook truoc.", "error");
+    return;
+  }
+
+  setSubmitState(form, true, "Dang hoan tat tai khoan...");
 
   try {
-    const response = await fetch(`${AUTH_API}/register`, {
+    const response = await fetch(`${AUTH_API}/social/setup/${pendingSocial.provider}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ username, fullname, email, password })
+      body: JSON.stringify({
+        accessToken: pendingSocial.accessToken,
+        username,
+        fullname,
+        email,
+        password
+      })
     });
     const data = await response.json();
 
@@ -255,20 +288,38 @@ async function register(event) {
       return;
     }
 
-    if (handleVerificationStep(data, "Dang ky thanh cong. Vui long xac thuc email.")) {
-      return;
-    }
-
-    showToast(data.message || "Dang ky thanh cong. Hay kiem tra email de xac thuc.", "success");
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1400);
+    sessionStorage.removeItem(PENDING_SOCIAL_KEY);
+    finishLogin(data);
   } catch (error) {
     showToast("Khong ket noi duoc server.", "error");
     console.error(error);
   } finally {
     setSubmitState(form, false);
+  }
+}
+
+function initSocialSetupForm() {
+  const form = document.querySelector("form[onsubmit='register(event)']");
+  if (!form) return;
+
+  const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
+  const emailInput = document.getElementById("email");
+  const fullnameInput = document.getElementById("fullname");
+
+  if (pendingSocial?.email && emailInput) {
+    emailInput.value = pendingSocial.email;
+    emailInput.readOnly = true;
+  }
+
+  if (pendingSocial?.fullname && fullnameInput) {
+    fullnameInput.value = pendingSocial.fullname;
+  }
+
+  if (!pendingSocial?.provider) {
+    form.querySelectorAll("input, button[type='submit']").forEach(element => {
+      element.disabled = true;
+    });
+    showToast("Dang ky thu cong da tat. Hay chon Google hoac Facebook de xac thuc truoc.", "info");
   }
 }
 
@@ -361,3 +412,4 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+initSocialSetupForm();
