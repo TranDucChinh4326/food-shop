@@ -232,6 +232,7 @@ async function register(event) {
 
   const form = event.currentTarget;
   const fullname = document.getElementById("fullname").value;
+  const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -243,7 +244,7 @@ async function register(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ fullname, email, password })
+      body: JSON.stringify({ username, fullname, email, password })
     });
     const data = await response.json();
 
@@ -273,7 +274,7 @@ async function login(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
-  const email = document.getElementById("email").value;
+  const login = document.getElementById("login")?.value || document.getElementById("email")?.value;
   const password = document.getElementById("password").value;
 
   setSubmitState(form, true, "Dang dang nhap...");
@@ -284,7 +285,7 @@ async function login(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ login, password })
     });
     const data = await response.json();
 
