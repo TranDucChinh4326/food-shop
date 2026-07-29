@@ -1610,6 +1610,10 @@ function initSupportWidget() {
 function getFoodHubRobotIcon(showWordmark = false) {
   return `
     <svg class="support-robot-icon ${showWordmark ? "with-wordmark" : ""}" viewBox="0 0 160 160" focusable="false">
+      ${showWordmark ? `
+        <circle class="robot-badge-bg" cx="80" cy="80" r="70"></circle>
+        <circle class="robot-badge-ring" cx="80" cy="80" r="70"></circle>
+      ` : ""}
       <g class="foodhub-robot-mark">
         <path class="robot-antenna" d="M80 42V25"></path>
         <circle class="robot-ring" cx="80" cy="19" r="8"></circle>
@@ -1621,7 +1625,6 @@ function getFoodHubRobotIcon(showWordmark = false) {
         <circle class="robot-eye" cx="94" cy="92" r="5"></circle>
         <path class="robot-mouth" d="M71 101c4 5 14 5 18 0"></path>
       </g>
-      ${showWordmark ? `<text class="foodhub-wordmark" x="80" y="151" text-anchor="middle">FoodHub</text>` : ""}
     </svg>
   `;
 }

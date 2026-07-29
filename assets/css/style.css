@@ -1011,7 +1011,8 @@ h2 {
 }
 
 .social-account-list {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -1021,9 +1022,11 @@ h2 {
   border: 1px solid #f0dfd5;
   border-radius: 8px;
   display: grid;
-  gap: 16px;
+  flex: 1 1 300px;
+  gap: 14px;
   grid-template-columns: minmax(0, 1fr) auto;
   justify-content: space-between;
+  max-width: 460px;
   min-height: 86px;
   padding: 16px 18px;
 }
@@ -1037,7 +1040,7 @@ h2 {
 
 .social-account-name {
   color: #1f1712;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   line-height: 1.2;
   margin-bottom: 6px;
@@ -1098,18 +1101,19 @@ h2 {
   border-radius: 8px;
   cursor: pointer;
   display: inline-flex;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   justify-content: center;
   justify-self: end;
   min-height: 42px;
-  padding: 0 18px;
+  padding: 0 16px;
   white-space: nowrap;
 }
 
 .social-provider-action.linked {
   background: transparent;
   color: #9a2e19;
+  min-width: 92px;
   padding-inline: 0;
 }
 
@@ -1243,7 +1247,7 @@ h2 {
   gap: 20px;
   grid-column: 2;
   grid-row: 1;
-  grid-template-columns: auto minmax(220px, 1fr) minmax(360px, 0.9fr);
+  grid-template-columns: auto minmax(220px, 0.65fr) minmax(520px, 1.35fr);
   min-height: 96px;
   padding: 16px 24px;
 }
@@ -1331,10 +1335,11 @@ button.account-photo-badge {
 }
 
 .summary-social-links .social-account-list {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  justify-content: flex-end;
 }
 
 .summary-social-links .social-account-item {
+  flex: 1 1 320px;
   min-height: 84px;
 }
 
@@ -2214,21 +2219,21 @@ footer {
 
 .support-toggle {
   align-items: center;
-  background: #fff;
-  border: 1px solid #f0dfd5;
-  border-radius: 18px;
-  box-shadow: 0 18px 36px rgba(255, 87, 34, 0.22), 0 8px 20px rgba(30, 15, 8, 0.14);
-  color: #ff7900;
+  background: #ff7900;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 14px 28px rgba(255, 121, 0, 0.3), 0 6px 16px rgba(30, 15, 8, 0.16);
+  color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-size: 0;
   font-weight: 900;
-  height: 92px;
+  height: 64px;
   justify-content: center;
-  min-height: 92px;
-  padding: 8px;
+  min-height: 64px;
+  padding: 0;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  width: 92px;
+  width: 64px;
 }
 
 .support-toggle:hover {
@@ -2239,7 +2244,7 @@ footer {
 .support-toggle span {
   align-items: center;
   background: transparent;
-  border-radius: 14px;
+  border-radius: 50%;
   display: inline-flex;
   height: 100%;
   justify-content: center;
@@ -2254,41 +2259,44 @@ footer {
 }
 
 .support-toggle .support-robot-icon.with-wordmark {
-  height: 76px;
-  width: 76px;
+  height: 48px;
+  width: 48px;
 }
 
 .robot-face {
-  fill: #ff7900;
+  fill: #fff;
 }
 
 .robot-screen {
-  fill: #fff;
+  fill: #ff7900;
 }
 
 .robot-ear,
 .robot-ring {
-  fill: #ff7900;
+  fill: #fff;
 }
 
 .robot-antenna,
 .robot-mouth {
   fill: none;
-  stroke: #ff7900;
+  stroke: #fff;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 7;
 }
 
 .robot-eye {
+  fill: #fff;
+}
+
+.robot-badge-bg {
   fill: #ff7900;
 }
 
-.foodhub-wordmark {
-  fill: #ff7900;
-  font-family: Arial, sans-serif;
-  font-size: 26px;
-  font-weight: 900;
+.robot-badge-ring {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 6;
 }
 
 .support-panel {
@@ -2311,7 +2319,7 @@ footer {
 }
 
 .support-widget.open .support-panel {
-  bottom: 110px;
+  bottom: 82px;
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
@@ -2368,8 +2376,20 @@ footer {
   width: 34px;
 }
 
+.chat-avatar .robot-face,
+.chat-avatar .robot-ear,
+.chat-avatar .robot-ring,
+.chat-avatar .robot-eye {
+  fill: #fff;
+}
+
+.chat-avatar .robot-screen {
+  fill: #ff7900;
+}
+
 .chat-avatar .robot-antenna,
 .chat-avatar .robot-mouth {
+  stroke: #fff;
   stroke-width: 7;
 }
 
@@ -2827,7 +2847,7 @@ footer {
   }
 
   .support-widget.open .support-panel {
-    bottom: 104px;
+    bottom: 82px;
   }
 
   .chat-panel {
@@ -3244,14 +3264,14 @@ footer {
   }
 
   .support-toggle {
-    border-radius: 16px;
-    box-shadow: 0 14px 30px rgba(255, 87, 34, 0.24);
+    border-radius: 50%;
+    box-shadow: 0 12px 26px rgba(255, 121, 0, 0.28);
     font-size: 0;
-    height: 82px;
+    height: 60px;
     justify-content: center;
-    min-height: 82px;
-    padding: 7px;
-    width: 82px;
+    min-height: 60px;
+    padding: 0;
+    width: 60px;
   }
 
   .support-toggle span {
@@ -3260,17 +3280,17 @@ footer {
   }
 
   .support-toggle .support-robot-icon.with-wordmark {
-    height: 68px;
-    width: 68px;
+    height: 44px;
+    width: 44px;
   }
 
   .support-panel {
-    bottom: 98px;
+    bottom: 76px;
     right: 0;
   }
 
   .support-widget.open .support-panel {
-    bottom: 104px;
+    bottom: 80px;
   }
 
   .chat-panel {

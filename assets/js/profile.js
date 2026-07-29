@@ -84,8 +84,8 @@ function renderSocialAccounts(accounts = []) {
   container.innerHTML = providers.map(provider => {
     const account = linked[provider.id];
     const statusClass = account ? "linked" : "missing";
-    const statusText = account ? "DA LIEN KET" : "CHUA LIEN KET";
-    const actionLabel = account ? "Huy lien ket" : "Lien ket ngay";
+    const statusText = account ? "ĐÃ LIÊN KẾT" : "CHƯA LIÊN KẾT";
+    const actionLabel = account ? "Hủy liên kết" : "Liên kết ngay";
 
     return `
       <div class="social-account-item">
