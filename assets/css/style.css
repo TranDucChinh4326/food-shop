@@ -1331,36 +1331,20 @@ button.account-photo-badge {
 }
 
 .summary-social-links .social-account-list {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .summary-social-links .social-account-item {
-  align-items: flex-start;
-  display: grid;
-  gap: 8px;
-  padding: 10px 12px;
-}
-
-.summary-social-links .social-account-name {
-  gap: 8px;
+  min-height: 84px;
 }
 
 .summary-social-links .social-account-icon {
-  height: 26px;
-  width: 26px;
+  height: 44px;
+  width: 44px;
 }
 
 .summary-social-links .social-account-meta {
   display: none;
-}
-
-.summary-social-links .social-account-status {
-  justify-self: start;
-  padding: 5px 9px;
-}
-
-.summary-social-links .social-link-actions {
-  gap: 8px;
 }
 
 .summary-social-links .social-link-btn {
