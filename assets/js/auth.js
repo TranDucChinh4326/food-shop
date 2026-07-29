@@ -327,7 +327,7 @@ async function login(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
-  const login = document.getElementById("login")?.value || document.getElementById("email")?.value;
+  const loginValue = document.getElementById("loginIdentifier")?.value || document.getElementById("email")?.value;
   const password = document.getElementById("password").value;
 
   setSubmitState(form, true, "Dang dang nhap...");
@@ -338,7 +338,7 @@ async function login(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ login, password })
+      body: JSON.stringify({ login: loginValue, password })
     });
     const data = await response.json();
 
