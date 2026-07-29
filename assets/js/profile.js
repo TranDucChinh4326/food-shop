@@ -494,22 +494,60 @@ function initAvatarUpload() {
       return;
     }
 
-    if (file.size > 450 * 1024) {
-      showSiteToast("Anh dai dien nen nho hon 450KB.", "error");
-      input.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      selectedAvatarData = String(reader.result || "");
-      renderAccountSummary({
-        fullname: document.getElementById("profileFullname")?.value,
-        email: document.getElementById("profileEmail")?.value,
-        avatar: selectedAvatarData
+    compressAvatarImage(file)
+      .then(dataUrl => {
+        selectedAvatarData = dataUrl;
+        renderAccountSummary({
+          fullname: document.getElementById("profileFullname")?.value,
+          email: document.getElementById("profileEmail")?.value,
+          avatar: selectedAvatarData
+        });
+        showSiteToast("Da chon anh dai dien. Bam Luu thay doi de cap nhat.");
+      })
+      .catch(error => {
+        console.error(error);
+        showSiteToast("Khong the xu ly anh dai dien.", "error");
+      })
+      .finally(() => {
+        input.value = "";
       });
-      showSiteToast("Da chon anh dai dien. Bam Luu thay doi de cap nhat.");
+  });
+}
+
+function compressAvatarImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onerror = reject;
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = reject;
+      image.onload = () => {
+        const maxSize = 320;
+        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+        const width = Math.max(1, Math.round(image.width * scale));
+        const height = Math.max(1, Math.round(image.height * scale));
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(image, 0, 0, width, height);
+
+        let quality = 0.82;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+        while (dataUrl.length > 420000 && quality > 0.45) {
+          quality -= 0.08;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+
+        resolve(dataUrl);
+      };
+
+      image.src = String(reader.result || "");
     };
+
     reader.readAsDataURL(file);
   });
 }
