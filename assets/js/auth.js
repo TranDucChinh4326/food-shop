@@ -75,7 +75,9 @@ function finishLogin(data) {
   showToast("Dang nhap thanh cong. Dang vao FoodHub...", "success");
 
   setTimeout(() => {
-    const redirectUrl = getSafeRedirectUrl();
+    const redirectUrl = data.requiresAccountSetup || data.user?.requiresAccountSetup
+      ? "profile.html?setup=1"
+      : getSafeRedirectUrl();
     sessionStorage.removeItem("foodhub_after_login");
     window.location.href = redirectUrl;
   }, 700);

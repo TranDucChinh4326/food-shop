@@ -137,7 +137,7 @@ function renderPasswordMode(user) {
   if (hint) {
     hint.textContent = hasPasswordSet
       ? "Nhap mat khau hien tai de doi sang mat khau moi."
-      : "Tai khoan nay dang dang nhap bang Google/Facebook. Hay tao mat khau neu ban muon dang nhap bang email.";
+      : "Tai khoan nay vua duoc tao bang Google/Facebook. Hay tao mat khau de hoan tat tai khoan chinh.";
   }
 
   if (button) {
@@ -281,6 +281,7 @@ async function loadProfile() {
     initAddressSelectors();
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
     document.getElementById("profileFullname").value = data.user.fullname || "";
+    document.getElementById("profileUsername").value = data.user.username || "";
     document.getElementById("profileEmail").value = data.user.email || "";
     document.getElementById("profilePhone").value = data.user.phone || "";
     fillAddressForm({
@@ -291,6 +292,9 @@ async function loadProfile() {
     }, data.user.address);
     renderEmailVerifyStatus(data.user);
     renderPasswordMode(data.user);
+    if (data.user.requiresAccountSetup || new URLSearchParams(window.location.search).get("setup") === "1") {
+      showSiteToast("Vui long tao username va mat khau de hoan tat tai khoan.", "info");
+    }
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
     await loadSocialAccounts();
@@ -303,6 +307,7 @@ async function saveProfile(event) {
   event.preventDefault();
 
   const payload = {
+    username: document.getElementById("profileUsername").value,
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
     phone: document.getElementById("profilePhone").value,
@@ -350,6 +355,7 @@ async function changePassword(event) {
       body: JSON.stringify(payload)
     });
     event.currentTarget.reset();
+    await loadProfile();
     showSiteToast("Da doi mat khau.");
   } catch (error) {
     showSiteToast(error.message, "error");
