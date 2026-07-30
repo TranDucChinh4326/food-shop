@@ -7,6 +7,7 @@ let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
 let savedAddresses = [];
 let selectedAvatarData = "";
+let selectedAvatarBlob = null;
 let passwordCaptchaAnswer = "";
 let passwordCaptchaId = "";
 let passwordCaptchaCooldownTimer;
@@ -26,6 +27,32 @@ async function requestProfileJson(url, options = {}) {
       ...getProfileAuthHeaders(),
       ...(options.headers || {})
     }
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    requireLogin(data.message || "Phien dang nhap da het han.", "profile.html");
+    throw new Error(data.message || "Phien dang nhap da het han.");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || "Khong the xu ly yeu cau.");
+  }
+
+  return data;
+}
+
+async function requestProfileFormData(url, formData, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    method: options.method || "POST",
+    headers: {
+      Authorization: `Bearer ${getAuthToken()}`,
+      ...(options.headers || {})
+    },
+    body: formData
   });
   const data = await response.json().catch(() => ({}));
 
@@ -630,24 +657,34 @@ async function saveProfile(event) {
     username: document.getElementById("profileUsername").value,
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
-    avatar: selectedAvatarData || document.querySelector("#profileAvatar img")?.getAttribute("src") || "",
     phone: document.getElementById("profilePhone").value
   };
 
   try {
-    const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
+    let data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
       method: "PUT",
       body: JSON.stringify(payload)
     });
+
+    const verificationUrl = data.verificationUrl;
+    const profileMessage = data.message;
+
+    if (selectedAvatarBlob) {
+      const avatarForm = new FormData();
+      avatarForm.append("avatar", selectedAvatarBlob, "avatar.jpg");
+      data = await requestProfileFormData(`${PROFILE_AUTH_API}/avatar`, avatarForm);
+    }
+
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     selectedAvatarData = "";
+    selectedAvatarBlob = null;
     renderEmailVerifyStatus(data.user);
     renderAccountSummary(data.user);
     renderUser();
-    if (data.verificationUrl) {
-      showSiteToast(data.message || "Vui long xac thuc email moi.");
+    if (verificationUrl) {
+      showSiteToast(profileMessage || "Vui long xac thuc email moi.");
       setTimeout(() => {
-        window.location.href = data.verificationUrl;
+        window.location.href = verificationUrl;
       }, 900);
       return;
     }
@@ -676,8 +713,9 @@ function initAvatarUpload() {
     }
 
     compressAvatarImage(file)
-      .then(dataUrl => {
+      .then(({ dataUrl, blob }) => {
         selectedAvatarData = dataUrl;
+        selectedAvatarBlob = blob;
         renderAccountSummary({
           fullname: document.getElementById("profileFullname")?.value,
           email: document.getElementById("profileEmail")?.value,
@@ -723,7 +761,14 @@ function compressAvatarImage(file) {
           dataUrl = canvas.toDataURL("image/jpeg", quality);
         }
 
-        resolve(dataUrl);
+        canvas.toBlob(blob => {
+          if (!blob) {
+            reject(new Error("Khong the nen anh dai dien"));
+            return;
+          }
+
+          resolve({ dataUrl, blob });
+        }, "image/jpeg", quality);
       };
 
       image.src = String(reader.result || "");
