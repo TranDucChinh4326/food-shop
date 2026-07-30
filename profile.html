@@ -234,14 +234,14 @@
         <div class="captcha-row">
           <div>
             <span>Mã captcha</span>
-            <strong id="passwordCaptchaQuestion">0 + 0</strong>
+            <canvas id="passwordCaptchaCanvas" class="captcha-canvas" width="220" height="70" aria-label="Mã captcha"></canvas>
           </div>
           <button type="button" id="refreshPasswordCaptcha" class="social-link-btn">Đổi mã</button>
         </div>
 
         <label>
           Nhập mã captcha
-          <input type="text" id="passwordCaptchaAnswer" inputmode="numeric" autocomplete="off" required>
+          <input type="text" id="passwordCaptchaAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" required>
         </label>
 
         <button type="submit" class="btn">Đổi mật khẩu</button>

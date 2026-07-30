@@ -1456,9 +1456,14 @@ button.account-photo-badge {
   margin-bottom: 4px;
 }
 
-.captcha-row strong {
-  color: #2a211d;
-  font-size: 20px;
+.captcha-canvas {
+  background: #fffaf4;
+  border: 1px solid #e2c6b6;
+  border-radius: 4px;
+  display: block;
+  height: 58px;
+  max-width: 100%;
+  width: 220px;
 }
 
 .profile-page .social-link-card {

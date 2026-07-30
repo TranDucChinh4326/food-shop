@@ -153,14 +153,62 @@ function renderPasswordMode(user) {
 }
 
 function refreshPasswordCaptcha() {
-  const question = document.getElementById("passwordCaptchaQuestion");
+  const canvas = document.getElementById("passwordCaptchaCanvas");
   const answerInput = document.getElementById("passwordCaptchaAnswer");
-  const left = Math.floor(Math.random() * 8) + 2;
-  const right = Math.floor(Math.random() * 8) + 2;
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const code = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 
-  passwordCaptchaAnswer = String(left + right);
-  if (question) question.textContent = `${left} + ${right}`;
+  passwordCaptchaAnswer = code.toLowerCase();
   if (answerInput) answerInput.value = "";
+  if (!canvas) return;
+
+  const context = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+
+  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#fffaf4";
+  context.fillRect(0, 0, width, height);
+
+  for (let i = 0; i < 9; i += 1) {
+    context.beginPath();
+    context.moveTo(Math.random() * width, Math.random() * height);
+    context.bezierCurveTo(
+      Math.random() * width,
+      Math.random() * height,
+      Math.random() * width,
+      Math.random() * height,
+      Math.random() * width,
+      Math.random() * height
+    );
+    context.strokeStyle = i % 2 === 0 ? "rgba(154, 67, 0, 0.28)" : "rgba(42, 33, 29, 0.22)";
+    context.lineWidth = Math.random() * 1.4 + 0.6;
+    context.stroke();
+  }
+
+  for (let i = 0; i < 120; i += 1) {
+    context.fillStyle = `rgba(60, 42, 33, ${Math.random() * 0.18})`;
+    context.fillRect(Math.random() * width, Math.random() * height, 1.2, 1.2);
+  }
+
+  const startX = 24;
+  const gap = 30;
+  code.split("").forEach((char, index) => {
+    const x = startX + index * gap + Math.random() * 5;
+    const y = 44 + Math.random() * 8;
+    const angle = (Math.random() - 0.5) * 0.55;
+
+    context.save();
+    context.translate(x, y);
+    context.rotate(angle);
+    context.font = `${Math.floor(Math.random() * 9) + 28}px Georgia, "Times New Roman", serif`;
+    context.lineWidth = 1;
+    context.strokeStyle = "rgba(42, 33, 29, 0.65)";
+    context.fillStyle = index % 2 === 0 ? "#2a211d" : "#9a4300";
+    context.strokeText(char, 0, 0);
+    context.fillText(char, 0, 0);
+    context.restore();
+  });
 }
 
 function renderAccountSummary(user) {
@@ -605,7 +653,7 @@ async function changePassword(event) {
   const currentPassword = document.getElementById("currentPassword").value;
   const newPassword = document.getElementById("newPassword").value;
   const confirmPassword = document.getElementById("confirmNewPassword").value;
-  const captchaAnswer = document.getElementById("passwordCaptchaAnswer").value.trim();
+  const captchaAnswer = document.getElementById("passwordCaptchaAnswer").value.trim().toLowerCase();
 
   if (newPassword !== confirmPassword) {
     showSiteToast("Mat khau moi nhap lai khong khop.", "error");
