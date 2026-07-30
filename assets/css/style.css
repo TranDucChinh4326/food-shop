@@ -1048,26 +1048,32 @@ h2 {
 
 .social-account-icon {
   align-items: center;
-  background: #fff1eb;
+  background: #fff;
   border-radius: 50%;
-  color: #ff5722;
+  box-shadow: 0 0 0 1px rgba(240, 223, 213, 0.9);
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: 24px;
-  font-weight: 900;
   height: 44px;
   justify-content: center;
   width: 44px;
 }
 
 .social-account-icon.google {
-  background: #fff1eb;
-  color: #4285f4;
+  background: #fff;
 }
 
 .social-account-icon.facebook {
-  background: #eaf2ff;
-  color: #1877f2;
+  background: #eef4ff;
+}
+
+.provider-logo {
+  display: block;
+  height: 28px;
+  width: 28px;
+}
+
+.facebook-logo {
+  filter: drop-shadow(0 2px 4px rgba(24, 119, 242, 0.2));
 }
 
 .social-account-meta {

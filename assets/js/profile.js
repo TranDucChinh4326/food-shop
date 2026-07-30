@@ -80,8 +80,28 @@ function renderSocialAccounts(accounts = []) {
   }, {});
 
   const providers = [
-    { id: "google", label: "Google", icon: "G" },
-    { id: "facebook", label: "Facebook", icon: "f" }
+    {
+      id: "google",
+      label: "Google",
+      icon: `
+        <svg class="provider-logo google-logo" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.9-6.9C35.9 2.3 30.5 0 24 0 14.6 0 6.5 5.4 2.6 13.3l8 6.2C12.5 13.6 17.8 9.5 24 9.5Z"/>
+          <path fill="#4285F4" d="M47 24.5c0-1.7-.2-3.3-.4-4.8H24v9.1h12.9c-.6 2.9-2.2 5.4-4.7 7.1l7.3 5.7C43.8 37.7 47 31.9 47 24.5Z"/>
+          <path fill="#FBBC05" d="M10.6 28.5A14.4 14.4 0 0 1 10.6 19.5l-8-6.2a24 24 0 0 0 0 21.4l8-6.2Z"/>
+          <path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-6.5l-7.8-6c-2.2 1.5-5 2.4-8.2 2.4-6.2 0-11.5-4.1-13.4-9.6l-8 6.2C6.5 42.6 14.6 48 24 48Z"/>
+        </svg>
+      `
+    },
+    {
+      id: "facebook",
+      label: "Facebook",
+      icon: `
+        <svg class="provider-logo facebook-logo" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <circle cx="24" cy="24" r="24" fill="#1877F2"/>
+          <path fill="#fff" d="M30.8 25.4 31.9 18h-7.1v-4.8c0-2 1-4 4.2-4h3.2V2.9S29.3 2.4 26.5 2.4c-5.9 0-9.8 3.6-9.8 10.1V18h-6.6v7.4h6.6V43.3a26 26 0 0 0 8.1 0V25.4h6Z"/>
+        </svg>
+      `
+    }
   ];
 
   container.innerHTML = providers.map(provider => {
