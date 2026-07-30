@@ -716,6 +716,7 @@ function compressAvatarImage(file) {
 async function changePassword(event) {
   event.preventDefault();
 
+  const form = event.currentTarget;
   const currentPassword = document.getElementById("currentPassword").value;
   const newPassword = document.getElementById("newPassword").value;
   const confirmPassword = document.getElementById("confirmNewPassword").value;
@@ -745,16 +746,16 @@ async function changePassword(event) {
   };
 
   try {
-    await requestProfileJson(`${PROFILE_AUTH_API}/password`, {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/password`, {
       method: "PUT",
       body: JSON.stringify(payload)
     });
-    event.currentTarget.reset();
+    form?.reset();
     passwordCaptchaId = "";
     passwordCaptchaAnswer = "";
     drawPasswordCaptchaPlaceholder("Bấm Xin mã");
     await loadProfile();
-    showSiteToast("Da doi mat khau.");
+    showSiteToast(data.message || "Da doi mat khau.");
   } catch (error) {
     if (/captcha/i.test(error.message || "")) {
       passwordCaptchaId = "";
