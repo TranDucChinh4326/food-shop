@@ -1416,6 +1416,29 @@ button.account-photo-badge {
   min-height: 42px;
 }
 
+.password-input-wrap {
+  display: block;
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 72px !important;
+}
+
+.password-visibility-toggle {
+  background: transparent;
+  border: 0;
+  color: #9a4300;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 12px;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .profile-page .profile-card .btn {
   background: #9a4300;
   border-radius: 6px;

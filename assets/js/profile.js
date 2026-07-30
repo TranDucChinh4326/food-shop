@@ -765,8 +765,21 @@ async function changePassword(event) {
   }
 }
 
+function togglePasswordVisibility(event) {
+  const button = event.target.closest("[data-toggle-password]");
+  if (!button) return;
+
+  const input = document.getElementById(button.dataset.togglePassword);
+  if (!input) return;
+
+  const shouldShow = input.type === "password";
+  input.type = shouldShow ? "text" : "password";
+  button.textContent = shouldShow ? "Ẩn" : "Hiện";
+}
+
 document.getElementById("profileForm").addEventListener("submit", saveProfile);
 document.getElementById("passwordForm").addEventListener("submit", changePassword);
+document.getElementById("passwordForm").addEventListener("click", togglePasswordVisibility);
 document.getElementById("socialAccounts")?.addEventListener("click", handleSocialProviderAction);
 initAvatarUpload();
 document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);

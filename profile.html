@@ -208,7 +208,7 @@
         <button type="button" class="btn" disabled>Nạp tiền</button>
       </section>
 
-      <form id="passwordForm" class="profile-card password-card" data-profile-panel="password" hidden>
+      <form id="passwordForm" class="profile-card password-card" data-profile-panel="password" autocomplete="off" hidden>
         <div class="section-heading">
           <div>
             <h2>Đổi mật khẩu</h2>
@@ -218,17 +218,26 @@
 
         <label>
           Mật khẩu hiện tại
-          <input type="password" id="currentPassword" autocomplete="current-password" required>
+          <span class="password-input-wrap">
+            <input type="password" id="currentPassword" autocomplete="off" required>
+            <button type="button" class="password-visibility-toggle" data-toggle-password="currentPassword">Hiện</button>
+          </span>
         </label>
 
         <label>
           Mật khẩu mới
-          <input type="password" id="newPassword" autocomplete="new-password" minlength="6" required>
+          <span class="password-input-wrap">
+            <input type="password" id="newPassword" autocomplete="off" minlength="6" required>
+            <button type="button" class="password-visibility-toggle" data-toggle-password="newPassword">Hiện</button>
+          </span>
         </label>
 
         <label>
           Nhập lại mật khẩu mới
-          <input type="password" id="confirmNewPassword" autocomplete="new-password" minlength="6" required>
+          <span class="password-input-wrap">
+            <input type="password" id="confirmNewPassword" autocomplete="off" minlength="6" required>
+            <button type="button" class="password-visibility-toggle" data-toggle-password="confirmNewPassword">Hiện</button>
+          </span>
         </label>
 
         <div class="captcha-row">
