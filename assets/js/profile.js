@@ -8,6 +8,9 @@ let profileFacebookSdkPromise;
 let savedAddresses = [];
 let selectedAvatarData = "";
 let passwordCaptchaAnswer = "";
+let passwordCaptchaId = "";
+let passwordCaptchaCooldownTimer;
+let passwordCaptchaCooldownUntil = 0;
 
 function getProfileAuthHeaders() {
   return {
@@ -152,14 +155,77 @@ function renderPasswordMode(user) {
   }
 }
 
-function refreshPasswordCaptcha() {
+function drawPasswordCaptchaPlaceholder(message = "Bấm Xin mã") {
+  const canvas = document.getElementById("passwordCaptchaCanvas");
+  if (!canvas) return;
+
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#fffaf4";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#9a6a4a";
+  context.font = "700 18px Arial, sans-serif";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(message, canvas.width / 2, canvas.height / 2);
+}
+
+function updatePasswordCaptchaButton() {
+  const button = document.getElementById("refreshPasswordCaptcha");
+  if (!button) return;
+
+  const remaining = Math.max(0, Math.ceil((passwordCaptchaCooldownUntil - Date.now()) / 1000));
+  button.disabled = remaining > 0;
+  button.textContent = remaining > 0 ? `Xin lại sau ${remaining}s` : "Xin mã";
+
+  if (remaining <= 0 && passwordCaptchaCooldownTimer) {
+    clearInterval(passwordCaptchaCooldownTimer);
+    passwordCaptchaCooldownTimer = null;
+  }
+}
+
+function startPasswordCaptchaCooldown(seconds = 60) {
+  passwordCaptchaCooldownUntil = Date.now() + seconds * 1000;
+  updatePasswordCaptchaButton();
+
+  if (passwordCaptchaCooldownTimer) {
+    clearInterval(passwordCaptchaCooldownTimer);
+  }
+
+  passwordCaptchaCooldownTimer = setInterval(updatePasswordCaptchaButton, 1000);
+}
+
+async function refreshPasswordCaptcha() {
   const canvas = document.getElementById("passwordCaptchaCanvas");
   const answerInput = document.getElementById("passwordCaptchaAnswer");
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const code = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const button = document.getElementById("refreshPasswordCaptcha");
 
-  passwordCaptchaAnswer = code.toLowerCase();
+  if (Date.now() < passwordCaptchaCooldownUntil) {
+    updatePasswordCaptchaButton();
+    return;
+  }
+
   if (answerInput) answerInput.value = "";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Dang lay ma...";
+  }
+
+  let code = "";
+  try {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/password-captcha`);
+    code = String(data.code || "").toUpperCase();
+    passwordCaptchaId = data.id || "";
+    passwordCaptchaAnswer = code.toLowerCase();
+    startPasswordCaptchaCooldown(60);
+  } catch (error) {
+    passwordCaptchaId = "";
+    passwordCaptchaAnswer = "";
+    updatePasswordCaptchaButton();
+    showSiteToast(error.message, "error");
+    return;
+  }
+
   if (!canvas) return;
 
   const context = canvas.getContext("2d");
@@ -660,9 +726,13 @@ async function changePassword(event) {
     return;
   }
 
+  if (!passwordCaptchaId || !passwordCaptchaAnswer) {
+    showSiteToast("Vui long bam Xin ma captcha truoc.", "error");
+    return;
+  }
+
   if (captchaAnswer !== passwordCaptchaAnswer) {
     showSiteToast("Ma captcha khong dung.", "error");
-    refreshPasswordCaptcha();
     return;
   }
 
@@ -671,7 +741,7 @@ async function changePassword(event) {
     newPassword,
     confirmPassword,
     captchaAnswer,
-    captchaExpected: passwordCaptchaAnswer
+    captchaId: passwordCaptchaId
   };
 
   try {
@@ -680,11 +750,15 @@ async function changePassword(event) {
       body: JSON.stringify(payload)
     });
     event.currentTarget.reset();
-    refreshPasswordCaptcha();
+    passwordCaptchaId = "";
+    passwordCaptchaAnswer = "";
+    drawPasswordCaptchaPlaceholder("Bấm Xin mã");
     await loadProfile();
     showSiteToast("Da doi mat khau.");
   } catch (error) {
-    refreshPasswordCaptcha();
+    passwordCaptchaId = "";
+    passwordCaptchaAnswer = "";
+    drawPasswordCaptchaPlaceholder("Bấm Xin mã");
     showSiteToast(error.message, "error");
   }
 }
@@ -706,5 +780,6 @@ document.getElementById("savedAddressList")?.addEventListener("click", event => 
 document.querySelectorAll("[data-profile-tab]").forEach(button => {
   button.addEventListener("click", () => setProfileTab(button.dataset.profileTab));
 });
-refreshPasswordCaptcha();
+drawPasswordCaptchaPlaceholder("Bấm Xin mã");
+updatePasswordCaptchaButton();
 loadProfile();
