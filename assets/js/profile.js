@@ -750,7 +750,11 @@ async function changePassword(event) {
       method: "PUT",
       body: JSON.stringify(payload)
     });
-    form?.reset();
+    if (form) {
+      form.querySelectorAll("input").forEach(input => {
+        input.value = "";
+      });
+    }
     passwordCaptchaId = "";
     passwordCaptchaAnswer = "";
     drawPasswordCaptchaPlaceholder("Bấm Xin mã");
