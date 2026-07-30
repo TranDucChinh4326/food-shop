@@ -328,6 +328,12 @@ function renderAccountSummary(user) {
   const name = document.getElementById("profileDisplayName");
   const email = document.getElementById("profileDisplayEmail");
   const avatar = document.getElementById("profileAvatar");
+  const initials = String(user?.fullname || user?.email || "FH")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join("") || "FH";
 
   if (name) name.textContent = user?.fullname || "FoodHub User";
   if (email) email.textContent = user?.email || "";
@@ -336,14 +342,16 @@ function renderAccountSummary(user) {
     const avatarSource = selectedAvatarData || user?.avatar;
 
     if (avatarSource) {
-      avatar.innerHTML = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}">`;
+      avatar.textContent = "";
+      const image = document.createElement("img");
+      image.src = avatarSource;
+      image.alt = user?.fullname || "FoodHub User";
+      image.addEventListener("error", () => {
+        console.warn("Avatar image failed to load:", avatarSource);
+        avatar.textContent = initials;
+      }, { once: true });
+      avatar.appendChild(image);
     } else {
-      const initials = String(user?.fullname || user?.email || "FH")
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map(part => part.charAt(0).toUpperCase())
-        .join("") || "FH";
       avatar.textContent = initials;
     }
   }
