@@ -756,9 +756,11 @@ async function changePassword(event) {
     await loadProfile();
     showSiteToast("Da doi mat khau.");
   } catch (error) {
-    passwordCaptchaId = "";
-    passwordCaptchaAnswer = "";
-    drawPasswordCaptchaPlaceholder("Bấm Xin mã");
+    if (/captcha/i.test(error.message || "")) {
+      passwordCaptchaId = "";
+      passwordCaptchaAnswer = "";
+      drawPasswordCaptchaPlaceholder("Bấm Xin mã");
+    }
     showSiteToast(error.message, "error");
   }
 }
