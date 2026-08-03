@@ -1407,11 +1407,15 @@ function renderUser() {
       ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
+    const avatarSource = String(user.avatar || "").trim();
+    const avatarContent = avatarSource
+      ? `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`
+      : initial;
 
     userArea.innerHTML = `
       <div class="account-menu">
         <button type="button" class="account-toggle" aria-label="Mở tài khoản" aria-expanded="false">
-          <span class="account-avatar">${initial}</span>
+          <span class="account-avatar">${avatarContent}</span>
         </button>
         <div class="account-dropdown">
           <div class="account-summary">

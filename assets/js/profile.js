@@ -7,7 +7,6 @@ let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
 let savedAddresses = [];
 let selectedAvatarData = "";
-let selectedAvatarBlob = null;
 let passwordCaptchaAnswer = "";
 let passwordCaptchaId = "";
 let passwordCaptchaCooldownTimer;
@@ -665,11 +664,12 @@ async function saveProfile(event) {
     username: document.getElementById("profileUsername").value,
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
+    avatar: selectedAvatarData || document.querySelector("#profileAvatar img")?.getAttribute("src") || "",
     phone: document.getElementById("profilePhone").value
   };
 
   try {
-    let data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
       method: "PUT",
       body: JSON.stringify(payload)
     });
@@ -677,15 +677,8 @@ async function saveProfile(event) {
     const verificationUrl = data.verificationUrl;
     const profileMessage = data.message;
 
-    if (selectedAvatarBlob) {
-      const avatarForm = new FormData();
-      avatarForm.append("avatar", selectedAvatarBlob, "avatar.jpg");
-      data = await requestProfileFormData(`${PROFILE_AUTH_API}/avatar`, avatarForm);
-    }
-
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     selectedAvatarData = "";
-    selectedAvatarBlob = null;
     renderEmailVerifyStatus(data.user);
     renderAccountSummary(data.user);
     renderUser();
@@ -721,9 +714,8 @@ function initAvatarUpload() {
     }
 
     compressAvatarImage(file)
-      .then(({ dataUrl, blob }) => {
+      .then(dataUrl => {
         selectedAvatarData = dataUrl;
-        selectedAvatarBlob = blob;
         renderAccountSummary({
           fullname: document.getElementById("profileFullname")?.value,
           email: document.getElementById("profileEmail")?.value,
@@ -769,14 +761,7 @@ function compressAvatarImage(file) {
           dataUrl = canvas.toDataURL("image/jpeg", quality);
         }
 
-        canvas.toBlob(blob => {
-          if (!blob) {
-            reject(new Error("Khong the nen anh dai dien"));
-            return;
-          }
-
-          resolve({ dataUrl, blob });
-        }, "image/jpeg", quality);
+        resolve(dataUrl);
       };
 
       image.src = String(reader.result || "");
