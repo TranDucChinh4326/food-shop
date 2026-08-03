@@ -338,7 +338,7 @@ function renderAccountSummary(user) {
   if (email) email.textContent = user?.email || "";
 
   if (avatar) {
-    const avatarSource = selectedAvatarData || user?.avatar;
+    const avatarSource = selectedAvatarData || user?.avatar || getDefaultAvatarDataUrl();
 
     if (avatarSource) {
       avatar.textContent = "";

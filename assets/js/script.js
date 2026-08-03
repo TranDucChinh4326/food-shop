@@ -83,6 +83,25 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function getDefaultAvatarDataUrl() {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ff7a2f"/>
+          <stop offset="1" stop-color="#ff4b20"/>
+        </linearGradient>
+      </defs>
+      <rect width="96" height="96" rx="48" fill="url(#bg)"/>
+      <circle cx="48" cy="36" r="17" fill="#fff7f2"/>
+      <path d="M20 82c4.8-18.5 17.1-28 28-28s23.2 9.5 28 28" fill="#fff7f2"/>
+      <circle cx="48" cy="48" r="44" fill="none" stroke="#fff" stroke-width="5"/>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 function formatMoney(number) {
   return Number(number).toLocaleString("vi-VN") + "đ";
 }
@@ -1407,10 +1426,8 @@ function renderUser() {
       ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
-    const avatarSource = String(user.avatar || "").trim();
-    const avatarContent = avatarSource
-      ? `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`
-      : initial;
+    const avatarSource = String(user.avatar || "").trim() || getDefaultAvatarDataUrl();
+    const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
 
     userArea.innerHTML = `
       <div class="account-menu">
