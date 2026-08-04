@@ -1248,6 +1248,14 @@ function formatCountdown(seconds) {
   return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
 }
 
+function getBankDisplayName(bankCode) {
+  const bankNames = {
+    "970424": "Shinhan Bank Việt Nam"
+  };
+
+  return bankNames[String(bankCode || "")] || bankCode || "Ngân hàng";
+}
+
 async function cancelActiveQrPayment(reason = "manual") {
   if (!activeQrPayment?.orderId) return;
 
@@ -1277,6 +1285,7 @@ function closeQrPaymentDialog({ cancel = true } = {}) {
   const dialog = document.getElementById("qrPaymentDialog");
 
   if (dialog) dialog.remove();
+  document.body.classList.remove("qr-payment-open");
   if (cancel) cancelActiveQrPayment("closed");
 }
 
@@ -1291,6 +1300,7 @@ function showQrPaymentDialog(order) {
 
   const oldDialog = document.getElementById("qrPaymentDialog");
   if (oldDialog) oldDialog.remove();
+  document.body.classList.add("qr-payment-open");
 
   const dialog = document.createElement("div");
   dialog.id = "qrPaymentDialog";
@@ -1307,7 +1317,7 @@ function showQrPaymentDialog(order) {
       <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Ma QR thanh toan don ${order.id}">
       <div class="qr-payment-info">
         <div><span>Số tiền</span><strong>${formatMoney(session.amount)}</strong></div>
-        <div><span>Ngân hàng</span><strong>${escapeHtml(session.bankCode)}</strong></div>
+        <div><span>Ngân hàng</span><strong>${escapeHtml(getBankDisplayName(session.bankCode))}</strong></div>
         <div><span>Số tài khoản</span><strong>${escapeHtml(session.bankAccountNo)}</strong></div>
         <div><span>Chủ tài khoản</span><strong>${escapeHtml(session.bankAccountName)}</strong></div>
         <div><span>Nội dung</span><strong>${escapeHtml(session.transferContent)}</strong></div>
