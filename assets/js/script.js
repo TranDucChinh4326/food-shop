@@ -574,11 +574,63 @@ function fillAddressForm(addressConfig, userAddress) {
   refreshAddressSelectorOptions(addressConfig, userAddress);
 }
 
+function setCheckoutAddressRequiredState(hasAddress, message = "") {
+  const warning = document.getElementById("checkoutProfileWarning");
+  const submitButton = document.querySelector("#orderForm button[type='submit']");
+
+  if (warning) {
+    warning.hidden = hasAddress;
+    warning.innerHTML = hasAddress
+      ? ""
+      : `${escapeHtml(message || "Bạn cần cập nhật địa chỉ giao hàng trước khi đặt hàng.")} <a href="profile.html">Cập nhật ngay</a>`;
+  }
+
+  if (submitButton) {
+    submitButton.disabled = !hasAddress;
+  }
+}
+
+async function loadCheckoutProfile() {
+  if (!isLoggedIn()) return null;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.user) return null;
+
+    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+
+    const nameInput = document.getElementById("customerName");
+    const phoneInput = document.getElementById("customerPhone");
+
+    if (nameInput && !nameInput.value) nameInput.value = data.user.fullname || "";
+    if (phoneInput && !phoneInput.value) phoneInput.value = data.user.phone || "";
+
+    if (data.user.address) {
+      fillAddressForm({
+        cityId: "customerCity",
+        wardId: "customerWard",
+        detailId: "customerAddress"
+      }, data.user.address);
+    }
+
+    return data.user;
+  } catch (error) {
+    console.error("Khong tai duoc ho so dat hang:", error);
+    return null;
+  }
+}
+
 async function loadCheckoutSavedAddresses() {
   const select = document.getElementById("savedAddressSelect");
   const wrap = document.getElementById("savedAddressSelectWrap");
 
-  if (!select || !wrap || !isLoggedIn()) return;
+  if (!select || !wrap || !isLoggedIn()) return [];
 
   try {
     const response = await fetch(`${API_BASE_URL}/auth/addresses`, {
@@ -588,7 +640,7 @@ async function loadCheckoutSavedAddresses() {
     });
     const data = await response.json();
 
-    if (!response.ok || !Array.isArray(data.addresses) || data.addresses.length === 0) return;
+    if (!response.ok || !Array.isArray(data.addresses) || data.addresses.length === 0) return [];
 
     wrap.hidden = false;
     select.innerHTML = `<option value="">Nhập địa chỉ mới</option>` + data.addresses.map(address => (
@@ -612,8 +664,11 @@ async function loadCheckoutSavedAddresses() {
         phone: option.dataset.phone || ""
       });
     });
+
+    return data.addresses;
   } catch (error) {
     console.error("Khong tai duoc dia chi da luu:", error);
+    return [];
   }
 }
 
@@ -1096,6 +1151,7 @@ function addToCart(foodId) {
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
   const totalPrice = document.getElementById("total-price");
+  const checkoutSummary = document.getElementById("checkoutSummary");
 
   updateCartCount();
 
@@ -1104,14 +1160,24 @@ function renderCart() {
   if (cart.length === 0) {
     cartItems.innerHTML = `<p class="empty-cart">Giỏ hàng đang trống.</p>`;
     totalPrice.textContent = "0đ";
+    if (checkoutSummary) {
+      checkoutSummary.innerHTML = `
+        <div><span>Tổng mặt hàng</span><strong>0</strong></div>
+        <div><span>Tạm tính</span><strong>0đ</strong></div>
+        <div><span>Phí giao hàng</span><strong>Chưa áp dụng</strong></div>
+        <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>0đ</strong></div>
+      `;
+    }
     return;
   }
 
   let total = 0;
+  let totalQuantity = 0;
 
   cartItems.innerHTML = cart.map(item => {
     const itemTotal = Number(item.price) * Number(item.quantity);
     total += itemTotal;
+    totalQuantity += Number(item.quantity);
 
     return `
       <div class="cart-item">
@@ -1133,6 +1199,15 @@ function renderCart() {
   }).join("");
 
   totalPrice.textContent = formatMoney(total);
+
+  if (checkoutSummary) {
+    checkoutSummary.innerHTML = `
+      <div><span>Tổng mặt hàng</span><strong>${totalQuantity}</strong></div>
+      <div><span>Tạm tính</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Phí giao hàng</span><strong>Chưa áp dụng</strong></div>
+      <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(total)}</strong></div>
+    `;
+  }
 }
 
 function changeQuantity(foodId, amount) {
@@ -1197,8 +1272,20 @@ async function submitOrder(event) {
   const addressDetail = document.getElementById("customerAddress").value;
   const address = buildAddressString(cityName, "", wardName, addressDetail);
   const note = document.getElementById("customerNote").value;
+  const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value || "cod";
   const submitButton = document.querySelector("#orderForm button[type='submit']");
   const token = getAuthToken();
+
+  if (!name.trim() || !phone.trim() || !cityName || !wardName || !addressDetail.trim()) {
+    showSiteToast("Vui lòng cập nhật đầy đủ thông tin giao hàng trước khi đặt hàng.", "error");
+    setCheckoutAddressRequiredState(false, "Bạn cần cập nhật đầy đủ địa chỉ giao hàng trước khi đặt hàng.");
+    return;
+  }
+
+  if (!["cod", "qr", "wallet"].includes(paymentMethod)) {
+    showSiteToast("Phương thức thanh toán không hợp lệ.", "error");
+    return;
+  }
 
   submitButton.disabled = true;
   submitButton.textContent = "Đang gửi đơn...";
@@ -1215,6 +1302,7 @@ async function submitOrder(event) {
         customerPhone: phone,
         customerAddress: address,
         customerNote: note,
+        paymentMethod,
         items: cart.map(item => ({
           foodId: item.id,
           quantity: item.quantity
@@ -1279,6 +1367,7 @@ async function trackOrder(event) {
         <p><strong>Khách hàng:</strong> ${data.customer_name}</p>
         <p><strong>Số điện thoại:</strong> ${data.phone}</p>
         <p><strong>Địa chỉ:</strong> ${data.address}</p>
+        <p><strong>Thanh toán:</strong> ${getPaymentMethodLabel(data.payment_method)} - ${getPaymentStatusLabel(data.payment_status)}</p>
         ${data.note ? `<p><strong>Ghi chú:</strong> ${data.note}</p>` : ""}
         <div>
           ${data.items.map(item => `
@@ -1376,6 +1465,7 @@ function renderOrderHistory(orders) {
         <p><strong>Khach hang:</strong> ${order.customer_name}</p>
         <p><strong>So dien thoai:</strong> ${order.phone}</p>
         <p><strong>Dia chi:</strong> ${order.address}</p>
+        <p><strong>Thanh toan:</strong> ${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
         ${order.note ? `<p><strong>Ghi chu:</strong> ${order.note}</p>` : ""}
       </div>
 
@@ -1411,6 +1501,28 @@ function getOrderStatusLabel(status) {
   };
 
   return labels[status] || status;
+}
+
+function getPaymentMethodLabel(method) {
+  const labels = {
+    cod: "Thanh toán khi nhận hàng",
+    qr: "Thanh toán bằng mã QR",
+    wallet: "Tiền trong tài khoản"
+  };
+
+  return labels[method] || "Chưa xác định";
+}
+
+function getPaymentStatusLabel(status) {
+  const labels = {
+    unpaid: "Chưa thanh toán",
+    pending: "Chờ thanh toán",
+    paid: "Đã thanh toán",
+    failed: "Thanh toán thất bại",
+    refunded: "Đã hoàn tiền"
+  };
+
+  return labels[status] || "Chưa xác định";
 }
 
 function renderUser() {
@@ -1888,16 +2000,18 @@ function maybeShowChatBubble(widget) {
 if (protectCheckoutPage()) {
   (async () => {
     await initAddressSelectors();
-  const currentUser = getCurrentUser();
-
-  if (currentUser?.address) {
-    fillAddressForm({
-      cityId: "customerCity",
-      wardId: "customerWard",
-      detailId: "customerAddress"
-    }, currentUser.address);
-  }
-  loadCheckoutSavedAddresses();
+  const currentUser = await loadCheckoutProfile() || getCurrentUser();
+  const savedAddresses = await loadCheckoutSavedAddresses();
+  const hasCheckoutAddress = Boolean(
+    savedAddresses.length
+      || currentUser?.address
+      || (
+        document.getElementById("customerCity")?.value
+        && document.getElementById("customerWard")?.value
+        && document.getElementById("customerAddress")?.value
+      )
+  );
+  setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
 
   loadPublicCategories();
   loadFoods();
