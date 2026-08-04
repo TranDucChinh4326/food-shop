@@ -1067,6 +1067,93 @@ h2 {
   text-decoration: underline;
 }
 
+.qr-payment-dialog {
+  align-items: center;
+  background: rgba(35, 20, 12, 0.52);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 400;
+}
+
+.qr-payment-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 22px 60px rgba(35, 20, 12, 0.24);
+  display: grid;
+  gap: 16px;
+  max-height: calc(100vh - 40px);
+  max-width: 460px;
+  overflow: auto;
+  padding: 22px;
+  width: min(100%, 460px);
+}
+
+.qr-payment-head {
+  align-items: start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.qr-payment-head h2 {
+  font-size: 22px;
+  margin: 0 0 4px;
+}
+
+.qr-payment-head p {
+  color: #755f54;
+  margin: 0;
+}
+
+.qr-payment-close {
+  background: #fff1eb;
+  border: 1px solid #ffd1bd;
+  border-radius: 50%;
+  color: #b13a08;
+  cursor: pointer;
+  font-size: 24px;
+  height: 38px;
+  line-height: 1;
+  width: 38px;
+}
+
+.qr-payment-image {
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+  max-width: 280px;
+  width: 100%;
+}
+
+.qr-payment-info {
+  background: #fff8f3;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.qr-payment-info div,
+.qr-payment-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.qr-payment-info span {
+  color: #6f5d54;
+}
+
+.qr-payment-info strong {
+  text-align: right;
+}
+
 .address-input-grid {
   display: grid;
   gap: 16px;

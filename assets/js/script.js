@@ -16,6 +16,8 @@ let announcementTimer;
 let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
+let activeQrPayment = null;
+let qrPaymentCountdownTimer = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -1240,6 +1242,112 @@ function removeItem(foodId) {
   renderCart();
 }
 
+function formatCountdown(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
+
+async function cancelActiveQrPayment(reason = "manual") {
+  if (!activeQrPayment?.orderId) return;
+
+  const orderId = activeQrPayment.orderId;
+  activeQrPayment = null;
+
+  if (qrPaymentCountdownTimer) {
+    clearInterval(qrPaymentCountdownTimer);
+    qrPaymentCountdownTimer = null;
+  }
+
+  try {
+    await fetch(`${ORDERS_API}/${orderId}/payment/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ reason })
+    });
+  } catch (error) {
+    console.error("Khong huy duoc giao dich QR:", error);
+  }
+}
+
+function closeQrPaymentDialog({ cancel = true } = {}) {
+  const dialog = document.getElementById("qrPaymentDialog");
+
+  if (dialog) dialog.remove();
+  if (cancel) cancelActiveQrPayment("closed");
+}
+
+function showQrPaymentDialog(order) {
+  const session = order.paymentSession;
+  if (!session?.qrUrl) return;
+
+  activeQrPayment = {
+    orderId: order.id,
+    startedAt: Date.now()
+  };
+
+  const oldDialog = document.getElementById("qrPaymentDialog");
+  if (oldDialog) oldDialog.remove();
+
+  const dialog = document.createElement("div");
+  dialog.id = "qrPaymentDialog";
+  dialog.className = "qr-payment-dialog";
+  dialog.innerHTML = `
+    <div class="qr-payment-card" role="dialog" aria-modal="true" aria-labelledby="qrPaymentTitle">
+      <div class="qr-payment-head">
+        <div>
+          <h2 id="qrPaymentTitle">Thanh toán QR đơn #${order.id}</h2>
+          <p>Không rời trang trong lúc giao dịch đang chờ xử lý.</p>
+        </div>
+        <button type="button" class="qr-payment-close" aria-label="Hủy thanh toán">×</button>
+      </div>
+      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Ma QR thanh toan don ${order.id}">
+      <div class="qr-payment-info">
+        <div><span>Số tiền</span><strong>${formatMoney(session.amount)}</strong></div>
+        <div><span>Ngân hàng</span><strong>${escapeHtml(session.bankCode)}</strong></div>
+        <div><span>Số tài khoản</span><strong>${escapeHtml(session.bankAccountNo)}</strong></div>
+        <div><span>Chủ tài khoản</span><strong>${escapeHtml(session.bankAccountName)}</strong></div>
+        <div><span>Nội dung</span><strong>${escapeHtml(session.transferContent)}</strong></div>
+        <div><span>Thời gian còn lại</span><strong id="qrPaymentCountdown">${formatCountdown(session.expiresInSeconds || 600)}</strong></div>
+      </div>
+      <div class="qr-payment-actions">
+        <button type="button" class="social-link-btn" data-qr-cancel>Hủy giao dịch</button>
+        <a class="btn" href="track.html">Tôi đã chuyển khoản</a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  let remaining = Number(session.expiresInSeconds || 600);
+  qrPaymentCountdownTimer = setInterval(() => {
+    remaining -= 1;
+    const countdown = document.getElementById("qrPaymentCountdown");
+    if (countdown) countdown.textContent = formatCountdown(Math.max(remaining, 0));
+
+    if (remaining <= 0) {
+      closeQrPaymentDialog({ cancel: true });
+      showSiteToast("Giao dich QR da het han va duoc huy.", "error");
+    }
+  }, 1000);
+
+  dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
+  dialog.querySelector("[data-qr-cancel]")?.addEventListener("click", () => {
+    closeQrPaymentDialog({ cancel: true });
+    showSiteToast("Da huy giao dich QR.");
+  });
+  dialog.querySelector("a.btn")?.addEventListener("click", () => {
+    activeQrPayment = null;
+    if (qrPaymentCountdownTimer) {
+      clearInterval(qrPaymentCountdownTimer);
+      qrPaymentCountdownTimer = null;
+    }
+  });
+}
+
 async function submitOrder(event) {
   event.preventDefault();
 
@@ -1327,6 +1435,12 @@ async function submitOrder(event) {
     saveCart();
     renderCart();
     document.getElementById("orderForm").reset();
+
+    if (data.order?.paymentMethod === "qr" && data.order?.paymentSession) {
+      showQrPaymentDialog(data.order);
+      showSiteToast("Da tao ma QR. Vui long hoan tat thanh toan.");
+      return;
+    }
     showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
 
     setTimeout(() => {
@@ -1996,6 +2110,23 @@ function maybeShowChatBubble(widget) {
     }, 220);
   }, 5000);
 }
+
+window.addEventListener("beforeunload", event => {
+  if (!activeQrPayment) return;
+
+  event.preventDefault();
+  event.returnValue = "";
+});
+
+window.addEventListener("pagehide", () => {
+  if (!activeQrPayment?.orderId) return;
+
+  const token = getAuthToken();
+  const payload = JSON.stringify({ reason: "pagehide" });
+  const blob = new Blob([payload], { type: "application/json" });
+
+  navigator.sendBeacon(`${ORDERS_API}/${activeQrPayment.orderId}/payment/cancel?token=${encodeURIComponent(token || "")}`, blob);
+});
 
 if (protectCheckoutPage()) {
   (async () => {
