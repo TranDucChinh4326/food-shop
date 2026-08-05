@@ -7,8 +7,8 @@ async function verifyEmail() {
   const token = new URLSearchParams(window.location.search).get("token");
 
   if (!token) {
-    message.textContent = "Link xac thuc khong hop le.";
-    action.textContent = "Ve trang dang ky";
+    message.textContent = "Link xác thực không hợp lệ.";
+    action.textContent = "Ve trang đăng ký";
     action.href = "register.html";
     return;
   }
@@ -18,15 +18,15 @@ async function verifyEmail() {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.message || "Khong the xac thuc email.");
+      throw new Error(data.message || "Không thể xác thực email.");
     }
 
-    message.textContent = data.message || "Email da duoc xac thuc thanh cong.";
-    action.textContent = "Dang nhap ngay";
+    message.textContent = data.message || "Email đã được xác thực thành công.";
+    action.textContent = "Đăng nhập ngay";
     action.href = "login.html";
   } catch (error) {
     message.textContent = error.message;
-    action.textContent = "Ve trang dang nhap";
+    action.textContent = "Ve trang đăng nhập";
     action.href = "login.html";
   }
 }

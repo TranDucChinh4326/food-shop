@@ -152,7 +152,7 @@ function normalizeAccountType(value) {
 }
 
 function getAccountTypeTitle() {
-  return activeAccountType === "customers" ? "Tai khoan khach hang" : "Tai khoan nhan vien";
+  return activeAccountType === "customers" ? "Tài khoản khách hàng" : "Tài khoản nhân viên";
 }
 
 function syncAccountView() {
@@ -162,12 +162,12 @@ function syncAccountView() {
   accountSection.querySelector(".page-heading h2").textContent = getAccountTypeTitle();
   const breadcrumb = accountSection.querySelector(".page-heading p");
   if (breadcrumb) {
-    breadcrumb.innerHTML = `<a href="index.html">Trang chu</a> <span>/</span> ${getAccountTypeTitle()}`;
+    breadcrumb.innerHTML = `<a href="index.html">Trang chủ</a> <span>/</span> ${getAccountTypeTitle()}`;
   }
 
   if (accountCreateLink) {
     accountCreateLink.href = `admin-account.html?type=${activeAccountType === "customers" ? "customer" : "staff"}`;
-    accountCreateLink.textContent = activeAccountType === "customers" ? "+ Tao khach hang" : "+ Them nhan vien";
+    accountCreateLink.textContent = activeAccountType === "customers" ? "+ Tạo khách hàng" : "+ Thêm nhân viên";
   }
 }
 
@@ -176,43 +176,43 @@ function formatMoney(number) {
 }
 
 function formatDateTime(value) {
-  if (!value) return "Chua hen ngay";
+  if (!value) return "Chưa hẹn ngày";
   return new Date(value).toLocaleString("vi-VN");
 }
 
 function formatRole(role) {
   const roles = {
-    USER: "Khach hang",
-    STAFF_SALES: "Nhan vien ban hang",
-    STAFF_CONTENT: "Quan ly mon an",
-    STAFF_MANAGER: "Quan ly nhan vien",
+    USER: "Khách hàng",
+    STAFF_SALES: "Nhân viên bạn hang",
+    STAFF_CONTENT: "Quản lý món ăn",
+    STAFF_MANAGER: "Quản lý nhân viên",
     ADMIN: "Admin"
   };
 
-  return roles[role] || role || "Khach hang";
+  return roles[role] || role || "Khách hàng";
 }
 
 function formatAnnouncementStatus(status) {
   const statuses = {
-    active: "Hoat dong",
-    hidden: "Da an",
-    expired: "Het han",
-    scheduled: "Sap hien thi"
+    active: "Hoạt động",
+    hidden: "Đã ẩn",
+    expired: "Hết hạn",
+    scheduled: "Sắp hiển thị"
   };
 
-  return statuses[status] || status || "Khong ro";
+  return statuses[status] || status || "Không rõ";
 }
 
 function formatDiscountStatus(status) {
   const statuses = {
-    active: "Hoat dong",
-    hidden: "Da an",
-    expired: "Het han",
-    scheduled: "Sap dien ra",
+    active: "Hoạt động",
+    hidden: "Đã ẩn",
+    expired: "Hết hạn",
+    scheduled: "Sắp diễn ra",
     soldout: "Het luot"
   };
 
-  return statuses[status] || status || "Khong ro";
+  return statuses[status] || status || "Không rõ";
 }
 
 function formatDiscountValue(discount) {
@@ -333,7 +333,7 @@ async function requestJson(url, options = {}) {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
     sessionStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
-    throw new Error(data.message || "Phien dang nhap da het han.");
+    throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
 
   if (!response.ok) {
@@ -372,7 +372,7 @@ async function loadUsers() {
   if (!usersList) return;
 
   syncAccountView();
-  usersList.textContent = `Dang tai ${activeAccountType === "customers" ? "khach hang" : "nhan vien"}...`;
+  usersList.textContent = `Đang tải ${activeAccountType === "customers" ? "khách hàng" : "nhân viên"}...`;
 
   try {
     const params = new URLSearchParams({
@@ -384,7 +384,7 @@ async function loadUsers() {
     if (users.length === 0) {
       cachedUsers = [];
       usersPage = 1;
-      usersList.textContent = `Chua co ${activeAccountType === "customers" ? "khach hang" : "nhan vien"} phu hop.`;
+      usersList.textContent = `Chưa có ${activeAccountType === "customers" ? "khách hàng" : "nhân viên"} phù hợp.`;
       return;
     }
 
@@ -410,7 +410,7 @@ function renderUsersTable() {
   const to = startIndex + pageUsers.length;
 
   if (totalUsers === 0) {
-    usersList.textContent = `Chua co ${activeAccountType === "customers" ? "khach hang" : "nhan vien"} phu hop.`;
+    usersList.textContent = `Chưa có ${activeAccountType === "customers" ? "khách hàng" : "nhân viên"} phù hợp.`;
     return;
   }
 
@@ -423,8 +423,8 @@ function renderUsersTable() {
               <th>Ho ten</th>
               <th>Email</th>
               <th>Vai tro</th>
-              <th>Xac thuc</th>
-              <th>Trang thai</th>
+              <th>Xác thực</th>
+              <th>Trạng thái</th>
               <th>Chuc nang</th>
             </tr>
           </thead>
@@ -436,20 +436,20 @@ function renderUsersTable() {
                 <td>${startIndex + index + 1}</td>
                 <td>
                   <strong>${escapeHtml(account.fullname)}</strong>
-                  <small>${account.passwordSet ? "Co mat khau" : "Chua dat mat khau"}</small>
+                  <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
                 <td>${escapeHtml(account.email)}</td>
                 <td>${formatRole(account.role)}</td>
-                <td>${account.emailVerified ? "Da xac thuc" : "Chua xac thuc"}</td>
+                <td>${account.emailVerified ? "Da xác thực" : "Chưa xác thực"}</td>
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
                 <td>
                   <div class="table-actions">
                     ${isRootAdmin
-                      ? `<span class="admin-lock-note">Quan tri cao nhat</span>`
+                      ? `<span class="admin-lock-note">Quản trị cao nhat</span>`
                       : `
-                        <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sua" aria-label="Sua tai khoan">${editIcon()}</a>
-                        <button type="button" class="icon-btn key" title="Dat mat khau" aria-label="Dat mat khau" data-reset-password="${account.id}">${keyIcon()}</button>
-                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tai khoan" : "Mo khoa tai khoan"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
+                        <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
+                        <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
+                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tài khoản" : "Mo khoa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
                       `}
                   </div>
                 </td>
@@ -460,7 +460,7 @@ function renderUsersTable() {
         </table>
       </div>
       <div class="table-footer">
-        Dang hien thi tu ${from} den ${to} cua ${totalUsers} ket qua
+        Đang hiển thị từ ${from} đến ${to} của ${totalUsers} kết quả
         <div class="pager">
           <button type="button" data-users-page="prev" ${usersPage === 1 ? "disabled" : ""}>&lsaquo;</button>
           ${Array.from({ length: totalPages }, (_, index) => `
@@ -475,7 +475,7 @@ function renderUsersTable() {
 async function loadAnnouncements() {
   if (!announcementsList) return;
 
-  announcementsList.textContent = "Dang tai thong bao...";
+  announcementsList.textContent = "Đang tải thông báo...";
 
   try {
     const params = new URLSearchParams({
@@ -510,7 +510,7 @@ function renderAnnouncementsTable() {
   const to = startIndex + pageItems.length;
 
   if (total === 0) {
-    announcementsList.textContent = "Chua co thong bao phu hop.";
+    announcementsList.textContent = "Chưa có thông báo phù hợp.";
     return;
   }
 
@@ -520,10 +520,10 @@ function renderAnnouncementsTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Tieu de</th>
-            <th>Ngay dang</th>
-            <th>Het hieu luc</th>
-            <th>Trang thai</th>
+            <th>Tiêu đề</th>
+            <th>Ngày đăng</th>
+            <th>Hết hiệu lực</th>
+            <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -533,15 +533,15 @@ function renderAnnouncementsTable() {
               <td>${startIndex + index + 1}</td>
               <td>
                 <strong>${escapeHtml(item.title)}</strong>
-                <small>${escapeHtml(item.content || "Khong co noi dung mo ta")}</small>
+                <small>${escapeHtml(item.content || "Không có nội dung mô tả")}</small>
               </td>
               <td>${formatDateTime(item.published_at)}</td>
-              <td>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</td>
+              <td>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</td>
               <td><span class="account-status ${item.status === "active" ? "active" : "locked"}">${formatAnnouncementStatus(item.status)}</span></td>
               <td>
                 <div class="table-actions">
-                  <a class="icon-btn edit" href="admin-announcement.html?id=${item.id}" title="Sua" aria-label="Sua thong bao">${editIcon()}</a>
-                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa thong bao" data-hide-announcement="${item.id}">${trashIcon()}</button>
+                  <a class="icon-btn edit" href="admin-announcement.html?id=${item.id}" title="Sửa" aria-label="Sửa thông báo">${editIcon()}</a>
+                  <button type="button" class="icon-btn delete" title="Xóa" aria-label="Xóa thông báo" data-hide-announcement="${item.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -550,7 +550,7 @@ function renderAnnouncementsTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-announcements-page="prev" ${announcementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -569,7 +569,7 @@ function resetDiscountForm() {
   document.getElementById("discountId").value = "";
   document.getElementById("discountMinOrder").value = "0";
   document.getElementById("discountIsActive").value = "1";
-  document.getElementById("saveDiscountBtn").textContent = "Luu ma";
+  document.getElementById("saveDiscountBtn").textContent = "Lưu ma";
 }
 
 function fillDiscountForm(discount) {
@@ -584,7 +584,7 @@ function fillDiscountForm(discount) {
   document.getElementById("discountStartsAt").value = formatDateInputValue(discount.starts_at);
   document.getElementById("discountExpiresAt").value = formatDateInputValue(discount.expires_at);
   document.getElementById("discountIsActive").value = discount.is_active ? "1" : "0";
-  document.getElementById("saveDiscountBtn").textContent = "Cap nhat ma";
+  document.getElementById("saveDiscountBtn").textContent = "Cập nhật ma";
   discountForm.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -615,7 +615,7 @@ async function saveDiscount(event) {
       body: JSON.stringify(payload)
     });
 
-    showAdminToast(discountId ? "Da cap nhat ma giam gia." : "Da tao ma giam gia.");
+    showAdminToast(discountId ? "Da cập nhật mã giảm giá." : "Đã tạo mã giảm giá.");
     resetDiscountForm();
     await loadDiscounts();
   } catch (error) {
@@ -626,7 +626,7 @@ async function saveDiscount(event) {
 async function loadDiscounts() {
   if (!discountsList) return;
 
-  discountsList.textContent = "Dang tai ma giam gia...";
+  discountsList.textContent = "Đang tải mã giảm giá...";
 
   try {
     const params = new URLSearchParams({
@@ -660,7 +660,7 @@ function renderDiscountsTable() {
   const to = startIndex + pageItems.length;
 
   if (total === 0) {
-    discountsList.textContent = "Chua co ma giam gia phu hop.";
+    discountsList.textContent = "Chưa có mã giảm giá phù hợp.";
     return;
   }
 
@@ -671,10 +671,10 @@ function renderDiscountsTable() {
           <tr>
             <th>STT</th>
             <th>Ma</th>
-            <th>Gia tri</th>
+            <th>Giá trị</th>
             <th>Dieu kien</th>
             <th>Hieu luc</th>
-            <th>Trang thai</th>
+            <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -689,17 +689,17 @@ function renderDiscountsTable() {
               <td>${formatDiscountValue(item)}</td>
               <td>
                 <strong>Tu ${formatMoney(item.min_order || 0)}</strong>
-                <small>${item.max_discount ? `Toi da ${formatMoney(item.max_discount)}` : "Khong gioi han giam"}</small>
+                <small>${item.max_discount ? `Tối đa ${formatMoney(item.max_discount)}` : "Không giới hạn giam"}</small>
               </td>
               <td>
-                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bat dau ngay"}</strong>
-                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</small>
+                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bắt đầu ngay"}</strong>
+                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</small>
               </td>
               <td><span class="account-status ${item.status === "active" ? "active" : "locked"}">${formatDiscountStatus(item.status)}</span></td>
               <td>
                 <div class="table-actions">
-                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua ma giam gia" data-edit-discount="${item.id}">${editIcon()}</button>
-                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa ma giam gia" data-delete-discount="${item.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa mã giảm giá" data-edit-discount="${item.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa" aria-label="Xóa mã giảm giá" data-delete-discount="${item.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -708,7 +708,7 @@ function renderDiscountsTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-discounts-page="prev" ${discountsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -731,12 +731,12 @@ function formatAdvertisementPosition(position) {
 
 function formatAdvertisementStatus(status) {
   const labels = {
-    active: "Hoat dong",
-    scheduled: "Sap hien",
-    expired: "Het han",
-    hidden: "Da an"
+    active: "Hoạt động",
+    scheduled: "Sắp hiện",
+    expired: "Hết hạn",
+    hidden: "Đã ẩn"
   };
-  return labels[status] || status || "Khong ro";
+  return labels[status] || status || "Không rõ";
 }
 
 function getAdvertisementStatusClass(status) {
@@ -749,8 +749,8 @@ function renderAdvertisementPreview(src) {
   if (!advertisementPreview) return;
 
   advertisementPreview.innerHTML = src
-    ? `<img src="${escapeHtml(src)}" alt="Xem truoc quang cao">`
-    : "Chua chon anh";
+    ? `<img src="${escapeHtml(src)}" alt="Xem trước quảng cáo">`
+    : "Chưa chọn anh";
 }
 
 function showAdvertisementListView() {
@@ -778,7 +778,7 @@ function resetAdvertisementForm() {
   document.getElementById("advertisementIsActive").value = "1";
   pendingAdvertisementImage = "";
   renderAdvertisementPreview("");
-  document.getElementById("saveAdvertisementBtn").textContent = "Luu quang cao";
+  document.getElementById("saveAdvertisementBtn").textContent = "Lưu quảng cáo";
 }
 
 function fillAdvertisementForm(item) {
@@ -795,7 +795,7 @@ function fillAdvertisementForm(item) {
   pendingAdvertisementImage = item.image || "";
   if (advertisementImageFile) advertisementImageFile.value = "";
   renderAdvertisementPreview(pendingAdvertisementImage);
-  document.getElementById("saveAdvertisementBtn").textContent = "Cap nhat quang cao";
+  document.getElementById("saveAdvertisementBtn").textContent = "Cập nhật quảng cáo";
   showAdvertisementFormView();
 }
 
@@ -805,17 +805,17 @@ function readAdvertisementImageFile() {
 
   const validTypes = ["image/jpeg", "image/png", "image/webp"];
   if (!validTypes.includes(file.type)) {
-    return Promise.reject(new Error("Chi ho tro anh JPG, PNG hoac WebP."));
+    return Promise.reject(new Error("Chi hỗ trợ anh JPG, PNG hoặc WebP."));
   }
 
   if (file.size > 1.5 * 1024 * 1024) {
-    return Promise.reject(new Error("Anh quang cao toi da 1.5MB."));
+    return Promise.reject(new Error("Anh quảng cáo tối đa 1.5MB."));
   }
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("Khong the doc tep anh."));
+    reader.onerror = () => reject(new Error("Không thể doc tệp ảnh."));
     reader.readAsDataURL(file);
   });
 }
@@ -847,7 +847,7 @@ async function saveAdvertisement(event) {
       body: JSON.stringify(payload)
     });
 
-    showAdminToast(advertisementId ? "Da cap nhat quang cao." : "Da tao quang cao.");
+    showAdminToast(advertisementId ? "Da cập nhật quảng cáo." : "Đã tạo quảng cáo.");
     resetAdvertisementForm();
     await loadAdvertisements();
     showAdvertisementListView();
@@ -859,7 +859,7 @@ async function saveAdvertisement(event) {
 async function loadAdvertisements() {
   if (!advertisementsList) return;
 
-  advertisementsList.textContent = "Dang tai quang cao...";
+  advertisementsList.textContent = "Đang tải quảng cáo...";
 
   try {
     const params = new URLSearchParams({
@@ -894,7 +894,7 @@ function renderAdvertisementsTable() {
   const to = startIndex + pageItems.length;
 
   if (total === 0) {
-    advertisementsList.textContent = "Chua co quang cao phu hop.";
+    advertisementsList.textContent = "Chưa có quảng cáo phù hợp.";
     return;
   }
 
@@ -904,11 +904,11 @@ function renderAdvertisementsTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Hinh anh</th>
-            <th>Tieu de</th>
+            <th>Hình ảnh</th>
+            <th>Tiêu đề</th>
             <th>Vi tri</th>
             <th>Hieu luc</th>
-            <th>Trang thai</th>
+            <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -919,18 +919,18 @@ function renderAdvertisementsTable() {
               <td><img class="ad-thumb" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}"></td>
               <td>
                 <strong>${escapeHtml(item.title)}</strong>
-                <small>${item.link_url ? escapeHtml(item.link_url) : "Khong gan link"}</small>
+                <small>${item.link_url ? escapeHtml(item.link_url) : "Không gắn link"}</small>
               </td>
               <td>${formatAdvertisementPosition(item.position)}</td>
               <td>
-                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bat dau ngay"}</strong>
-                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</small>
+                <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bắt đầu ngay"}</strong>
+                <small>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</small>
               </td>
               <td><span class="account-status ${getAdvertisementStatusClass(item.status)}">${formatAdvertisementStatus(item.status)}</span></td>
               <td>
                 <div class="table-actions">
-                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua quang cao" data-edit-advertisement="${item.id}">${editIcon()}</button>
-                  <button type="button" class="icon-btn delete" title="Xoa" aria-label="Xoa quang cao" data-delete-advertisement="${item.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa quảng cáo" data-edit-advertisement="${item.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa" aria-label="Xóa quảng cáo" data-delete-advertisement="${item.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -939,7 +939,7 @@ function renderAdvertisementsTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-advertisements-page="prev" ${advertisementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -954,9 +954,9 @@ function renderAdvertisementsTable() {
 async function loadStats() {
   if (!statsSummary) return;
 
-  statsSummary.textContent = "Dang tai thong ke...";
-  statsTopFoods.textContent = "Dang tai...";
-  statsDaily.textContent = "Dang tai...";
+  statsSummary.textContent = "Đang tải thống kê...";
+  statsTopFoods.textContent = "Đang tải...";
+  statsDaily.textContent = "Đang tải...";
 
   try {
     const params = new URLSearchParams();
@@ -977,13 +977,13 @@ function renderStats(data) {
   const summary = data.summary || {};
   const statCards = [
     ["Tong don", summary.total_orders || 0],
-    ["Doanh thu hoan tat", formatMoney(summary.revenue || 0)],
-    ["Don cho xu ly", summary.pending_orders || 0],
-    ["Don hoan tat", summary.done_orders || 0],
-    ["Tai khoan", summary.total_users || 0],
-    ["Khach hang", summary.customers || 0],
-    ["Mon dang ban", summary.active_foods || 0],
-    ["Ma dang dung", summary.active_discounts || 0]
+    ["Doanh thu hoàn tất", formatMoney(summary.revenue || 0)],
+    ["Don cho xử lý", summary.pending_orders || 0],
+    ["Don hoàn tất", summary.done_orders || 0],
+    ["Tài khoản", summary.total_users || 0],
+    ["Khách hàng", summary.customers || 0],
+    ["Mon đang bán", summary.active_foods || 0],
+    ["Ma đang dùng", summary.active_discounts || 0]
   ];
 
   statsSummary.innerHTML = statCards.map(([label, value]) => `
@@ -994,7 +994,7 @@ function renderStats(data) {
   `).join("");
 
   statsTopFoods.innerHTML = renderSimpleTable(
-    ["Mon", "So luong", "Doanh thu"],
+    ["Mon", "Số lượng", "Doanh thu"],
     (data.topFoods || []).map(item => `
       <tr>
         <td><strong>${escapeHtml(item.food_name)}</strong></td>
@@ -1002,7 +1002,7 @@ function renderStats(data) {
         <td>${formatMoney(item.revenue || 0)}</td>
       </tr>
     `),
-    "Chua co du lieu mon ban."
+    "Chưa có du lieu mon ban."
   );
 
   statsDaily.innerHTML = renderSimpleTable(
@@ -1014,7 +1014,7 @@ function renderStats(data) {
         <td>${formatMoney(item.revenue || 0)}</td>
       </tr>
     `),
-    "Chua co du lieu doanh thu."
+    "Chưa có du lieu doanh thu."
   );
 }
 
@@ -1133,8 +1133,8 @@ function getFoodRootSlug(food) {
 }
 
 function getFoodCategoryTitle(slug = activeFoodCategory) {
-  if (!slug || slug === "all") return "Tat ca mon";
-  return getCategoryBySlug(slug)?.name || "Tat ca mon";
+  if (!slug || slug === "all") return "Tất cả mon";
+  return getCategoryBySlug(slug)?.name || "Tất cả mon";
 }
 
 function renderAdminFoodCategoryNav() {
@@ -1144,7 +1144,7 @@ function renderAdminFoodCategoryNav() {
   const roots = getRootCategories(false);
   container.innerHTML = `
     <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all">
-      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tat ca mon</span>
+      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả mon</span>
     </a>
     ${roots.map(category => `
       <a href="admin.html?section=foods&foodCategory=${escapeHtml(category.slug)}" data-admin-target="foods" data-food-category="${escapeHtml(category.slug)}">
@@ -1169,7 +1169,7 @@ function renderCategoryParentOptions(selectedId = "", editingId = "") {
     .sort((first, second) => Number(first.sortOrder || 0) - Number(second.sortOrder || 0));
 
   parentSelect.innerHTML = `
-    <option value="">Danh muc cha</option>
+    <option value="">Danh mục cha</option>
     ${rootCategories.map(category => `
       <option value="${category.id}" ${String(selectedId || "") === String(category.id) ? "selected" : ""}>
         ${escapeHtml(category.name)}
@@ -1185,8 +1185,8 @@ function renderCategoryFilterOptions() {
   const roots = getRootCategories(true);
 
   categoryTypeFilter.innerHTML = `
-    <option value="all">Tat ca</option>
-    <option value="root">Danh muc cha</option>
+    <option value="all">Tất cả</option>
+    <option value="root">Danh mục cha</option>
     ${roots.map(category => `<option value="${category.id}">${escapeHtml(category.name)}</option>`).join("")}
   `;
 
@@ -1203,13 +1203,13 @@ function showCategoryFormView(mode = "create") {
   if (categoryFormView) categoryFormView.hidden = false;
 
   if (categoryFormTitle) {
-    categoryFormTitle.textContent = mode === "edit" ? "Cap nhat danh muc" : "Them danh muc";
+    categoryFormTitle.textContent = mode === "edit" ? "Cập nhật danh mục" : "Thêm danh mục";
   }
 
   if (categoryFormSubtitle) {
     categoryFormSubtitle.textContent = mode === "edit"
-      ? "Chinh sua ten, cap danh muc, thu tu hien thi va trang thai."
-      : "Tao danh muc cha nhu Banh keo hoac danh muc con ben trong danh muc cha.";
+      ? "Chinh sửa ten, cap danh mục, thu từ hiển thị va trạng thái."
+      : "Tạo danh mục cha nhu Banh keo hoặc danh mục con ben trong danh mục cha.";
   }
 }
 
@@ -1279,7 +1279,7 @@ function renderCategoriesTable() {
   const to = startIndex + pageItems.length;
 
   if (!total) {
-    categoriesList.textContent = "Chua co danh muc phu hop.";
+    categoriesList.textContent = "Chưa có danh mục phù hợp.";
     return;
   }
 
@@ -1289,10 +1289,10 @@ function renderCategoriesTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Ten danh muc</th>
+            <th>Ten danh mục</th>
             <th>Cap</th>
-            <th>Thuoc danh muc cha</th>
-            <th>Trang thai</th>
+            <th>Thuoc danh mục cha</th>
+            <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -1304,13 +1304,13 @@ function renderCategoriesTable() {
                 <strong>${escapeHtml(category.name)}</strong>
                 <small>${escapeHtml(category.slug || "")}</small>
               </td>
-              <td>${category.parentId ? "Danh muc con" : "Danh muc cha"}</td>
+              <td>${category.parentId ? "Danh mục con" : "Danh mục cha"}</td>
               <td>${escapeHtml(category.parentName || "-")}</td>
-              <td><span class="account-status ${Number(category.isActive) ? "active" : "locked"}">${Number(category.isActive) ? "Hoat dong" : "Da an"}</span></td>
+              <td><span class="account-status ${Number(category.isActive) ? "active" : "locked"}">${Number(category.isActive) ? "Hoạt động" : "Đã ẩn"}</span></td>
               <td>
                 <div class="table-actions">
-                  <button type="button" class="icon-btn edit" title="Sua" aria-label="Sua danh muc" data-edit-category="${category.id}">${editIcon()}</button>
-                  <button type="button" class="icon-btn delete" title="An" aria-label="An danh muc" data-delete-category="${category.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa danh mục" data-edit-category="${category.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="An" aria-label="Ẩn danh mục" data-delete-category="${category.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -1319,7 +1319,7 @@ function renderCategoriesTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-categories-page="prev" ${categoriesPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -1334,7 +1334,7 @@ function renderCategoriesTable() {
 async function loadCategories() {
   if (!categoriesList) return;
 
-  categoriesList.textContent = "Dang tai danh muc...";
+  categoriesList.textContent = "Đang tải danh mục...";
 
   try {
     cachedCategories = (await requestJson(`${ADMIN_API}/categories?includeInactive=1`)).map(normalizeAdminCategory);
@@ -1363,7 +1363,7 @@ async function saveCategory(event) {
       method: categoryId ? "PUT" : "POST",
       body: JSON.stringify(payload)
     });
-    showAdminToast(categoryId ? "Da cap nhat danh muc." : "Da them danh muc.");
+    showAdminToast(categoryId ? "Da cập nhật danh mục." : "Đã thêm danh mục.");
     resetCategoryForm();
     await loadCategories();
     await loadFoods();
@@ -1376,7 +1376,7 @@ async function saveCategory(event) {
 async function loadFoods() {
   if (!foodsList) return;
 
-  foodsList.textContent = "Dang tai mon an...";
+  foodsList.textContent = "Đang tải món ăn...";
 
   try {
     const foods = await requestJson(`${ADMIN_API}/foods`);
@@ -1403,7 +1403,7 @@ function getFoodCategoryLabel(food) {
 
   if (categoryName) return categoryName;
 
-  return "Chua phan loai";
+  return "Chưa phân loại";
 }
 
 function getFoodCategoryFilterOptions() {
@@ -1416,13 +1416,13 @@ function getFoodCategoryFilterOptions() {
       .sort((first, second) => Number(first.sortOrder || 0) - Number(second.sortOrder || 0));
 
     return [
-      { value: "all", label: "Tat ca" },
+      { value: "all", label: "Tất cả" },
       ...children.map(category => ({ value: String(category.id), label: category.name }))
     ];
   }
 
   return [
-    { value: "all", label: "Tat ca" },
+    { value: "all", label: "Tất cả" },
     ...roots.map(category => ({ value: category.slug, label: category.name }))
   ];
 }
@@ -1503,7 +1503,7 @@ function renderFoodsTable() {
   const to = startIndex + pageFoods.length;
 
   if (totalFoods === 0) {
-    foodsList.textContent = "Chua co mon phu hop.";
+    foodsList.textContent = "Chưa có mon phù hợp.";
     return;
   }
 
@@ -1513,10 +1513,10 @@ function renderFoodsTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Hinh anh</th>
+            <th>Hình ảnh</th>
             <th>Ten mon</th>
             <th>Gia</th>
-            <th>So luong con</th>
+            <th>Số lượng con</th>
             <th>Chuc nang</th>
           </tr>
         </thead>
@@ -1529,14 +1529,14 @@ function renderFoodsTable() {
               </td>
               <td>
                 <strong>${escapeHtml(food.name)}</strong>
-                <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Dang ban" : "Da an"}</small>
+                <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Đang bán" : "Đã ẩn"}</small>
               </td>
               <td>${formatMoney(food.price)}</td>
               <td>${Number(food.stock_quantity ?? food.stockQuantity ?? 0).toLocaleString("vi-VN")}</td>
               <td>
                 <div class="table-actions">
-                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sua" aria-label="Sua mon">${editIcon()}</a>
-                  <button type="button" class="icon-btn delete" title="An mon" aria-label="An mon" data-hide-food="${food.id}">${trashIcon()}</button>
+                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sửa" aria-label="Sửa mon">${editIcon()}</a>
+                  <button type="button" class="icon-btn delete" title="Ẩn mon" aria-label="Ẩn mon" data-hide-food="${food.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -1545,7 +1545,7 @@ function renderFoodsTable() {
       </table>
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${totalFoods} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${totalFoods} kết quả
       <div class="pager">
         <button type="button" data-foods-page="prev" ${foodsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -1558,7 +1558,7 @@ function renderFoodsTable() {
 }
 
 async function hideFood(foodId) {
-  if (!confirm("An mon nay khoi thuc don?")) {
+  if (!confirm("Ẩn mon này khoi thực đơn?")) {
     return;
   }
 
@@ -1567,7 +1567,7 @@ async function hideFood(foodId) {
       method: "DELETE"
     });
     await loadFoods();
-    showAdminToast("Da an mon khoi thuc don.");
+    showAdminToast("Đã ẩn mon khoi thực đơn.");
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -1593,7 +1593,7 @@ async function createStaff(event) {
     staffForm.reset();
     renderPermissionChecks(staffPermissions);
     await loadUsers();
-    showAdminToast("Da tao nhan vien.");
+    showAdminToast("Đã tạo nhân viên.");
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -1621,7 +1621,7 @@ async function toggleAccount(userId, isActive) {
 }
 
 async function resetAccountPassword(userId) {
-  const newPassword = prompt("Nhap mat khau moi toi thieu 6 ky tu cho tai khoan nay:");
+  const newPassword = prompt("Nhập mật khẩu mới tối thiểu 6 ky từ cho tài khoản này:");
 
   if (!newPassword) return;
 
@@ -1735,12 +1735,12 @@ categoriesList?.addEventListener("click", async event => {
     }
 
     if (deleteButton) {
-      if (!confirm("An danh muc nay? Neu la danh muc cha, cac muc con cung se bi an.")) return;
+      if (!confirm("Ẩn danh mục này? Nếu là danh mục cha, các mục con cũng sẽ bị ẩn.")) return;
 
       await requestJson(`${ADMIN_API}/categories/${deleteButton.dataset.deleteCategory}`, {
         method: "DELETE"
       });
-      showAdminToast("Da an danh muc.");
+      showAdminToast("Đã ẩn danh mục.");
       await loadCategories();
       await loadFoods();
     }
@@ -1924,13 +1924,13 @@ usersList?.addEventListener("click", async event => {
 
     if (toggleButton) {
       await toggleAccount(toggleButton.dataset.toggleUser, toggleButton.dataset.active === "1");
-      showAdminToast("Da cap nhat trang thai tai khoan.");
+      showAdminToast("Da cập nhật trạng thái tài khoản.");
       await loadUsers();
     }
 
     if (resetButton) {
       await resetAccountPassword(resetButton.dataset.resetPassword);
-      showAdminToast("Da dat lai mat khau.");
+      showAdminToast("Da dat lai mật khẩu.");
     }
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -1960,12 +1960,12 @@ announcementsList?.addEventListener("click", async event => {
     }
 
     if (hideButton) {
-      if (!confirm("Xoa vinh vien thong bao nay?")) return;
+      if (!confirm("Xóa vĩnh viễn thông báo này?")) return;
 
       await requestJson(`${ADMIN_API}/announcements/${hideButton.dataset.hideAnnouncement}`, {
         method: "DELETE"
       });
-      showAdminToast("Da xoa thong bao.");
+      showAdminToast("Đã xóa thông báo.");
       await loadAnnouncements();
     }
   } catch (error) {
@@ -2004,12 +2004,12 @@ discountsList?.addEventListener("click", async event => {
     }
 
     if (deleteButton) {
-      if (!confirm("Xoa vinh vien ma giam gia nay?")) return;
+      if (!confirm("Xóa vĩnh viễn mã giảm giá này?")) return;
 
       await requestJson(`${ADMIN_API}/discounts/${deleteButton.dataset.deleteDiscount}`, {
         method: "DELETE"
       });
-      showAdminToast("Da xoa ma giam gia.");
+      showAdminToast("Đã xóa mã giảm giá.");
       await loadDiscounts();
     }
   } catch (error) {
@@ -2048,12 +2048,12 @@ advertisementsList?.addEventListener("click", async event => {
     }
 
     if (deleteButton) {
-      if (!confirm("Xoa vinh vien quang cao nay?")) return;
+      if (!confirm("Xóa vĩnh viễn quảng cáo này?")) return;
 
       await requestJson(`${ADVERTISEMENTS_API}/admin/${deleteButton.dataset.deleteAdvertisement}`, {
         method: "DELETE"
       });
-      showAdminToast("Da xoa quang cao.");
+      showAdminToast("Đã xóa quảng cáo.");
       await loadAdvertisements();
     }
   } catch (error) {

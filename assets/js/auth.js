@@ -29,7 +29,7 @@ function showToast(message, type = "info") {
 }
 
 function showComingSoon(provider) {
-  showToast(`${provider} chua duoc cau hinh App ID/Client ID.`, "info");
+  showToast(`${provider} chưa được cấu hình App ID/Client ID.`, "info");
 }
 
 function handleVerificationStep(data, fallbackMessage) {
@@ -72,14 +72,14 @@ function getSafeRedirectUrl() {
 
 function finishLogin(data) {
   if (!data.token || !data.user) {
-    showToast(data.message || "Thieu thong tin dang nhap.", "error");
+    showToast(data.message || "Thiếu thong tin đăng nhập.", "error");
     return;
   }
 
   sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
   sessionStorage.setItem("foodhub_show_chat_bubble", "1");
-  showToast("Dang nhap thanh cong. Dang vao FoodHub...", "success");
+  showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
 
   setTimeout(() => {
     const redirectUrl = data.requiresAccountSetup || data.user?.requiresAccountSetup
@@ -110,7 +110,7 @@ function loadScript(src, id) {
 
 function initFacebookSdk() {
   if (!FACEBOOK_APP_ID) {
-    return Promise.reject(new Error("Facebook chua duoc cau hinh App ID."));
+    return Promise.reject(new Error("Facebook chưa được cấu hình App ID."));
   }
 
   if (window.FB) {
@@ -127,7 +127,7 @@ function initFacebookSdk() {
   if (!facebookSdkPromise) {
     facebookSdkPromise = new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new Error("Facebook SDK tai qua lau hoac bi trinh duyet chan."));
+        reject(new Error("Facebook SDK tải quá lâu hoặc bị trình duyệt chặn."));
       }, 10000);
 
       window.fbAsyncInit = () => {
@@ -171,7 +171,7 @@ async function postSocialToken(provider, accessToken) {
       fullname: data.fullname || "",
       avatar: data.avatar || ""
     }));
-    showToast(data.message || "Vui long hoan tat tai khoan.", "info");
+    showToast(data.message || "Vui lòng hoàn tất tài khoản.", "info");
     setTimeout(() => {
       window.location.href = "register.html?socialSetup=1";
     }, 900);
@@ -179,7 +179,7 @@ async function postSocialToken(provider, accessToken) {
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Khong the dang nhap social.");
+    throw new Error(data.message || "Không thể đăng nhập social.");
   }
 
   finishLogin(data);
@@ -200,7 +200,7 @@ async function loginWithGoogle() {
         scope: "openid email profile",
         callback: async response => {
           if (!response.access_token) {
-            showToast("Google khong tra ve access token.", "error");
+            showToast("Google không trả về access token.", "error");
             return;
           }
 
@@ -216,7 +216,7 @@ async function loginWithGoogle() {
     googleTokenClient.requestAccessToken({ prompt: "select_account" });
   } catch (error) {
     console.error(error);
-    showToast("Khong tai duoc Google Login.", "error");
+    showToast("Không tải được Google Login.", "error");
   }
 }
 
@@ -234,13 +234,13 @@ async function loginWithFacebook() {
     }, { scope: "public_profile" });
   } catch (error) {
     console.error(error);
-    showToast(error.message || "Khong tai duoc Facebook Login.", "error");
+    showToast(error.message || "Không tải được Facebook Login.", "error");
   }
 }
 
 async function handleFacebookResponse(response) {
   if (!response.authResponse?.accessToken) {
-    showToast("Facebook chua cap quyen dang nhap hoac popup da bi dong.", "info");
+    showToast("Facebook chưa cấp quyền đăng nhập hoặc popup đã bị đóng.", "info");
     return;
   }
 
@@ -262,11 +262,11 @@ async function register(event) {
   const password = document.getElementById("password").value;
 
   if (!pendingSocial?.provider || !pendingSocial?.accessToken) {
-    showToast("Vui long xac thuc bang Google hoac Facebook truoc.", "error");
+    showToast("Vui lòng xác thực bằng Google hoặc Facebook truoc.", "error");
     return;
   }
 
-  setSubmitState(form, true, "Dang hoan tat tai khoan...");
+  setSubmitState(form, true, "Đang hoàn tất tài khoản...");
 
   try {
     const response = await fetch(`${AUTH_API}/social/setup/${pendingSocial.provider}`, {
@@ -285,14 +285,14 @@ async function register(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      showToast(data.message || "Khong the dang ky.", "error");
+      showToast(data.message || "Không thể đăng ký.", "error");
       return;
     }
 
     sessionStorage.removeItem(PENDING_SOCIAL_KEY);
     finishLogin(data);
   } catch (error) {
-    showToast("Khong ket noi duoc server.", "error");
+    showToast("Không kết nối được server.", "error");
     console.error(error);
   } finally {
     setSubmitState(form, false);
@@ -320,7 +320,7 @@ function initSocialSetupForm() {
     form.querySelectorAll("input, button[type='submit']").forEach(element => {
       element.disabled = true;
     });
-    showToast("Dang ky thu cong da tat. Hay chon Google hoac Facebook de xac thuc truoc.", "info");
+    showToast("Đăng ký thu cong da tat. Hay chọn Google hoặc Facebook de xác thực truoc.", "info");
   }
 }
 
@@ -331,7 +331,7 @@ async function login(event) {
   const loginValue = document.getElementById("loginIdentifier")?.value || document.getElementById("email")?.value;
   const password = document.getElementById("password").value;
 
-  setSubmitState(form, true, "Dang dang nhap...");
+  setSubmitState(form, true, "Đang đăng nhập...");
 
   try {
     const response = await fetch(`${AUTH_API}/login`, {
@@ -344,18 +344,18 @@ async function login(event) {
     const data = await response.json();
 
     if (response.status === 403) {
-      handleVerificationStep(data, "Email chua xac thuc.");
+      handleVerificationStep(data, "Email chưa xác thực.");
       return;
     }
 
     if (!response.ok) {
-      showToast(data.message || "Khong the dang nhap.", "error");
+      showToast(data.message || "Không thể đăng nhập.", "error");
       return;
     }
 
     finishLogin(data);
   } catch (error) {
-    showToast("Khong ket noi duoc server.", "error");
+    showToast("Không kết nối được server.", "error");
     console.error(error);
   } finally {
     setSubmitState(form, false);
@@ -381,7 +381,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kenh ho tro FoodHub">
+    <div class="support-panel" aria-label="Kenh hỗ trợ FoodHub">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -399,7 +399,7 @@ function initSupportWidget() {
         <strong>Email</strong>
       </a>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
       <span>${robotIcon}</span>
     </button>
   `;

@@ -54,7 +54,7 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui long dang nhap bang tai khoan quan tri.");
+    alert("Vui lòng đăng nhập bang tài khoản quản trị.");
     window.location.href = "login.html";
   }
 }
@@ -73,11 +73,11 @@ async function requestJson(url, options = {}) {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
     sessionStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
-    throw new Error(data.message || "Phien dang nhap da het han.");
+    throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Khong the xu ly yeu cau.");
+    throw new Error(data.message || "Không thể xử lý yêu cầu.");
   }
 
   return data;
@@ -120,8 +120,8 @@ function syncAccountMode() {
     const note = permissionPanel.querySelector(".form-note");
     if (note) {
       note.textContent = isCustomerMode()
-        ? "Khach hang khong duoc cap quyen quan tri."
-        : "Chon cac khu vuc nhan vien duoc phep xem va thao tac trong trang quan tri.";
+        ? "Khách hàng không được cấp quyền quản trị."
+        : "Chọn cac khu vuc nhân viên được phép xem va thao tác trong trang quản trị.";
     }
   }
 }
@@ -133,18 +133,18 @@ function getCheckedPermissions() {
 function setModeText() {
   if (isEditMode) {
     accountFormTitle.textContent = accountType === "customer"
-      ? "Cap nhat tai khoan khach hang"
-      : "Cap nhat tai khoan nhan vien";
-    accountBreadcrumb.textContent = "Cap nhat";
+      ? "Cập nhật tài khoản khách hàng"
+      : "Cập nhật tài khoản nhân viên";
+    accountBreadcrumb.textContent = "Cập nhật";
     passwordField.hidden = true;
     accountPassword.required = false;
     return;
   }
 
   accountFormTitle.textContent = accountType === "customer"
-    ? "Tao tai khoan khach hang"
-    : "Them tai khoan nhan vien";
-  accountBreadcrumb.textContent = "Them moi";
+    ? "Tạo tài khoản khách hàng"
+    : "Thêm tài khoản nhân viên";
+  accountBreadcrumb.textContent = "Thêm mới";
   accountPassword.required = true;
 }
 
@@ -161,7 +161,7 @@ async function loadAccount() {
   const account = users.find(item => String(item.id) === String(accountId));
 
   if (!account) {
-    showAdminToast("Khong tim thay tai khoan.", "error");
+    showAdminToast("Không tìm thấy tài khoản.", "error");
     return;
   }
 
@@ -194,7 +194,7 @@ async function saveAccount(event) {
 
     sessionStorage.setItem("foodhub_admin_section", "accounts");
     sessionStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
-    showAdminToast(isEditMode ? "Da cap nhat tai khoan." : "Da tao tai khoan.");
+    showAdminToast(isEditMode ? "Da cập nhật tài khoản." : "Đã tạo tài khoản.");
     setTimeout(() => {
       window.location.href = `admin.html?section=accounts&accountType=${accountType === "customer" ? "customers" : "staff"}`;
     }, 700);

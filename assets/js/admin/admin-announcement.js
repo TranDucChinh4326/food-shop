@@ -49,7 +49,7 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui long dang nhap bang tai khoan quan tri.");
+    alert("Vui lòng đăng nhập bang tài khoản quản trị.");
     window.location.href = "login.html";
   }
 }
@@ -68,11 +68,11 @@ async function requestJson(url, options = {}) {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
     sessionStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
-    throw new Error(data.message || "Phien dang nhap da het han.");
+    throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Khong the xu ly yeu cau.");
+    throw new Error(data.message || "Không thể xử lý yêu cầu.");
   }
 
   return data;
@@ -80,13 +80,13 @@ async function requestJson(url, options = {}) {
 
 function setModeText() {
   if (isEditMode) {
-    announcementFormTitle.textContent = "Cap nhat thong tin thong bao";
-    announcementBreadcrumb.textContent = "Cap nhat";
+    announcementFormTitle.textContent = "Cập nhật thong tin thông báo";
+    announcementBreadcrumb.textContent = "Cập nhật";
     return;
   }
 
-  announcementFormTitle.textContent = "Them moi thong bao";
-  announcementBreadcrumb.textContent = "Them moi";
+  announcementFormTitle.textContent = "Thêm mới thông báo";
+  announcementBreadcrumb.textContent = "Thêm mới";
 }
 
 function toDatetimeLocal(value) {
@@ -149,7 +149,7 @@ async function saveAnnouncement(event) {
     });
 
     sessionStorage.setItem("foodhub_admin_section", "announcements");
-    showAdminToast(isEditMode ? "Da cap nhat thong bao." : "Da tao thong bao.");
+    showAdminToast(isEditMode ? "Da cập nhật thông báo." : "Đã tạo thông báo.");
     setTimeout(() => {
       window.location.href = "admin.html";
     }, 700);

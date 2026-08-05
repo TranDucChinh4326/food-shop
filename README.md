@@ -6,26 +6,26 @@ Frontend HTML/CSS/JavaScript tinh cho FoodHub.
 
 ```text
 food-shop/
-  index.html                 Trang chu
-  menu.html                  Thuc don
-  cart.html                  Gio hang
-  track.html                 Lich su don hang
-  announcements.html         Danh sach thong bao
-  login.html/register.html   Dang nhap, dang ky
-  admin*.html                Cac trang quan tri
+  index.html                 Trang chủ
+  menu.html                  Thực đơn
+  cart.html                  Giỏ hàng
+  track.html                 Lịch sử đơn hàng
+  announcements.html         Danh sách thông báo
+  login.html/register.html   Đăng nhập, đăng ký
+  admin*.html                Cac trang quản trị
   config.js                  Cau hinh API va OAuth
   assets/
     css/                     CSS chung, auth, admin
     js/                      JS chung, auth, profile
-    js/admin/                JS rieng cho trang quan tri
+    js/admin/                JS rieng cho trang quản trị
   docs/                      Ghi chu cau truc va van hanh
 ```
 
-Giu cac file `.html` o thu muc goc de URL Cloudflare Pages khong bi doi.
+Giữ các file `.html` o thư mục gốc de URL Cloudflare Pages không bị đổi.
 
 ## Chay local
 
-Mo truc tiep `index.html` hoac dung Live Server.
+Mo truc tiep `index.html` hoặc dung Live Server.
 
 Backend local mac dinh:
 
@@ -38,8 +38,8 @@ window.FOODHUB_CONFIG = {
 ## Deploy Cloudflare Pages
 
 1. Upload folder `food-shop` len GitHub.
-2. Tao Cloudflare Pages project tu repo GitHub.
-3. Sau khi co backend domain, sua `config.js`:
+2. Tạo Cloudflare Pages project từ repo GitHub.
+3. Sau khi co backend domain, sửa `config.js`:
 
 ```js
 window.FOODHUB_CONFIG = {

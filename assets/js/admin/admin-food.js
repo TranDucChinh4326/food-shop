@@ -58,7 +58,7 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui long dang nhap bang tai khoan quan tri.");
+    alert("Vui lòng đăng nhập bang tài khoản quản trị.");
     window.location.href = "login.html";
   }
 }
@@ -77,11 +77,11 @@ async function requestJson(url, options = {}) {
     sessionStorage.removeItem(AUTH_TOKEN_KEY);
     sessionStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
-    throw new Error(data.message || "Phien dang nhap da het han.");
+    throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Khong the xu ly yeu cau.");
+    throw new Error(data.message || "Không thể xử lý yêu cầu.");
   }
 
   return data;
@@ -101,7 +101,7 @@ function slugify(value) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/Ä‘/g, "d")
+    .replace(/đ/g, "d")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
@@ -170,13 +170,13 @@ function setModeText() {
   const typeText = root?.name ? root.name.toLowerCase() : "mon";
 
   if (isEditMode) {
-    foodFormTitle.textContent = `Cap nhat ${typeText}`;
-    foodBreadcrumb.textContent = `Cap nhat ${typeText}`;
+    foodFormTitle.textContent = `Cập nhật ${typeText}`;
+    foodBreadcrumb.textContent = `Cập nhật ${typeText}`;
     return;
   }
 
-  foodFormTitle.textContent = `Them moi ${typeText}`;
-  foodBreadcrumb.textContent = `Them moi ${typeText}`;
+  foodFormTitle.textContent = `Thêm mới ${typeText}`;
+  foodBreadcrumb.textContent = `Thêm mới ${typeText}`;
 }
 
 function syncFoodTypeField() {
@@ -185,7 +185,7 @@ function syncFoodTypeField() {
   foodType.value = selectedRootSlug;
 
   if (foodTypeLabel) {
-    foodTypeLabel.value = root?.name || "Danh muc mon";
+    foodTypeLabel.value = root?.name || "Danh mục mon";
   }
 }
 
@@ -193,7 +193,7 @@ function renderCategoryOptions(selectedId = "") {
   const categories = getSubCategories();
 
   if (categories.length === 0) {
-    foodCategory.innerHTML = `<option value="">Chua co danh muc</option>`;
+    foodCategory.innerHTML = `<option value="">Chưa có danh mục</option>`;
     return;
   }
 
@@ -215,8 +215,8 @@ async function loadCategories() {
     getSelectedRootCategory();
   } catch (error) {
     foodCategories = [
-      { id: 100, name: "Do an", slug: "do-an", parentId: null, sortOrder: 1, isActive: 1 },
-      { id: 101, name: "Nuoc uong", slug: "nuoc-uong", parentId: null, sortOrder: 2, isActive: 1 }
+      { id: 100, name: "Đồ ăn", slug: "do-an", parentId: null, sortOrder: 1, isActive: 1 },
+      { id: 101, name: "Nước uống", slug: "nuoc-uong", parentId: null, sortOrder: 2, isActive: 1 }
     ];
     selectedRootSlug = "do-an";
     showAdminToast(error.message, "error");
@@ -249,18 +249,18 @@ function renderPreview() {
 function readImageFile(file) {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
-      reject(new Error("Vui long chon tep hinh anh."));
+      reject(new Error("Vui lòng chọn tệp hình ảnh."));
       return;
     }
 
     if (file.size > MAX_IMAGE_SIZE) {
-      reject(new Error("Anh toi da 1.5MB de web tai nhanh hon."));
+      reject(new Error("Ảnh tối đa 1.5MB để web tải nhanh hơn."));
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Khong the doc tep anh."));
+    reader.onerror = () => reject(new Error("Không thể doc tệp ảnh."));
     reader.readAsDataURL(file);
   });
 }
@@ -273,7 +273,7 @@ async function handleImageFileChange() {
   try {
     foodImage.value = await readImageFile(file);
     renderPreview();
-    showAdminToast("Da chon anh mon.");
+    showAdminToast("Da chọn anh mon.");
   } catch (error) {
     foodImageFile.value = "";
     showAdminToast(error.message, "error");
@@ -287,7 +287,7 @@ async function loadFood() {
   const food = foods.find(item => String(item.id) === String(foodIdParam));
 
   if (!food) {
-    showAdminToast("Khong tim thay mon an.", "error");
+    showAdminToast("Không tìm thấy món ăn.", "error");
     return;
   }
 
@@ -332,7 +332,7 @@ async function saveFood(event) {
     sessionStorage.setItem("foodhub_admin_section", "foods");
     sessionStorage.setItem("foodhub_food_category", selectedRootSlug);
     sessionStorage.setItem("foodhub_food_subcategory", "all");
-    showAdminToast(currentFoodId ? "Da cap nhat mon." : "Da them mon.");
+    showAdminToast(currentFoodId ? "Da cập nhật mon." : "Đã thêm mon.");
     setTimeout(() => {
       window.location.href = `admin.html?section=foods&foodCategory=${encodeURIComponent(selectedRootSlug)}`;
     }, 700);

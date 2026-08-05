@@ -38,7 +38,7 @@ const LEGACY_ADDRESS_LOOKUP = {
   "Hải Phòng": {
     "Quận Hồng Bàng": ["Phường Sở Dầu", "Phường Quán Toan", "Phường Phan Bội Châu", "Phường Gia Viễn"],
     "Quận Ngô Quyền": ["Phường Lạch Tray", "Phường Máy Chai", "Phường Cầu Tre", "Phường Vĩnh Niệm"],
-    "Quận Lê Chân": ["Phường Trại Cau", "Phường Kênh Dương", "Phường Lam Sơn", "Phường An Biên"]
+    "Quận Lê Chân": ["Phường Trại Cau", "Phường Kênh Dương", "Phường Lam Sơn", "Phường Ẩn Biên"]
   }
 };
 
@@ -109,7 +109,7 @@ function formatMoney(number) {
 }
 
 function formatDateTime(value) {
-  if (!value) return "Chua dat";
+  if (!value) return "Chưa đặt";
 
   return new Date(value).toLocaleString("vi-VN", {
     hour: "2-digit",
@@ -136,7 +136,7 @@ function isLoggedIn() {
   return Boolean(getAuthToken() && getCurrentUser());
 }
 
-function requireLogin(message = "Vui long dang nhap de tiep tuc.", target = window.location.href) {
+function requireLogin(message = "Vui lòng đăng nhập để tiếp tục.", target = window.location.href) {
   sessionStorage.setItem("foodhub_after_login", target);
   showSiteToast(message, "error");
 
@@ -247,7 +247,7 @@ function renderPublicNavCategories() {
     const children = getRootChildren(root.id);
     const panel = children.length
       ? children.map(category => `<a href="${getCategoryUrl(category.slug)}">${escapeHtml(category.name)}</a>`).join("")
-      : `<a href="${getCategoryUrl(root.slug)}">Tat ca ${escapeHtml(root.name)}</a>`;
+      : `<a href="${getCategoryUrl(root.slug)}">Tất cả ${escapeHtml(root.name)}</a>`;
 
     return `
       <div class="nav-dropdown" data-public-category-menu="${escapeHtml(root.slug)}">
@@ -266,14 +266,14 @@ async function loadPublicCategories() {
 
   try {
     const response = await fetch(CATEGORIES_API);
-    if (!response.ok) throw new Error("Khong the tai danh muc");
+    if (!response.ok) throw new Error("Không thể tải danh mục");
 
     publicCategories = await response.json();
     renderPublicNavCategories();
     renderMenuCategoryOptions();
     if (foods.length) renderFoods();
   } catch (error) {
-    console.error("Loi tai danh muc:", error);
+    console.error("Lỗi tải danh mục:", error);
   }
 }
 
@@ -383,18 +383,18 @@ async function loadVietnamAddressLookup() {
 
     try {
       const response = await fetch(VIETNAM_ADDRESS_API);
-      if (!response.ok) throw new Error("Khong tai duoc danh sach tinh thanh.");
+      if (!response.ok) throw new Error("Không tải được danh sách tỉnh thành.");
 
       const provinces = await response.json();
       const lookup = normalizeVietnamAddressData(Array.isArray(provinces) ? provinces : []);
-      if (Object.keys(lookup).length === 0) throw new Error("Danh sach tinh thanh khong hop le.");
+      if (Object.keys(lookup).length === 0) throw new Error("Danh sách tỉnh thành không hợp lệ.");
 
       ADDRESS_LOOKUP = lookup;
       sessionStorage.setItem(ADDRESS_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), lookup }));
     } catch (error) {
       console.warn(error);
       ADDRESS_LOOKUP = LEGACY_ADDRESS_LOOKUP;
-      showSiteToast("Tam thoi dung danh sach dia chi du phong.", "info");
+      showSiteToast("Tạm thời dung danh sách địa chỉ dự phòng.", "info");
     }
 
     return ADDRESS_LOOKUP;
@@ -413,7 +413,7 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
 
   const parsedAddress = parseAddressString(selectedAddress);
   const cityNames = Object.keys(ADDRESS_LOOKUP);
-  setSelectOptions(citySelect, cityNames, "Chon thanh pho");
+  setSelectOptions(citySelect, cityNames, "Chọn thanh pho");
 
   if (cityNames.includes(parsedAddress.city)) {
     citySelect.value = parsedAddress.city;
@@ -423,12 +423,12 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
   const selectedDistrict = districtNames.includes(parsedAddress.district) ? parsedAddress.district : districtNames[0] || "";
 
   if (districtSelect) {
-    setSelectOptions(districtSelect, districtNames, "Chon quan huyen");
+    setSelectOptions(districtSelect, districtNames, "Chọn quan huyen");
     districtSelect.value = selectedDistrict;
   }
 
   const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [];
-  setSelectOptions(wardSelect, wardNames, "Chon phuong xa");
+  setSelectOptions(wardSelect, wardNames, "Chọn phuong xa");
   if (wardNames.includes(parsedAddress.ward)) {
     wardSelect.value = parsedAddress.ward;
   }
@@ -559,15 +559,15 @@ async function initAddressSelectors() {
       const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
       const selectedDistrict = districts[0] || "";
       if (districtSelect) {
-        setSelectOptions(districtSelect, districts, "Chon quan huyen");
+        setSelectOptions(districtSelect, districts, "Chọn quan huyen");
         districtSelect.value = selectedDistrict;
       }
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chon phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chọn phuong xa");
       if (detailInput) detailInput.value = "";
     });
 
     districtSelect?.addEventListener("change", () => {
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chon phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chọn phuong xa");
     });
   });
 }
@@ -623,7 +623,7 @@ async function loadCheckoutProfile() {
 
     return data.user;
   } catch (error) {
-    console.error("Khong tai duoc ho so dat hang:", error);
+    console.error("Không tải được hồ sơ đặt hàng:", error);
     return null;
   }
 }
@@ -669,7 +669,7 @@ async function loadCheckoutSavedAddresses() {
 
     return data.addresses;
   } catch (error) {
-    console.error("Khong tai duoc dia chi da luu:", error);
+    console.error("Không tải được địa chỉ đã lưu:", error);
     return [];
   }
 }
@@ -739,7 +739,7 @@ async function loadPublicAnnouncements() {
     const announcements = await response.json();
 
     if (!response.ok || announcements.length === 0) {
-      box.innerHTML = `<span class="announcement-empty">Hien chua co thong bao moi.</span>`;
+      box.innerHTML = `<span class="announcement-empty">Hien chưa có thông báo mới.</span>`;
       return;
     }
 
@@ -760,7 +760,7 @@ async function loadPublicAnnouncements() {
 
     startAnnouncementTicker(box, announcements.length);
   } catch (error) {
-    box.innerHTML = `<span class="announcement-empty">Khong the tai thong bao.</span>`;
+    box.innerHTML = `<span class="announcement-empty">Không thể tải thông báo.</span>`;
     console.error(error);
   }
 }
@@ -780,8 +780,8 @@ function getFloatingAdvertisementsShell() {
   shell.dataset.floatingAds = "true";
   shell.hidden = true;
   shell.innerHTML = `
-    <a class="floating-ad floating-ad-left" data-floating-ad-slot="left" aria-label="Quang cao ben trai" hidden></a>
-    <a class="floating-ad floating-ad-right" data-floating-ad-slot="right" aria-label="Quang cao ben phai" hidden></a>
+    <a class="floating-ad floating-ad-left" data-floating-ad-slot="left" aria-label="Quảng cáo bên trái" hidden></a>
+    <a class="floating-ad floating-ad-right" data-floating-ad-slot="right" aria-label="Quảng cáo bên phải" hidden></a>
   `;
   document.body.appendChild(shell);
 
@@ -801,7 +801,7 @@ function renderFloatingAdItem(slot, advertisement) {
     slot.removeAttribute("rel");
   }
 
-  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quang cao FoodHub")}">`;
+  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo FoodHub")}">`;
   slot.hidden = false;
 }
 
@@ -858,19 +858,19 @@ async function loadFloatingAdvertisements() {
     setFloatingAdSlot(shell, "right", rightAdvertisements);
   } catch (error) {
     shell.hidden = true;
-    console.error("Loi tai quang cao:", error);
+    console.error("Lỗi tải quảng cáo:", error);
   }
 }
 
 function getAnnouncementStatusText(status) {
   const labels = {
-    active: "Dang hoat dong",
-    hidden: "Da an",
-    expired: "Het han",
-    scheduled: "Sap hien thi"
+    active: "Đang hoạt động",
+    hidden: "Đã ẩn",
+    expired: "Hết hạn",
+    scheduled: "Sắp hiển thị"
   };
 
-  return labels[status] || status || "Khong ro";
+  return labels[status] || status || "Không rõ";
 }
 
 function getDateInputValue(value) {
@@ -916,7 +916,7 @@ function renderAnnouncementArchive() {
   const to = start + pageItems.length;
 
   if (total === 0) {
-    list.innerHTML = `<p>Khong co thong bao phu hop.</p>`;
+    list.innerHTML = `<p>Không có thông báo phù hợp.</p>`;
     if (pager) pager.innerHTML = "";
     return;
   }
@@ -930,12 +930,12 @@ function renderAnnouncementArchive() {
       </div>
       <dl>
         <div>
-          <dt>Ngay dang</dt>
+          <dt>Ngày đăng</dt>
           <dd>${formatDateTime(item.published_at)}</dd>
         </div>
         <div>
-          <dt>Het hieu luc</dt>
-          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Khong gioi han"}</dd>
+          <dt>Hết hiệu lực</dt>
+          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</dd>
         </div>
       </dl>
     </article>
@@ -944,7 +944,7 @@ function renderAnnouncementArchive() {
   if (!pager) return;
 
   pager.innerHTML = `
-    <span>Dang hien thi tu ${from} den ${to} cua ${total} thong bao</span>
+    <span>Đang hiển thị từ ${from} đến ${to} của ${total} thông báo</span>
     <div class="archive-pager-buttons">
       <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""}>&lsaquo;</button>
       ${Array.from({ length: totalPages }, (_, index) => `
@@ -960,14 +960,14 @@ async function loadAnnouncementArchive() {
 
   if (!list) return;
 
-  list.innerHTML = `<p>Dang tai thong bao...</p>`;
+  list.innerHTML = `<p>Đang tải thông báo...</p>`;
 
   try {
     const response = await fetch(`${ANNOUNCEMENTS_API}/archive`);
     const announcements = await response.json();
 
     if (!response.ok) {
-      throw new Error(announcements.message || "Khong the tai thong bao.");
+      throw new Error(announcements.message || "Không thể tải thông báo.");
     }
 
     announcementArchive = announcements;
@@ -1096,7 +1096,7 @@ function renderFoods() {
 
 function addToCart(foodId) {
   if (!isLoggedIn()) {
-    requireLogin("Vui long dang nhap de them mon vao gio hang.", "menu.html");
+    requireLogin("Vui lòng đăng nhập de thêm mon vao giỏ hàng.", "menu.html");
     return;
   }
 
@@ -1277,7 +1277,7 @@ async function cancelActiveQrPayment(reason = "manual") {
       body: JSON.stringify({ reason })
     });
   } catch (error) {
-    console.error("Khong huy duoc giao dich QR:", error);
+    console.error("Không hủy được giao dịch QR:", error);
   }
 }
 
@@ -1340,14 +1340,14 @@ function showQrPaymentDialog(order) {
 
     if (remaining <= 0) {
       closeQrPaymentDialog({ cancel: true });
-      showSiteToast("Giao dich QR da het han va duoc huy.", "error");
+      showSiteToast("Giao dịch QR đã hết hạn và được hủy.", "error");
     }
   }, 1000);
 
   dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
   dialog.querySelector("[data-qr-cancel]")?.addEventListener("click", () => {
     closeQrPaymentDialog({ cancel: true });
-    showSiteToast("Da huy giao dich QR.");
+    showSiteToast("Đã hủy giao dich QR.");
   });
   dialog.querySelector("a.btn")?.addEventListener("click", () => {
     activeQrPayment = null;
@@ -1362,7 +1362,7 @@ async function submitOrder(event) {
   event.preventDefault();
 
   if (!isLoggedIn()) {
-    requireLogin("Vui long dang nhap de dat hang.", "cart.html");
+    requireLogin("Vui lòng đăng nhập de đặt hàng.", "cart.html");
     return;
   }
 
@@ -1432,7 +1432,7 @@ async function submitOrder(event) {
     if (response.status === 401) {
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phien dang nhap da het han. Vui long dang nhap lai.", "cart.html");
+      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "cart.html");
       return;
     }
 
@@ -1448,7 +1448,7 @@ async function submitOrder(event) {
 
     if (data.order?.paymentMethod === "qr" && data.order?.paymentSession) {
       showQrPaymentDialog(data.order);
-      showSiteToast("Da tao ma QR. Vui long hoan tat thanh toan.");
+      showSiteToast("Đã tạo mã QR. Vui lòng hoàn tất thanh toan.");
       return;
     }
     showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
@@ -1519,7 +1519,7 @@ async function loadOrderHistory(event) {
   if (!resultBox) return;
 
   if (!isLoggedIn()) {
-    requireLogin("Vui long dang nhap de xem lich su don hang.", "track.html");
+    requireLogin("Vui lòng đăng nhập de xem lịch sử đơn hàng.", "track.html");
     return;
   }
 
@@ -1530,7 +1530,7 @@ async function loadOrderHistory(event) {
   if (searchValue) params.set("q", searchValue);
   if (dateValue) params.set("date", dateValue);
 
-  resultBox.innerHTML = "<p>Dang tai lich su don hang...</p>";
+  resultBox.innerHTML = "<p>Đang tải lịch sử đơn hàng...</p>";
 
   try {
     const response = await fetch(`${ORDERS_API}?${params.toString()}`, {
@@ -1543,18 +1543,18 @@ async function loadOrderHistory(event) {
     if (response.status === 401) {
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phien dang nhap da het han. Vui long dang nhap lai.", "track.html");
+      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "track.html");
       return;
     }
 
     if (!response.ok) {
-      resultBox.innerHTML = `<p>${data.message || "Khong the tai lich su don hang."}</p>`;
+      resultBox.innerHTML = `<p>${data.message || "Không thể tải lịch sử đơn hàng."}</p>`;
       return;
     }
 
     renderOrderHistory(data);
   } catch (error) {
-    resultBox.innerHTML = "<p>Khong ket noi duoc server.</p>";
+    resultBox.innerHTML = "<p>Không kết nối được server.</p>";
     console.error(error);
   }
 }
@@ -1567,8 +1567,8 @@ function renderOrderHistory(orders) {
   if (!orders.length) {
     resultBox.innerHTML = `
       <div class="empty-history">
-        <h3>Chua co don hang phu hop</h3>
-        <p>Ban co the quay lai thuc don de dat mon hoac thu bo loc khac.</p>
+        <h3>Chưa có đơn hàng phù hợp</h3>
+        <p>Bạn co the quay lai thực đơn de dat mon hoặc thu bo loc khac.</p>
         <a href="menu.html" class="btn">Dat mon ngay</a>
       </div>
     `;
@@ -1586,9 +1586,9 @@ function renderOrderHistory(orders) {
       </div>
 
       <div class="history-info">
-        <p><strong>Khach hang:</strong> ${order.customer_name}</p>
+        <p><strong>Khách hàng:</strong> ${order.customer_name}</p>
         <p><strong>So dien thoai:</strong> ${order.phone}</p>
-        <p><strong>Dia chi:</strong> ${order.address}</p>
+        <p><strong>Địa chỉ:</strong> ${order.address}</p>
         <p><strong>Thanh toan:</strong> ${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
         ${order.note ? `<p><strong>Ghi chu:</strong> ${order.note}</p>` : ""}
       </div>
@@ -1819,7 +1819,7 @@ function protectCheckoutPage() {
   if (isLoggedIn()) return true;
 
   const target = profileForm ? "profile.html" : orderHistory ? "track.html" : "cart.html";
-  requireLogin("Vui long dang nhap de tiep tuc.", target);
+  requireLogin("Vui lòng đăng nhập để tiếp tục.", target);
   return false;
 }
 
@@ -1832,7 +1832,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kenh ho tro FoodHub">
+    <div class="support-panel" aria-label="Kenh hỗ trợ FoodHub">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -1854,7 +1854,7 @@ function initSupportWidget() {
       <strong>FoodHub đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
       <span aria-hidden="true">${robotIcon}</span>
     </button>
   `;
@@ -1901,7 +1901,7 @@ function initChatSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel chat-panel" aria-label="Hop chat ho tro FoodHub">
+    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ FoodHub">
       <div class="chat-header">
         <div class="chat-agent">
           <span class="chat-avatar" aria-hidden="true">
@@ -1913,25 +1913,25 @@ function initChatSupportWidget() {
           </div>
         </div>
         <div class="chat-header-actions">
-          <button type="button" class="chat-menu" aria-label="Menu ho tro">
+          <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
             <span></span><span></span><span></span>
           </button>
-          <button type="button" class="chat-close" aria-label="Dong ho tro">&times;</button>
+          <button type="button" class="chat-close" aria-label="Dong hỗ trợ">&times;</button>
         </div>
       </div>
       <div class="chat-quick-menu" hidden>
-        <a href="menu.html">Xem thuc don</a>
-        <a href="track.html">Lich su don hang</a>
-        <a href="contact.html">Lien he FoodHub</a>
+        <a href="menu.html">Xem thực đơn</a>
+        <a href="track.html">Lịch sử đơn hàng</a>
+        <a href="contact.html">Liên hệ FoodHub</a>
       </div>
       <div class="chat-messages" aria-live="polite">
-        <div class="chat-message bot">Xin chao ${escapeHtml(displayName)}, FoodHub co the ho tro gi cho ban?</div>
-        <div class="chat-message bot muted">Day la khung chat tam thoi. Sau nay minh se ket noi du lieu he thong de tra loi tu dong.</div>
+        <div class="chat-message bot">Xin chao ${escapeHtml(displayName)}, FoodHub co the hỗ trợ gi cho ban?</div>
+        <div class="chat-message bot muted">Day la khung chat tạm thời. Sau này minh se kết nối du lieu he thong de tra loi từ dong.</div>
       </div>
       <form class="chat-form">
         <input type="file" class="chat-file" aria-label="Dinh kem tep" hidden>
         <div class="chat-form-main">
-          <input type="text" class="chat-input" placeholder="Nhap noi dung..." aria-label="Nhap tin nhan ho tro">
+          <input type="text" class="chat-input" placeholder="Nhập nội dung..." aria-label="Nhập tin nhan hỗ trợ">
           <div class="chat-tools">
             <button type="button" class="chat-tool chat-like" aria-label="Gui like">
               <svg viewBox="0 0 24 24" focusable="false">
@@ -1943,7 +1943,7 @@ function initChatSupportWidget() {
                 <path d="M18.4 11.2 11 18.6a4.2 4.2 0 0 1-6-6L14 3.7a2.9 2.9 0 0 1 4.1 4.1L9.5 16.4a1.5 1.5 0 0 1-2.1-2.1l7.5-7.5"></path>
               </svg>
             </button>
-            <button type="button" class="chat-tool chat-emoji" aria-label="Chon bieu tuong">
+            <button type="button" class="chat-tool chat-emoji" aria-label="Chọn bieu tuong">
               <svg viewBox="0 0 24 24" focusable="false">
                 <circle cx="12" cy="12" r="9"></circle>
                 <circle cx="9" cy="10" r="1"></circle>
@@ -1971,7 +1971,7 @@ function initChatSupportWidget() {
       <strong>FoodHub đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo ho tro" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
       <span aria-hidden="true">${robotLogo}</span>
     </button>
   `;
@@ -2028,7 +2028,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user file-message">Da dinh kem: ${escapeHtml(file.name)}</div>
-      <div class="chat-message bot muted">FoodHub da nhan thong tin tep. Tinh nang gui tep that se duoc ket noi sau.</div>
+      <div class="chat-message bot muted">FoodHub da nhan thong tin tep. Tinh nang gui tep that sẽ được kết nối sau.</div>
     `);
     chatFile.value = "";
     hideChatPopovers();
@@ -2056,7 +2056,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cam on ${escapeHtml(displayName)}, FoodHub da nhan phan hoi cua ban.</div>
+      <div class="chat-message bot muted">Cam on ${escapeHtml(displayName)}, FoodHub da nhan phan hoi của ban.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -2069,7 +2069,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">FoodHub da nhan tin nhan cua ban. Chuc nang tra loi tu dong se duoc cap nhat sau.</div>
+      <div class="chat-message bot muted">FoodHub da nhan tin nhan của ban. Chuc nang tra loi từ dong sẽ được cập nhật sau.</div>
     `);
     chatInput.value = "";
     hideChatPopovers();
