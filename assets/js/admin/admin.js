@@ -58,6 +58,10 @@ const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
 const statsFromDate = document.getElementById("statsFromDate");
 const statsToDate = document.getElementById("statsToDate");
+const feedbackList = document.getElementById("feedbackList");
+const feedbackSearch = document.getElementById("feedbackSearch");
+const feedbackStatusFilter = document.getElementById("feedbackStatusFilter");
+const feedbackPageSize = document.getElementById("feedbackPageSize");
 let navButtons = [...document.querySelectorAll("[data-admin-target]")];
 let navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
@@ -101,6 +105,10 @@ let cachedAdvertisements = [];
 let advertisementsPage = 1;
 let advertisementsPerPage = 5;
 let pendingAdvertisementImage = "";
+let feedbackSearchTimer;
+let cachedFeedback = [];
+let feedbackPage = 1;
+let feedbackPerPage = 5;
 function refreshAdminNavElements() {
   navButtons = [...document.querySelectorAll("[data-admin-target]")];
   navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
@@ -213,6 +221,35 @@ function formatDiscountStatus(status) {
   };
 
   return statuses[status] || status || "Không rõ";
+}
+
+function formatFeedbackStatus(status) {
+  const statuses = {
+    new: "Moi gui",
+    in_progress: "Dang xu ly",
+    replied: "Da phan hoi",
+    closed: "Da dong"
+  };
+
+  return statuses[status] || status || "Khong ro";
+}
+
+function formatFeedbackCategory(category) {
+  const categories = {
+    general: "Trai nghiem chung",
+    order: "Dat hang",
+    food: "Chat luong mon an",
+    delivery: "Giao hang",
+    payment: "Thanh toan",
+    account: "Tai khoan"
+  };
+
+  return categories[category] || "Trai nghiem chung";
+}
+
+function renderFeedbackStars(rating) {
+  const value = Math.max(1, Math.min(5, Number(rating) || 1));
+  return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
 function formatDiscountValue(discount) {
@@ -946,6 +983,89 @@ function renderAdvertisementsTable() {
           <button type="button" class="${advertisementsPage === index + 1 ? "active" : ""}" data-advertisements-page="${index + 1}">${index + 1}</button>
         `).join("")}
         <button type="button" data-advertisements-page="next" ${advertisementsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadFeedback() {
+  if (!feedbackList) return;
+
+  feedbackList.textContent = "Dang tai phan hoi...";
+
+  try {
+    const params = new URLSearchParams();
+    if (feedbackSearch?.value.trim()) params.set("search", feedbackSearch.value.trim());
+    if (feedbackStatusFilter?.value && feedbackStatusFilter.value !== "all") {
+      params.set("status", feedbackStatusFilter.value);
+    }
+
+    cachedFeedback = await requestJson(`${ADMIN_API}/feedback?${params.toString()}`);
+    renderFeedbackTable();
+  } catch (error) {
+    feedbackList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderFeedbackTable() {
+  if (!feedbackList) return;
+
+  const total = cachedFeedback.length;
+  if (total === 0) {
+    feedbackList.innerHTML = `<p class="empty-note">Chua co phan hoi nao.</p>`;
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / feedbackPerPage));
+  feedbackPage = Math.min(Math.max(feedbackPage, 1), totalPages);
+  const startIndex = (feedbackPage - 1) * feedbackPerPage;
+  const pageItems = cachedFeedback.slice(startIndex, startIndex + feedbackPerPage);
+  const from = startIndex + 1;
+  const to = Math.min(startIndex + pageItems.length, total);
+
+  feedbackList.innerHTML = `
+    <div class="feedback-admin-list">
+      ${pageItems.map(item => `
+        <article class="feedback-admin-card">
+          <div class="feedback-admin-head">
+            <div>
+              <h3>${escapeHtml(item.title)}</h3>
+              <p>
+                <strong>${escapeHtml(item.customer_name)}</strong> - ${escapeHtml(item.customer_email)}<br>
+                ${formatFeedbackCategory(item.category)} - ${formatDateTime(item.created_at)}
+              </p>
+            </div>
+            <select class="status-select" data-feedback-status="${item.id}">
+              ${["new", "in_progress", "replied", "closed"].map(status => `
+                <option value="${status}" ${item.status === status ? "selected" : ""}>${formatFeedbackStatus(status)}</option>
+              `).join("")}
+            </select>
+          </div>
+          <div class="feedback-admin-rating">${renderFeedbackStars(item.rating)} <span>${Number(item.rating)}/5</span></div>
+          <p class="feedback-admin-content">${escapeHtml(item.content)}</p>
+          ${item.admin_reply ? `
+            <div class="feedback-admin-reply">
+              <strong>Da phan hoi${item.replied_by_name ? ` - ${escapeHtml(item.replied_by_name)}` : ""}</strong>
+              <p>${escapeHtml(item.admin_reply)}</p>
+              <small>${item.replied_at ? formatDateTime(item.replied_at) : ""}</small>
+            </div>
+          ` : ""}
+          <form class="feedback-reply-form" data-feedback-reply-form="${item.id}">
+            <textarea name="reply" rows="3" placeholder="Nhap noi dung phan hoi den khach hang..." required>${item.admin_reply ? escapeHtml(item.admin_reply) : ""}</textarea>
+            <button type="submit" class="primary-btn">Gui phan hoi</button>
+          </form>
+        </article>
+      `).join("")}
+    </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-feedback-page="prev" ${feedbackPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${feedbackPage === index + 1 ? "active" : ""}" data-feedback-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-feedback-page="next" ${feedbackPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
   `;
@@ -1856,6 +1976,21 @@ advertisementImageFile?.addEventListener("change", async () => {
     advertisementImageFile.value = "";
   }
 });
+document.getElementById("refreshFeedbackBtn")?.addEventListener("click", loadFeedback);
+feedbackStatusFilter?.addEventListener("change", () => {
+  feedbackPage = 1;
+  loadFeedback();
+});
+feedbackPageSize?.addEventListener("change", () => {
+  feedbackPerPage = Number(feedbackPageSize.value) || 5;
+  feedbackPage = 1;
+  renderFeedbackTable();
+});
+feedbackSearch?.addEventListener("input", () => {
+  clearTimeout(feedbackSearchTimer);
+  feedbackPage = 1;
+  feedbackSearchTimer = setTimeout(loadFeedback, 300);
+});
 
 ordersList.addEventListener("change", async event => {
   if (!event.target.matches(".status-select")) {
@@ -2061,6 +2196,68 @@ advertisementsList?.addEventListener("click", async event => {
   }
 });
 
+feedbackList?.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-feedback-page]");
+  if (!pageButton) return;
+
+  const pageAction = pageButton.dataset.feedbackPage;
+  const totalPages = Math.max(1, Math.ceil(cachedFeedback.length / feedbackPerPage));
+
+  if (pageAction === "prev") {
+    feedbackPage -= 1;
+  } else if (pageAction === "next") {
+    feedbackPage += 1;
+  } else {
+    feedbackPage = Number(pageAction);
+  }
+
+  feedbackPage = Math.min(Math.max(feedbackPage, 1), totalPages);
+  renderFeedbackTable();
+});
+
+feedbackList?.addEventListener("change", async event => {
+  const statusSelect = event.target.closest("[data-feedback-status]");
+  if (!statusSelect) return;
+
+  try {
+    await requestJson(`${ADMIN_API}/feedback/${statusSelect.dataset.feedbackStatus}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: statusSelect.value })
+    });
+    showAdminToast("Da cap nhat trang thai phan hoi.");
+    await loadFeedback();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+    await loadFeedback();
+  }
+});
+
+feedbackList?.addEventListener("submit", async event => {
+  const form = event.target.closest("[data-feedback-reply-form]");
+  if (!form) return;
+  event.preventDefault();
+
+  const button = form.querySelector("button[type='submit']");
+  const reply = form.elements.reply.value;
+
+  button.disabled = true;
+  button.textContent = "Dang gui...";
+
+  try {
+    await requestJson(`${ADMIN_API}/feedback/${form.dataset.feedbackReplyForm}/reply`, {
+      method: "POST",
+      body: JSON.stringify({ reply })
+    });
+    showAdminToast("Da gui phan hoi den khach hang.");
+    await loadFeedback();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Gui phan hoi";
+  }
+});
+
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
 const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
@@ -2098,4 +2295,5 @@ loadFoods();
 loadAnnouncements();
 loadDiscounts();
 loadAdvertisements();
+loadFeedback();
 loadStats();

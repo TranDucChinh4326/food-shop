@@ -37,6 +37,7 @@
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
       <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thống kê</span></a>
     </nav>
   </aside>
@@ -461,6 +462,38 @@
         </div>
 
         <div id="discountsList" class="accounts-list table-state">Đang tải mã giảm giá...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="feedback">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quản lý phản hồi khách hàng</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Phản hồi khách hàng</p>
+          </div>
+          <div class="heading-actions">
+            <button id="refreshFeedbackBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div class="feedback-admin-toolbar table-toolbar multi-filter">
+          <input type="search" id="feedbackSearch" placeholder="Tìm kiếm">
+          <select id="feedbackStatusFilter">
+            <option value="all">Tất cả</option>
+            <option value="new">Mới gửi</option>
+            <option value="in_progress">Đang xử lý</option>
+            <option value="replied">Đã phản hồi</option>
+            <option value="closed">Đã đóng</option>
+          </select>
+          <select id="feedbackPageSize" aria-label="Số dòng phản hồi mỗi trang">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        <div id="feedbackList" class="accounts-list table-state">Đang tải phản hồi...</div>
       </section>
     </section>
 
