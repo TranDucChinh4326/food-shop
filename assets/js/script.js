@@ -823,9 +823,21 @@ function renderHomeFoodSections() {
 
   if (bestSellerBox) {
     const bestSellers = [...foods]
+      .filter(food => Number(food.soldCount || 0) > 0)
       .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.id) - Number(first.id))
-      .slice(0, 6);
-    bestSellerBox.innerHTML = bestSellers.map(renderBestSellerCard).join("");
+      .slice(0, 5);
+
+    if (!bestSellers.length) {
+      bestSellerBox.innerHTML = "<p>Chua co mon nao phat sinh luot ban.</p>";
+    } else {
+      const sellerCards = bestSellers.map(renderBestSellerCard).join("");
+      const duplicatedCards = bestSellers.length > 1 ? sellerCards + sellerCards : sellerCards;
+      bestSellerBox.innerHTML = `
+        <div class="best-seller-track ${bestSellers.length > 1 ? "is-animated" : ""}">
+          ${duplicatedCards}
+        </div>
+      `;
+    }
   }
 
   if (sectionBox) {

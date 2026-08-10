@@ -582,23 +582,42 @@ nav a:hover,
 }
 
 .best-seller-strip {
-  display: grid;
+  overflow: hidden;
+  position: relative;
+}
+
+.best-seller-track {
+  display: flex;
   gap: 18px;
-  grid-auto-columns: minmax(280px, 1fr);
-  grid-auto-flow: column;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  scroll-snap-type: x proximity;
+  width: max-content;
+}
+
+.best-seller-track.is-animated {
+  animation: bestSellerMarquee 22s linear infinite;
+}
+
+.best-seller-strip:hover .best-seller-track.is-animated {
+  animation-play-state: paused;
+}
+
+@keyframes bestSellerMarquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 9px));
+  }
 }
 
 .best-seller-card {
   border-radius: 8px;
   box-shadow: 0 12px 28px rgba(58, 34, 19, 0.13);
   cursor: pointer;
+  flex: 0 0 min(360px, 72vw);
   min-height: 190px;
   overflow: hidden;
   position: relative;
-  scroll-snap-align: start;
 }
 
 .best-seller-card img {
@@ -3395,8 +3414,8 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .best-seller-strip {
-    grid-auto-columns: minmax(240px, 82vw);
+  .best-seller-card {
+    flex-basis: min(280px, 82vw);
   }
 
   .food-detail-main {
