@@ -2661,37 +2661,6 @@ button.account-photo-badge {
   line-height: 1.5;
 }
 
-.about {
-  background: #fff8f0;
-}
-
-.about-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
-}
-
-.about-list div {
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-}
-
-.about-list h3 {
-  margin-bottom: 12px;
-}
-
-.customer-reviews {
-  background: #fff8f2;
-  padding: 62px 8% 70px;
-}
-
-.review-heading {
-  margin: 0 auto 28px;
-  max-width: 1180px;
-}
-
 .section-kicker {
   color: #ff5722;
   display: block;
@@ -2700,97 +2669,6 @@ button.account-photo-badge {
   letter-spacing: 0;
   margin-bottom: 8px;
   text-transform: uppercase;
-}
-
-.review-heading h2 {
-  color: #161616;
-  font-size: 38px;
-  line-height: 1.15;
-  margin-bottom: 12px;
-}
-
-.review-heading p {
-  color: #6b5b52;
-  font-size: 17px;
-  line-height: 1.6;
-  max-width: 760px;
-}
-
-.review-grid {
-  display: grid;
-  gap: 22px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0 auto;
-  max-width: 1180px;
-}
-
-.review-card {
-  background: #fff;
-  border: 1px solid #f1e4dc;
-  border-radius: 8px;
-  box-shadow: 0 14px 34px rgba(64, 34, 18, 0.08);
-  display: grid;
-  gap: 18px;
-  min-height: 178px;
-  padding: 22px;
-}
-
-.review-card-head {
-  align-items: center;
-  display: grid;
-  gap: 12px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-}
-
-.review-avatar {
-  align-items: center;
-  background: #ffe0cf;
-  border-radius: 50%;
-  color: #b5480d;
-  display: inline-flex;
-  font-size: 14px;
-  font-weight: 900;
-  height: 44px;
-  justify-content: center;
-  width: 44px;
-}
-
-.review-avatar.green {
-  background: #cbffd9;
-  color: #16803a;
-}
-
-.review-avatar.yellow {
-  background: #fff1c8;
-  color: #b56a00;
-}
-
-.review-card h3 {
-  color: #222;
-  font-size: 16px;
-  line-height: 1.2;
-  margin: 0 0 3px;
-}
-
-.review-card-head p {
-  color: #7a6b64;
-  font-size: 14px;
-  line-height: 1.25;
-  margin: 0;
-}
-
-.review-stars {
-  color: #ff9800;
-  font-size: 14px;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.review-card blockquote {
-  color: #5b4740;
-  font-size: 16px;
-  font-style: italic;
-  line-height: 1.65;
 }
 
 .contact {
@@ -3554,8 +3432,6 @@ footer {
 
   .food-list,
   .home-food-grid,
-  .about-list,
-  .review-grid,
   .checkout-grid,
   .contact-grid,
   .profile-grid {
@@ -3576,18 +3452,6 @@ footer {
 
   .food-detail-info h2 {
     font-size: 24px;
-  }
-
-  .customer-reviews {
-    padding: 46px 5% 54px;
-  }
-
-  .review-heading {
-    text-align: left;
-  }
-
-  .review-heading h2 {
-    font-size: 32px;
   }
 
   .announcement-shell {
