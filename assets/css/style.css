@@ -556,6 +556,13 @@ nav a:hover,
   background: #e64a19;
 }
 
+.food-detail-page .food-detail-breadcrumb {
+  background: transparent !important;
+  justify-content: flex-start !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
 .food-card-detail-link {
   color: inherit;
   display: block;
