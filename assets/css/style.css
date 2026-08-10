@@ -841,27 +841,31 @@ body.food-detail-open {
 
 .food-detail-breadcrumb {
   align-items: center;
-  color: #8a6f62;
+  background: #d7191c;
+  color: #fff;
   display: flex;
   flex-wrap: wrap;
-  font-size: 15px;
-  gap: 8px;
-  margin-bottom: 16px;
+  font-size: 16px;
+  gap: 18px;
+  justify-content: center;
+  margin-bottom: 22px;
+  min-height: 58px;
+  padding: 12px 18px;
 }
 
 .food-detail-breadcrumb a {
-  color: #a64008;
+  color: #fff;
   font-weight: 700;
   text-decoration: none;
 }
 
 .food-detail-breadcrumb span {
-  color: #3c2d26;
+  color: #201814;
   font-weight: 700;
 }
 
 .food-detail-breadcrumb b {
-  color: #c7a695;
+  color: #fff;
   font-weight: 400;
 }
 
