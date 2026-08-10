@@ -273,7 +273,7 @@ async function handleImageFileChange() {
   try {
     foodImage.value = await readImageFile(file);
     renderPreview();
-    showAdminToast("Da chọn anh mon.");
+    showAdminToast("Đã chọn ảnh món.");
   } catch (error) {
     foodImageFile.value = "";
     showAdminToast(error.message, "error");
@@ -332,7 +332,7 @@ async function saveFood(event) {
     sessionStorage.setItem("foodhub_admin_section", "foods");
     sessionStorage.setItem("foodhub_food_category", selectedRootSlug);
     sessionStorage.setItem("foodhub_food_subcategory", "all");
-    showAdminToast(currentFoodId ? "Da cập nhật mon." : "Đã thêm mon.");
+    showAdminToast(currentFoodId ? "Đã cập nhật món." : "Đã thêm món.");
     setTimeout(() => {
       window.location.href = `admin.html?section=foods&foodCategory=${encodeURIComponent(selectedRootSlug)}`;
     }, 700);

@@ -194,7 +194,7 @@ async function saveAccount(event) {
 
     sessionStorage.setItem("foodhub_admin_section", "accounts");
     sessionStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
-    showAdminToast(isEditMode ? "Da cập nhật tài khoản." : "Đã tạo tài khoản.");
+    showAdminToast(isEditMode ? "Đã cập nhật tài khoản." : "Đã tạo tài khoản.");
     setTimeout(() => {
       window.location.href = `admin.html?section=accounts&accountType=${accountType === "customer" ? "customers" : "staff"}`;
     }, 700);

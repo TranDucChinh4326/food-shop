@@ -43,9 +43,9 @@
 
   <main class="admin-main">
     <header class="admin-page-bar">
-      <button class="sidebar-toggle-btn admin-page-toggle" type="button" data-sidebar-toggle aria-label="Thu gon menu" aria-expanded="true"></button>
+      <button class="sidebar-toggle-btn admin-page-toggle" type="button" data-sidebar-toggle aria-label="Thu gọn menu" aria-expanded="true"></button>
       <div class="admin-page-actions">
-        <a class="admin-top-icon" href="index.html" title="Ve website" aria-label="Ve website"><span class="nav-icon" data-icon="home" aria-hidden="true"></span></a>
+        <a class="admin-top-icon" href="index.html" title="Về website" aria-label="Về website"><span class="nav-icon" data-icon="home" aria-hidden="true"></span></a>
         <details class="admin-user-menu">
           <summary>
             <span class="admin-avatar"><span class="nav-icon" data-icon="account" aria-hidden="true"></span></span>
@@ -141,12 +141,12 @@
 
         <div id="categoryListView" class="category-list-view">
           <div class="table-toolbar multi-filter">
-            <input type="search" id="categorySearch" placeholder="Tìm kiem">
+            <input type="search" id="categorySearch" placeholder="Tìm kiếm">
             <select id="categoryTypeFilter">
               <option value="all">Tất cả</option>
               <option value="root">Danh mục cha</option>
             </select>
-            <select id="categoryPageSize" aria-label="So dong danh mục mới trang">
+            <select id="categoryPageSize" aria-label="Số dòng danh mục mỗi trang">
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -169,14 +169,14 @@
             <input type="hidden" id="categoryId">
             <label>
               Tên danh mục
-              <input id="categoryName" type="text" placeholder="VD: Com, Pho, Banh keo" required>
+              <input id="categoryName" type="text" placeholder="VD: Cơm, Phở, Bánh kẹo" required>
             </label>
             <label>
               Cấp danh mục
               <select id="categoryParent">
                 <option value="">Danh mục cha</option>
               </select>
-              <small class="field-hint">Để trống nếu muốn tạo muc cha nhu Đồ ăn, Do uong, Banh keo. Chọn muc cha neu muon tạo muc con.</small>
+              <small class="field-hint">Để trống nếu muốn tạo mục cha như Đồ ăn, Đồ uống, Bánh kẹo. Chọn mục cha nếu muốn tạo mục con.</small>
             </label>
             <div class="announcement-date-grid">
               <label>
@@ -202,7 +202,7 @@
         <div class="page-heading">
           <div>
             <h2>Quản lý món ăn</h2>
-            <p><a href="index.html">Trang chủ</a> <span>/</span> <span id="foodCategoryTitle">ất cả món</span></p>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> <span id="foodCategoryTitle">Tất cả món</span></p>
           </div>
           <div class="heading-actions">
             <a href="admin-food.html" id="foodCreateLink" class="primary-btn button-link">+ Thêm mới</a>
@@ -211,11 +211,11 @@
         </div>
 
         <div class="food-toolbar table-toolbar multi-filter">
-          <input type="search" id="foodSearch" placeholder="Tìm kiem">
+          <input type="search" id="foodSearch" placeholder="Tìm kiếm">
           <select id="foodCategoryFilter">
             <option value="all">Tất cả</option>
           </select>
-          <select id="foodPageSize" aria-label="So dong món ăn mới trang">
+          <select id="foodPageSize" aria-label="Số dòng món ăn mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -240,8 +240,8 @@
         </div>
 
         <div class="user-toolbar table-toolbar multi-filter">
-          <input type="search" id="userSearch" placeholder="Tìm kiem">
-          <select id="userPageSize" aria-label="So dong tài khoản mới trang">
+          <input type="search" id="userSearch" placeholder="Tìm kiếm">
+          <select id="userPageSize" aria-label="Số dòng tài khoản mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -266,14 +266,14 @@
         </div>
 
         <div class="announcement-toolbar table-toolbar multi-filter">
-          <input type="search" id="announcementSearch" placeholder="Tìm kiem">
+          <input type="search" id="announcementSearch" placeholder="Tìm kiếm">
           <select id="announcementStatusFilter">
             <option value="all">Tất cả</option>
             <option value="active">Đang hiển thị</option>
             <option value="hidden">Đã ẩn</option>
             <option value="expired">Hết hạn</option>
           </select>
-          <select id="announcementPageSize" aria-label="So dong thông báo mới trang">
+          <select id="announcementPageSize" aria-label="Số dòng thông báo mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -367,7 +367,7 @@
                 <option value="expired">Hết hạn</option>
                 <option value="hidden">Đã ẩn</option>
               </select>
-              <select id="advertisementPageSize" aria-label="So dong quảng cáo mới trang">
+              <select id="advertisementPageSize" aria-label="Số dòng quảng cáo mỗi trang">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -430,7 +430,7 @@
           <div class="announcement-date-grid">
             <label>
               Số lượt sử dụng
-              <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bỏ trống neu không giới hạn">
+              <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bỏ trống nếu không giới hạn">
             </label>
             <label>
               Trạng thái
@@ -457,7 +457,7 @@
         </form>
 
         <div class="discount-toolbar table-toolbar multi-filter">
-          <input type="search" id="discountSearch" placeholder="Tìm kiem">
+          <input type="search" id="discountSearch" placeholder="Tìm kiếm">
           <select id="discountStatusFilter">
             <option value="all">Tất cả</option>
             <option value="active">Hoạt động</option>
@@ -466,7 +466,7 @@
             <option value="soldout">Hết lượt</option>
             <option value="hidden">Đã ẩn</option>
           </select>
-          <select id="discountPageSize" aria-label="So dong mã giảm giá mới trang">
+          <select id="discountPageSize" aria-label="Số dòng mã giảm giá mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>

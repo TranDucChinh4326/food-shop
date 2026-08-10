@@ -193,7 +193,7 @@ function formatDateTime(value) {
 function formatRole(role) {
   const roles = {
     USER: "Khách hàng",
-    STAFF_SALES: "Nhân viên bạn hang",
+    STAFF_SALES: "Nhân viên bán hàng",
     STAFF_CONTENT: "Quản lý món ăn",
     STAFF_MANAGER: "Quản lý nhân viên",
     ADMIN: "Admin"
@@ -219,7 +219,7 @@ function formatDiscountStatus(status) {
     hidden: "Đã ẩn",
     expired: "Hết hạn",
     scheduled: "Sắp diễn ra",
-    soldout: "Het luot"
+    soldout: "Hết lượt"
   };
 
   return statuses[status] || status || "Không rõ";
@@ -227,26 +227,26 @@ function formatDiscountStatus(status) {
 
 function formatFeedbackStatus(status) {
   const statuses = {
-    new: "Moi gui",
-    in_progress: "Dang xu ly",
-    replied: "Da phan hoi",
-    closed: "Da dong"
+    new: "Mới gửi",
+    in_progress: "Đang xử lý",
+    replied: "Đã phản hồi",
+    closed: "Đã đóng"
   };
 
-  return statuses[status] || status || "Khong ro";
+  return statuses[status] || status || "Không rõ";
 }
 
 function formatFeedbackCategory(category) {
   const categories = {
-    general: "Trai nghiem chung",
-    order: "Dat hang",
-    food: "Chat luong mon an",
-    delivery: "Giao hang",
-    payment: "Thanh toan",
-    account: "Tai khoan"
+    general: "Trải nghiệm chung",
+    order: "Đặt hàng",
+    food: "Chất lượng món ăn",
+    delivery: "Giao hàng",
+    payment: "Thanh toán",
+    account: "Tài khoản"
   };
 
-  return categories[category] || "Trai nghiem chung";
+  return categories[category] || "Trải nghiệm chung";
 }
 
 function renderFeedbackStars(rating) {
@@ -479,8 +479,8 @@ function renderUsersTable() {
                 </td>
                 <td>${escapeHtml(account.email)}</td>
                 <td>${formatRole(account.role)}</td>
-                <td>${account.emailVerified ? "Da xác thực" : "Chưa xác thực"}</td>
-                <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Activate" : "Lock"}</span></td>
+                <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
+                <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Đang hoạt động" : "Đã khóa"}</span></td>
                 <td>
                   <div class="table-actions">
                     ${isRootAdmin
@@ -654,7 +654,7 @@ async function saveDiscount(event) {
       body: JSON.stringify(payload)
     });
 
-    showAdminToast(discountId ? "Da cập nhật mã giảm giá." : "Đã tạo mã giảm giá.");
+    showAdminToast(discountId ? "Đã cập nhật mã giảm giá." : "Đã tạo mã giảm giá.");
     resetDiscountForm();
     await loadDiscounts();
   } catch (error) {
@@ -709,10 +709,10 @@ function renderDiscountsTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Ma</th>
+            <th>Mã</th>
             <th>Giá trị</th>
-            <th>Dieu kien</th>
-            <th>Hieu luc</th>
+            <th>Điều kiện</th>
+            <th>Hiệu lực</th>
             <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
@@ -886,7 +886,7 @@ async function saveAdvertisement(event) {
       body: JSON.stringify(payload)
     });
 
-    showAdminToast(advertisementId ? "Da cập nhật quảng cáo." : "Đã tạo quảng cáo.");
+    showAdminToast(advertisementId ? "Đã cập nhật quảng cáo." : "Đã tạo quảng cáo.");
     resetAdvertisementForm();
     await loadAdvertisements();
     showAdvertisementListView();
@@ -946,7 +946,7 @@ function renderAdvertisementsTable() {
             <th>Hình ảnh</th>
             <th>Tiêu đề</th>
             <th>Vi tri</th>
-            <th>Hieu luc</th>
+            <th>Hiệu lực</th>
             <th>Trạng thái</th>
             <th>Chuc nang</th>
           </tr>
@@ -993,7 +993,7 @@ function renderAdvertisementsTable() {
 async function loadFeedback() {
   if (!feedbackList) return;
 
-  feedbackList.textContent = "Dang tai phan hoi...";
+  feedbackList.textContent = "Đang tải phản hồi...";
 
   try {
     const params = new URLSearchParams();
@@ -1015,7 +1015,7 @@ function renderFeedbackTable() {
 
   const total = cachedFeedback.length;
   if (total === 0) {
-    feedbackList.innerHTML = `<p class="empty-note">Chua co phan hoi nao.</p>`;
+    feedbackList.innerHTML = `<p class="empty-note">Chưa có phản hồi nào.</p>`;
     return;
   }
 
@@ -1048,20 +1048,20 @@ function renderFeedbackTable() {
           <p class="feedback-admin-content">${escapeHtml(item.content)}</p>
           ${item.admin_reply ? `
             <div class="feedback-admin-reply">
-              <strong>Da phan hoi${item.replied_by_name ? ` - ${escapeHtml(item.replied_by_name)}` : ""}</strong>
+              <strong>Đã phản hồi${item.replied_by_name ? ` - ${escapeHtml(item.replied_by_name)}` : ""}</strong>
               <p>${escapeHtml(item.admin_reply)}</p>
               <small>${item.replied_at ? formatDateTime(item.replied_at) : ""}</small>
             </div>
           ` : ""}
           <form class="feedback-reply-form" data-feedback-reply-form="${item.id}">
-            <textarea name="reply" rows="3" placeholder="Nhap noi dung phan hoi den khach hang..." required>${item.admin_reply ? escapeHtml(item.admin_reply) : ""}</textarea>
-            <button type="submit" class="primary-btn">Gui phan hoi</button>
+            <textarea name="reply" rows="3" placeholder="Nhập nội dung phản hồi đến khách hàng..." required>${item.admin_reply ? escapeHtml(item.admin_reply) : ""}</textarea>
+            <button type="submit" class="primary-btn">Gửi phản hồi</button>
           </form>
         </article>
       `).join("")}
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-feedback-page="prev" ${feedbackPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -1358,8 +1358,8 @@ function getFoodRootSlug(food) {
 }
 
 function getFoodCategoryTitle(slug = activeFoodCategory) {
-  if (!slug || slug === "all") return "Tất cả mon";
-  return getCategoryBySlug(slug)?.name || "Tất cả mon";
+  if (!slug || slug === "all") return "Tất cả món";
+  return getCategoryBySlug(slug)?.name || "Tất cả món";
 }
 
 function renderAdminFoodCategoryNav() {
@@ -1369,7 +1369,7 @@ function renderAdminFoodCategoryNav() {
   const roots = getRootCategories(false);
   container.innerHTML = `
     <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all">
-      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả mon</span>
+      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả món</span>
     </a>
     ${roots.map(category => `
       <a href="admin.html?section=foods&foodCategory=${escapeHtml(category.slug)}" data-admin-target="foods" data-food-category="${escapeHtml(category.slug)}">
@@ -1434,7 +1434,7 @@ function showCategoryFormView(mode = "create") {
   if (categoryFormSubtitle) {
     categoryFormSubtitle.textContent = mode === "edit"
       ? "Chinh sửa ten, cap danh mục, thu từ hiển thị va trạng thái."
-      : "Tạo danh mục cha nhu Banh keo hoặc danh mục con ben trong danh mục cha.";
+      : "Tạo danh mục cha như Bánh kẹo hoặc danh mục con bên trong danh mục cha.";
   }
 }
 
@@ -1588,7 +1588,7 @@ async function saveCategory(event) {
       method: categoryId ? "PUT" : "POST",
       body: JSON.stringify(payload)
     });
-    showAdminToast(categoryId ? "Da cập nhật danh mục." : "Đã thêm danh mục.");
+    showAdminToast(categoryId ? "Đã cập nhật danh mục." : "Đã thêm danh mục.");
     resetCategoryForm();
     await loadCategories();
     await loadFoods();
@@ -1760,7 +1760,7 @@ function renderFoodsTable() {
               <td>${Number(food.stock_quantity ?? food.stockQuantity ?? 0).toLocaleString("vi-VN")}</td>
               <td>
                 <div class="table-actions">
-                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sửa" aria-label="Sửa mon">${editIcon()}</a>
+                  <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sửa" aria-label="Sửa món">${editIcon()}</a>
                   <button type="button" class="icon-btn delete" title="Ẩn mon" aria-label="Ẩn mon" data-hide-food="${food.id}">${trashIcon()}</button>
                 </div>
               </td>
@@ -2164,13 +2164,13 @@ usersList?.addEventListener("click", async event => {
 
     if (toggleButton) {
       await toggleAccount(toggleButton.dataset.toggleUser, toggleButton.dataset.active === "1");
-      showAdminToast("Da cập nhật trạng thái tài khoản.");
+      showAdminToast("Đã cập nhật trạng thái tài khoản.");
       await loadUsers();
     }
 
     if (resetButton) {
       await resetAccountPassword(resetButton.dataset.resetPassword);
-      showAdminToast("Da dat lai mật khẩu.");
+      showAdminToast("Đã đặt lại mật khẩu.");
     }
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -2329,7 +2329,7 @@ feedbackList?.addEventListener("change", async event => {
       method: "PATCH",
       body: JSON.stringify({ status: statusSelect.value })
     });
-    showAdminToast("Da cap nhat trang thai phan hoi.");
+    showAdminToast("Đã cập nhật trạng thái phản hồi.");
     await loadFeedback();
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -2346,20 +2346,20 @@ feedbackList?.addEventListener("submit", async event => {
   const reply = form.elements.reply.value;
 
   button.disabled = true;
-  button.textContent = "Dang gui...";
+  button.textContent = "Đang gửi...";
 
   try {
     await requestJson(`${ADMIN_API}/feedback/${form.dataset.feedbackReplyForm}/reply`, {
       method: "POST",
       body: JSON.stringify({ reply })
     });
-    showAdminToast("Da gui phan hoi den khach hang.");
+    showAdminToast("Đã gửi phản hồi đến khách hàng.");
     await loadFeedback();
   } catch (error) {
     showAdminToast(error.message, "error");
   } finally {
     button.disabled = false;
-    button.textContent = "Gui phan hoi";
+    button.textContent = "Gửi phản hồi";
   }
 });
 
