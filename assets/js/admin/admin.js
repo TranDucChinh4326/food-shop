@@ -1433,7 +1433,7 @@ function showCategoryFormView(mode = "create") {
 
   if (categoryFormSubtitle) {
     categoryFormSubtitle.textContent = mode === "edit"
-      ? "Chinh sửa ten, cap danh mục, thu từ hiển thị va trạng thái."
+      ? "Chỉnh sửa tên, cấp danh mục, thứ tự hiển thị và trạng thái."
       : "Tạo danh mục cha như Bánh kẹo hoặc danh mục con bên trong danh mục cha.";
   }
 }

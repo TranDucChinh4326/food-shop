@@ -706,7 +706,7 @@ async function loadFoods() {
 
   if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage) return;
 
-  if (foodList) foodList.innerHTML = "<p>Dang tai mon an...</p>";
+  if (foodList) foodList.innerHTML = "<p>Đang tải món ăn...</p>";
 
   try {
     const response = await fetch(API_URL);
@@ -734,10 +734,10 @@ async function loadFoods() {
     renderHomeFoodSections();
     renderFoodDetailPage();
   } catch (error) {
-    console.error("Loi tai mon an:", error);
-    if (foodList) foodList.innerHTML = "<p>Khong the tai mon an tu database.</p>";
-    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Khong the tai mon ban chay tu database.</p>";
-    if (homeSectionBox) homeSectionBox.innerHTML = "<p>Khong the tai thuc don tu database.</p>";
+    console.error("Lỗi tải món ăn:", error);
+    if (foodList) foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
+    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Không thể tải món bán chạy từ database.</p>";
+    if (homeSectionBox) homeSectionBox.innerHTML = "<p>Không thể tải thực đơn từ database.</p>";
   }
 }
 function getFoodDisplayCategory(food) {
@@ -839,7 +839,7 @@ function renderHomeFoodSections() {
       .slice(0, 5);
 
     if (!bestSellers.length) {
-      bestSellerBox.innerHTML = "<p>Chua co mon nao phat sinh luot ban.</p>";
+      bestSellerBox.innerHTML = "<p>Chưa có món nào phát sinh lượt bán.</p>";
     } else {
       const sellerCards = bestSellers.map(renderBestSellerCard).join("");
       const duplicatedCards = bestSellers.length > 1 ? sellerCards + sellerCards : sellerCards;
@@ -1509,7 +1509,7 @@ function renderFoods() {
 
 function addToCart(foodId) {
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập de thêm mon vao giỏ hàng.", "menu.html");
+    requireLogin("Vui lòng đăng nhập để thêm món vào giỏ hàng.", "menu.html");
     return;
   }
 
@@ -1727,7 +1727,7 @@ function showQrPaymentDialog(order) {
         </div>
         <button type="button" class="qr-payment-close" aria-label="Hủy thanh toán">×</button>
       </div>
-      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Ma QR thanh toan don ${order.id}">
+      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Mã QR thanh toán đơn ${order.id}">
       <div class="qr-payment-info">
         <div><span>Số tiền</span><strong>${formatMoney(session.amount)}</strong></div>
         <div><span>Ngân hàng</span><strong>${escapeHtml(getBankDisplayName(session.bankCode))}</strong></div>
@@ -1775,7 +1775,7 @@ async function submitOrder(event) {
   event.preventDefault();
 
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập de đặt hàng.", "cart.html");
+    requireLogin("Vui lòng đăng nhập để đặt hàng.", "cart.html");
     return;
   }
 
@@ -1932,7 +1932,7 @@ async function loadOrderHistory(event) {
   if (!resultBox) return;
 
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập de xem lịch sử đơn hàng.", "track.html");
+    requireLogin("Vui lòng đăng nhập để xem lịch sử đơn hàng.", "track.html");
     return;
   }
 
@@ -1981,7 +1981,7 @@ function renderOrderHistory(orders) {
     resultBox.innerHTML = `
       <div class="empty-history">
         <h3>Chưa có đơn hàng phù hợp</h3>
-        <p>Bạn co the quay lai thực đơn de dat mon hoặc thu bo loc khac.</p>
+        <p>Bạn có thể quay lại thực đơn để đặt món hoặc thử bộ lọc khác.</p>
         <a href="menu.html" class="btn">Dat mon ngay</a>
       </div>
     `;
@@ -1992,7 +1992,7 @@ function renderOrderHistory(orders) {
     <article class="track-card">
       <div class="order-history-top">
         <div>
-          <h3>Don #${order.id} - ${formatMoney(order.total_price)}</h3>
+          <h3>Đơn #${order.id} - ${formatMoney(order.total_price)}</h3>
           <p>${new Date(order.created_at).toLocaleString("vi-VN")}</p>
         </div>
         <span class="status-pill">${getOrderStatusLabel(order.status)}</span>
@@ -2000,9 +2000,9 @@ function renderOrderHistory(orders) {
 
       <div class="history-info">
         <p><strong>Khách hàng:</strong> ${order.customer_name}</p>
-        <p><strong>So dien thoai:</strong> ${order.phone}</p>
+        <p><strong>Số điện thoại:</strong> ${order.phone}</p>
         <p><strong>Địa chỉ:</strong> ${order.address}</p>
-        <p><strong>Thanh toan:</strong> ${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
+        <p><strong>Thanh toán:</strong> ${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
         ${order.note ? `<p><strong>Ghi chu:</strong> ${order.note}</p>` : ""}
       </div>
 
@@ -2329,7 +2329,7 @@ function initChatSupportWidget() {
           <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
             <span></span><span></span><span></span>
           </button>
-          <button type="button" class="chat-close" aria-label="Dong hỗ trợ">&times;</button>
+          <button type="button" class="chat-close" aria-label="Đóng hỗ trợ">&times;</button>
         </div>
       </div>
       <div class="chat-quick-menu" hidden>
@@ -2338,25 +2338,25 @@ function initChatSupportWidget() {
         <a href="contact.html">Liên hệ FoodHub</a>
       </div>
       <div class="chat-messages" aria-live="polite">
-        <div class="chat-message bot">Xin chao ${escapeHtml(displayName)}, FoodHub co the hỗ trợ gi cho ban?</div>
-        <div class="chat-message bot muted">Day la khung chat tạm thời. Sau này minh se kết nối du lieu he thong de tra loi từ dong.</div>
+        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, FoodHub có thể hỗ trợ gì cho bạn?</div>
+        <div class="chat-message bot muted">Đây là khung chat tạm thời. Sau này mình sẽ kết nối dữ liệu hệ thống để trả lời tự động.</div>
       </div>
       <form class="chat-form">
-        <input type="file" class="chat-file" aria-label="Dinh kem tep" hidden>
+        <input type="file" class="chat-file" aria-label="Đính kèm tệp" hidden>
         <div class="chat-form-main">
-          <input type="text" class="chat-input" placeholder="Nhập nội dung..." aria-label="Nhập tin nhan hỗ trợ">
+          <input type="text" class="chat-input" placeholder="Nhập nội dung..." aria-label="Nhập tin nhắn hỗ trợ">
           <div class="chat-tools">
-            <button type="button" class="chat-tool chat-like" aria-label="Gui like">
+            <button type="button" class="chat-tool chat-like" aria-label="Gửi like">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M7 10v10H4V10h3Zm4.2-7c.8 0 1.4.6 1.4 1.4v3.2H18c1.2 0 2 .9 1.8 2.1l-1.1 7.7c-.2 1-1 1.7-2 1.7H9V9.8l2-5.6c.2-.7.8-1.2 1.5-1.2h-1.3Z"></path>
               </svg>
             </button>
-            <button type="button" class="chat-tool chat-attach" aria-label="Dinh kem tep">
+            <button type="button" class="chat-tool chat-attach" aria-label="Đính kèm tệp">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M18.4 11.2 11 18.6a4.2 4.2 0 0 1-6-6L14 3.7a2.9 2.9 0 0 1 4.1 4.1L9.5 16.4a1.5 1.5 0 0 1-2.1-2.1l7.5-7.5"></path>
               </svg>
             </button>
-            <button type="button" class="chat-tool chat-emoji" aria-label="Chọn bieu tuong">
+            <button type="button" class="chat-tool chat-emoji" aria-label="Chọn biểu tượng">
               <svg viewBox="0 0 24 24" focusable="false">
                 <circle cx="12" cy="12" r="9"></circle>
                 <circle cx="9" cy="10" r="1"></circle>
@@ -2364,7 +2364,7 @@ function initChatSupportWidget() {
                 <path d="M8 14c1 1.4 2.3 2 4 2s3-.6 4-2"></path>
               </svg>
             </button>
-            <button type="submit" class="chat-send" aria-label="Gui tin nhan">
+            <button type="submit" class="chat-send" aria-label="Gửi tin nhắn">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M4 12 20 4l-4 16-4-7-8-1Z"></path>
               </svg>
@@ -2384,7 +2384,7 @@ function initChatSupportWidget() {
       <strong>FoodHub đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ" aria-expanded="false">
       <span aria-hidden="true">${robotLogo}</span>
     </button>
   `;
@@ -2440,8 +2440,8 @@ function initChatSupportWidget() {
     if (!file) return;
 
     chatMessages.insertAdjacentHTML("beforeend", `
-      <div class="chat-message user file-message">Da dinh kem: ${escapeHtml(file.name)}</div>
-      <div class="chat-message bot muted">FoodHub da nhan thong tin tep. Tinh nang gui tep that sẽ được kết nối sau.</div>
+      <div class="chat-message user file-message">Đã đính kèm: ${escapeHtml(file.name)}</div>
+      <div class="chat-message bot muted">FoodHub đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
     `);
     chatFile.value = "";
     hideChatPopovers();
@@ -2469,7 +2469,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cam on ${escapeHtml(displayName)}, FoodHub da nhan phan hoi của ban.</div>
+      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận phản hồi của bạn.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -2482,7 +2482,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">FoodHub da nhan tin nhan của ban. Chuc nang tra loi từ dong sẽ được cập nhật sau.</div>
+      <div class="chat-message bot muted">FoodHub đã nhận tin nhắn của bạn. Chức năng trả lời tự động sẽ được cập nhật sau.</div>
     `);
     chatInput.value = "";
     hideChatPopovers();

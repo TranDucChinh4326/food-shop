@@ -163,7 +163,7 @@ function renderEmailVerifyStatus(user) {
   status.className = `verify-status ${isVerified ? "verified" : "pending"}`;
   status.textContent = isVerified
     ? "Email đã được xác thực. Google cùng email se từ dong đồng bộ vao tài khoản này."
-    : "Email chưa xác thực. Bạn can xác thực truoc khi đăng nhập bang mật khẩu.";
+    : "Email chưa xác thực. Bạn cần xác thực trước khi đăng nhập bằng mật khẩu.";
 }
 
 function renderPasswordMode(user) {
@@ -192,8 +192,8 @@ function renderPasswordMode(user) {
 
   if (hint) {
     hint.textContent = hasPasswordSet
-      ? "Nhập mật khẩu hiện tại de đổi sang mật khẩu mới."
-      : "Tài khoản này vừa được tạo bằng Google/Facebook. Hay tạo mật khẩu de hoàn tất tài khoản chinh.";
+      ? "Nhập mật khẩu hiện tại để đổi sang mật khẩu mới."
+      : "Tài khoản này vừa được tạo bằng Google/Facebook. Hãy tạo mật khẩu để hoàn tất tài khoản chính.";
   }
 
   if (button) {
@@ -519,7 +519,7 @@ async function postSocialLink(provider, accessToken) {
 
   renderSocialAccounts(data.accounts || []);
   await loadProfile();
-  showSiteToast(data.message || "Da liên kết tài khoản.");
+  showSiteToast(data.message || "Đã liên kết tài khoản.");
 }
 
 async function linkGoogleAccount() {
@@ -630,7 +630,7 @@ async function handleFacebookLinkResponse(response) {
 
 async function loadProfile() {
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập de xem tài khoản.", "profile.html");
+    requireLogin("Vui lòng đăng nhập để xem tài khoản.", "profile.html");
     return;
   }
 
@@ -646,7 +646,7 @@ async function loadProfile() {
     renderPasswordMode(data.user);
     renderAccountSummary(data.user);
     if (data.user.requiresAccountSetup || new URLSearchParams(window.location.search).get("setup") === "1") {
-      showSiteToast("Vui lòng tạo username va mật khẩu de hoàn tất tài khoản.", "info");
+      showSiteToast("Vui lòng tạo username và mật khẩu để hoàn tất tài khoản.", "info");
     }
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
@@ -690,7 +690,7 @@ async function saveProfile(event) {
       return;
     }
 
-    showSiteToast(data.message || "Da cập nhật thong tin tài khoản.");
+    showSiteToast(data.message || "Đã cập nhật thông tin tài khoản.");
   } catch (error) {
     showSiteToast(error.message, "error");
   }
@@ -721,7 +721,7 @@ function initAvatarUpload() {
           email: document.getElementById("profileEmail")?.value,
           avatar: selectedAvatarData
         });
-        showSiteToast("Da chọn ảnh đại diện. Bam Lưu thay doi de cập nhật.");
+        showSiteToast("Đã chọn ảnh đại diện. Bấm Lưu thay đổi để cập nhật.");
       })
       .catch(error => {
         console.error(error);
@@ -786,12 +786,12 @@ async function changePassword(event) {
   }
 
   if (!passwordCaptchaId || !passwordCaptchaAnswer) {
-    showSiteToast("Vui lòng bam Xin mã captcha truoc.", "error");
+    showSiteToast("Vui lòng bấm Xin mã captcha trước.", "error");
     return;
   }
 
   if (captchaAnswer !== passwordCaptchaAnswer) {
-    showSiteToast("Ma captcha không đúng.", "error");
+    showSiteToast("Mã captcha không đúng.", "error");
     return;
   }
 
@@ -817,7 +817,7 @@ async function changePassword(event) {
     passwordCaptchaAnswer = "";
     drawPasswordCaptchaPlaceholder("Bấm Xin mã");
     await loadProfile();
-    showSiteToast(data.message || "Da doi mật khẩu.");
+    showSiteToast(data.message || "Đã đổi mật khẩu.");
   } catch (error) {
     if (/captcha/i.test(error.message || "")) {
       passwordCaptchaId = "";

@@ -262,7 +262,7 @@ async function register(event) {
   const password = document.getElementById("password").value;
 
   if (!pendingSocial?.provider || !pendingSocial?.accessToken) {
-    showToast("Vui lòng xác thực bằng Google hoặc Facebook truoc.", "error");
+    showToast("Vui lòng xác thực bằng Google hoặc Facebook trước.", "error");
     return;
   }
 
@@ -320,7 +320,7 @@ function initSocialSetupForm() {
     form.querySelectorAll("input, button[type='submit']").forEach(element => {
       element.disabled = true;
     });
-    showToast("Đăng ký thu cong da tat. Hay chọn Google hoặc Facebook de xác thực truoc.", "info");
+    showToast("Đăng ký thủ công đã tắt. Hãy chọn Google hoặc Facebook để xác thực trước.", "info");
   }
 }
 

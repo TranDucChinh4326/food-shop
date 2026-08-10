@@ -54,7 +54,7 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui lòng đăng nhập bang tài khoản quản trị.");
+    alert("Vui lòng đăng nhập bằng tài khoản quản trị.");
     window.location.href = "login.html";
   }
 }
@@ -121,7 +121,7 @@ function syncAccountMode() {
     if (note) {
       note.textContent = isCustomerMode()
         ? "Khách hàng không được cấp quyền quản trị."
-        : "Chọn cac khu vuc nhân viên được phép xem va thao tác trong trang quản trị.";
+        : "Chọn các khu vực nhân viên được phép xem và thao tác trong trang quản trị.";
     }
   }
 }
