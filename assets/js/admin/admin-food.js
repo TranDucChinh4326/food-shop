@@ -87,6 +87,32 @@ async function requestJson(url, options = {}) {
   return data;
 }
 
+async function requestFormData(url, formData, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    method: options.method || "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {})
+    },
+    body: formData
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    window.location.href = "login.html";
+    throw new Error(data.message || "Phiên đăng nhập đã hết hạn.");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || "Không thể xử lý yêu cầu.");
+  }
+
+  return data;
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -246,23 +272,20 @@ function renderPreview() {
   `;
 }
 
-function readImageFile(file) {
-  return new Promise((resolve, reject) => {
-    if (!file.type.startsWith("image/")) {
-      reject(new Error("Vui lòng chọn tệp hình ảnh."));
-      return;
-    }
+async function uploadImageFile(file) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Vui lòng chọn tệp hình ảnh.");
+  }
 
-    if (file.size > MAX_IMAGE_SIZE) {
-      reject(new Error("Ảnh tối đa 1.5MB để web tải nhanh hơn."));
-      return;
-    }
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error("Ảnh tối đa 1.5MB để web tải nhanh hơn.");
+  }
 
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(new Error("Không thể doc tệp ảnh."));
-    reader.readAsDataURL(file);
-  });
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const data = await requestFormData(`${ADMIN_API}/foods/image`, formData);
+  return data.image;
 }
 
 async function handleImageFileChange() {
@@ -271,7 +294,10 @@ async function handleImageFileChange() {
   if (!file) return;
 
   try {
-    foodImage.value = await readImageFile(file);
+    foodImage.value = "";
+    renderPreview();
+    showAdminToast("Đang tải ảnh món...");
+    foodImage.value = await uploadImageFile(file);
     renderPreview();
     showAdminToast("Đã chọn ảnh món.");
   } catch (error) {
@@ -279,7 +305,6 @@ async function handleImageFileChange() {
     showAdminToast(error.message, "error");
   }
 }
-
 async function loadFood() {
   if (!isEditMode) return;
 

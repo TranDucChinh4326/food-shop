@@ -382,6 +382,32 @@ async function requestJson(url, options = {}) {
   return data;
 }
 
+async function requestFormData(url, formData, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    method: options.method || "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {})
+    },
+    body: formData
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    sessionStorage.removeItem(AUTH_TOKEN_KEY);
+    sessionStorage.removeItem(AUTH_USER_KEY);
+    window.location.href = "login.html";
+    throw new Error(data.message || "Phiên đăng nhập đã hết hạn.");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || "Không thể xử lý yêu cầu.");
+  }
+
+  return data;
+}
+
 function renderPermissionChecks(container, selected = [], name = "permissions") {
   if (!container) return;
 
@@ -838,29 +864,27 @@ function fillAdvertisementForm(item) {
   showAdvertisementFormView();
 }
 
-function readAdvertisementImageFile() {
+async function uploadAdvertisementImageFile() {
   const file = advertisementImageFile?.files?.[0];
-  if (!file) return Promise.resolve(pendingAdvertisementImage);
+  if (!file) return pendingAdvertisementImage;
 
   const validTypes = ["image/jpeg", "image/png", "image/webp"];
   if (!validTypes.includes(file.type)) {
-    return Promise.reject(new Error("Chi hỗ trợ anh JPG, PNG hoặc WebP."));
+    throw new Error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.");
   }
 
   if (file.size > 1.5 * 1024 * 1024) {
-    return Promise.reject(new Error("Anh quảng cáo tối đa 1.5MB."));
+    throw new Error("Ảnh quảng cáo tối đa 1.5MB.");
   }
 
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("Không thể doc tệp ảnh."));
-    reader.readAsDataURL(file);
-  });
+  const formData = new FormData();
+  formData.append("image", file);
+  const data = await requestFormData(`${ADVERTISEMENTS_API}/admin/image`, formData);
+  pendingAdvertisementImage = data.image || "";
+  return pendingAdvertisementImage;
 }
-
 async function readAdvertisementPayload() {
-  const image = await readAdvertisementImageFile();
+  const image = await uploadAdvertisementImageFile();
 
   return {
     title: document.getElementById("advertisementTitle").value,

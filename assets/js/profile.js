@@ -7,6 +7,7 @@ let profileGoogleTokenClient;
 let profileFacebookSdkPromise;
 let savedAddresses = [];
 let selectedAvatarData = "";
+let selectedAvatarFile = null;
 let passwordCaptchaAnswer = "";
 let passwordCaptchaId = "";
 let passwordCaptchaCooldownTimer;
@@ -637,7 +638,11 @@ async function loadProfile() {
   try {
     await initAddressSelectors();
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`);
+    if (selectedAvatarData?.startsWith("blob:")) {
+      URL.revokeObjectURL(selectedAvatarData);
+    }
     selectedAvatarData = "";
+    selectedAvatarFile = null;
     document.getElementById("profileFullname").value = data.user.fullname || "";
     document.getElementById("profileUsername").value = data.user.username || "";
     document.getElementById("profileEmail").value = data.user.email || "";
@@ -664,21 +669,34 @@ async function saveProfile(event) {
     username: document.getElementById("profileUsername").value,
     fullname: document.getElementById("profileFullname").value,
     email: document.getElementById("profileEmail").value,
-    avatar: selectedAvatarData || document.querySelector("#profileAvatar img")?.getAttribute("src") || "",
     phone: document.getElementById("profilePhone").value
   };
 
   try {
-    const data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
+    let data = await requestProfileJson(`${PROFILE_AUTH_API}/me`, {
       method: "PUT",
       body: JSON.stringify(payload)
     });
+
+    if (selectedAvatarFile) {
+      const avatarForm = new FormData();
+      avatarForm.append("avatar", selectedAvatarFile);
+      const avatarData = await requestProfileFormData(`${PROFILE_AUTH_API}/avatar`, avatarForm);
+      data = {
+        ...data,
+        user: avatarData.user || {
+          ...data.user,
+          avatar: avatarData.avatar
+        }
+      };
+    }
 
     const verificationUrl = data.verificationUrl;
     const profileMessage = data.message;
 
     sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     selectedAvatarData = "";
+    selectedAvatarFile = null;
     renderEmailVerifyStatus(data.user);
     renderAccountSummary(data.user);
     renderUser();
@@ -713,61 +731,19 @@ function initAvatarUpload() {
       return;
     }
 
-    compressAvatarImage(file)
-      .then(dataUrl => {
-        selectedAvatarData = dataUrl;
-        renderAccountSummary({
-          fullname: document.getElementById("profileFullname")?.value,
-          email: document.getElementById("profileEmail")?.value,
-          avatar: selectedAvatarData
-        });
-        showSiteToast("Đã chọn ảnh đại diện. Bấm Lưu thay đổi để cập nhật.");
-      })
-      .catch(error => {
-        console.error(error);
-        showSiteToast("Không thể xử lý ảnh đại diện.", "error");
-      })
-      .finally(() => {
-        input.value = "";
-      });
-  });
-}
+    if (selectedAvatarData?.startsWith("blob:")) {
+      URL.revokeObjectURL(selectedAvatarData);
+    }
 
-function compressAvatarImage(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onerror = reject;
-    reader.onload = () => {
-      const image = new Image();
-      image.onerror = reject;
-      image.onload = () => {
-        const maxSize = 320;
-        const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
-        const width = Math.max(1, Math.round(image.width * scale));
-        const height = Math.max(1, Math.round(image.height * scale));
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-
-        canvas.width = width;
-        canvas.height = height;
-        context.drawImage(image, 0, 0, width, height);
-
-        let quality = 0.82;
-        let dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-        while (dataUrl.length > 420000 && quality > 0.45) {
-          quality -= 0.08;
-          dataUrl = canvas.toDataURL("image/jpeg", quality);
-        }
-
-        resolve(dataUrl);
-      };
-
-      image.src = String(reader.result || "");
-    };
-
-    reader.readAsDataURL(file);
+    selectedAvatarFile = file;
+    selectedAvatarData = URL.createObjectURL(file);
+    renderAccountSummary({
+      fullname: document.getElementById("profileFullname")?.value,
+      email: document.getElementById("profileEmail")?.value,
+      avatar: selectedAvatarData
+    });
+    showSiteToast("Đã chọn ảnh đại diện. Bấm Lưu thay đổi để cập nhật.");
+    input.value = "";
   });
 }
 
