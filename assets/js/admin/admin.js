@@ -459,12 +459,12 @@ function renderUsersTable() {
           <thead>
             <tr>
               <th>STT</th>
-              <th>Ho ten</th>
+              <th>Họ tên</th>
               <th>Email</th>
-              <th>Vai tro</th>
+              <th>Vai trò</th>
               <th>Xác thực</th>
               <th>Trạng thái</th>
-              <th>Chuc nang</th>
+              <th>Chức năng</th>
             </tr>
           </thead>
           <tbody>
@@ -563,7 +563,7 @@ function renderAnnouncementsTable() {
             <th>Ngày đăng</th>
             <th>Hết hiệu lực</th>
             <th>Trạng thái</th>
-            <th>Chuc nang</th>
+            <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
@@ -714,7 +714,7 @@ function renderDiscountsTable() {
             <th>Điều kiện</th>
             <th>Hiệu lực</th>
             <th>Trạng thái</th>
-            <th>Chuc nang</th>
+            <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
@@ -945,10 +945,10 @@ function renderAdvertisementsTable() {
             <th>STT</th>
             <th>Hình ảnh</th>
             <th>Tiêu đề</th>
-            <th>Vi tri</th>
+            <th>Vị trí</th>
             <th>Hiệu lực</th>
             <th>Trạng thái</th>
-            <th>Chuc nang</th>
+            <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
@@ -1514,11 +1514,11 @@ function renderCategoriesTable() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Ten danh mục</th>
-            <th>Cap</th>
-            <th>Thuoc danh mục cha</th>
+            <th>Tên danh mục</th>
+            <th>Cấp</th>
+            <th>Thuộc danh mục cha</th>
             <th>Trạng thái</th>
-            <th>Chuc nang</th>
+            <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>
@@ -1739,10 +1739,10 @@ function renderFoodsTable() {
           <tr>
             <th>STT</th>
             <th>Hình ảnh</th>
-            <th>Ten mon</th>
-            <th>Gia</th>
-            <th>Số lượng con</th>
-            <th>Chuc nang</th>
+            <th>Tên món</th>
+            <th>Giá</th>
+            <th>Số lượng còn</th>
+            <th>Chức năng</th>
           </tr>
         </thead>
         <tbody>

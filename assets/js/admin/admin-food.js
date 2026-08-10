@@ -240,7 +240,7 @@ function renderPreview() {
   foodPreview.innerHTML = `
     <img src="${escapeHtml(imageUrl)}" alt="">
     <div>
-      <strong>${escapeHtml(foodName.value.trim() || "Ten mon")}</strong>
+      <strong>${escapeHtml(foodName.value.trim() || "Tên món")}</strong>
       <small>${Number(foodPrice.value || 0).toLocaleString("vi-VN")}d</small>
     </div>
   `;
