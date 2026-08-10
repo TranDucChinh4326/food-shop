@@ -1153,6 +1153,7 @@ function renderRevenueTrend(rows) {
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
   const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
+  const totalRevenue = ordered.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
   const points = ordered.map((item, index) => {
     const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
     const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
@@ -1161,6 +1162,12 @@ function renderRevenueTrend(rows) {
   const areaPoints = `0,92 ${points} 100,92`;
 
   return `
+    ${totalRevenue === 0 ? `
+      <div class="chart-empty">
+        <strong>Chưa có doanh thu hoàn tất</strong>
+        <span>Biểu đồ sẽ cập nhật khi có đơn hoàn tất trong khoảng thời gian đã chọn.</span>
+      </div>
+    ` : ""}
     <svg class="revenue-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
