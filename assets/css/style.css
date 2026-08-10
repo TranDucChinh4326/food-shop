@@ -839,12 +839,30 @@ body.food-detail-open {
   width: 100%;
 }
 
-.food-detail-back {
-  color: #ff7a1a;
-  display: inline-flex;
-  font-weight: 700;
+.food-detail-breadcrumb {
+  align-items: center;
+  color: #8a6f62;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 15px;
+  gap: 8px;
   margin-bottom: 16px;
+}
+
+.food-detail-breadcrumb a {
+  color: #a64008;
+  font-weight: 700;
   text-decoration: none;
+}
+
+.food-detail-breadcrumb span {
+  color: #3c2d26;
+  font-weight: 700;
+}
+
+.food-detail-breadcrumb b {
+  color: #c7a695;
+  font-weight: 400;
 }
 
 .food-detail-page-empty {

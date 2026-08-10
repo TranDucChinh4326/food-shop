@@ -771,8 +771,13 @@ function renderStarText(rating = 5) {
   return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
-function getFoodDetailUrl(foodId) {
-  return `food-detail.html?id=${encodeURIComponent(foodId)}`;
+function getFoodDetailUrl(foodId, options = {}) {
+  const params = new URLSearchParams({ id: String(foodId) });
+
+  if (options.from) params.set("from", options.from);
+  if (options.category) params.set("category", options.category);
+
+  return `food-detail.html?${params.toString()}`;
 }
 
 function renderCompactFoodCard(food, options = {}) {
@@ -782,7 +787,7 @@ function renderCompactFoodCard(food, options = {}) {
 
   return `
     <article class="${cardClass}" data-open-food-detail="${food.id}">
-      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="home-food-card-body">
         <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
@@ -804,7 +809,7 @@ function renderCompactFoodCard(food, options = {}) {
 function renderBestSellerCard(food) {
   return `
     <article class="best-seller-card" data-open-food-detail="${food.id}">
-      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="best-seller-overlay">
         <span>Bán chạy</span>
@@ -892,6 +897,45 @@ function getFeaturedCategoryItems(items, limit = 4) {
   return [...items]
     .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0))
     .slice(0, limit);
+}
+
+function getFoodDetailBreadcrumb(food) {
+  const params = new URLSearchParams(window.location.search);
+  const from = params.get("from");
+  const categoryValue = params.get("category") || food.subcategory || food.category || "all";
+  const categoryLabel = food.categoryName || getFoodDisplayCategory(food);
+  const rootLabel = food.parentCategoryName || getFoodDisplayCategory(food);
+
+  if (from === "home") {
+    return [
+      { label: "Trang chủ", href: "index.html" },
+      { label: "Chi tiết món ăn" }
+    ];
+  }
+
+  if (from === "cart") {
+    return [
+      { label: "Giỏ hàng", href: "cart.html" },
+      { label: "Chi tiết món ăn" }
+    ];
+  }
+
+  return [
+    { label: rootLabel, href: `menu.html?category=${encodeURIComponent(food.category || "all")}` },
+    { label: categoryLabel, href: `menu.html?category=${encodeURIComponent(categoryValue)}` },
+    { label: "Chi tiết món ăn" }
+  ];
+}
+
+function renderFoodDetailBreadcrumb(food) {
+  return `
+    <nav class="food-detail-breadcrumb" aria-label="Duong dan trang">
+      ${getFoodDetailBreadcrumb(food).map((item, index, items) => `
+        ${item.href ? `<a href="${item.href}">${escapeHtml(item.label)}</a>` : `<span>${escapeHtml(item.label)}</span>`}
+        ${index < items.length - 1 ? `<b aria-hidden="true">&gt;</b>` : ""}
+      `).join("")}
+    </nav>
+  `;
 }
 
 function showFoodDetail(foodId) {
@@ -1026,7 +1070,7 @@ function renderFoodDetailPage() {
   document.title = `${food.name} - FoodHub`;
   page.innerHTML = `
     <section class="food-detail-page-shell">
-      <a class="food-detail-back" href="menu.html?category=${encodeURIComponent(food.subcategory || food.category || "all")}">Quay lại danh mục</a>
+      ${renderFoodDetailBreadcrumb(food)}
       <div class="food-detail-card food-detail-page-card">
         <div class="food-detail-main">
           <div class="food-detail-gallery">
@@ -1443,8 +1487,8 @@ function renderFoods() {
     const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
 
     return `
-      <div class="food-card" data-open-food-detail="${food.id}">
-        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
+      <div class="food-card" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
+        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
           <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
           <h3>${escapeHtml(food.name)}</h3>
           <p>${escapeHtml(food.desc || "")}</p>
@@ -1551,9 +1595,9 @@ function renderCart() {
     totalQuantity += Number(item.quantity);
 
     return `
-      <div class="cart-item" data-open-food-detail="${item.id}">
+      <div class="cart-item" data-open-food-detail="${item.id}" data-detail-from="cart">
         <div>
-          <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id)}">${escapeHtml(item.name)}</a></h4>
+          <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a></h4>
           <p>${formatMoney(item.price)}</p>
         </div>
 
@@ -2510,7 +2554,10 @@ window.addEventListener("pagehide", () => {
 document.addEventListener("click", event => {
   const detailCard = event.target.closest("[data-open-food-detail]");
   if (!detailCard || event.target.closest("button, input, a, select, textarea")) return;
-  window.location.href = getFoodDetailUrl(detailCard.dataset.openFoodDetail);
+  window.location.href = getFoodDetailUrl(detailCard.dataset.openFoodDetail, {
+    from: detailCard.dataset.detailFrom || "home",
+    category: detailCard.dataset.detailCategory || ""
+  });
 });
 
 document.addEventListener("keydown", event => {
