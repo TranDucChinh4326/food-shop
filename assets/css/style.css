@@ -858,8 +858,8 @@ body.food-detail-open {
 }
 
 .food-detail-breadcrumb a {
-  color: #777;
-  font-weight: 400;
+  color: #ff7a1a;
+  font-weight: 700;
   text-decoration: none;
 }
 
