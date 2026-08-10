@@ -1048,12 +1048,6 @@ function renderFoodDetailPage() {
             </div>
             <strong class="food-detail-price">${formatMoney(food.price)}</strong>
             <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
-            <div class="food-detail-options">
-              <h3>Tùy chọn thêm</h3>
-              <label><input type="checkbox" disabled> Thêm phô mai <span>+15.000đ</span></label>
-              <label><input type="checkbox" disabled> Thêm topping <span>+25.000đ</span></label>
-              <label><input type="checkbox" disabled> Không hành tây <span>Miễn phí</span></label>
-            </div>
             <div class="food-detail-actions">
               <div class="food-detail-qty">
                 <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
@@ -1475,7 +1469,7 @@ function addToCart(foodId) {
     return;
   }
 
-  const food = foods.find(item => item.id === foodId);
+  const food = foods.find(item => String(item.id) === String(foodId));
 
   if (!food) {
     showSiteToast("Không tìm thấy món ăn.", "error");
