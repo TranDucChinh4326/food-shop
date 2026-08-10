@@ -38,7 +38,6 @@
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
       <a class="admin-nav-btn" href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=stats" data-admin-target="stats"><span class="nav-icon" data-icon="stats" aria-hidden="true"></span><span class="nav-text">Thống kê</span></a>
     </nav>
   </aside>
 
@@ -60,42 +59,55 @@
     </header>
 
     <section class="admin-section active" data-admin-section="overview">
-      <div class="overview-grid">
-        <button class="overview-card" type="button" data-admin-shortcut="orders">
-          <span>Đơn hàng</span>
-          <strong>Xử lý trạng thái giao hàng</strong>
-          <small>Cập nhật xac nhan, đang giao, hoàn tất hoặc huy don.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="foods">
-          <span>Món ăn</span>
-          <strong>Thêm sửa thực đơn</strong>
-          <small>Quản lý giá, hình ảnh, mô tả và trạng thái đang bán.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="accounts">
-          <span> Tài khoản</span>
-          <strong>Nhân viên và khách hàng</strong>
-          <small>Quyền hạn đóng, khóa tài khoản và đặt lại mật khẩu khi cần.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="announcements">
-          <span>Thông báo</span>
-          <strong>Đăng tin trên trang chủ</strong>
-          <small>Quản lý các thông báo hiển thị ở đầu website cho khách hàng.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="advertisements">
-          <span>Quảng cáo</span>
-          <strong>Banner nổi hai bên</strong>
-          <small>Quản lý hình quảng cáo cố định bên trái và bên phải website.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="discounts">
-          <span>Mã giảm giá</span>
-          <strong>Tạo ưu đãi đặt hàng</strong>
-          <small>Quản lý mã giảm theo phần trăm, số tiền, hạn dùng và số lượt sử dụng.</small>
-        </button>
-        <button class="overview-card" type="button" data-admin-shortcut="stats">
-          <span>Thống kê</span>
-          <strong>Theo dõi doanh thu</strong>
-          <small>Xem tổng đơn, doanh thu, món bán chạy và tình hình tài khoản.</small>
-        </button>
+      <div class="overview-dashboard">
+        <div class="dashboard-heading">
+          <div>
+            <h1>Tổng quan</h1>
+            <p>Chào mừng trở lại, Admin. Đây là những dữ liệu đang diễn ra hôm nay.</p>
+          </div>
+          <div class="stats-filter dashboard-filter">
+            <input id="statsFromDate" type="date" aria-label="Từ ngày">
+            <input id="statsToDate" type="date" aria-label="Đến ngày">
+            <button id="applyStatsFilterBtn" type="button" class="primary-btn">Lọc</button>
+            <button id="refreshStatsBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div id="statsSummary" class="stats-grid table-state">Đang tải thống kê...</div>
+
+        <div class="dashboard-grid">
+          <section class="dashboard-card revenue-card">
+            <div class="dashboard-card-title">
+              <h2>Xu hướng doanh thu</h2>
+              <span>7 ngày gần nhất</span>
+            </div>
+            <div id="statsDaily" class="dashboard-chart table-state compact-state">Đang tải...</div>
+          </section>
+
+          <section class="dashboard-card category-card">
+            <div class="dashboard-card-title">
+              <h2>Đơn hàng theo danh mục</h2>
+              <span>Theo số lượng bán</span>
+            </div>
+            <div id="statsCategories" class="category-summary table-state compact-state">Đang tải...</div>
+          </section>
+
+          <section class="dashboard-card top-foods-card">
+            <div class="dashboard-card-title">
+              <h2>Sản phẩm bán chạy nhất</h2>
+              <span>Top món theo lượt bán</span>
+            </div>
+            <div id="statsTopFoods" class="table-state compact-state">Đang tải...</div>
+          </section>
+
+          <section class="dashboard-card satisfaction-card">
+            <div class="dashboard-card-title">
+              <h2>Mức độ hài lòng</h2>
+              <span>Phản hồi khách hàng</span>
+            </div>
+            <div id="statsSatisfaction" class="satisfaction-score table-state compact-state">Đang tải...</div>
+          </section>
+        </div>
       </div>
     </section>
 
@@ -497,37 +509,6 @@
       </section>
     </section>
 
-    <section class="admin-section" data-admin-section="stats">
-      <section class="panel accounts-panel admin-table-page">
-        <div class="page-heading">
-          <div>
-            <h2>Thống kê hệ thống</h2>
-            <p><a href="index.html">Trang chủ</a> <span>/</span> Thống kê</p>
-          </div>
-          <div class="heading-actions">
-            <button id="refreshStatsBtn" type="button" class="ghost-btn">Tải lại</button>
-          </div>
-        </div>
-
-        <div class="stats-filter table-toolbar multi-filter">
-          <input id="statsFromDate" type="date" aria-label="Tu ngay">
-          <input id="statsToDate" type="date" aria-label="Den ngay">
-          <button id="applyStatsFilterBtn" type="button" class="primary-btn">Lọc</button>
-        </div>
-
-        <div id="statsSummary" class="stats-grid table-state">Đang tải thống kê...</div>
-        <div class="stats-columns">
-          <section>
-            <h3>Món bán chạy</h3>
-            <div id="statsTopFoods" class="table-state compact-state">Đang tải...</div>
-          </section>
-          <section>
-            <h3>Doanh thu theo ngày</h3>
-            <div id="statsDaily" class="table-state compact-state">Đang tải...</div>
-          </section>
-        </div>
-      </section>
-    </section>
   </main>
 
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>

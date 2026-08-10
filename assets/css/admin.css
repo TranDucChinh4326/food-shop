@@ -655,44 +655,38 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   max-width: 640px;
 }
 
-.overview-grid {
+.overview-dashboard {
   display: grid;
+  gap: 22px;
+}
+
+.dashboard-heading {
+  align-items: center;
+  display: flex;
   gap: 18px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 22px;
+  justify-content: space-between;
 }
 
-.overview-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.07);
-  color: var(--ink);
-  display: grid;
-  gap: 8px;
-  min-height: 170px;
-  padding: 22px;
-  text-align: left;
+.dashboard-heading h1 {
+  font-size: 30px;
+  margin: 0 0 6px;
 }
 
-.overview-card span {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.overview-card strong {
-  font-size: 22px;
-  line-height: 1.2;
-}
-
-.overview-card small {
+.dashboard-heading p {
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.5;
+  margin: 0;
 }
 
-.overview-card:hover {
-  border-color: rgba(255, 87, 34, 0.35);
-  transform: translateY(-1px);
+.dashboard-filter {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.dashboard-filter input {
+  min-width: 150px;
 }
 
 .food-management-grid {
@@ -1615,57 +1609,275 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .stats-grid {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .stats-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
-  display: grid;
-  gap: 10px;
-  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(78, 45, 25, 0.07);
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  min-height: 112px;
+  padding: 18px;
 }
 
 .stats-card span {
   color: var(--muted);
-  font-size: 14px;
+  display: block;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .stats-card strong {
   color: var(--ink);
-  font-size: 26px;
+  display: block;
+  font-size: 27px;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
+  margin-top: 12px;
 }
 
-.stats-columns {
+.stats-card small {
+  color: #0f9f63;
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.stats-card em {
+  align-items: center;
+  background: #fff3ec;
+  border: 1px solid #ffd5c5;
+  border-radius: 8px;
+  color: var(--accent);
+  display: inline-flex;
+  flex: 0 0 34px;
+  font-style: normal;
+  font-weight: 800;
+  height: 34px;
+  justify-content: center;
+}
+
+.dashboard-grid {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: 0 30px 30px;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 0.95fr);
 }
 
-.stats-columns section {
+.dashboard-card {
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(78, 45, 25, 0.06);
   overflow: hidden;
 }
 
-.stats-columns h3 {
-  border-bottom: 1px solid var(--line);
-  font-size: 20px;
+.dashboard-card-title {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 20px 6px;
+}
+
+.dashboard-card-title h2 {
+  font-size: 18px;
   margin: 0;
-  padding: 18px 20px;
+}
+
+.dashboard-card-title span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.revenue-card,
+.top-foods-card {
+  min-height: 290px;
+}
+
+.top-foods-card {
+  grid-column: 1 / 2;
+}
+
+.satisfaction-card {
+  min-height: 290px;
 }
 
 .compact-state {
   padding: 18px 20px 20px;
+}
+
+.dashboard-chart {
+  min-height: 230px;
+}
+
+.revenue-svg {
+  display: block;
+  height: 170px;
+  width: 100%;
+}
+
+.chart-labels {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.chart-labels span {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.chart-labels strong {
+  color: var(--ink);
+  display: block;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.top-food-list {
+  display: grid;
+  gap: 12px;
+}
+
+.top-food-list article {
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.top-food-list article > span {
+  align-items: center;
+  background: #fff3ec;
+  border-radius: 8px;
+  color: var(--accent);
+  display: inline-flex;
+  font-weight: 800;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.top-food-list strong,
+.top-food-list small {
+  display: block;
+}
+
+.top-food-list small {
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.top-food-list b {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.category-summary {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+}
+
+.category-ring {
+  --c0: #ff7a1a;
+  --c1: #ffc8ad;
+  --c2: #3d271c;
+  --c3: #ffefe7;
+  background: conic-gradient(var(--c0) 0 48%, var(--c1) 48% 72%, var(--c2) 72% 86%, var(--c3) 86% 100%);
+  border-radius: 50%;
+  height: 142px;
+  position: relative;
+  width: 142px;
+}
+
+.category-ring::after {
+  background: #fff;
+  border-radius: 50%;
+  content: "";
+  inset: 32px;
+  position: absolute;
+}
+
+.category-ring span {
+  display: none;
+}
+
+.category-list {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.category-list p {
+  align-items: center;
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  margin: 0;
+}
+
+.category-list i {
+  background: #ff7a1a;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+}
+
+.category-list p:nth-child(2) i {
+  background: #ffc8ad;
+}
+
+.category-list p:nth-child(3) i {
+  background: #3d271c;
+}
+
+.category-list p:nth-child(4) i {
+  background: #ffefe7;
+  border: 1px solid #ffd5c5;
+}
+
+.category-list strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.satisfaction-score {
+  align-content: center;
+  display: grid;
+  justify-items: center;
+  min-height: 210px;
+}
+
+.satisfaction-score strong {
+  color: var(--accent);
+  font-size: 44px;
+  line-height: 1;
+}
+
+.satisfaction-score span {
+  color: var(--muted);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.satisfaction-score small {
+  color: #0f9f63;
+  font-weight: 700;
+  margin-top: 18px;
 }
 
 .empty-note {
@@ -1833,8 +2045,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   .food-management-grid,
   .accounts-grid,
   .admin-editor-grid,
-  .overview-grid {
+  .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-filter {
+    justify-content: flex-start;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

@@ -56,6 +56,8 @@ const advertisementPreview = document.getElementById("advertisementPreview");
 const statsSummary = document.getElementById("statsSummary");
 const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
+const statsCategories = document.getElementById("statsCategories");
+const statsSatisfaction = document.getElementById("statsSatisfaction");
 const statsFromDate = document.getElementById("statsFromDate");
 const statsToDate = document.getElementById("statsToDate");
 const feedbackList = document.getElementById("feedbackList");
@@ -1075,8 +1077,10 @@ async function loadStats() {
   if (!statsSummary) return;
 
   statsSummary.textContent = "Đang tải thống kê...";
-  statsTopFoods.textContent = "Đang tải...";
-  statsDaily.textContent = "Đang tải...";
+  if (statsTopFoods) statsTopFoods.textContent = "Đang tải...";
+  if (statsDaily) statsDaily.textContent = "Đang tải...";
+  if (statsCategories) statsCategories.textContent = "Đang tải...";
+  if (statsSatisfaction) statsSatisfaction.textContent = "Đang tải...";
 
   try {
     const params = new URLSearchParams();
@@ -1087,57 +1091,151 @@ async function loadStats() {
     renderStats(data);
   } catch (error) {
     statsSummary.textContent = error.message;
-    statsTopFoods.textContent = "";
-    statsDaily.textContent = "";
+    if (statsTopFoods) statsTopFoods.textContent = "";
+    if (statsDaily) statsDaily.textContent = "";
+    if (statsCategories) statsCategories.textContent = "";
+    if (statsSatisfaction) statsSatisfaction.textContent = "";
     showAdminToast(error.message, "error");
   }
 }
 
 function renderStats(data) {
   const summary = data.summary || {};
+  const totalOrders = Number(summary.total_orders || 0);
+  const doneOrders = Number(summary.done_orders || 0);
+  const successRate = totalOrders ? (doneOrders / totalOrders) * 100 : 0;
   const statCards = [
-    ["Tong don", summary.total_orders || 0],
-    ["Doanh thu hoàn tất", formatMoney(summary.revenue || 0)],
-    ["Don cho xử lý", summary.pending_orders || 0],
-    ["Don hoàn tất", summary.done_orders || 0],
-    ["Tài khoản", summary.total_users || 0],
-    ["Khách hàng", summary.customers || 0],
-    ["Mon đang bán", summary.active_foods || 0],
-    ["Ma đang dùng", summary.active_discounts || 0]
+    {
+      label: "Tổng doanh thu",
+      value: formatMoney(summary.revenue || 0),
+      hint: `${Number(summary.done_orders || 0).toLocaleString("vi-VN")} đơn hoàn tất`,
+      icon: "₫"
+    },
+    {
+      label: "Tổng đơn hàng",
+      value: Number(summary.total_orders || 0).toLocaleString("vi-VN"),
+      hint: `${Number(summary.pending_orders || 0).toLocaleString("vi-VN")} đơn chờ xử lý`,
+      icon: "□"
+    },
+    {
+      label: "Khách hàng",
+      value: Number(summary.customers || 0).toLocaleString("vi-VN"),
+      hint: `${Number(summary.total_users || 0).toLocaleString("vi-VN")} tài khoản trong hệ thống`,
+      icon: "♙"
+    },
+    {
+      label: "Tỷ lệ thành công",
+      value: `${successRate.toFixed(1)}%`,
+      hint: `${Number(summary.cancelled_orders || 0).toLocaleString("vi-VN")} đơn đã hủy`,
+      icon: "✓"
+    }
   ];
 
-  statsSummary.innerHTML = statCards.map(([label, value]) => `
+  statsSummary.innerHTML = statCards.map(card => `
     <article class="stats-card">
-      <span>${label}</span>
-      <strong>${value}</strong>
+      <div>
+        <span>${card.label}</span>
+        <strong>${card.value}</strong>
+        <small>${card.hint}</small>
+      </div>
+      <em aria-hidden="true">${card.icon}</em>
     </article>
   `).join("");
 
-  statsTopFoods.innerHTML = renderSimpleTable(
-    ["Mon", "Số lượng", "Doanh thu"],
-    (data.topFoods || []).map(item => `
-      <tr>
-        <td><strong>${escapeHtml(item.food_name)}</strong></td>
-        <td>${Number(item.quantity || 0).toLocaleString("vi-VN")}</td>
-        <td>${formatMoney(item.revenue || 0)}</td>
-      </tr>
-    `),
-    "Chưa có du lieu mon ban."
-  );
-
-  statsDaily.innerHTML = renderSimpleTable(
-    ["Ngay", "Don", "Doanh thu"],
-    (data.dailyRevenue || []).map(item => `
-      <tr>
-        <td><strong>${new Date(item.order_date).toLocaleDateString("vi-VN")}</strong></td>
-        <td>${Number(item.orders_count || 0).toLocaleString("vi-VN")}</td>
-        <td>${formatMoney(item.revenue || 0)}</td>
-      </tr>
-    `),
-    "Chưa có du lieu doanh thu."
-  );
+  if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || []);
+  if (statsTopFoods) statsTopFoods.innerHTML = renderTopFoodsList(data.topFoods || []);
+  if (statsCategories) statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
+  if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
 
+function renderRevenueTrend(rows) {
+  const ordered = [...rows].reverse().slice(-7);
+  if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
+
+  const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
+  const points = ordered.map((item, index) => {
+    const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
+    const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
+    return `${x},${y}`;
+  }).join(" ");
+  const areaPoints = `0,92 ${points} 100,92`;
+
+  return `
+    <svg class="revenue-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#ff7a1a" stop-opacity="0.38"></stop>
+          <stop offset="100%" stop-color="#ff7a1a" stop-opacity="0.04"></stop>
+        </linearGradient>
+      </defs>
+      <polygon points="${areaPoints}" fill="url(#revenueFill)"></polygon>
+      <polyline points="${points}" fill="none" stroke="#ff7a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </svg>
+    <div class="chart-labels">
+      ${ordered.map(item => `
+        <span>
+          <strong>${formatMoney(item.revenue || 0)}</strong>
+          ${new Date(item.order_date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}
+        </span>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderTopFoodsList(rows) {
+  if (!rows.length) return `<p class="empty-note">Chưa có dữ liệu món bán.</p>`;
+
+  return `
+    <div class="top-food-list">
+      ${rows.map((item, index) => `
+        <article>
+          <span>${index + 1}</span>
+          <div>
+            <strong>${escapeHtml(item.food_name)}</strong>
+            <small>${Number(item.quantity || 0).toLocaleString("vi-VN")} lượt bán</small>
+          </div>
+          <b>${formatMoney(item.revenue || 0)}</b>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderCategorySummary(rows) {
+  if (!rows.length) return `<p class="empty-note">Chưa có dữ liệu danh mục.</p>`;
+
+  const total = rows.reduce((sum, item) => sum + Number(item.quantity || 0), 0) || 1;
+  let current = 0;
+  const colors = ["#ff7a1a", "#ffc8ad", "#3d271c", "#ffefe7"];
+  const segments = rows.slice(0, 4).map((item, index) => {
+    const percent = Math.max(0, (Number(item.quantity || 0) / total) * 100);
+    const start = current;
+    current += percent;
+    return `${colors[index]} ${start}% ${current}%`;
+  }).join(", ");
+
+  return `
+    <div class="category-ring" style="background: conic-gradient(${segments});" aria-hidden="true"></div>
+    <div class="category-list">
+      ${rows.slice(0, 4).map((item, index) => `
+        <p><i style="--i:${index};"></i>${escapeHtml(item.category_name || "Chưa phân loại")}<strong>${Number(item.quantity || 0).toLocaleString("vi-VN")}</strong></p>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderSatisfaction(feedback) {
+  const average = Number(feedback.average_rating || 0);
+  const total = Number(feedback.total_feedback || 0);
+
+  if (!total) return `<p class="empty-note">Chưa có phản hồi đánh giá.</p>`;
+
+  return `
+    <strong>${average.toFixed(1)}</strong>
+    <span>/ 5.0</span>
+    <small>${total.toLocaleString("vi-VN")} phản hồi</small>
+  `;
+}
 async function loadOrders() {
   ordersList.textContent = "Đang tải đơn hàng...";
 
