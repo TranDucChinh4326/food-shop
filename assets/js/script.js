@@ -856,7 +856,7 @@ function renderHomeFoodSections() {
           <a href="menu.html?category=${encodeURIComponent(group.items[0]?.subcategory || group.items[0]?.category || "all")}">Xem tất cả</a>
         </div>
         <div class="home-food-grid">
-          ${[...group.items].sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.id) - Number(first.id)).slice(0, 3).map(food => renderCompactFoodCard(food)).join("")}
+          ${getFeaturedCategoryItems(group.items, 4).map(food => renderCompactFoodCard(food)).join("")}
         </div>
       </section>
     `).join("");
@@ -874,6 +874,18 @@ function renderRatingBreakdown(rating = 4.8) {
       </div>
     `;
   }).join("");
+}
+
+function getFeaturedCategoryItems(items, limit = 4) {
+  const hasSoldItems = items.some(food => Number(food.soldCount || 0) > 0);
+
+  if (!hasSoldItems) {
+    return items.slice(0, limit);
+  }
+
+  return [...items]
+    .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0))
+    .slice(0, limit);
 }
 
 function showFoodDetail(foodId) {
