@@ -717,16 +717,196 @@ async function loadFoods() {
       parentCategoryName: food.parent_category_name,
       price: food.price,
       stockQuantity: Number(food.stock_quantity ?? food.quantity ?? 0),
+      soldCount: Number(food.sold_count || 0),
+      rating: Number(food.rating || 4.8),
+      reviewCount: Number(food.review_count || Math.max(3, Math.round(Number(food.sold_count || 0) / 2))),
       desc: food.description,
       image: food.image
     }));
 
     renderMenuCategoryOptions();
     renderFoods();
+    renderHomeFoodSections();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
     foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
   }
+}
+
+function getFoodDisplayCategory(food) {
+  return food.parentCategoryName || food.categoryName || "Món ăn";
+}
+
+function getFoodComments(food) {
+  const comments = [
+    {
+      name: "Nguyễn Minh Tâm",
+      rating: 5,
+      text: `${food.name} đóng gói cẩn thận, món vẫn còn nóng khi nhận.`
+    },
+    {
+      name: "Lê Hồng Hạnh",
+      rating: 5,
+      text: "Hương vị vừa miệng, khẩu phần ổn và giao hàng khá nhanh."
+    },
+    {
+      name: "Trần Hoàng Nam",
+      rating: 4,
+      text: "Giá hợp lý, lần sau mình sẽ tiếp tục đặt thêm món khác."
+    }
+  ];
+
+  return comments;
+}
+
+function renderStarText(rating = 5) {
+  const value = Math.max(1, Math.min(5, Math.round(Number(rating) || 5)));
+  return "★".repeat(value) + "☆".repeat(5 - value);
+}
+
+function renderCompactFoodCard(food, options = {}) {
+  const stock = Number(food.stockQuantity || 0);
+  const sold = Number(food.soldCount || 0);
+  const cardClass = options.compact ? "home-food-card compact" : "home-food-card";
+
+  return `
+    <article class="${cardClass}" data-open-food-detail="${food.id}">
+      <button type="button" class="home-food-detail-trigger" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></button>
+      <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+      <div class="home-food-card-body">
+        <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
+        <h3>${escapeHtml(food.name)}</h3>
+        <p>${escapeHtml(food.desc || "")}</p>
+        <div class="home-food-meta">
+          <span>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)}</span>
+          <span>Đã bán ${sold}</span>
+        </div>
+        <div class="home-food-bottom">
+          <strong>${formatMoney(food.price)}</strong>
+          <button type="button" class="home-add-btn" onclick="event.stopPropagation(); addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>+</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderBestSellerCard(food) {
+  return `
+    <article class="best-seller-card" data-open-food-detail="${food.id}">
+      <button type="button" class="home-food-detail-trigger" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></button>
+      <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+      <div class="best-seller-overlay">
+        <span>Bán chạy</span>
+        <h3>${escapeHtml(food.name)}</h3>
+        <p>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)} • Đã bán ${Number(food.soldCount || 0)}</p>
+      </div>
+    </article>
+  `;
+}
+
+function renderHomeFoodSections() {
+  const bestSellerBox = document.getElementById("homeBestSellers");
+  const sectionBox = document.getElementById("homeFoodSections");
+
+  if (!bestSellerBox && !sectionBox) return;
+
+  if (!foods.length) {
+    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Chưa có món ăn.</p>";
+    if (sectionBox) sectionBox.innerHTML = "<p>Chưa có món ăn.</p>";
+    return;
+  }
+
+  if (bestSellerBox) {
+    const bestSellers = [...foods]
+      .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.id) - Number(first.id))
+      .slice(0, 6);
+    bestSellerBox.innerHTML = bestSellers.map(renderBestSellerCard).join("");
+  }
+
+  if (sectionBox) {
+    const categoryMap = new Map();
+    foods.forEach(food => {
+      const key = food.category || "khac";
+      const title = getFoodDisplayCategory(food);
+      if (!categoryMap.has(key)) categoryMap.set(key, { title, items: [] });
+      categoryMap.get(key).items.push(food);
+    });
+
+    sectionBox.innerHTML = [...categoryMap.values()].map(group => `
+      <section class="home-category-block">
+        <div class="home-category-heading">
+          <h3>${escapeHtml(group.title)}</h3>
+          <a href="menu.html?category=${encodeURIComponent(group.items[0]?.category || "all")}">Xem tất cả</a>
+        </div>
+        <div class="home-food-grid">
+          ${group.items.map(food => renderCompactFoodCard(food)).join("")}
+        </div>
+      </section>
+    `).join("");
+  }
+}
+
+function showFoodDetail(foodId) {
+  const food = foods.find(item => String(item.id) === String(foodId));
+  if (!food) return;
+
+  const oldDialog = document.getElementById("foodDetailDialog");
+  if (oldDialog) oldDialog.remove();
+
+  const sold = Number(food.soldCount || 0);
+  const reviewCount = Number(food.reviewCount || 0);
+  const stock = Number(food.stockQuantity || 0);
+  const dialog = document.createElement("div");
+  dialog.id = "foodDetailDialog";
+  dialog.className = "food-detail-dialog";
+  dialog.innerHTML = `
+    <div class="food-detail-card" role="dialog" aria-modal="true" aria-labelledby="foodDetailTitle">
+      <button type="button" class="food-detail-close" aria-label="Đóng">×</button>
+      <div class="food-detail-main">
+        <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+        <div class="food-detail-info">
+          <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
+          <h2 id="foodDetailTitle">${escapeHtml(food.name)}</h2>
+          <div class="food-detail-stats">
+            <span>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)}</span>
+            <span>${reviewCount} lượt đánh giá</span>
+            <span>${sold} lượt mua</span>
+          </div>
+          <strong class="food-detail-price">${formatMoney(food.price)}</strong>
+          <p>${escapeHtml(food.desc || "Món ăn đang được FoodHub cập nhật mô tả chi tiết.")}</p>
+          <div class="food-detail-stock">Tồn kho: <strong>${stock > 0 ? stock : "Hết hàng"}</strong></div>
+          <div class="food-detail-actions">
+            <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
+            <button type="button" class="btn" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>Thêm vào giỏ</button>
+          </div>
+        </div>
+      </div>
+      <section class="food-detail-reviews">
+        <h3>Bình luận của người mua trước</h3>
+        ${getFoodComments(food).map(comment => `
+          <article>
+            <div>
+              <strong>${escapeHtml(comment.name)}</strong>
+              <span>${renderStarText(comment.rating)}</span>
+            </div>
+            <p>${escapeHtml(comment.text)}</p>
+          </article>
+        `).join("")}
+      </section>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+  document.body.classList.add("food-detail-open");
+  dialog.querySelector(".food-detail-close")?.addEventListener("click", closeFoodDetail);
+  dialog.addEventListener("click", event => {
+    if (event.target === dialog) closeFoodDetail();
+  });
+}
+
+function closeFoodDetail() {
+  document.getElementById("foodDetailDialog")?.remove();
+  document.body.classList.remove("food-detail-open");
 }
 
 async function loadPublicAnnouncements() {
@@ -2136,6 +2316,16 @@ window.addEventListener("pagehide", () => {
   const blob = new Blob([payload], { type: "application/json" });
 
   navigator.sendBeacon(`${ORDERS_API}/${activeQrPayment.orderId}/payment/cancel?token=${encodeURIComponent(token || "")}`, blob);
+});
+
+document.addEventListener("click", event => {
+  const detailCard = event.target.closest("[data-open-food-detail]");
+  if (!detailCard || event.target.closest(".home-add-btn, input, a, select, textarea")) return;
+  showFoodDetail(detailCard.dataset.openFoodDetail);
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeFoodDetail();
 });
 
 if (protectCheckoutPage()) {
