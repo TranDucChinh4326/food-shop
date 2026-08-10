@@ -526,18 +526,6 @@ nav a:hover,
   border-radius: 50%;
 }
 
-.hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 70px 8%;
-  gap: 40px;
-}
-
-.hero-text {
-  flex: 1;
-}
-
 .badge {
   display: inline-block;
   background: #ffe2d5;
@@ -546,18 +534,6 @@ nav a:hover,
   border-radius: 20px;
   margin-bottom: 18px;
   font-weight: bold;
-}
-
-.hero-text h1 {
-  font-size: 54px;
-  margin-bottom: 20px;
-}
-
-.hero-text p {
-  font-size: 18px;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 28px;
 }
 
 .btn,
@@ -578,16 +554,6 @@ nav a:hover,
 .btn:hover,
 .food-card button:hover {
   background: #e64a19;
-}
-
-.hero-img {
-  flex: 1;
-}
-
-.hero-img img {
-  width: 100%;
-  border-radius: 30px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
 
 .home-shop-section {
@@ -3421,15 +3387,6 @@ footer {
     min-height: 40px;
   }
 
-  .hero {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .hero-text h1 {
-    font-size: 38px;
-  }
-
   .food-list,
   .home-food-grid,
   .checkout-grid,
@@ -3818,7 +3775,6 @@ footer {
     overflow: hidden;
   }
 
-  .hero,
   .menu-page,
   .checkout-page,
   .track-page,
@@ -3827,16 +3783,6 @@ footer {
     padding: 18px 16px 34px;
   }
 
-  .hero {
-    gap: 22px;
-  }
-
-  .hero-text h1 {
-    font-size: 34px;
-    line-height: 1.12;
-  }
-
-  .hero-text p,
   .menu-hero p,
   .checkout-hero p,
   .track-hero p,

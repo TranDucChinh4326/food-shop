@@ -700,13 +700,17 @@ function updateCartCount() {
 
 async function loadFoods() {
   const foodList = document.getElementById("food-list");
+  const bestSellerBox = document.getElementById("homeBestSellers");
+  const homeSectionBox = document.getElementById("homeFoodSections");
 
-  if (!foodList) return;
+  if (!foodList && !bestSellerBox && !homeSectionBox) return;
 
-  foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+  if (foodList) foodList.innerHTML = "<p>Dang tai mon an...</p>";
 
   try {
     const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`Foods API returned ${response.status}`);
+
     foods = await response.json();
     foods = foods.map(food => ({
       id: food.id,
@@ -728,11 +732,12 @@ async function loadFoods() {
     renderFoods();
     renderHomeFoodSections();
   } catch (error) {
-    console.error("Lỗi tải món ăn:", error);
-    foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
+    console.error("Loi tai mon an:", error);
+    if (foodList) foodList.innerHTML = "<p>Khong the tai mon an tu database.</p>";
+    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Khong the tai mon ban chay tu database.</p>";
+    if (homeSectionBox) homeSectionBox.innerHTML = "<p>Khong the tai thuc don tu database.</p>";
   }
 }
-
 function getFoodDisplayCategory(food) {
   return food.parentCategoryName || food.categoryName || "Món ăn";
 }
