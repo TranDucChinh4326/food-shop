@@ -562,6 +562,10 @@ nav a:hover,
   text-decoration: none;
 }
 
+[data-open-food-detail] {
+  cursor: pointer;
+}
+
 .cart-item-detail-link {
   color: inherit;
   text-decoration: none;

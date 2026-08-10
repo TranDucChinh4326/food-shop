@@ -1449,7 +1449,7 @@ function renderFoods() {
     const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
 
     return `
-      <div class="food-card">
+      <div class="food-card" data-open-food-detail="${food.id}">
         <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
           <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
           <h3>${escapeHtml(food.name)}</h3>
@@ -1557,7 +1557,7 @@ function renderCart() {
     totalQuantity += Number(item.quantity);
 
     return `
-      <div class="cart-item">
+      <div class="cart-item" data-open-food-detail="${item.id}">
         <div>
           <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id)}">${escapeHtml(item.name)}</a></h4>
           <p>${formatMoney(item.price)}</p>
@@ -2515,7 +2515,7 @@ window.addEventListener("pagehide", () => {
 
 document.addEventListener("click", event => {
   const detailCard = event.target.closest("[data-open-food-detail]");
-  if (!detailCard || event.target.closest(".home-add-btn, input, a, select, textarea")) return;
+  if (!detailCard || event.target.closest("button, input, a, select, textarea")) return;
   window.location.href = getFoodDetailUrl(detailCard.dataset.openFoodDetail);
 });
 
