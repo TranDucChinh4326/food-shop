@@ -702,8 +702,9 @@ async function loadFoods() {
   const foodList = document.getElementById("food-list");
   const bestSellerBox = document.getElementById("homeBestSellers");
   const homeSectionBox = document.getElementById("homeFoodSections");
+  const foodDetailPage = document.getElementById("foodDetailPage");
 
-  if (!foodList && !bestSellerBox && !homeSectionBox) return;
+  if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage) return;
 
   if (foodList) foodList.innerHTML = "<p>Dang tai mon an...</p>";
 
@@ -731,6 +732,7 @@ async function loadFoods() {
     renderMenuCategoryOptions();
     renderFoods();
     renderHomeFoodSections();
+    renderFoodDetailPage();
   } catch (error) {
     console.error("Loi tai mon an:", error);
     if (foodList) foodList.innerHTML = "<p>Khong the tai mon an tu database.</p>";
@@ -769,6 +771,10 @@ function renderStarText(rating = 5) {
   return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
+function getFoodDetailUrl(foodId) {
+  return `food-detail.html?id=${encodeURIComponent(foodId)}`;
+}
+
 function renderCompactFoodCard(food, options = {}) {
   const stock = Number(food.stockQuantity || 0);
   const sold = Number(food.soldCount || 0);
@@ -776,7 +782,7 @@ function renderCompactFoodCard(food, options = {}) {
 
   return `
     <article class="${cardClass}" data-open-food-detail="${food.id}">
-      <button type="button" class="home-food-detail-trigger" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></button>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="home-food-card-body">
         <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
@@ -798,7 +804,7 @@ function renderCompactFoodCard(food, options = {}) {
 function renderBestSellerCard(food) {
   return `
     <article class="best-seller-card" data-open-food-detail="${food.id}">
-      <button type="button" class="home-food-detail-trigger" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></button>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="best-seller-overlay">
         <span>Bán chạy</span>
@@ -989,6 +995,111 @@ function showFoodDetail(foodId) {
 function closeFoodDetail() {
   document.getElementById("foodDetailDialog")?.remove();
   document.body.classList.remove("food-detail-open");
+}
+
+function renderFoodDetailPage() {
+  const page = document.getElementById("foodDetailPage");
+  if (!page) return;
+
+  const foodId = new URLSearchParams(window.location.search).get("id");
+  const food = foods.find(item => String(item.id) === String(foodId));
+
+  if (!food) {
+    page.innerHTML = `
+      <section class="food-detail-page-empty">
+        <h1>Không tìm thấy món ăn</h1>
+        <p>Món ăn có thể đã bị ẩn hoặc đường dẫn không còn hợp lệ.</p>
+        <a class="btn" href="menu.html">Quay lại thực đơn</a>
+      </section>
+    `;
+    return;
+  }
+
+  const sold = Number(food.soldCount || 0);
+  const reviewCount = Number(food.reviewCount || 0);
+  const stock = Number(food.stockQuantity || 0);
+  const rating = Number(food.rating || 4.8);
+  const comments = getFoodComments(food);
+  const category = getFoodDisplayCategory(food);
+  const image = food.image || "";
+
+  document.title = `${food.name} - FoodHub`;
+  page.innerHTML = `
+    <section class="food-detail-page-shell">
+      <a class="food-detail-back" href="menu.html?category=${encodeURIComponent(food.subcategory || food.category || "all")}">Quay lại danh mục</a>
+      <div class="food-detail-card food-detail-page-card">
+        <div class="food-detail-main">
+          <div class="food-detail-gallery">
+            <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+            <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
+              <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+              <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+              <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+            </div>
+          </div>
+          <div class="food-detail-info">
+            <span class="food-detail-category">${escapeHtml(category)}</span>
+            <h1>${escapeHtml(food.name)}</h1>
+            <div class="food-detail-stats">
+              <span class="food-detail-stars">${renderStarText(rating)}</span>
+              <span>${rating.toFixed(1)} sao</span>
+              <span>${sold} lượt mua</span>
+              <span>${reviewCount} đánh giá</span>
+            </div>
+            <strong class="food-detail-price">${formatMoney(food.price)}</strong>
+            <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+            <div class="food-detail-options">
+              <h3>Tùy chọn thêm</h3>
+              <label><input type="checkbox" disabled> Thêm phô mai <span>+15.000đ</span></label>
+              <label><input type="checkbox" disabled> Thêm topping <span>+25.000đ</span></label>
+              <label><input type="checkbox" disabled> Không hành tây <span>Miễn phí</span></label>
+            </div>
+            <div class="food-detail-actions">
+              <div class="food-detail-qty">
+                <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
+                <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
+                <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
+              </div>
+              <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
+            </div>
+          </div>
+        </div>
+        <section class="food-detail-reviews">
+          <h3>Đánh giá & Nhận xét</h3>
+          <div class="food-review-summary">
+            <div class="food-review-score">
+              <strong>${rating.toFixed(1)}</strong>
+              <span>${renderStarText(rating)}</span>
+              <small>Dựa trên ${reviewCount} đánh giá</small>
+            </div>
+            <div class="food-rating-bars">${renderRatingBreakdown(rating)}</div>
+          </div>
+          <div class="food-review-list">
+            ${comments.map(comment => `
+              <article>
+                <div class="food-review-avatar">${escapeHtml(comment.name.slice(0, 2).toUpperCase())}</div>
+                <div>
+                  <header><strong>${escapeHtml(comment.name)}</strong><small>2 ngày trước</small></header>
+                  <span>${renderStarText(comment.rating)}</span>
+                  <p>${escapeHtml(comment.text)}</p>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      </div>
+    </section>
+  `;
+
+  page.querySelectorAll("[data-food-qty-step]").forEach(button => {
+    button.addEventListener("click", () => {
+      const input = page.querySelector(`[data-food-qty="${food.id}"]`);
+      if (!input) return;
+      const step = Number(button.dataset.foodQtyStep || 0);
+      const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
+      input.value = String(nextValue);
+    });
+  });
 }
 
 async function loadPublicAnnouncements() {
@@ -1339,9 +1450,11 @@ function renderFoods() {
 
     return `
       <div class="food-card">
-        <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
-        <h3>${escapeHtml(food.name)}</h3>
-        <p>${escapeHtml(food.desc || "")}</p>
+        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id)}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
+          <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+          <h3>${escapeHtml(food.name)}</h3>
+          <p>${escapeHtml(food.desc || "")}</p>
+        </a>
         <div class="food-price-row">
           <span>${formatMoney(food.price)}</span>
           <span class="food-stock-badge ${stock > 0 ? "in-stock" : "out-stock"}">${stockLabel}</span>
@@ -1446,7 +1559,7 @@ function renderCart() {
     return `
       <div class="cart-item">
         <div>
-          <h4>${item.name}</h4>
+          <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id)}">${escapeHtml(item.name)}</a></h4>
           <p>${formatMoney(item.price)}</p>
         </div>
 
@@ -2403,7 +2516,7 @@ window.addEventListener("pagehide", () => {
 document.addEventListener("click", event => {
   const detailCard = event.target.closest("[data-open-food-detail]");
   if (!detailCard || event.target.closest(".home-add-btn, input, a, select, textarea")) return;
-  showFoodDetail(detailCard.dataset.openFoodDetail);
+  window.location.href = getFoodDetailUrl(detailCard.dataset.openFoodDetail);
 });
 
 document.addEventListener("keydown", event => {
