@@ -843,8 +843,8 @@ function renderHomeFoodSections() {
   if (sectionBox) {
     const categoryMap = new Map();
     foods.forEach(food => {
-      const key = food.category || "khac";
-      const title = getFoodDisplayCategory(food);
+      const key = food.subcategory || food.category || "khac";
+      const title = food.categoryName || getFoodDisplayCategory(food);
       if (!categoryMap.has(key)) categoryMap.set(key, { title, items: [] });
       categoryMap.get(key).items.push(food);
     });
@@ -853,14 +853,27 @@ function renderHomeFoodSections() {
       <section class="home-category-block">
         <div class="home-category-heading">
           <h3>${escapeHtml(group.title)}</h3>
-          <a href="menu.html?category=${encodeURIComponent(group.items[0]?.category || "all")}">Xem tất cả</a>
+          <a href="menu.html?category=${encodeURIComponent(group.items[0]?.subcategory || group.items[0]?.category || "all")}">Xem tất cả</a>
         </div>
         <div class="home-food-grid">
-          ${group.items.map(food => renderCompactFoodCard(food)).join("")}
+          ${[...group.items].sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.id) - Number(first.id)).slice(0, 3).map(food => renderCompactFoodCard(food)).join("")}
         </div>
       </section>
     `).join("");
   }
+}
+
+function renderRatingBreakdown(rating = 4.8) {
+  const value = Math.max(1, Math.min(5, Number(rating) || 4.8));
+  return [5, 4, 3, 2, 1].map(star => {
+    const width = Math.max(8, Math.min(96, star === 5 ? value * 18 : (6 - star) * 7));
+    return `
+      <div class="food-rating-row">
+        <span>${star}</span>
+        <div><i style="width:${width}%"></i></div>
+      </div>
+    `;
+  }).join("");
 }
 
 function showFoodDetail(foodId) {
@@ -873,42 +886,74 @@ function showFoodDetail(foodId) {
   const sold = Number(food.soldCount || 0);
   const reviewCount = Number(food.reviewCount || 0);
   const stock = Number(food.stockQuantity || 0);
+  const rating = Number(food.rating || 4.8);
+  const comments = getFoodComments(food);
+  const category = getFoodDisplayCategory(food);
+  const image = food.image || "";
   const dialog = document.createElement("div");
   dialog.id = "foodDetailDialog";
   dialog.className = "food-detail-dialog";
   dialog.innerHTML = `
     <div class="food-detail-card" role="dialog" aria-modal="true" aria-labelledby="foodDetailTitle">
-      <button type="button" class="food-detail-close" aria-label="Đóng">×</button>
+      <button type="button" class="food-detail-close" aria-label="Đóng">&times;</button>
       <div class="food-detail-main">
-        <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+        <div class="food-detail-gallery">
+          <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+          <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
+            <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+            <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+            <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
+          </div>
+        </div>
         <div class="food-detail-info">
-          <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
+          <span class="food-detail-category">${escapeHtml(category)}</span>
           <h2 id="foodDetailTitle">${escapeHtml(food.name)}</h2>
           <div class="food-detail-stats">
-            <span>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)}</span>
-            <span>${reviewCount} lượt đánh giá</span>
+            <span class="food-detail-stars">${renderStarText(rating)}</span>
+            <span>${rating.toFixed(1)} sao</span>
             <span>${sold} lượt mua</span>
+            <span>${reviewCount} đánh giá</span>
           </div>
           <strong class="food-detail-price">${formatMoney(food.price)}</strong>
-          <p>${escapeHtml(food.desc || "Món ăn đang được FoodHub cập nhật mô tả chi tiết.")}</p>
-          <div class="food-detail-stock">Tồn kho: <strong>${stock > 0 ? stock : "Hết hàng"}</strong></div>
+          <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+          <div class="food-detail-options">
+            <h3>Tùy chọn thêm</h3>
+            <label><input type="checkbox" disabled> Thêm phô mai <span>+15.000đ</span></label>
+            <label><input type="checkbox" disabled> Thêm topping <span>+25.000đ</span></label>
+            <label><input type="checkbox" disabled> Không hành tây <span>Miễn phí</span></label>
+          </div>
           <div class="food-detail-actions">
-            <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
-            <button type="button" class="btn" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>Thêm vào giỏ</button>
+            <div class="food-detail-qty">
+              <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
+              <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
+              <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
+            </div>
+            <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
           </div>
         </div>
       </div>
       <section class="food-detail-reviews">
-        <h3>Bình luận của người mua trước</h3>
-        ${getFoodComments(food).map(comment => `
-          <article>
-            <div>
-              <strong>${escapeHtml(comment.name)}</strong>
-              <span>${renderStarText(comment.rating)}</span>
-            </div>
-            <p>${escapeHtml(comment.text)}</p>
-          </article>
-        `).join("")}
+        <h3>Đánh giá & Nhận xét</h3>
+        <div class="food-review-summary">
+          <div class="food-review-score">
+            <strong>${rating.toFixed(1)}</strong>
+            <span>${renderStarText(rating)}</span>
+            <small>Dựa trên ${reviewCount} đánh giá</small>
+          </div>
+          <div class="food-rating-bars">${renderRatingBreakdown(rating)}</div>
+        </div>
+        <div class="food-review-list">
+          ${comments.map(comment => `
+            <article>
+              <div class="food-review-avatar">${escapeHtml(comment.name.slice(0, 2).toUpperCase())}</div>
+              <div>
+                <header><strong>${escapeHtml(comment.name)}</strong><small>2 ngày trước</small></header>
+                <span>${renderStarText(comment.rating)}</span>
+                <p>${escapeHtml(comment.text)}</p>
+              </div>
+            </article>
+          `).join("")}
+        </div>
       </section>
     </div>
   `;
@@ -916,11 +961,19 @@ function showFoodDetail(foodId) {
   document.body.appendChild(dialog);
   document.body.classList.add("food-detail-open");
   dialog.querySelector(".food-detail-close")?.addEventListener("click", closeFoodDetail);
+  dialog.querySelectorAll("[data-food-qty-step]").forEach(button => {
+    button.addEventListener("click", () => {
+      const input = dialog.querySelector(`[data-food-qty="${food.id}"]`);
+      if (!input) return;
+      const step = Number(button.dataset.foodQtyStep || 0);
+      const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
+      input.value = String(nextValue);
+    });
+  });
   dialog.addEventListener("click", event => {
     if (event.target === dialog) closeFoodDetail();
   });
 }
-
 function closeFoodDetail() {
   document.getElementById("foodDetailDialog")?.remove();
   document.body.classList.remove("food-detail-open");
