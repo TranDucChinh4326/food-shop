@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 body {
@@ -260,7 +260,7 @@ header.header-compact .header-tools {
   border-radius: 999px;
   display: inline-flex;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 7px 12px;
 }
 
@@ -295,7 +295,7 @@ header.header-compact .header-tools {
 .archive-announcement dt {
   color: #7a6b64;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -326,7 +326,7 @@ header.header-compact .header-tools {
   color: #333;
   cursor: pointer;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   height: 38px;
   min-width: 38px;
   padding: 0 12px;
@@ -577,7 +577,7 @@ nav a:hover,
 .home-section-heading a,
 .home-category-heading a {
   color: #ff5722;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -654,7 +654,7 @@ nav a:hover,
   color: #fff;
   display: inline-flex;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   justify-self: start;
   padding: 4px 8px;
 }
@@ -877,7 +877,7 @@ body.food-detail-open {
 .food-detail-category {
   color: #ff7a1a;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -896,7 +896,7 @@ body.food-detail-open {
   flex-wrap: wrap;
   font-size: 14px;
   gap: 8px 14px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .food-detail-stars,
@@ -907,7 +907,7 @@ body.food-detail-open {
 .food-detail-price {
   color: #ff7a1a;
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .food-detail-info p {
@@ -953,7 +953,7 @@ body.food-detail-open {
 .food-detail-options label span {
   color: #fff;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .food-detail-actions {
@@ -985,7 +985,7 @@ body.food-detail-open {
   background: transparent;
   border: 0;
   color: #fff;
-  font-weight: 900;
+  font-weight: 700;
   min-height: 42px;
   padding: 0;
   text-align: center;
@@ -1084,7 +1084,7 @@ body.food-detail-open {
   color: #4f196f;
   display: flex;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   height: 38px;
   justify-content: center;
   width: 38px;
@@ -1682,7 +1682,7 @@ body.qr-payment-open {
 .verify-status {
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.5;
   margin-top: -4px;
   padding: 10px 12px;
@@ -1734,7 +1734,7 @@ body.qr-payment-open {
 .feedback-card label {
   color: #5f4a3f;
   display: grid;
-  font-weight: 800;
+  font-weight: 700;
   gap: 8px;
 }
 
@@ -1786,7 +1786,7 @@ body.qr-payment-open {
   border-radius: 50%;
   color: #ff4d25;
   display: inline-flex;
-  font-weight: 900;
+  font-weight: 700;
   height: 34px;
   justify-content: center;
   width: 34px;
@@ -1845,7 +1845,7 @@ body.qr-payment-open {
   border-radius: 999px;
   color: #475569;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
   padding: 6px 10px;
   white-space: nowrap;
 }
@@ -1990,7 +1990,7 @@ body.qr-payment-open {
   border-radius: 999px;
   display: inline-flex;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   padding: 5px 8px;
 }
@@ -2054,7 +2054,7 @@ body.qr-payment-open {
   cursor: pointer;
   display: inline-flex;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   gap: 10px;
   min-height: 48px;
   padding: 0 18px;
@@ -2174,7 +2174,7 @@ body.qr-payment-open {
   color: #a34508;
   display: flex;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   height: 64px;
   justify-content: center;
   overflow: hidden;
@@ -2232,7 +2232,7 @@ button.account-photo-badge {
   border-radius: 999px;
   color: #b85b12;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 6px 10px;
 }
 
@@ -2340,7 +2340,7 @@ button.account-photo-badge {
   border: 0;
   color: #9a4300;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 700;
   min-height: 34px;
   padding: 0 12px;
   position: absolute;
@@ -2385,7 +2385,7 @@ button.account-photo-badge {
   color: #7a6b64;
   display: block;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 4px;
 }
 
@@ -2461,7 +2461,7 @@ button.account-photo-badge {
   border-radius: 6px;
   color: #8f3c00;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 700;
   min-height: 34px;
   padding: 0 12px;
 }
@@ -2603,7 +2603,7 @@ button.account-photo-badge {
 
 .text-link {
   color: #ff5722;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -2753,7 +2753,7 @@ button.account-photo-badge {
   color: #ff5722;
   flex: 0 0 auto;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
   padding: 8px 12px;
 }
 
@@ -2814,7 +2814,7 @@ button.account-photo-badge {
   color: #ff5722;
   display: inline-flex;
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 700;
   height: 48px;
   justify-content: center;
   margin-bottom: 18px;
@@ -2828,7 +2828,7 @@ button.account-photo-badge {
 
 .contact-card p {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
@@ -2841,7 +2841,7 @@ button.account-photo-badge {
   color: #ff5722;
   display: block;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
   margin-bottom: 8px;
   text-transform: uppercase;
@@ -2884,7 +2884,7 @@ footer {
   color: #fff7ed;
   display: inline-flex;
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 18px;
 }
 
@@ -2938,7 +2938,7 @@ footer {
 .footer-links h3 {
   color: #fff7ed;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.04em;
   margin: 0 0 18px;
   text-transform: uppercase;
@@ -3010,7 +3010,7 @@ footer {
   bottom: 24px;
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
   color: #fff;
-  font-weight: 800;
+  font-weight: 700;
   left: 50%;
   max-width: min(420px, calc(100vw - 32px));
   opacity: 0;
@@ -3062,7 +3062,7 @@ footer {
 .chat-bubble-tip strong {
   color: #ff6f00;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .chat-bubble-tip span {
@@ -3103,7 +3103,7 @@ footer {
   cursor: pointer;
   display: inline-flex;
   font-size: 0;
-  font-weight: 900;
+  font-weight: 700;
   height: 64px;
   justify-content: center;
   min-height: 64px;
@@ -3294,7 +3294,7 @@ footer {
   cursor: pointer;
   display: inline-flex;
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 700;
   height: 32px;
   justify-content: center;
   line-height: 1;
@@ -3344,7 +3344,7 @@ footer {
   color: #332822;
   display: inline-flex;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   justify-content: center;
   min-height: 36px;
   padding: 6px;
@@ -3539,7 +3539,7 @@ footer {
   color: #fff;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: 900;
+  font-weight: 700;
   height: 30px;
   justify-content: center;
   width: 30px;
@@ -3551,7 +3551,6 @@ footer {
 
 .support-link.messenger span {
   background: #1877f2;
-  font-family: Georgia, serif;
 }
 
 .support-link.phone span {
@@ -4235,7 +4234,7 @@ footer {
   cursor: pointer;
   display: inline-flex;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   justify-content: center;
   line-height: 1;
   min-height: 44px;
@@ -4294,7 +4293,7 @@ footer {
   color: #ff5722;
   display: inline-flex;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   height: 34px;
   justify-content: center;
   text-transform: uppercase;
