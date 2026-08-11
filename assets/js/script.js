@@ -1004,19 +1004,18 @@ function renderOrderReviewControl(order, item) {
     <div class="order-review">
       <button type="button" class="order-review-toggle" onclick="toggleOrderReviewForm('${panelId}')">Đánh giá</button>
       <form id="${panelId}" class="order-review-form" onsubmit="submitFoodReview(event, ${order.id}, ${item.food_id})" hidden>
-        <label>
-          <span>Số sao</span>
-          <select name="rating" required>
-            <option value="5">5 sao</option>
-            <option value="4">4 sao</option>
-            <option value="3">3 sao</option>
-            <option value="2">2 sao</option>
-            <option value="1">1 sao</option>
-          </select>
-        </label>
+        <fieldset class="order-review-stars" aria-label="Chọn số sao">
+          <legend>Số sao <small>bắt buộc</small></legend>
+          <div class="order-review-star-options">
+            ${[5, 4, 3, 2, 1].map(star => `
+              <input type="radio" id="${panelId}-star-${star}" name="rating" value="${star}" required>
+              <label for="${panelId}-star-${star}" title="${star} sao">★</label>
+            `).join("")}
+          </div>
+        </fieldset>
         <label>
           <span>Nhận xét</span>
-          <textarea name="comment" rows="3" minlength="5" maxlength="1000" placeholder="Chia sẻ trải nghiệm của bạn về món này..." required></textarea>
+          <textarea name="comment" rows="3" maxlength="1000" placeholder="Bạn có thể để trống nếu chỉ muốn chấm sao."></textarea>
         </label>
         <div class="order-review-actions">
           <button type="submit" class="btn">Gửi đánh giá</button>
@@ -1038,11 +1037,11 @@ async function submitFoodReview(event, orderId, foodId) {
 
   const form = event.target;
   const submitButton = form.querySelector("button[type='submit']");
-  const rating = Number(form.rating.value);
+  const rating = Number(form.rating?.value || 0);
   const comment = form.comment.value.trim();
 
-  if (comment.length < 5) {
-    showSiteToast("Vui lòng nhập nhận xét ít nhất 5 ký tự.", "error");
+  if (!rating) {
+    showSiteToast("Vui lòng chọn số sao trước khi gửi đánh giá.", "error");
     return;
   }
 

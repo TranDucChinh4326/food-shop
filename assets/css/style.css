@@ -3118,6 +3118,59 @@ button.account-photo-badge {
   gap: 6px;
 }
 
+.order-review-stars {
+  border: 0;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.order-review-stars legend {
+  color: #5f4a3f;
+  font-weight: 700;
+  padding: 0;
+}
+
+.order-review-stars legend small {
+  color: #a64008;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.order-review-star-options {
+  direction: rtl;
+  display: inline-flex;
+  gap: 4px;
+  justify-content: flex-end;
+  width: fit-content;
+}
+
+.order-review-star-options input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.order-review-star-options label {
+  color: #dfc9bd;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 30px;
+  line-height: 1;
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+
+.order-review-star-options label:hover,
+.order-review-star-options label:hover ~ label,
+.order-review-star-options input:checked ~ label {
+  color: #ff8a00;
+}
+
+.order-review-star-options label:hover {
+  transform: translateY(-1px) scale(1.08);
+}
+
 .order-review-form select,
 .order-review-form textarea {
   background: #fff;
