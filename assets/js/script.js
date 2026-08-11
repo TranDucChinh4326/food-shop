@@ -4,11 +4,13 @@ const CATEGORIES_API = `${API_BASE_URL}/foods/categories`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
 const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
 const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
+const FOOD_REVIEWS_API = `${API_BASE_URL}/food-reviews`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
 
 let foods = [];
+let foodReviews = [];
 let publicCategories = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
 let toastTimer;
@@ -723,8 +725,8 @@ async function loadFoods() {
       price: food.price,
       stockQuantity: Number(food.stock_quantity ?? food.quantity ?? 0),
       soldCount: Number(food.sold_count || 0),
-      rating: Number(food.rating || 4.8),
-      reviewCount: Number(food.review_count || Math.max(3, Math.round(Number(food.sold_count || 0) / 2))),
+      rating: Number(food.rating || 0),
+      reviewCount: Number(food.review_count || 0),
       desc: food.description,
       image: food.image
     }));
@@ -733,6 +735,7 @@ async function loadFoods() {
     renderFoods();
     renderHomeFoodSections();
     renderFoodDetailPage();
+    loadFoodReviews();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
     if (foodList) foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
@@ -745,30 +748,59 @@ function getFoodDisplayCategory(food) {
 }
 
 function getFoodComments(food) {
-  const comments = [
-    {
-      name: "Nguyễn Minh Tâm",
-      rating: 5,
-      text: `${food.name} đóng gói cẩn thận, món vẫn còn nóng khi nhận.`
-    },
-    {
-      name: "Lê Hồng Hạnh",
-      rating: 5,
-      text: "Hương vị vừa miệng, khẩu phần ổn và giao hàng khá nhanh."
-    },
-    {
-      name: "Trần Hoàng Nam",
-      rating: 4,
-      text: "Giá hợp lý, lần sau mình sẽ tiếp tục đặt thêm món khác."
-    }
-  ];
+  return foodReviews.filter(review => String(review.foodId) === String(food.id));
+}
 
-  return comments;
+async function loadFoodReviews() {
+  const homeReviewBox = document.getElementById("homeReviewList");
+  const homeReviewFilters = document.getElementById("homeReviewFilters");
+  const foodDetailPage = document.getElementById("foodDetailPage");
+
+  if (!homeReviewBox && !homeReviewFilters && !foodDetailPage) return;
+
+  try {
+    const response = await fetch(`${FOOD_REVIEWS_API}?limit=40`);
+    if (!response.ok) throw new Error(`Reviews API returned ${response.status}`);
+
+    foodReviews = await response.json();
+  } catch (error) {
+    console.error("Lỗi tải đánh giá món ăn:", error);
+    foodReviews = [];
+  }
+
+  renderHomeReviews();
+  renderFoodDetailPage();
+}
+
+function getReviewFood(review) {
+  return foods.find(food => String(food.id) === String(review.foodId)) || null;
+}
+
+function getReviewCustomerName(review) {
+  return review.customerName || "Khách hàng FoodHub";
+}
+
+function getReviewInitials(name) {
+  const words = String(name || "KH").trim().split(/\s+/).filter(Boolean);
+  const initials = words.length > 1 ? `${words[0][0]}${words[words.length - 1][0]}` : String(words[0] || "KH").slice(0, 2);
+  return initials.toUpperCase();
+}
+
+function formatReviewDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("vi-VN");
 }
 
 function renderStarText(rating = 5) {
-  const value = Math.max(1, Math.min(5, Math.round(Number(rating) || 5)));
+  const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
   return "★".repeat(value) + "☆".repeat(5 - value);
+}
+
+function renderRatingLabel(rating, reviewCount = 0) {
+  if (!Number(reviewCount)) return "Chưa có đánh giá";
+  return `${renderStarText(rating)} ${Number(rating || 0).toFixed(1)}`;
 }
 
 function getFoodDetailUrl(foodId, options = {}) {
@@ -794,7 +826,7 @@ function renderCompactFoodCard(food, options = {}) {
         <h3>${escapeHtml(food.name)}</h3>
         <p>${escapeHtml(food.desc || "")}</p>
         <div class="home-food-meta">
-          <span>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)}</span>
+          <span>${renderRatingLabel(food.rating, food.reviewCount)}</span>
           <span>Đã bán ${sold}</span>
         </div>
         <div class="home-food-bottom">
@@ -814,7 +846,7 @@ function renderBestSellerCard(food) {
       <div class="best-seller-overlay">
         <span>Bán chạy</span>
         <h3>${escapeHtml(food.name)}</h3>
-        <p>${renderStarText(food.rating)} ${Number(food.rating || 4.8).toFixed(1)} • Đã bán ${Number(food.soldCount || 0)}</p>
+        <p>${renderRatingLabel(food.rating, food.reviewCount)} • Đã bán ${Number(food.soldCount || 0)}</p>
       </div>
     </article>
   `;
@@ -874,10 +906,90 @@ function renderHomeFoodSections() {
   }
 }
 
-function renderRatingBreakdown(rating = 4.8) {
-  const value = Math.max(1, Math.min(5, Number(rating) || 4.8));
+function renderHomeReviewCard(review) {
+  const food = getReviewFood(review);
+  const customerName = getReviewCustomerName(review);
+  const foodName = food?.name || review.foodName || "Món ăn";
+  const image = food?.image || review.foodImage || "";
+
+  return `
+    <article class="home-review-card">
+      <a class="home-review-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
+        <span>${escapeHtml(foodName)}</span>
+      </a>
+      <div class="home-review-body">
+        <div class="home-review-author">
+          <span class="home-review-avatar">${escapeHtml(getReviewInitials(customerName))}</span>
+          <div>
+            <strong>${escapeHtml(customerName)}</strong>
+            <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
+          </div>
+        </div>
+        <div class="home-review-stars">${renderStarText(review.rating)}</div>
+        <p>${escapeHtml(review.comment)}</p>
+      </div>
+    </article>
+  `;
+}
+
+function renderHomeReviews() {
+  const reviewBox = document.getElementById("homeReviewList");
+  const filterBox = document.getElementById("homeReviewFilters");
+
+  if (!reviewBox && !filterBox) return;
+
+  const selectedRating = filterBox?.querySelector("[data-home-review-rating]")?.value || "all";
+  const selectedFood = filterBox?.querySelector("[data-home-review-food]")?.value || "all";
+
+  if (filterBox) {
+    const foodOptions = foods
+      .filter(food => foodReviews.some(review => String(review.foodId) === String(food.id)))
+      .map(food => `<option value="${food.id}" ${String(selectedFood) === String(food.id) ? "selected" : ""}>${escapeHtml(food.name)}</option>`)
+      .join("");
+
+    filterBox.innerHTML = `
+      <label>
+        <span>Số sao</span>
+        <select data-home-review-rating>
+          <option value="all" ${selectedRating === "all" ? "selected" : ""}>Tất cả</option>
+          <option value="5" ${selectedRating === "5" ? "selected" : ""}>5 sao</option>
+          <option value="4" ${selectedRating === "4" ? "selected" : ""}>4 sao</option>
+          <option value="3" ${selectedRating === "3" ? "selected" : ""}>3 sao</option>
+          <option value="2" ${selectedRating === "2" ? "selected" : ""}>2 sao</option>
+          <option value="1" ${selectedRating === "1" ? "selected" : ""}>1 sao</option>
+        </select>
+      </label>
+      <label>
+        <span>Món ăn</span>
+        <select data-home-review-food>
+          <option value="all" ${selectedFood === "all" ? "selected" : ""}>Tất cả món</option>
+          ${foodOptions}
+        </select>
+      </label>
+    `;
+
+    filterBox.querySelectorAll("select").forEach(select => {
+      select.addEventListener("change", renderHomeReviews);
+    });
+  }
+
+  if (!reviewBox) return;
+
+  const filteredReviews = foodReviews
+    .filter(review => selectedRating === "all" || String(review.rating) === selectedRating)
+    .filter(review => selectedFood === "all" || String(review.foodId) === selectedFood)
+    .slice(0, 6);
+
+  reviewBox.innerHTML = filteredReviews.length
+    ? filteredReviews.map(renderHomeReviewCard).join("")
+    : `<p class="home-review-empty">Chưa có bình luận phù hợp.</p>`;
+}
+
+function renderRatingBreakdown(rating = 0, reviewCount = 0) {
+  const value = Math.max(0, Math.min(5, Number(rating) || 0));
   return [5, 4, 3, 2, 1].map(star => {
-    const width = Math.max(8, Math.min(96, star === 5 ? value * 18 : (6 - star) * 7));
+    const width = Number(reviewCount) ? Math.max(8, Math.min(96, star === 5 ? value * 18 : (6 - star) * 7)) : 0;
     return `
       <div class="food-rating-row">
         <span>${star}</span>
@@ -1002,19 +1114,19 @@ function showFoodDetail(foodId) {
             <span>${renderStarText(rating)}</span>
             <small>Dựa trên ${reviewCount} đánh giá</small>
           </div>
-          <div class="food-rating-bars">${renderRatingBreakdown(rating)}</div>
+          <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
         </div>
         <div class="food-review-list">
-          ${comments.map(comment => `
+          ${comments.length ? comments.map(comment => `
             <article>
-              <div class="food-review-avatar">${escapeHtml(comment.name.slice(0, 2).toUpperCase())}</div>
+              <div class="food-review-avatar">${escapeHtml(getReviewInitials(getReviewCustomerName(comment)))}</div>
               <div>
-                <header><strong>${escapeHtml(comment.name)}</strong><small>2 ngày trước</small></header>
+                <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
                 <span>${renderStarText(comment.rating)}</span>
-                <p>${escapeHtml(comment.text)}</p>
+                <p>${escapeHtml(comment.comment)}</p>
               </div>
             </article>
-          `).join("")}
+          `).join("") : `<p class="food-review-empty">Chưa có đánh giá cho món này.</p>`}
         </div>
       </section>
     </div>
@@ -1110,19 +1222,19 @@ function renderFoodDetailPage() {
               <span>${renderStarText(rating)}</span>
               <small>Dựa trên ${reviewCount} đánh giá</small>
             </div>
-            <div class="food-rating-bars">${renderRatingBreakdown(rating)}</div>
+            <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
           </div>
           <div class="food-review-list">
-            ${comments.map(comment => `
+            ${comments.length ? comments.map(comment => `
               <article>
-                <div class="food-review-avatar">${escapeHtml(comment.name.slice(0, 2).toUpperCase())}</div>
+                <div class="food-review-avatar">${escapeHtml(getReviewInitials(getReviewCustomerName(comment)))}</div>
                 <div>
-                  <header><strong>${escapeHtml(comment.name)}</strong><small>2 ngày trước</small></header>
+                  <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
                   <span>${renderStarText(comment.rating)}</span>
-                  <p>${escapeHtml(comment.text)}</p>
+                  <p>${escapeHtml(comment.comment)}</p>
                 </div>
               </article>
-            `).join("")}
+            `).join("") : `<p class="food-review-empty">Chưa có đánh giá cho món này.</p>`}
           </div>
         </section>
       </div>
