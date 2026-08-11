@@ -1645,7 +1645,9 @@ h2 {
 }
 
 .checkout-page {
-  padding-top: 24px;
+  margin: 0 auto;
+  max-width: 1320px;
+  padding-top: 28px;
 }
 
 .checkout-page-heading {
@@ -1674,8 +1676,8 @@ h2 {
 
 .checkout-grid {
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.88fr);
+  gap: 24px;
+  grid-template-columns: minmax(360px, 0.82fr) minmax(440px, 1fr);
   align-items: start;
 }
 
@@ -1691,7 +1693,11 @@ h2 {
 
 .checkout-card {
   border-radius: 10px;
-  padding: 22px;
+  padding: 24px;
+}
+
+.checkout-card:first-child {
+  min-height: 360px;
 }
 
 .checkout-card .section-heading {
@@ -1779,18 +1785,18 @@ h2 {
 
 .payment-options {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .payment-option {
-  align-items: center;
+  align-items: flex-start;
   border: 1px solid #f0dfd5;
   border-radius: 8px;
   cursor: pointer;
   display: grid;
   gap: 12px;
   grid-template-columns: auto minmax(0, 1fr);
-  padding: 12px 14px;
+  padding: 16px 18px;
 }
 
 .payment-option:has(input:checked) {
@@ -1821,7 +1827,7 @@ h2 {
   border-radius: 8px;
   display: grid;
   gap: 10px;
-  padding: 14px;
+  padding: 18px;
 }
 
 .checkout-summary-box div {
@@ -2890,10 +2896,10 @@ button.account-photo-badge {
   border: 1px solid #f0e5dc;
   border-radius: 10px;
   display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
-  margin-bottom: 10px;
-  padding: 14px;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  margin-bottom: 12px;
+  padding: 16px;
   text-align: left;
 }
 
@@ -2928,12 +2934,25 @@ button.account-photo-badge {
 .cart-total {
   background: #fff1eb;
   border-radius: 8px;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
-  margin-top: 14px;
-  padding: 16px;
+  margin-top: 16px;
+  padding: 18px;
   text-align: right;
   color: #ff5722;
+}
+
+.empty-cart {
+  align-items: center;
+  background: #fff8f3;
+  border: 1px dashed #efcdbb;
+  border-radius: 8px;
+  color: #7c6255;
+  display: flex;
+  justify-content: center;
+  min-height: 190px;
+  padding: 28px;
+  text-align: center;
 }
 
 .order-form {
@@ -4201,6 +4220,14 @@ footer {
     flex-direction: column;
   }
 
+  .checkout-grid {
+    gap: 18px;
+  }
+
+  .checkout-card:first-child {
+    min-height: 0;
+  }
+
   .checkout-page-heading h1 {
     font-size: 28px;
   }
@@ -4213,6 +4240,14 @@ footer {
     grid-template-columns: 1fr;
     justify-items: start;
     text-align: left;
+  }
+
+  .qty-box {
+    width: 100%;
+  }
+
+  .remove-btn {
+    width: 100%;
   }
 
   .cart-total {
