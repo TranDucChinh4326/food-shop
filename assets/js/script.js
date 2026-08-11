@@ -2189,28 +2189,38 @@ function renderOrderHistory(orders) {
   }
 
   resultBox.innerHTML = orders.map(order => `
-    <article class="track-card">
+    <article class="track-card order-card">
       <div class="order-history-top">
         <div>
-          <h3>Đơn #${order.id} - ${formatMoney(order.total_price)}</h3>
-          <p>${new Date(order.created_at).toLocaleString("vi-VN")}</p>
+          <p class="order-code">Đơn hàng #${order.id}</p>
+          <h3>${formatMoney(order.total_price)}</h3>
+          <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
         </div>
         <span class="status-pill">${getOrderStatusLabel(order.status)}</span>
       </div>
 
       <div class="history-info">
-        <p><strong>Khách hàng:</strong> ${order.customer_name}</p>
-        <p><strong>Số điện thoại:</strong> ${order.phone}</p>
-        <p><strong>Địa chỉ:</strong> ${order.address}</p>
-        <p><strong>Thanh toán:</strong> ${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
-        ${order.note ? `<p><strong>Ghi chu:</strong> ${order.note}</p>` : ""}
+        <div>
+          <small>Người nhận</small>
+          <p>${escapeHtml(order.customer_name)} - ${escapeHtml(order.phone)}</p>
+        </div>
+        <div>
+          <small>Địa chỉ giao hàng</small>
+          <p>${escapeHtml(order.address)}</p>
+        </div>
+        <div>
+          <small>Thanh toán</small>
+          <p>${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
+        </div>
+        ${order.note ? `<div><small>Ghi chú</small><p>${escapeHtml(order.note)}</p></div>` : ""}
       </div>
 
       <div class="history-items">
         ${order.items.map(item => `
-          <div class="track-line">
-            <div>
-              <span>${item.food_name} x ${item.quantity}</span>
+          <div class="track-line order-item-row">
+            <div class="order-item-main">
+              <span>${escapeHtml(item.food_name)}</span>
+              <small>Số lượng: ${Number(item.quantity)}</small>
               ${renderOrderReviewControl(order, item)}
             </div>
             <strong>${formatMoney(item.subtotal)}</strong>
@@ -2237,7 +2247,8 @@ function getOrderStatusLabel(status) {
     confirmed: "Đã xác nhận",
     delivering: "Đang giao",
     done: "Hoàn tất",
-    cancelled: "Đã hủy"
+    cancelled: "Đã hủy",
+    pending_payment: "Chờ thanh toán"
   };
 
   return labels[status] || status;
