@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lịch sử đơn hàng - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260811-track-compact">
 </head>
 <body>
   <header>
@@ -58,27 +58,22 @@
     </nav>
   </header>
 
-  <main class="track-page">
-    <section class="track-hero">
-      <span class="badge">Đơn hàng của tôi</span>
-      <h1>Lịch sử đặt hàng</h1>
-      <p>Xem trạng thái và chi tiết các đơn đã đặt bằng tài khoản hiện tại. Thông tin đơn hàng không còn tra cứu công khai bằng mã đơn.</p>
-    </section>
-
+  <main class="track-page track-page-compact">
     <section class="track-card-shell">
       <div class="section-heading">
         <div>
-          <h2>Đơn hàng gần đây</h2>
-          <p>Lọc nhanh theo mã đơn, thông tin giao hàng hoặc ngày đặt.</p>
+          <span class="section-kicker">&#272;&#417;n h&agrave;ng c&#7911;a t&ocirc;i</span>
+          <h2>L&#7883;ch s&#7917; &#273;&#7863;t h&agrave;ng</h2>
+          <p>L&#7885;c nhanh theo m&atilde; &#273;&#417;n, th&ocirc;ng tin giao h&agrave;ng ho&#7863;c ng&agrave;y &#273;&#7863;t.</p>
         </div>
-        <a href="menu.html" class="text-link">Đặt thêm món</a>
+        <a href="menu.html" class="text-link">&#272;&#7863;t th&ecirc;m m&oacute;n</a>
       </div>
 
       <form class="history-filter" onsubmit="loadOrderHistory(event)">
-        <input type="search" id="orderSearch" placeholder="Tìm mã đơn, tên, SĐT hoặc địa chỉ">
+        <input type="search" id="orderSearch" placeholder="T&igrave;m m&atilde; &#273;&#417;n, t&ecirc;n, S&#272;T ho&#7863;c &#273;&#7883;a ch&#7881;">
         <input type="date" id="orderDate">
-        <button type="submit" class="btn">Lọc đơn</button>
-        <button type="button" class="btn muted-btn" onclick="resetOrderHistoryFilter()">Xóa lọc</button>
+        <button type="submit" class="btn">L&#7885;c &#273;&#417;n</button>
+        <button type="button" class="btn muted-btn" onclick="resetOrderHistoryFilter()">X&oacute;a l&#7885;c</button>
       </form>
 
       <div id="track-result" class="track-result"></div>
