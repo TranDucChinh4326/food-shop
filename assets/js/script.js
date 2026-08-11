@@ -755,8 +755,9 @@ async function loadFoodReviews() {
   const homeReviewBox = document.getElementById("homeReviewList");
   const homeReviewFilters = document.getElementById("homeReviewFilters");
   const foodDetailPage = document.getElementById("foodDetailPage");
+  const orderHistoryBox = document.getElementById("track-result");
 
-  if (!homeReviewBox && !homeReviewFilters && !foodDetailPage) return;
+  if (!homeReviewBox && !homeReviewFilters && !foodDetailPage && !orderHistoryBox) return;
 
   try {
     const response = await fetch(`${FOOD_REVIEWS_API}?limit=40`);
@@ -984,6 +985,92 @@ function renderHomeReviews() {
   reviewBox.innerHTML = filteredReviews.length
     ? filteredReviews.map(renderHomeReviewCard).join("")
     : `<p class="home-review-empty">Chưa có bình luận phù hợp.</p>`;
+}
+
+function hasReviewedOrderItem(orderId, foodId) {
+  return foodReviews.some(review => String(review.orderId) === String(orderId) && String(review.foodId) === String(foodId));
+}
+
+function renderOrderReviewControl(order, item) {
+  if (order.status !== "done") return "";
+
+  if (hasReviewedOrderItem(order.id, item.food_id)) {
+    return `<span class="order-review-done">Đã đánh giá</span>`;
+  }
+
+  const panelId = `review-panel-${order.id}-${item.food_id}`;
+
+  return `
+    <div class="order-review">
+      <button type="button" class="order-review-toggle" onclick="toggleOrderReviewForm('${panelId}')">Đánh giá</button>
+      <form id="${panelId}" class="order-review-form" onsubmit="submitFoodReview(event, ${order.id}, ${item.food_id})" hidden>
+        <label>
+          <span>Số sao</span>
+          <select name="rating" required>
+            <option value="5">5 sao</option>
+            <option value="4">4 sao</option>
+            <option value="3">3 sao</option>
+            <option value="2">2 sao</option>
+            <option value="1">1 sao</option>
+          </select>
+        </label>
+        <label>
+          <span>Nhận xét</span>
+          <textarea name="comment" rows="3" minlength="5" maxlength="1000" placeholder="Chia sẻ trải nghiệm của bạn về món này..." required></textarea>
+        </label>
+        <div class="order-review-actions">
+          <button type="submit" class="btn">Gửi đánh giá</button>
+          <button type="button" class="btn muted-btn" onclick="toggleOrderReviewForm('${panelId}', true)">Hủy</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+function toggleOrderReviewForm(panelId, forceClose = false) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  panel.hidden = forceClose ? true : !panel.hidden;
+}
+
+async function submitFoodReview(event, orderId, foodId) {
+  event.preventDefault();
+
+  const form = event.target;
+  const submitButton = form.querySelector("button[type='submit']");
+  const rating = Number(form.rating.value);
+  const comment = form.comment.value.trim();
+
+  if (comment.length < 5) {
+    showSiteToast("Vui lòng nhập nhận xét ít nhất 5 ký tự.", "error");
+    return;
+  }
+
+  try {
+    if (submitButton) submitButton.disabled = true;
+
+    const response = await fetch(FOOD_REVIEWS_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ orderId, foodId, rating, comment })
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || "Không thể gửi đánh giá.");
+    }
+
+    showSiteToast(data.message || "Đánh giá món ăn thành công.");
+    await loadFoodReviews();
+    await loadOrderHistory();
+  } catch (error) {
+    showSiteToast(error.message || "Không thể gửi đánh giá.", "error");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
 }
 
 function renderRatingBreakdown(rating = 0, reviewCount = 0) {
@@ -2077,6 +2164,7 @@ async function loadOrderHistory(event) {
       return;
     }
 
+    await loadFoodReviews();
     renderOrderHistory(data);
   } catch (error) {
     resultBox.innerHTML = "<p>Không kết nối được server.</p>";
@@ -2121,7 +2209,10 @@ function renderOrderHistory(orders) {
       <div class="history-items">
         ${order.items.map(item => `
           <div class="track-line">
-            <span>${item.food_name} x ${item.quantity}</span>
+            <div>
+              <span>${item.food_name} x ${item.quantity}</span>
+              ${renderOrderReviewControl(order, item)}
+            </div>
             <strong>${formatMoney(item.subtotal)}</strong>
           </div>
         `).join("")}
