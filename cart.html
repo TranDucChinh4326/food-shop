@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260804-qr-polish">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260811-cart-stack">
 </head>
 <body>
   <header>
@@ -67,109 +67,114 @@
       <a href="menu.html" class="text-link">Tiếp tục chọn món</a>
     </div>
 
-    <section class="checkout-grid">
-      <div class="checkout-card">
+    <form id="orderForm" class="order-form checkout-stack" onsubmit="submitOrder(event)">
+      <section class="checkout-card checkout-customer-card">
         <div class="section-heading">
           <div>
-            <h2>Giỏ hàng của bạn</h2>
-            <p>Các món sẽ được giữ trong trình duyệt của bạn.</p>
-          </div>
-          <a href="menu.html" class="text-link">Thêm món</a>
-        </div>
-
-        <div id="cart-items"></div>
-
-        <div class="cart-total">
-          Tổng tiền: <span id="total-price">0đ</span>
-        </div>
-      </div>
-
-      <div class="checkout-card">
-        <div class="section-heading">
-          <div>
-            <h2>Thông tin giao hàng</h2>
-            <p>FoodHub sẽ liên hệ xác nhận trước khi giao.</p>
+            <h2>Th&ocirc;ng tin giao h&agrave;ng</h2>
+            <p>FoodHub s&#7869; li&ecirc;n h&#7879; x&aacute;c nh&#7853;n tr&#432;&#7899;c khi giao.</p>
           </div>
         </div>
 
-        <form id="orderForm" class="order-form" onsubmit="submitOrder(event)">
+        <div class="checkout-customer-fields">
           <label id="savedAddressSelectWrap" hidden>
-            Chọn địa chỉ đã lưu
+            Ch&#7885;n &#273;&#7883;a ch&#7881; &#273;&atilde; l&#432;u
             <select id="savedAddressSelect">
-              <option value="">Nhập địa chỉ mới</option>
+              <option value="">Nh&#7853;p &#273;&#7883;a ch&#7881; m&#7899;i</option>
             </select>
           </label>
 
           <label>
-            Họ và tên
-            <input type="text" id="customerName" placeholder="Nguyễn Văn A" required>
+            H&#7885; v&agrave; t&ecirc;n
+            <input type="text" id="customerName" placeholder="Nguy&#7877;n V&#259;n A" required>
           </label>
 
           <label>
-            Số điện thoại
+            S&#7889; &#273;i&#7879;n tho&#7841;i
             <input type="tel" id="customerPhone" placeholder="0900 000 000" required>
           </label>
 
           <div class="address-input-grid">
             <label>
-              Thành phố / Tỉnh
+              Th&agrave;nh ph&#7889; / T&#7881;nh
               <select id="customerCity" required>
-                <option value="">Chọn thành phố</option>
+                <option value="">Ch&#7885;n th&agrave;nh ph&#7889;</option>
               </select>
             </label>
             <label>
-              Phường / Xã
+              Ph&#432;&#7901;ng / X&atilde;
               <select id="customerWard" required>
-                <option value="">Chọn phường xã</option>
+                <option value="">Ch&#7885;n ph&#432;&#7901;ng x&atilde;</option>
               </select>
             </label>
           </div>
 
           <label>
-            Địa chỉ cụ thể
-            <input type="text" id="customerAddress" placeholder="Số nhà, tên đường, tòa nhà" list="customerAddressSuggestions" required>
+            &#272;&#7883;a ch&#7881; c&#7909; th&#7875;
+            <input type="text" id="customerAddress" placeholder="S&#7889; nh&agrave;, t&ecirc;n &#273;&#432;&#7901;ng, t&ograve;a nh&agrave;" list="customerAddressSuggestions" required>
           </label>
           <datalist id="customerAddressSuggestions"></datalist>
 
           <label>
-            Ghi chú
-            <textarea id="customerNote" placeholder="Ví dụ: giao giờ nghỉ trưa, ít cay..."></textarea>
+            Ghi ch&uacute;
+            <textarea id="customerNote" placeholder="V&iacute; d&#7909;: giao gi&#7901; ngh&#7881; tr&#432;a, &iacute;t cay..."></textarea>
           </label>
+        </div>
+      </section>
 
+      <section class="checkout-card checkout-cart-card">
+        <div class="section-heading">
+          <div>
+            <h2>Gi&#7887; h&agrave;ng c&#7911;a b&#7841;n</h2>
+            <p>C&aacute;c m&oacute;n s&#7869; &#273;&#432;&#7907;c gi&#7919; trong tr&igrave;nh duy&#7879;t c&#7911;a b&#7841;n.</p>
+          </div>
+          <a href="menu.html" class="text-link">Th&ecirc;m m&oacute;n</a>
+        </div>
+
+        <div id="cart-items"></div>
+
+        <div class="cart-total">
+          T&#7893;ng ti&#7873;n: <span id="total-price">0&#273;</span>
+        </div>
+      </section>
+
+      <section class="checkout-card checkout-payment-card">
+        <div class="checkout-payment-layout">
           <div class="checkout-payment-section">
-            <h3>Phương thức thanh toán</h3>
+            <h3>Ph&#432;&#417;ng th&#7913;c thanh to&aacute;n</h3>
             <div class="payment-options">
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="cod" checked>
                 <span>
-                  <strong>Thanh toán khi nhận hàng</strong>
-                  <small>Trả tiền trực tiếp cho nhân viên giao hàng.</small>
+                  <strong>Thanh to&aacute;n khi nh&#7853;n h&agrave;ng</strong>
+                  <small>Tr&#7843; ti&#7873;n tr&#7921;c ti&#7871;p cho nh&acirc;n vi&ecirc;n giao h&agrave;ng.</small>
                 </span>
               </label>
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="qr">
                 <span>
-                  <strong>Thanh toán bằng mã QR</strong>
-                  <small>Hệ thống ghi nhận đơn chờ thanh toán QR.</small>
+                  <strong>Thanh to&aacute;n b&#7857;ng m&atilde; QR</strong>
+                  <small>H&#7879; th&#7889;ng ghi nh&#7853;n &#273;&#417;n ch&#7901; thanh to&aacute;n QR.</small>
                 </span>
               </label>
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="wallet">
                 <span>
-                  <strong>Thanh toán bằng tiền trong tài khoản</strong>
-                  <small>Sử dụng số dư FoodHub khi chức năng ví được kích hoạt.</small>
+                  <strong>Thanh to&aacute;n b&#7857;ng ti&#7873;n trong t&agrave;i kho&#7843;n</strong>
+                  <small>S&#7917; d&#7909;ng s&#7889; d&#432; FoodHub khi ch&#7913;c n&#259;ng v&iacute; &#273;&#432;&#7907;c k&iacute;ch ho&#7841;t.</small>
                 </span>
               </label>
             </div>
           </div>
 
-          <div id="checkoutSummary" class="checkout-summary-box"></div>
-          <p id="checkoutProfileWarning" class="checkout-warning" hidden></p>
-
-          <button type="submit" class="btn">Xác nhận đặt hàng</button>
-        </form>
-      </div>
-    </section>
+          <div class="checkout-confirm-panel">
+            <div id="checkoutSummary" class="checkout-summary-box"></div>
+            <p id="checkoutProfileWarning" class="checkout-warning" hidden></p>
+            <button type="submit" class="btn">X&aacute;c nh&#7853;n &#273;&#7863;t h&agrave;ng</button>
+          </div>
+        </div>
+      </section>
+    </form>
   </main>
 
   <footer class="site-footer">

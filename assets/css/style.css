@@ -1674,11 +1674,10 @@ h2 {
   margin: 4px 0 0;
 }
 
-.checkout-grid {
+.checkout-grid,
+.checkout-stack {
   display: grid;
   gap: 24px;
-  grid-template-columns: minmax(360px, 0.82fr) minmax(440px, 1fr);
-  align-items: start;
 }
 
 .checkout-card,
@@ -1696,16 +1695,44 @@ h2 {
   padding: 24px;
 }
 
-.checkout-card:first-child {
-  min-height: 360px;
-}
-
 .checkout-card .section-heading {
   margin-bottom: 14px;
   padding-bottom: 14px;
 }
 
-.order-form > .btn[type="submit"] {
+.checkout-customer-fields {
+  display: grid;
+  gap: 15px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkout-customer-fields label,
+.checkout-customer-fields .address-input-grid,
+.checkout-customer-fields datalist {
+  min-width: 0;
+}
+
+.checkout-customer-fields label:has(textarea),
+.checkout-customer-fields label:has(#customerAddress),
+.checkout-customer-fields #savedAddressSelectWrap,
+.checkout-customer-fields .address-input-grid {
+  grid-column: 1 / -1;
+}
+
+.checkout-payment-layout {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  align-items: start;
+}
+
+.checkout-confirm-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.order-form > .btn[type="submit"],
+.checkout-confirm-panel > .btn[type="submit"] {
   border-radius: 10px;
   font-size: 17px;
   font-weight: 700;
@@ -1771,10 +1798,8 @@ h2 {
 }
 
 .checkout-payment-section {
-  border-top: 1px solid #f1ded2;
   display: grid;
   gap: 12px;
-  padding-top: 14px;
 }
 
 .checkout-payment-section h3 {
@@ -4224,8 +4249,13 @@ footer {
     gap: 18px;
   }
 
-  .checkout-card:first-child {
-    min-height: 0;
+  .checkout-stack {
+    gap: 18px;
+  }
+
+  .checkout-customer-fields,
+  .checkout-payment-layout {
+    grid-template-columns: 1fr;
   }
 
   .checkout-page-heading h1 {
