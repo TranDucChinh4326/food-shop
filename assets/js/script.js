@@ -1149,14 +1149,22 @@ async function submitFoodReview(event, orderId, foodId) {
   }
 }
 
-function renderRatingBreakdown(rating = 0, reviewCount = 0) {
-  const value = Math.max(0, Math.min(5, Number(rating) || 0));
+function renderRatingBreakdown(reviews = []) {
+  const total = reviews.length;
+  const counts = reviews.reduce((summary, review) => {
+    const value = Math.max(1, Math.min(5, Math.round(Number(review.rating) || 0)));
+    summary[value] = (summary[value] || 0) + 1;
+    return summary;
+  }, {});
+
   return [5, 4, 3, 2, 1].map(star => {
-    const width = Number(reviewCount) ? Math.max(8, Math.min(96, star === 5 ? value * 18 : (6 - star) * 7)) : 0;
+    const count = counts[star] || 0;
+    const width = total ? Math.round((count / total) * 100) : 0;
     return `
       <div class="food-rating-row">
         <span>${star}</span>
         <div><i style="width:${width}%"></i></div>
+        <small>${count}</small>
       </div>
     `;
   }).join("");
@@ -1236,11 +1244,6 @@ function showFoodDetail(foodId) {
       <div class="food-detail-main">
         <div class="food-detail-gallery">
           <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
-          <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
-            <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-            <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-            <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-          </div>
         </div>
         <div class="food-detail-info">
           <span class="food-detail-category">${escapeHtml(category)}</span>
@@ -1262,7 +1265,8 @@ function showFoodDetail(foodId) {
           <div class="food-detail-actions">
             <div class="food-detail-qty">
               <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
-              <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
+              <span data-food-qty-display="${food.id}">1</span>
+              <input type="hidden" value="1" data-food-qty="${food.id}">
               <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
             </div>
             <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
@@ -1277,7 +1281,7 @@ function showFoodDetail(foodId) {
             <span>${renderStarText(rating)}</span>
             <small>Dựa trên ${reviewCount} đánh giá</small>
           </div>
-          <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
+          <div class="food-rating-bars">${renderRatingBreakdown(comments)}</div>
         </div>
         <div id="foodDetailDialogReviewControls" class="review-filter-bar"></div>
         <div id="foodDetailDialogReviewList" class="review-list"></div>
@@ -1300,6 +1304,8 @@ function showFoodDetail(foodId) {
       const step = Number(button.dataset.foodQtyStep || 0);
       const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
       input.value = String(nextValue);
+      const display = dialog.querySelector(`[data-food-qty-display="${food.id}"]`);
+      if (display) display.textContent = String(nextValue);
     });
   });
   dialog.addEventListener("click", event => {
@@ -1345,11 +1351,6 @@ function renderFoodDetailPage() {
         <div class="food-detail-main">
           <div class="food-detail-gallery">
             <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
-            <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
-              <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-              <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-              <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
-            </div>
           </div>
           <div class="food-detail-info">
             <span class="food-detail-category">${escapeHtml(category)}</span>
@@ -1365,7 +1366,8 @@ function renderFoodDetailPage() {
             <div class="food-detail-actions">
               <div class="food-detail-qty">
                 <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
-                <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
+                <span data-food-qty-display="${food.id}">1</span>
+                <input type="hidden" value="1" data-food-qty="${food.id}">
                 <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
               </div>
               <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
@@ -1380,7 +1382,7 @@ function renderFoodDetailPage() {
               <span>${renderStarText(rating)}</span>
               <small>Dựa trên ${reviewCount} đánh giá</small>
             </div>
-            <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
+            <div class="food-rating-bars">${renderRatingBreakdown(comments)}</div>
           </div>
           <div id="foodDetailPageReviewControls" class="review-filter-bar"></div>
           <div id="foodDetailPageReviewList" class="review-list"></div>
@@ -1396,6 +1398,8 @@ function renderFoodDetailPage() {
       const step = Number(button.dataset.foodQtyStep || 0);
       const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
       input.value = String(nextValue);
+      const display = page.querySelector(`[data-food-qty-display="${food.id}"]`);
+      if (display) display.textContent = String(nextValue);
     });
   });
   renderReviewPanel("detailPage", page.querySelector("#foodDetailPageReviewControls"), page.querySelector("#foodDetailPageReviewList"), foodReviews, {

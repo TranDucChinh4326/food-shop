@@ -1231,7 +1231,7 @@ body.food-detail-open {
 }
 
 .food-detail-thumbs {
-  display: flex;
+  display: none;
   gap: 10px;
 }
 
@@ -1372,9 +1372,9 @@ body.food-detail-open {
   align-items: center;
   background: #fff;
   border: 1px solid #edcdbd;
-  border-radius: 8px;
+  border-radius: 10px;
   display: grid;
-  grid-template-columns: 42px 1fr 42px;
+  grid-template-columns: 40px 54px 40px;
   min-height: 48px;
   overflow: hidden;
 }
@@ -1382,15 +1382,20 @@ body.food-detail-open {
 .food-detail-qty button {
   background: #fff8f3;
   color: #a64008;
+  font-weight: 800;
   min-height: 48px;
   padding: 0;
 }
 
-.food-detail-qty input {
-  background: transparent;
+.food-detail-qty span {
+  align-items: center;
   border: 0;
+  border-left: 1px solid #edcdbd;
+  border-right: 1px solid #edcdbd;
   color: #201814;
-  font-weight: 700;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
   min-height: 48px;
   padding: 0;
   text-align: center;
@@ -1457,7 +1462,7 @@ body.food-detail-open {
   align-items: center;
   display: grid;
   gap: 10px;
-  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-columns: 18px minmax(0, 1fr) 28px;
 }
 
 .food-rating-row span {
@@ -1476,6 +1481,12 @@ body.food-detail-open {
   background: #ff7a1a;
   display: block;
   height: 100%;
+}
+
+.food-rating-row small {
+  color: #8a6a58;
+  font-size: 12px;
+  text-align: right;
 }
 
 .food-review-list {
