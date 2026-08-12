@@ -831,36 +831,35 @@ nav a:hover,
 .home-review-grid,
 .review-list {
   display: grid;
-  gap: 0;
+  gap: 14px;
 }
 
 .review-list-card {
-  background: #fff;
-  border-bottom: 1px solid #ecdcd2;
+  background: linear-gradient(180deg, #fff, #fffaf7);
+  border: 1px solid #f1d9cc;
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(94, 48, 24, 0.06);
   display: grid;
-  gap: 14px;
-  grid-template-columns: 44px minmax(0, 1fr);
-  padding: 22px 0;
-}
-
-.review-list-card:first-child {
-  padding-top: 0;
+  gap: 16px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  padding: 18px;
 }
 
 .review-list-avatar {
-  padding-top: 2px;
+  padding-top: 3px;
 }
 
 .review-list-main {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .review-list-head {
-  align-items: start;
-  display: flex;
-  gap: 16px;
-  justify-content: space-between;
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .review-list-head strong {
@@ -874,19 +873,25 @@ nav a:hover,
 
 .review-list-stars {
   color: #ffb000;
+  font-size: 15px;
   font-weight: 800;
+  letter-spacing: 1px;
   white-space: nowrap;
 }
 
 .review-list-card p {
   color: #2d2420;
   font-size: 16px;
-  line-height: 1.65;
+  line-height: 1.55;
   margin: 0;
+  max-width: 780px;
 }
 
 .review-list-food {
   align-items: center;
+  background: #fff4ed;
+  border: 1px solid #f3d8c9;
+  border-radius: 8px;
   color: #201814;
   display: inline-grid;
   font-size: 14px;
@@ -894,7 +899,9 @@ nav a:hover,
   gap: 9px;
   grid-template-columns: 42px minmax(0, 1fr);
   max-width: 280px;
+  padding: 7px 10px 7px 7px;
   text-decoration: none;
+  width: fit-content;
 }
 
 .review-list-food img {
@@ -910,7 +917,7 @@ nav a:hover,
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  padding-top: 20px;
+  padding-top: 8px;
 }
 
 .review-pagination button {
@@ -4524,12 +4531,17 @@ footer {
 
   .review-list-card {
     grid-template-columns: 38px minmax(0, 1fr);
-    padding: 18px 0;
+    padding: 14px;
   }
 
   .review-list-head {
     display: grid;
     gap: 6px;
+    grid-template-columns: 1fr;
+  }
+
+  .review-list-stars {
+    font-size: 14px;
   }
 
   .review-pagination {
