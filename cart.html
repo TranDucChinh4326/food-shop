@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260812-payment-webhook">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260812-vnpay">
 </head>
 <body>
   <header>
@@ -158,6 +158,13 @@
                 </span>
               </label>
               <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="vnpay">
+                <span>
+                  <strong>Thanh to&aacute;n qua VNPay</strong>
+                  <small>Chuy&#7875;n sang c&#7893;ng thanh to&aacute;n VNPay &#273;&#7875; ho&agrave;n t&#7845;t giao d&#7883;ch.</small>
+                </span>
+              </label>
+              <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="wallet">
                 <span>
                   <strong>Thanh to&aacute;n b&#7857;ng ti&#7873;n trong t&agrave;i kho&#7843;n</strong>
@@ -197,6 +204,6 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/script.js?v=20260812-payment-webhook"></script>
+  <script src="assets/js/script.js?v=20260812-vnpay"></script>
 </body>
 </html>

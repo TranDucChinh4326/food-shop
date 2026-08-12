@@ -2127,7 +2127,7 @@ async function submitOrder(event) {
     return;
   }
 
-  if (!["cod", "qr", "wallet"].includes(paymentMethod)) {
+  if (!["cod", "qr", "vnpay", "wallet"].includes(paymentMethod)) {
     showSiteToast("Phương thức thanh toán không hợp lệ.", "error");
     return;
   }
@@ -2176,6 +2176,11 @@ async function submitOrder(event) {
     if (data.order?.paymentMethod === "qr" && data.order?.paymentSession) {
       showQrPaymentDialog(data.order);
       showSiteToast("Đã tạo mã QR. Vui lòng hoàn tất thanh toan.");
+      return;
+    }
+
+    if (data.order?.paymentMethod === "vnpay" && data.order?.paymentSession?.paymentUrl) {
+      window.location.href = data.order.paymentSession.paymentUrl;
       return;
     }
     showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
