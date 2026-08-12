@@ -2378,6 +2378,7 @@ function getPaymentMethodLabel(method) {
   const labels = {
     cod: "Thanh toán khi nhận hàng",
     qr: "Thanh toán bằng mã QR",
+    vnpay: "Thanh toan qua VNPay",
     wallet: "Tiền trong tài khoản"
   };
 
