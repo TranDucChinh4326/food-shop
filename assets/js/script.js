@@ -22,25 +22,25 @@ let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
-  "Hà Nội": {
-    "Quận Ba Đình": ["Phường Phúc Xá", "Phường Trúc Bạch", "Phường Kim Mã", "Phường Cống Vị"],
-    "Quận Hoàn Kiếm": ["Phường Chương Dương Độ", "Phường Hàng Trống", "Phường Hàng Bạc", "Phường Lý Thái Tổ"],
-    "Quận Đống Đa": ["Phường Nam Đồng", "Phường Trung Liệt", "Phường Khâm Thiên", "Phường Cát Linh"]
+  "HÃ  Ná»™i": {
+    "Quáº­n Ba ÄÃ¬nh": ["PhÆ°á»ng PhÃºc XÃ¡", "PhÆ°á»ng TrÃºc Báº¡ch", "PhÆ°á»ng Kim MÃ£", "PhÆ°á»ng Cá»‘ng Vá»‹"],
+    "Quáº­n HoÃ n Kiáº¿m": ["PhÆ°á»ng ChÆ°Æ¡ng DÆ°Æ¡ng Äá»™", "PhÆ°á»ng HÃ ng Trá»‘ng", "PhÆ°á»ng HÃ ng Báº¡c", "PhÆ°á»ng LÃ½ ThÃ¡i Tá»•"],
+    "Quáº­n Äá»‘ng Äa": ["PhÆ°á»ng Nam Äá»“ng", "PhÆ°á»ng Trung Liá»‡t", "PhÆ°á»ng KhÃ¢m ThiÃªn", "PhÆ°á»ng CÃ¡t Linh"]
   },
-  "Hồ Chí Minh": {
-    "Quận 1": ["Phường Bến Nghé", "Phường Đa Kao", "Phường Tân Định", "Phường Nguyễn Thái Bình"],
-    "Quận 3": ["Phường Võ Thị Sáu", "Phường Nguyễn Cư Trinh", "Phường Phạm Ngũ Lão", "Phường Đa Kao"],
-    "Quận 7": ["Phường Tân Phú", "Phường Tân Hưng", "Phường Tân Thuận Đông", "Phường Tân Quy"]
+  "Há»“ ChÃ­ Minh": {
+    "Quáº­n 1": ["PhÆ°á»ng Báº¿n NghÃ©", "PhÆ°á»ng Äa Kao", "PhÆ°á»ng TÃ¢n Äá»‹nh", "PhÆ°á»ng Nguyá»…n ThÃ¡i BÃ¬nh"],
+    "Quáº­n 3": ["PhÆ°á»ng VÃµ Thá»‹ SÃ¡u", "PhÆ°á»ng Nguyá»…n CÆ° Trinh", "PhÆ°á»ng Pháº¡m NgÅ© LÃ£o", "PhÆ°á»ng Äa Kao"],
+    "Quáº­n 7": ["PhÆ°á»ng TÃ¢n PhÃº", "PhÆ°á»ng TÃ¢n HÆ°ng", "PhÆ°á»ng TÃ¢n Thuáº­n ÄÃ´ng", "PhÆ°á»ng TÃ¢n Quy"]
   },
-  "Đà Nẵng": {
-    "Quận Hải Châu": ["Phường Thạch Thang", "Phường Bình Hiên", "Phường Nam Dương", "Phường Thanh Bình"],
-    "Quận Cẩm Lệ": ["Phường Hòa An", "Phường Hòa Thọ Tây", "Phường Hòa Xuân", "Phường Khuê Trung"],
-    "Quận Ngũ Hành Sơn": ["Phường Hòa Hải", "Phường Mỹ An", "Phường Khuê Mỹ", "Phường Mân Thái"]
+  "ÄÃ  Náºµng": {
+    "Quáº­n Háº£i ChÃ¢u": ["PhÆ°á»ng Tháº¡ch Thang", "PhÆ°á»ng BÃ¬nh HiÃªn", "PhÆ°á»ng Nam DÆ°Æ¡ng", "PhÆ°á»ng Thanh BÃ¬nh"],
+    "Quáº­n Cáº©m Lá»‡": ["PhÆ°á»ng HÃ²a An", "PhÆ°á»ng HÃ²a Thá» TÃ¢y", "PhÆ°á»ng HÃ²a XuÃ¢n", "PhÆ°á»ng KhuÃª Trung"],
+    "Quáº­n NgÅ© HÃ nh SÆ¡n": ["PhÆ°á»ng HÃ²a Háº£i", "PhÆ°á»ng Má»¹ An", "PhÆ°á»ng KhuÃª Má»¹", "PhÆ°á»ng MÃ¢n ThÃ¡i"]
   },
-  "Hải Phòng": {
-    "Quận Hồng Bàng": ["Phường Sở Dầu", "Phường Quán Toan", "Phường Phan Bội Châu", "Phường Gia Viễn"],
-    "Quận Ngô Quyền": ["Phường Lạch Tray", "Phường Máy Chai", "Phường Cầu Tre", "Phường Vĩnh Niệm"],
-    "Quận Lê Chân": ["Phường Trại Cau", "Phường Kênh Dương", "Phường Lam Sơn", "Phường Ẩn Biên"]
+  "Háº£i PhÃ²ng": {
+    "Quáº­n Há»“ng BÃ ng": ["PhÆ°á»ng Sá»Ÿ Dáº§u", "PhÆ°á»ng QuÃ¡n Toan", "PhÆ°á»ng Phan Bá»™i ChÃ¢u", "PhÆ°á»ng Gia Viá»…n"],
+    "Quáº­n NgÃ´ Quyá»n": ["PhÆ°á»ng Láº¡ch Tray", "PhÆ°á»ng MÃ¡y Chai", "PhÆ°á»ng Cáº§u Tre", "PhÆ°á»ng VÄ©nh Niá»‡m"],
+    "Quáº­n LÃª ChÃ¢n": ["PhÆ°á»ng Tráº¡i Cau", "PhÆ°á»ng KÃªnh DÆ°Æ¡ng", "PhÆ°á»ng Lam SÆ¡n", "PhÆ°á»ng áº¨n BiÃªn"]
   }
 };
 
@@ -50,9 +50,9 @@ let ADDRESS_LOOKUP = {};
 let addressLookupPromise;
 
 const DEFAULT_ADDRESS_SUGGESTIONS = [
-  "Số nhà, tên đường, khu phố",
-  "Tòa nhà, lầu, số phòng",
-  "Ngõ, ngách, hẻm gần khu vực"
+  "Sá»‘ nhÃ , tÃªn Ä‘Æ°á»ng, khu phá»‘",
+  "TÃ²a nhÃ , láº§u, sá»‘ phÃ²ng",
+  "NgÃµ, ngÃ¡ch, háº»m gáº§n khu vá»±c"
 ];
 
 localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -107,11 +107,11 @@ function getDefaultAvatarDataUrl() {
 }
 
 function formatMoney(number) {
-  return Number(number).toLocaleString("vi-VN") + "đ";
+  return Number(number).toLocaleString("vi-VN") + "Ä‘";
 }
 
 function formatDateTime(value) {
-  if (!value) return "Chưa đặt";
+  if (!value) return "ChÆ°a Ä‘áº·t";
 
   return new Date(value).toLocaleString("vi-VN", {
     hour: "2-digit",
@@ -138,7 +138,7 @@ function isLoggedIn() {
   return Boolean(getAuthToken() && getCurrentUser());
 }
 
-function requireLogin(message = "Vui lòng đăng nhập để tiếp tục.", target = window.location.href) {
+function requireLogin(message = "Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c.", target = window.location.href) {
   sessionStorage.setItem("foodhub_after_login", target);
   showSiteToast(message, "error");
 
@@ -152,7 +152,7 @@ function slugify(value) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/đ/g, "d")
+    .replace(/Ä‘/g, "d")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
@@ -249,7 +249,7 @@ function renderPublicNavCategories() {
     const children = getRootChildren(root.id);
     const panel = children.length
       ? children.map(category => `<a href="${getCategoryUrl(category.slug)}">${escapeHtml(category.name)}</a>`).join("")
-      : `<a href="${getCategoryUrl(root.slug)}">Tất cả ${escapeHtml(root.name)}</a>`;
+      : `<a href="${getCategoryUrl(root.slug)}">Táº¥t cáº£ ${escapeHtml(root.name)}</a>`;
 
     return `
       <div class="nav-dropdown" data-public-category-menu="${escapeHtml(root.slug)}">
@@ -268,14 +268,14 @@ async function loadPublicCategories() {
 
   try {
     const response = await fetch(CATEGORIES_API);
-    if (!response.ok) throw new Error("Không thể tải danh mục");
+    if (!response.ok) throw new Error("KhÃ´ng thá»ƒ táº£i danh má»¥c");
 
     publicCategories = await response.json();
     renderPublicNavCategories();
     renderMenuCategoryOptions();
     if (foods.length) renderFoods();
   } catch (error) {
-    console.error("Lỗi tải danh mục:", error);
+    console.error("Lá»—i táº£i danh má»¥c:", error);
   }
 }
 
@@ -290,14 +290,14 @@ function renderMenuCategoryOptions() {
   const foodMatch = foods.find(food => food.subcategory === categoryValue || food.category === categoryValue);
   const label = category?.name
     || (foodMatch?.subcategory === categoryValue ? foodMatch.categoryName : foodMatch?.parentCategoryName || foodMatch?.categoryName)
-    || (categoryValue === "all" ? "Tất cả món" : categoryValue.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
+    || (categoryValue === "all" ? "Táº¥t cáº£ mÃ³n" : categoryValue.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
 
   if (heading) heading.textContent = label;
 
   if (description) {
     description.textContent = categoryValue === "all"
-      ? "Hiển thị tất cả món theo thứ tự danh mục."
-      : `Đang hiển thị các món thuộc ${label}.`;
+      ? "Hiá»ƒn thá»‹ táº¥t cáº£ mÃ³n theo thá»© tá»± danh má»¥c."
+      : `Äang hiá»ƒn thá»‹ cÃ¡c mÃ³n thuá»™c ${label}.`;
   }
 }
 
@@ -347,7 +347,7 @@ function normalizeVietnamAddressData(provinces) {
 
     if (Array.isArray(province.wards)) {
       lookup[provinceName] = {
-        "Không dùng cấp huyện": province.wards
+        "KhÃ´ng dÃ¹ng cáº¥p huyá»‡n": province.wards
           .map(ward => String(ward.name || "").trim())
           .filter(Boolean)
       };
@@ -385,18 +385,18 @@ async function loadVietnamAddressLookup() {
 
     try {
       const response = await fetch(VIETNAM_ADDRESS_API);
-      if (!response.ok) throw new Error("Không tải được danh sách tỉnh thành.");
+      if (!response.ok) throw new Error("KhÃ´ng táº£i Ä‘Æ°á»£c danh sÃ¡ch tá»‰nh thÃ nh.");
 
       const provinces = await response.json();
       const lookup = normalizeVietnamAddressData(Array.isArray(provinces) ? provinces : []);
-      if (Object.keys(lookup).length === 0) throw new Error("Danh sách tỉnh thành không hợp lệ.");
+      if (Object.keys(lookup).length === 0) throw new Error("Danh sÃ¡ch tá»‰nh thÃ nh khÃ´ng há»£p lá»‡.");
 
       ADDRESS_LOOKUP = lookup;
       sessionStorage.setItem(ADDRESS_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), lookup }));
     } catch (error) {
       console.warn(error);
       ADDRESS_LOOKUP = LEGACY_ADDRESS_LOOKUP;
-      showSiteToast("Tạm thời dung danh sách địa chỉ dự phòng.", "info");
+      showSiteToast("Táº¡m thá»i dung danh sÃ¡ch Ä‘á»‹a chá»‰ dá»± phÃ²ng.", "info");
     }
 
     return ADDRESS_LOOKUP;
@@ -415,7 +415,7 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
 
   const parsedAddress = parseAddressString(selectedAddress);
   const cityNames = Object.keys(ADDRESS_LOOKUP);
-  setSelectOptions(citySelect, cityNames, "Chọn thanh pho");
+  setSelectOptions(citySelect, cityNames, "Chá»n thanh pho");
 
   if (cityNames.includes(parsedAddress.city)) {
     citySelect.value = parsedAddress.city;
@@ -425,12 +425,12 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
   const selectedDistrict = districtNames.includes(parsedAddress.district) ? parsedAddress.district : districtNames[0] || "";
 
   if (districtSelect) {
-    setSelectOptions(districtSelect, districtNames, "Chọn quan huyen");
+    setSelectOptions(districtSelect, districtNames, "Chá»n quan huyen");
     districtSelect.value = selectedDistrict;
   }
 
   const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [];
-  setSelectOptions(wardSelect, wardNames, "Chọn phuong xa");
+  setSelectOptions(wardSelect, wardNames, "Chá»n phuong xa");
   if (wardNames.includes(parsedAddress.ward)) {
     wardSelect.value = parsedAddress.ward;
   }
@@ -472,9 +472,9 @@ async function legacyInitAddressSelectors() {
 
     citySelect.dataset.addressSelectorInitialized = "true";
 
-    setSelectOptions(citySelect, cityNames, "Chọn thành phố");
-    setSelectOptions(districtSelect, [], "Chọn quận huyện");
-    setSelectOptions(wardSelect, [], "Chọn phường xã");
+    setSelectOptions(citySelect, cityNames, "Chá»n thÃ nh phá»‘");
+    setSelectOptions(districtSelect, [], "Chá»n quáº­n huyá»‡n");
+    setSelectOptions(wardSelect, [], "Chá»n phÆ°á»ng xÃ£");
 
     if (datalist) {
       datalist.innerHTML = DEFAULT_ADDRESS_SUGGESTIONS.map(suggestion => `<option value="${escapeHtml(suggestion)}"></option>`).join("");
@@ -482,14 +482,14 @@ async function legacyInitAddressSelectors() {
 
     citySelect.addEventListener("change", () => {
       const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
-      setSelectOptions(districtSelect, districts, "Chọn quận huyện");
-      setSelectOptions(wardSelect, [], "Chọn phường xã");
+      setSelectOptions(districtSelect, districts, "Chá»n quáº­n huyá»‡n");
+      setSelectOptions(wardSelect, [], "Chá»n phÆ°á»ng xÃ£");
       if (detailInput) detailInput.value = "";
     });
 
     districtSelect?.addEventListener("change", () => {
       const wards = ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [];
-      setSelectOptions(wardSelect, wards, "Chọn phường xã");
+      setSelectOptions(wardSelect, wards, "Chá»n phÆ°á»ng xÃ£");
     });
   });
 }
@@ -509,11 +509,11 @@ function legacyFillAddressForm(addressConfig, userAddress) {
   if (hasCityOption) {
     citySelect.value = parsedAddress.city;
     const districtList = Object.keys(ADDRESS_LOOKUP[parsedAddress.city] || {});
-    setSelectOptions(districtSelect, districtList, "Chọn quận huyện");
+    setSelectOptions(districtSelect, districtList, "Chá»n quáº­n huyá»‡n");
     districtSelect.value = parsedAddress.district || "";
 
     const wardList = ADDRESS_LOOKUP[parsedAddress.city]?.[parsedAddress.district] || [];
-    setSelectOptions(wardSelect, wardList, "Chọn phường xã");
+    setSelectOptions(wardSelect, wardList, "Chá»n phÆ°á»ng xÃ£");
     wardSelect.value = parsedAddress.ward || "";
   }
 
@@ -561,15 +561,15 @@ async function initAddressSelectors() {
       const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
       const selectedDistrict = districts[0] || "";
       if (districtSelect) {
-        setSelectOptions(districtSelect, districts, "Chọn quan huyen");
+        setSelectOptions(districtSelect, districts, "Chá»n quan huyen");
         districtSelect.value = selectedDistrict;
       }
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chọn phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chá»n phuong xa");
       if (detailInput) detailInput.value = "";
     });
 
     districtSelect?.addEventListener("change", () => {
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chọn phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chá»n phuong xa");
     });
   });
 }
@@ -586,7 +586,7 @@ function setCheckoutAddressRequiredState(hasAddress, message = "") {
     warning.hidden = hasAddress;
     warning.innerHTML = hasAddress
       ? ""
-      : `${escapeHtml(message || "Bạn cần cập nhật địa chỉ giao hàng trước khi đặt hàng.")} <a href="profile.html">Cập nhật ngay</a>`;
+      : `${escapeHtml(message || "Báº¡n cáº§n cáº­p nháº­t Ä‘á»‹a chá»‰ giao hÃ ng trÆ°á»›c khi Ä‘áº·t hÃ ng.")} <a href="profile.html">Cáº­p nháº­t ngay</a>`;
   }
 
   if (submitButton) {
@@ -625,7 +625,7 @@ async function loadCheckoutProfile() {
 
     return data.user;
   } catch (error) {
-    console.error("Không tải được hồ sơ đặt hàng:", error);
+    console.error("KhÃ´ng táº£i Ä‘Æ°á»£c há»“ sÆ¡ Ä‘áº·t hÃ ng:", error);
     return null;
   }
 }
@@ -647,9 +647,9 @@ async function loadCheckoutSavedAddresses() {
     if (!response.ok || !Array.isArray(data.addresses) || data.addresses.length === 0) return [];
 
     wrap.hidden = false;
-    select.innerHTML = `<option value="">Nhập địa chỉ mới</option>` + data.addresses.map(address => (
+    select.innerHTML = `<option value="">Nháº­p Ä‘á»‹a chá»‰ má»›i</option>` + data.addresses.map(address => (
       `<option value="${address.id}" data-address="${escapeHtml(address.address)}" data-name="${escapeHtml(address.receiverName || "")}" data-phone="${escapeHtml(address.phone || "")}">
-        ${escapeHtml(address.label || "Địa chỉ giao hàng")}${address.isDefault ? " - Mặc định" : ""}
+        ${escapeHtml(address.label || "Äá»‹a chá»‰ giao hÃ ng")}${address.isDefault ? " - Máº·c Ä‘á»‹nh" : ""}
       </option>`
     )).join("");
 
@@ -671,7 +671,7 @@ async function loadCheckoutSavedAddresses() {
 
     return data.addresses;
   } catch (error) {
-    console.error("Không tải được địa chỉ đã lưu:", error);
+    console.error("KhÃ´ng táº£i Ä‘Æ°á»£c Ä‘á»‹a chá»‰ Ä‘Ã£ lÆ°u:", error);
     return [];
   }
 }
@@ -708,7 +708,7 @@ async function loadFoods() {
 
   if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage) return;
 
-  if (foodList) foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+  if (foodList) foodList.innerHTML = "<p>Äang táº£i mÃ³n Äƒn...</p>";
 
   try {
     const response = await fetch(API_URL);
@@ -737,14 +737,14 @@ async function loadFoods() {
     renderFoodDetailPage();
     loadFoodReviews();
   } catch (error) {
-    console.error("Lỗi tải món ăn:", error);
-    if (foodList) foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
-    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Không thể tải món bán chạy từ database.</p>";
-    if (homeSectionBox) homeSectionBox.innerHTML = "<p>Không thể tải thực đơn từ database.</p>";
+    console.error("Lá»—i táº£i mÃ³n Äƒn:", error);
+    if (foodList) foodList.innerHTML = "<p>KhÃ´ng thá»ƒ táº£i mÃ³n Äƒn tá»« database.</p>";
+    if (bestSellerBox) bestSellerBox.innerHTML = "<p>KhÃ´ng thá»ƒ táº£i mÃ³n bÃ¡n cháº¡y tá»« database.</p>";
+    if (homeSectionBox) homeSectionBox.innerHTML = "<p>KhÃ´ng thá»ƒ táº£i thá»±c Ä‘Æ¡n tá»« database.</p>";
   }
 }
 function getFoodDisplayCategory(food) {
-  return food.parentCategoryName || food.categoryName || "Món ăn";
+  return food.parentCategoryName || food.categoryName || "MÃ³n Äƒn";
 }
 
 function getFoodComments(food) {
@@ -765,7 +765,7 @@ async function loadFoodReviews() {
 
     foodReviews = await response.json();
   } catch (error) {
-    console.error("Lỗi tải đánh giá món ăn:", error);
+    console.error("Lá»—i táº£i Ä‘Ã¡nh giÃ¡ mÃ³n Äƒn:", error);
     foodReviews = [];
   }
 
@@ -778,7 +778,7 @@ function getReviewFood(review) {
 }
 
 function getReviewCustomerName(review) {
-  return review.customerName || "Khách hàng FoodHub";
+  return review.customerName || "KhÃ¡ch hÃ ng FoodHub";
 }
 
 function getReviewInitials(name) {
@@ -812,11 +812,11 @@ function formatReviewDate(value) {
 
 function renderStarText(rating = 5) {
   const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
-  return "★".repeat(value) + "☆".repeat(5 - value);
+  return "â˜…".repeat(value) + "â˜†".repeat(5 - value);
 }
 
 function renderRatingLabel(rating, reviewCount = 0) {
-  if (!Number(reviewCount)) return "Chưa có đánh giá";
+  if (!Number(reviewCount)) return "ChÆ°a cÃ³ Ä‘Ã¡nh giÃ¡";
   return `${renderStarText(rating)} ${Number(rating || 0).toFixed(1)}`;
 }
 
@@ -836,7 +836,7 @@ function renderCompactFoodCard(food, options = {}) {
 
   return `
     <article class="${cardClass}" data-open-food-detail="${food.id}">
-      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiáº¿t ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="home-food-card-body">
         <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
@@ -844,7 +844,7 @@ function renderCompactFoodCard(food, options = {}) {
         <p>${escapeHtml(food.desc || "")}</p>
         <div class="home-food-meta">
           <span>${renderRatingLabel(food.rating, food.reviewCount)}</span>
-          <span>Đã bán ${sold}</span>
+          <span>ÄÃ£ bÃ¡n ${sold}</span>
         </div>
         <div class="home-food-bottom">
           <strong>${formatMoney(food.price)}</strong>
@@ -858,12 +858,12 @@ function renderCompactFoodCard(food, options = {}) {
 function renderBestSellerCard(food) {
   return `
     <article class="best-seller-card" data-open-food-detail="${food.id}">
-      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
+      <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiáº¿t ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       <div class="best-seller-overlay">
-        <span>Bán chạy</span>
+        <span>BÃ¡n cháº¡y</span>
         <h3>${escapeHtml(food.name)}</h3>
-        <p>${renderRatingLabel(food.rating, food.reviewCount)} • Đã bán ${Number(food.soldCount || 0)}</p>
+        <p>${renderRatingLabel(food.rating, food.reviewCount)} â€¢ ÄÃ£ bÃ¡n ${Number(food.soldCount || 0)}</p>
       </div>
     </article>
   `;
@@ -876,8 +876,8 @@ function renderHomeFoodSections() {
   if (!bestSellerBox && !sectionBox) return;
 
   if (!foods.length) {
-    if (bestSellerBox) bestSellerBox.innerHTML = "<p>Chưa có món ăn.</p>";
-    if (sectionBox) sectionBox.innerHTML = "<p>Chưa có món ăn.</p>";
+    if (bestSellerBox) bestSellerBox.innerHTML = "<p>ChÆ°a cÃ³ mÃ³n Äƒn.</p>";
+    if (sectionBox) sectionBox.innerHTML = "<p>ChÆ°a cÃ³ mÃ³n Äƒn.</p>";
     return;
   }
 
@@ -888,7 +888,7 @@ function renderHomeFoodSections() {
       .slice(0, 5);
 
     if (!bestSellers.length) {
-      bestSellerBox.innerHTML = "<p>Chưa có món nào phát sinh lượt bán.</p>";
+      bestSellerBox.innerHTML = "<p>ChÆ°a cÃ³ mÃ³n nÃ o phÃ¡t sinh lÆ°á»£t bÃ¡n.</p>";
     } else {
       const sellerCards = bestSellers.map(renderBestSellerCard).join("");
       const duplicatedCards = bestSellers.length > 1 ? sellerCards + sellerCards : sellerCards;
@@ -913,7 +913,7 @@ function renderHomeFoodSections() {
       <section class="home-category-block">
         <div class="home-category-heading">
           <h3>${escapeHtml(group.title)}</h3>
-          <a href="menu.html?category=${encodeURIComponent(group.items[0]?.subcategory || group.items[0]?.category || "all")}">Xem tất cả</a>
+          <a href="menu.html?category=${encodeURIComponent(group.items[0]?.subcategory || group.items[0]?.category || "all")}">Xem táº¥t cáº£</a>
         </div>
         <div class="home-food-grid">
           ${getFeaturedCategoryItems(group.items, 4).map(food => renderCompactFoodCard(food)).join("")}
@@ -923,31 +923,153 @@ function renderHomeFoodSections() {
   }
 }
 
-function renderHomeReviewCard(review) {
+const REVIEW_PAGE_SIZE = 3;
+const reviewListState = {
+  home: { rating: "all", food: "all", sort: "newest", page: 1 },
+  detailDialog: { rating: "all", food: "current", sort: "newest", page: 1 },
+  detailPage: { rating: "all", food: "current", sort: "newest", page: 1 }
+};
+
+function getReviewFoodName(review) {
   const food = getReviewFood(review);
+  return food?.name || review.foodName || "M\u00f3n \u0103n";
+}
+
+function getReviewFoodImage(review) {
+  const food = getReviewFood(review);
+  return food?.image || review.foodImage || "";
+}
+
+function renderReviewListCard(review, options = {}) {
   const customerName = getReviewCustomerName(review);
-  const foodName = food?.name || review.foodName || "M\u00f3n \u0103n";
-  const image = food?.image || review.foodImage || "";
+  const foodName = getReviewFoodName(review);
+  const image = getReviewFoodImage(review);
+  const showFood = options.showFood !== false;
 
   return `
-    <article class="home-review-card">
-      <div class="home-review-body">
-        <div class="home-review-author">
-          ${renderReviewAvatar(review, "home-review-avatar")}
+    <article class="review-list-card">
+      <div class="review-list-avatar">${renderReviewAvatar(review, "food-review-avatar")}</div>
+      <div class="review-list-main">
+        <header class="review-list-head">
           <div>
             <strong>${escapeHtml(customerName)}</strong>
             <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
           </div>
-          <span class="home-review-stars">${renderStarText(review.rating)}</span>
-        </div>
+          <span class="review-list-stars">${renderStarText(review.rating)}</span>
+        </header>
         <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
+        ${showFood ? `
+          <a class="review-list-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
+            <span>${escapeHtml(foodName)}</span>
+          </a>
+        ` : ""}
       </div>
-      <a class="home-review-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
-        <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
-        <span>${escapeHtml(foodName)}</span>
-      </a>
     </article>
   `;
+}
+
+function getReviewFoodOptions(selectedFood, options = {}) {
+  const currentFoodId = options.currentFoodId ? String(options.currentFoodId) : "";
+  const ids = new Set(foodReviews.map(review => String(review.foodId)));
+  const currentOption = options.includeCurrent && currentFoodId
+    ? `<option value="current" ${selectedFood === "current" ? "selected" : ""}>M&oacute;n hi&#7879;n t&#7841;i</option>`
+    : "";
+
+  return `
+    ${currentOption}
+    <option value="all" ${selectedFood === "all" ? "selected" : ""}>T&#7845;t c&#7843; m&oacute;n</option>
+    ${foods
+      .filter(food => ids.has(String(food.id)))
+      .map(food => `<option value="${food.id}" ${String(selectedFood) === String(food.id) ? "selected" : ""}>${escapeHtml(food.name)}</option>`)
+      .join("")}
+  `;
+}
+
+function filterAndSortReviews(reviews, state, options = {}) {
+  const currentFoodId = options.currentFoodId ? String(options.currentFoodId) : "";
+  const foodFilter = state.food === "current" ? currentFoodId : state.food;
+
+  return [...reviews]
+    .filter(review => state.rating === "all" || String(review.rating) === String(state.rating))
+    .filter(review => !foodFilter || foodFilter === "all" || String(review.foodId) === String(foodFilter))
+    .sort((first, second) => {
+      const firstDate = new Date(first.createdAt || 0).getTime();
+      const secondDate = new Date(second.createdAt || 0).getTime();
+      return state.sort === "oldest" ? firstDate - secondDate : secondDate - firstDate;
+    });
+}
+
+function renderReviewPagination(totalPages, currentPage) {
+  if (totalPages <= 1) return "";
+
+  return `
+    <div class="review-pagination" aria-label="Ph&acirc;n trang b&igrave;nh lu&#7853;n">
+      <button type="button" data-review-page="${Math.max(1, currentPage - 1)}" ${currentPage <= 1 ? "disabled" : ""}>&lsaquo;</button>
+      ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
+        <button type="button" class="${page === currentPage ? "active" : ""}" data-review-page="${page}">${page}</button>
+      `).join("")}
+      <button type="button" data-review-page="${Math.min(totalPages, currentPage + 1)}" ${currentPage >= totalPages ? "disabled" : ""}>&rsaquo;</button>
+    </div>
+  `;
+}
+
+function renderReviewPanel(scope, controlsElement, listElement, reviews, options = {}) {
+  if (!listElement) return;
+
+  const state = reviewListState[scope] || reviewListState.home;
+  const filteredReviews = filterAndSortReviews(reviews, state, options);
+  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / REVIEW_PAGE_SIZE));
+  state.page = Math.min(Math.max(1, Number(state.page || 1)), totalPages);
+  const startIndex = (state.page - 1) * REVIEW_PAGE_SIZE;
+  const pageReviews = filteredReviews.slice(startIndex, startIndex + REVIEW_PAGE_SIZE);
+
+  if (controlsElement) {
+    controlsElement.innerHTML = `
+      <label>
+        <span>S&#7889; sao</span>
+        <select data-review-filter="rating">
+          <option value="all" ${state.rating === "all" ? "selected" : ""}>T&#7845;t c&#7843;</option>
+          ${[5, 4, 3, 2, 1].map(star => `<option value="${star}" ${String(state.rating) === String(star) ? "selected" : ""}>${star} sao</option>`).join("")}
+        </select>
+      </label>
+      <label>
+        <span>M&oacute;n &#259;n</span>
+        <select data-review-filter="food">
+          ${getReviewFoodOptions(state.food, options)}
+        </select>
+      </label>
+      <label>
+        <span>S&#7855;p x&#7871;p</span>
+        <select data-review-filter="sort">
+          <option value="newest" ${state.sort === "newest" ? "selected" : ""}>M&#7899;i nh&#7845;t</option>
+          <option value="oldest" ${state.sort === "oldest" ? "selected" : ""}>C&#361; nh&#7845;t</option>
+        </select>
+      </label>
+    `;
+
+    controlsElement.querySelectorAll("[data-review-filter]").forEach(control => {
+      control.addEventListener("change", () => {
+        state[control.dataset.reviewFilter] = control.value;
+        state.page = 1;
+        renderReviewPanel(scope, controlsElement, listElement, reviews, options);
+      });
+    });
+  }
+
+  listElement.innerHTML = pageReviews.length
+    ? `
+      ${pageReviews.map(review => renderReviewListCard(review, options)).join("")}
+      ${renderReviewPagination(totalPages, state.page)}
+    `
+    : `<p class="home-review-empty">Ch&#432;a c&oacute; b&igrave;nh lu&#7853;n ph&ugrave; h&#7907;p.</p>`;
+
+  listElement.querySelectorAll("[data-review-page]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.page = Number(button.dataset.reviewPage || 1);
+      renderReviewPanel(scope, controlsElement, listElement, reviews, options);
+    });
+  });
 }
 
 function renderHomeReviews() {
@@ -956,38 +1078,8 @@ function renderHomeReviews() {
 
   if (!reviewBox && !filterBox) return;
 
-  if (filterBox) {
-    filterBox.innerHTML = `
-      <button type="button" class="home-review-nav" data-review-scroll="-1" aria-label="Xem binh luan truoc">&lsaquo;</button>
-      <button type="button" class="home-review-nav" data-review-scroll="1" aria-label="Xem binh luan tiep theo">&rsaquo;</button>
-    `;
-
-    filterBox.querySelectorAll("[data-review-scroll]").forEach(button => {
-      button.addEventListener("click", () => {
-        const direction = Number(button.dataset.reviewScroll || 1);
-        reviewBox?.scrollBy({
-          left: direction * Math.max(280, Math.floor(reviewBox.clientWidth * 0.85)),
-          behavior: "smooth"
-        });
-      });
-    });
-  }
-
-  if (!reviewBox) return;
-
-  const featuredReviews = [...foodReviews]
-    .sort((first, second) => {
-      const firstHasComment = String(first.comment || "").trim() ? 1 : 0;
-      const secondHasComment = String(second.comment || "").trim() ? 1 : 0;
-      return secondHasComment - firstHasComment || new Date(second.createdAt || 0) - new Date(first.createdAt || 0);
-    })
-    .slice(0, 10);
-
-  reviewBox.innerHTML = featuredReviews.length
-    ? featuredReviews.map(renderHomeReviewCard).join("")
-    : `<p class="home-review-empty">Ch\u01b0a c\u00f3 b\u00ecnh lu\u1eadn ph\u00f9 h\u1ee3p.</p>`;
+  renderReviewPanel("home", filterBox, reviewBox, foodReviews, { showFood: true });
 }
-
 function hasReviewedOrderItem(orderId, foodId) {
   return foodReviews.some(review => String(review.orderId) === String(orderId) && String(review.foodId) === String(foodId));
 }
@@ -996,31 +1088,31 @@ function renderOrderReviewControl(order, item) {
   if (order.status !== "done") return "";
 
   if (hasReviewedOrderItem(order.id, item.food_id)) {
-    return `<span class="order-review-done">Đã đánh giá</span>`;
+    return `<span class="order-review-done">ÄÃ£ Ä‘Ã¡nh giÃ¡</span>`;
   }
 
   const panelId = `review-panel-${order.id}-${item.food_id}`;
 
   return `
     <div class="order-review">
-      <button type="button" class="order-review-toggle" onclick="toggleOrderReviewForm('${panelId}')">Đánh giá</button>
+      <button type="button" class="order-review-toggle" onclick="toggleOrderReviewForm('${panelId}')">ÄÃ¡nh giÃ¡</button>
       <form id="${panelId}" class="order-review-form" onsubmit="submitFoodReview(event, ${order.id}, ${item.food_id})" hidden>
-        <fieldset class="order-review-stars" aria-label="Chọn số sao">
-          <legend>Số sao <small>bắt buộc</small></legend>
+        <fieldset class="order-review-stars" aria-label="Chá»n sá»‘ sao">
+          <legend>Sá»‘ sao <small>báº¯t buá»™c</small></legend>
           <div class="order-review-star-options">
             ${[5, 4, 3, 2, 1].map(star => `
               <input type="radio" id="${panelId}-star-${star}" name="rating" value="${star}" required>
-              <label for="${panelId}-star-${star}" title="${star} sao">★</label>
+              <label for="${panelId}-star-${star}" title="${star} sao">â˜…</label>
             `).join("")}
           </div>
         </fieldset>
         <label>
-          <span>Nhận xét</span>
-          <textarea name="comment" rows="3" maxlength="1000" placeholder="Bạn có thể để trống nếu chỉ muốn chấm sao."></textarea>
+          <span>Nháº­n xÃ©t</span>
+          <textarea name="comment" rows="3" maxlength="1000" placeholder="Báº¡n cÃ³ thá»ƒ Ä‘á»ƒ trá»‘ng náº¿u chá»‰ muá»‘n cháº¥m sao."></textarea>
         </label>
         <div class="order-review-actions">
-          <button type="submit" class="btn">Gửi đánh giá</button>
-          <button type="button" class="btn muted-btn" onclick="toggleOrderReviewForm('${panelId}', true)">Hủy</button>
+          <button type="submit" class="btn">Gá»­i Ä‘Ã¡nh giÃ¡</button>
+          <button type="button" class="btn muted-btn" onclick="toggleOrderReviewForm('${panelId}', true)">Há»§y</button>
         </div>
       </form>
     </div>
@@ -1042,7 +1134,7 @@ async function submitFoodReview(event, orderId, foodId) {
   const comment = form.comment.value.trim();
 
   if (!rating) {
-    showSiteToast("Vui lòng chọn số sao trước khi gửi đánh giá.", "error");
+    showSiteToast("Vui lÃ²ng chá»n sá»‘ sao trÆ°á»›c khi gá»­i Ä‘Ã¡nh giÃ¡.", "error");
     return;
   }
 
@@ -1060,14 +1152,14 @@ async function submitFoodReview(event, orderId, foodId) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(data.message || "Không thể gửi đánh giá.");
+      throw new Error(data.message || "KhÃ´ng thá»ƒ gá»­i Ä‘Ã¡nh giÃ¡.");
     }
 
-    showSiteToast(data.message || "Đánh giá món ăn thành công.");
+    showSiteToast(data.message || "ÄÃ¡nh giÃ¡ mÃ³n Äƒn thÃ nh cÃ´ng.");
     await loadFoodReviews();
     await loadOrderHistory();
   } catch (error) {
-    showSiteToast(error.message || "Không thể gửi đánh giá.", "error");
+    showSiteToast(error.message || "KhÃ´ng thá»ƒ gá»­i Ä‘Ã¡nh giÃ¡.", "error");
   } finally {
     if (submitButton) submitButton.disabled = false;
   }
@@ -1107,22 +1199,22 @@ function getFoodDetailBreadcrumb(food) {
 
   if (from === "home") {
     return [
-      { label: "Trang chủ", href: "index.html" },
-      { label: "Chi tiết món ăn" }
+      { label: "Trang chá»§", href: "index.html" },
+      { label: "Chi tiáº¿t mÃ³n Äƒn" }
     ];
   }
 
   if (from === "cart") {
     return [
-      { label: "Giỏ hàng", href: "cart.html" },
-      { label: "Chi tiết món ăn" }
+      { label: "Giá» hÃ ng", href: "cart.html" },
+      { label: "Chi tiáº¿t mÃ³n Äƒn" }
     ];
   }
 
   return [
     { label: rootLabel, href: `menu.html?category=${encodeURIComponent(food.category || "all")}` },
     { label: categoryLabel, href: `menu.html?category=${encodeURIComponent(categoryValue)}` },
-    { label: "Chi tiết món ăn" }
+    { label: "Chi tiáº¿t mÃ³n Äƒn" }
   ];
 }
 
@@ -1156,11 +1248,11 @@ function showFoodDetail(foodId) {
   dialog.className = "food-detail-dialog";
   dialog.innerHTML = `
     <div class="food-detail-card" role="dialog" aria-modal="true" aria-labelledby="foodDetailTitle">
-      <button type="button" class="food-detail-close" aria-label="Đóng">&times;</button>
+      <button type="button" class="food-detail-close" aria-label="ÄÃ³ng">&times;</button>
       <div class="food-detail-main">
         <div class="food-detail-gallery">
           <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
-          <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
+          <div class="food-detail-thumbs" aria-label="áº¢nh mÃ³n Äƒn">
             <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
             <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
             <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
@@ -1172,16 +1264,16 @@ function showFoodDetail(foodId) {
           <div class="food-detail-stats">
             <span class="food-detail-stars">${renderStarText(rating)}</span>
             <span>${rating.toFixed(1)} sao</span>
-            <span>${sold} lượt mua</span>
-            <span>${reviewCount} đánh giá</span>
+            <span>${sold} lÆ°á»£t mua</span>
+            <span>${reviewCount} Ä‘Ã¡nh giÃ¡</span>
           </div>
           <strong class="food-detail-price">${formatMoney(food.price)}</strong>
-          <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+          <p>${escapeHtml(food.desc || "FoodHub Ä‘ang cáº­p nháº­t mÃ´ táº£ chi tiáº¿t cho mÃ³n Äƒn nÃ y.")}</p>
           <div class="food-detail-options">
-            <h3>Tùy chọn thêm</h3>
-            <label><input type="checkbox" disabled> Thêm phô mai <span>+15.000đ</span></label>
-            <label><input type="checkbox" disabled> Thêm topping <span>+25.000đ</span></label>
-            <label><input type="checkbox" disabled> Không hành tây <span>Miễn phí</span></label>
+            <h3>TÃ¹y chá»n thÃªm</h3>
+            <label><input type="checkbox" disabled> ThÃªm phÃ´ mai <span>+15.000Ä‘</span></label>
+            <label><input type="checkbox" disabled> ThÃªm topping <span>+25.000Ä‘</span></label>
+            <label><input type="checkbox" disabled> KhÃ´ng hÃ nh tÃ¢y <span>Miá»…n phÃ­</span></label>
           </div>
           <div class="food-detail-actions">
             <div class="food-detail-qty">
@@ -1189,38 +1281,33 @@ function showFoodDetail(foodId) {
               <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
               <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
             </div>
-            <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
+            <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "ThÃªm vÃ o giá» hÃ ng" : "Háº¿t hÃ ng"}</button>
           </div>
         </div>
       </div>
       <section class="food-detail-reviews">
-        <h3>Đánh giá & Nhận xét</h3>
+        <h3>ÄÃ¡nh giÃ¡ & Nháº­n xÃ©t</h3>
         <div class="food-review-summary">
           <div class="food-review-score">
             <strong>${rating.toFixed(1)}</strong>
             <span>${renderStarText(rating)}</span>
-            <small>Dựa trên ${reviewCount} đánh giá</small>
+            <small>Dá»±a trÃªn ${reviewCount} Ä‘Ã¡nh giÃ¡</small>
           </div>
           <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
         </div>
-        <div class="food-review-list">
-          ${comments.length ? comments.map(comment => `
-            <article>
-              ${renderReviewAvatar(comment, "food-review-avatar")}
-              <div>
-                <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
-                <span>${renderStarText(comment.rating)}</span>
-                <p>${escapeHtml(comment.comment)}</p>
-              </div>
-            </article>
-          `).join("") : `<p class="food-review-empty">Chưa có đánh giá cho món này.</p>`}
-        </div>
+        <div id="foodDetailDialogReviewControls" class="review-filter-bar"></div>
+        <div id="foodDetailDialogReviewList" class="review-list"></div>
       </section>
     </div>
   `;
 
   document.body.appendChild(dialog);
   document.body.classList.add("food-detail-open");
+  renderReviewPanel("detailDialog", dialog.querySelector("#foodDetailDialogReviewControls"), dialog.querySelector("#foodDetailDialogReviewList"), foodReviews, {
+    currentFoodId: food.id,
+    includeCurrent: true,
+    showFood: true
+  });
   dialog.querySelector(".food-detail-close")?.addEventListener("click", closeFoodDetail);
   dialog.querySelectorAll("[data-food-qty-step]").forEach(button => {
     button.addEventListener("click", () => {
@@ -1250,9 +1337,9 @@ function renderFoodDetailPage() {
   if (!food) {
     page.innerHTML = `
       <section class="food-detail-page-empty">
-        <h1>Không tìm thấy món ăn</h1>
-        <p>Món ăn có thể đã bị ẩn hoặc đường dẫn không còn hợp lệ.</p>
-        <a class="btn" href="menu.html">Quay lại thực đơn</a>
+        <h1>KhÃ´ng tÃ¬m tháº¥y mÃ³n Äƒn</h1>
+        <p>MÃ³n Äƒn cÃ³ thá»ƒ Ä‘Ã£ bá»‹ áº©n hoáº·c Ä‘Æ°á»ng dáº«n khÃ´ng cÃ²n há»£p lá»‡.</p>
+        <a class="btn" href="menu.html">Quay láº¡i thá»±c Ä‘Æ¡n</a>
       </section>
     `;
     return;
@@ -1274,7 +1361,7 @@ function renderFoodDetailPage() {
         <div class="food-detail-main">
           <div class="food-detail-gallery">
             <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
-            <div class="food-detail-thumbs" aria-label="Ảnh món ăn">
+            <div class="food-detail-thumbs" aria-label="áº¢nh mÃ³n Äƒn">
               <button type="button" class="active"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
               <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
               <button type="button"><img src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}"></button>
@@ -1286,43 +1373,33 @@ function renderFoodDetailPage() {
             <div class="food-detail-stats">
               <span class="food-detail-stars">${renderStarText(rating)}</span>
               <span>${rating.toFixed(1)} sao</span>
-              <span>${sold} lượt mua</span>
-              <span>${reviewCount} đánh giá</span>
+              <span>${sold} lÆ°á»£t mua</span>
+              <span>${reviewCount} Ä‘Ã¡nh giÃ¡</span>
             </div>
             <strong class="food-detail-price">${formatMoney(food.price)}</strong>
-            <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+            <p>${escapeHtml(food.desc || "FoodHub Ä‘ang cáº­p nháº­t mÃ´ táº£ chi tiáº¿t cho mÃ³n Äƒn nÃ y.")}</p>
             <div class="food-detail-actions">
               <div class="food-detail-qty">
                 <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
                 <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>
                 <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
               </div>
-              <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
+              <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "ThÃªm vÃ o giá» hÃ ng" : "Háº¿t hÃ ng"}</button>
             </div>
           </div>
         </div>
         <section class="food-detail-reviews">
-          <h3>Đánh giá & Nhận xét</h3>
+          <h3>ÄÃ¡nh giÃ¡ & Nháº­n xÃ©t</h3>
           <div class="food-review-summary">
             <div class="food-review-score">
               <strong>${rating.toFixed(1)}</strong>
               <span>${renderStarText(rating)}</span>
-              <small>Dựa trên ${reviewCount} đánh giá</small>
+              <small>Dá»±a trÃªn ${reviewCount} Ä‘Ã¡nh giÃ¡</small>
             </div>
             <div class="food-rating-bars">${renderRatingBreakdown(rating, reviewCount)}</div>
           </div>
-          <div class="food-review-list">
-            ${comments.length ? comments.map(comment => `
-              <article>
-                ${renderReviewAvatar(comment, "food-review-avatar")}
-                <div>
-                  <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
-                  <span>${renderStarText(comment.rating)}</span>
-                  <p>${escapeHtml(comment.comment)}</p>
-                </div>
-              </article>
-            `).join("") : `<p class="food-review-empty">Chưa có đánh giá cho món này.</p>`}
-          </div>
+          <div id="foodDetailPageReviewControls" class="review-filter-bar"></div>
+          <div id="foodDetailPageReviewList" class="review-list"></div>
         </section>
       </div>
     </section>
@@ -1337,6 +1414,11 @@ function renderFoodDetailPage() {
       input.value = String(nextValue);
     });
   });
+  renderReviewPanel("detailPage", page.querySelector("#foodDetailPageReviewControls"), page.querySelector("#foodDetailPageReviewList"), foodReviews, {
+    currentFoodId: food.id,
+    includeCurrent: true,
+    showFood: true
+  });
 }
 
 async function loadPublicAnnouncements() {
@@ -1349,7 +1431,7 @@ async function loadPublicAnnouncements() {
     const announcements = await response.json();
 
     if (!response.ok || announcements.length === 0) {
-      box.innerHTML = `<span class="announcement-empty">Hien chưa có thông báo mới.</span>`;
+      box.innerHTML = `<span class="announcement-empty">Hien chÆ°a cÃ³ thÃ´ng bÃ¡o má»›i.</span>`;
       return;
     }
 
@@ -1370,7 +1452,7 @@ async function loadPublicAnnouncements() {
 
     startAnnouncementTicker(box, announcements.length);
   } catch (error) {
-    box.innerHTML = `<span class="announcement-empty">Không thể tải thông báo.</span>`;
+    box.innerHTML = `<span class="announcement-empty">KhÃ´ng thá»ƒ táº£i thÃ´ng bÃ¡o.</span>`;
     console.error(error);
   }
 }
@@ -1390,8 +1472,8 @@ function getFloatingAdvertisementsShell() {
   shell.dataset.floatingAds = "true";
   shell.hidden = true;
   shell.innerHTML = `
-    <a class="floating-ad floating-ad-left" data-floating-ad-slot="left" aria-label="Quảng cáo bên trái" hidden></a>
-    <a class="floating-ad floating-ad-right" data-floating-ad-slot="right" aria-label="Quảng cáo bên phải" hidden></a>
+    <a class="floating-ad floating-ad-left" data-floating-ad-slot="left" aria-label="Quáº£ng cÃ¡o bÃªn trÃ¡i" hidden></a>
+    <a class="floating-ad floating-ad-right" data-floating-ad-slot="right" aria-label="Quáº£ng cÃ¡o bÃªn pháº£i" hidden></a>
   `;
   document.body.appendChild(shell);
 
@@ -1411,7 +1493,7 @@ function renderFloatingAdItem(slot, advertisement) {
     slot.removeAttribute("rel");
   }
 
-  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo FoodHub")}">`;
+  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quáº£ng cÃ¡o FoodHub")}">`;
   slot.hidden = false;
 }
 
@@ -1468,19 +1550,19 @@ async function loadFloatingAdvertisements() {
     setFloatingAdSlot(shell, "right", rightAdvertisements);
   } catch (error) {
     shell.hidden = true;
-    console.error("Lỗi tải quảng cáo:", error);
+    console.error("Lá»—i táº£i quáº£ng cÃ¡o:", error);
   }
 }
 
 function getAnnouncementStatusText(status) {
   const labels = {
-    active: "Đang hoạt động",
-    hidden: "Đã ẩn",
-    expired: "Hết hạn",
-    scheduled: "Sắp hiển thị"
+    active: "Äang hoáº¡t Ä‘á»™ng",
+    hidden: "ÄÃ£ áº©n",
+    expired: "Háº¿t háº¡n",
+    scheduled: "Sáº¯p hiá»ƒn thá»‹"
   };
 
-  return labels[status] || status || "Không rõ";
+  return labels[status] || status || "KhÃ´ng rÃµ";
 }
 
 function getDateInputValue(value) {
@@ -1526,7 +1608,7 @@ function renderAnnouncementArchive() {
   const to = start + pageItems.length;
 
   if (total === 0) {
-    list.innerHTML = `<p>Không có thông báo phù hợp.</p>`;
+    list.innerHTML = `<p>KhÃ´ng cÃ³ thÃ´ng bÃ¡o phÃ¹ há»£p.</p>`;
     if (pager) pager.innerHTML = "";
     return;
   }
@@ -1540,12 +1622,12 @@ function renderAnnouncementArchive() {
       </div>
       <dl>
         <div>
-          <dt>Ngày đăng</dt>
+          <dt>NgÃ y Ä‘Äƒng</dt>
           <dd>${formatDateTime(item.published_at)}</dd>
         </div>
         <div>
-          <dt>Hết hiệu lực</dt>
-          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</dd>
+          <dt>Háº¿t hiá»‡u lá»±c</dt>
+          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "KhÃ´ng giá»›i háº¡n"}</dd>
         </div>
       </dl>
     </article>
@@ -1554,7 +1636,7 @@ function renderAnnouncementArchive() {
   if (!pager) return;
 
   pager.innerHTML = `
-    <span>Đang hiển thị từ ${from} đến ${to} của ${total} thông báo</span>
+    <span>Äang hiá»ƒn thá»‹ tá»« ${from} Ä‘áº¿n ${to} cá»§a ${total} thÃ´ng bÃ¡o</span>
     <div class="archive-pager-buttons">
       <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""}>&lsaquo;</button>
       ${Array.from({ length: totalPages }, (_, index) => `
@@ -1570,14 +1652,14 @@ async function loadAnnouncementArchive() {
 
   if (!list) return;
 
-  list.innerHTML = `<p>Đang tải thông báo...</p>`;
+  list.innerHTML = `<p>Äang táº£i thÃ´ng bÃ¡o...</p>`;
 
   try {
     const response = await fetch(`${ANNOUNCEMENTS_API}/archive`);
     const announcements = await response.json();
 
     if (!response.ok) {
-      throw new Error(announcements.message || "Không thể tải thông báo.");
+      throw new Error(announcements.message || "KhÃ´ng thá»ƒ táº£i thÃ´ng bÃ¡o.");
     }
 
     announcementArchive = announcements;
@@ -1675,19 +1757,19 @@ function renderFoods() {
   );
 
   if (filteredFoods.length === 0) {
-    foodList.innerHTML = "<p>Không tìm thấy món ăn phù hợp.</p>";
+    foodList.innerHTML = "<p>KhÃ´ng tÃ¬m tháº¥y mÃ³n Äƒn phÃ¹ há»£p.</p>";
     return;
   }
 
   foodList.innerHTML = filteredFoods.map(food => {
     const stock = Number(food.stockQuantity || 0);
     const quantityInput = `<input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>`;
-    const buttonLabel = stock > 0 ? "Thêm vào giỏ" : "Hết hàng";
-    const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
+    const buttonLabel = stock > 0 ? "ThÃªm vÃ o giá»" : "Háº¿t hÃ ng";
+    const stockLabel = stock > 0 ? `CÃ²n ${stock}` : "Háº¿t hÃ ng";
 
     return `
       <div class="food-card" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
-        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
+        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiáº¿t ${escapeHtml(food.name)}">
           <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
           <h3>${escapeHtml(food.name)}</h3>
           <p>${escapeHtml(food.desc || "")}</p>
@@ -1697,7 +1779,7 @@ function renderFoods() {
           <span class="food-stock-badge ${stock > 0 ? "in-stock" : "out-stock"}">${stockLabel}</span>
         </div>
         <div class="food-qty-row">
-          <label for="food-qty-${food.id}">Số lượng</label>
+          <label for="food-qty-${food.id}">Sá»‘ lÆ°á»£ng</label>
           ${quantityInput}
         </div>
         <button type="button" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
@@ -1708,20 +1790,20 @@ function renderFoods() {
 
 function addToCart(foodId) {
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập để thêm món vào giỏ hàng.", "menu.html");
+    requireLogin("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ thÃªm mÃ³n vÃ o giá» hÃ ng.", "menu.html");
     return;
   }
 
   const food = foods.find(item => String(item.id) === String(foodId));
 
   if (!food) {
-    showSiteToast("Không tìm thấy món ăn.", "error");
+    showSiteToast("KhÃ´ng tÃ¬m tháº¥y mÃ³n Äƒn.", "error");
     return;
   }
 
   const stock = Number(food.stockQuantity || 0);
   if (stock <= 0) {
-    showSiteToast("Món này hiện đã hết hàng.", "error");
+    showSiteToast("MÃ³n nÃ y hiá»‡n Ä‘Ã£ háº¿t hÃ ng.", "error");
     return;
   }
 
@@ -1730,7 +1812,7 @@ function addToCart(foodId) {
   const cappedQuantity = Math.min(requestedQuantity, stock);
 
   if (requestedQuantity > stock) {
-    showSiteToast(`Chỉ còn ${stock} phần cho món ${food.name}.`, "error");
+    showSiteToast(`Chá»‰ cÃ²n ${stock} pháº§n cho mÃ³n ${food.name}.`, "error");
     if (requestedInput) {
       requestedInput.value = String(stock);
     }
@@ -1741,7 +1823,7 @@ function addToCart(foodId) {
   const totalRequestedQuantity = (itemInCart?.quantity || 0) + cappedQuantity;
 
   if (totalRequestedQuantity > stock) {
-    showSiteToast(`Bạn đang đặt quá số lượng còn của ${food.name}.`, "error");
+    showSiteToast(`Báº¡n Ä‘ang Ä‘áº·t quÃ¡ sá»‘ lÆ°á»£ng cÃ²n cá»§a ${food.name}.`, "error");
     return;
   }
 
@@ -1759,7 +1841,7 @@ function addToCart(foodId) {
   saveCart();
   renderCart();
   updateCartCount();
-  showSiteToast(`Đã thêm ${food.name} x ${cappedQuantity} vào giỏ hàng`);
+  showSiteToast(`ÄÃ£ thÃªm ${food.name} x ${cappedQuantity} vÃ o giá» hÃ ng`);
 }
 
 function renderCart() {
@@ -1772,14 +1854,14 @@ function renderCart() {
   if (!cartItems || !totalPrice) return;
 
   if (cart.length === 0) {
-    cartItems.innerHTML = `<p class="empty-cart">Giỏ hàng đang trống.</p>`;
-    totalPrice.textContent = "0đ";
+    cartItems.innerHTML = `<p class="empty-cart">Giá» hÃ ng Ä‘ang trá»‘ng.</p>`;
+    totalPrice.textContent = "0Ä‘";
     if (checkoutSummary) {
       checkoutSummary.innerHTML = `
-        <div><span>Tổng mặt hàng</span><strong>0</strong></div>
-        <div><span>Tạm tính</span><strong>0đ</strong></div>
-        <div><span>Phí giao hàng</span><strong>Chưa áp dụng</strong></div>
-        <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>0đ</strong></div>
+        <div><span>Tá»•ng máº·t hÃ ng</span><strong>0</strong></div>
+        <div><span>Táº¡m tÃ­nh</span><strong>0Ä‘</strong></div>
+        <div><span>PhÃ­ giao hÃ ng</span><strong>ChÆ°a Ã¡p dá»¥ng</strong></div>
+        <div class="checkout-summary-total"><span>Tá»•ng thanh toÃ¡n</span><strong>0Ä‘</strong></div>
       `;
     }
     return;
@@ -1807,7 +1889,7 @@ function renderCart() {
         </div>
 
         <strong>${formatMoney(itemTotal)}</strong>
-        <button class="remove-btn" onclick="removeItem(${item.id})">Xóa</button>
+        <button class="remove-btn" onclick="removeItem(${item.id})">XÃ³a</button>
       </div>
     `;
   }).join("");
@@ -1816,10 +1898,10 @@ function renderCart() {
 
   if (checkoutSummary) {
     checkoutSummary.innerHTML = `
-      <div><span>Tổng mặt hàng</span><strong>${totalQuantity}</strong></div>
-      <div><span>Tạm tính</span><strong>${formatMoney(total)}</strong></div>
-      <div><span>Phí giao hàng</span><strong>Chưa áp dụng</strong></div>
-      <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Tá»•ng máº·t hÃ ng</span><strong>${totalQuantity}</strong></div>
+      <div><span>Táº¡m tÃ­nh</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>PhÃ­ giao hÃ ng</span><strong>ChÆ°a Ã¡p dá»¥ng</strong></div>
+      <div class="checkout-summary-total"><span>Tá»•ng thanh toÃ¡n</span><strong>${formatMoney(total)}</strong></div>
     `;
   }
 }
@@ -1834,7 +1916,7 @@ function changeQuantity(foodId, amount) {
   const nextQuantity = item.quantity + amount;
 
   if (nextQuantity > stock) {
-    showSiteToast(`Số lượng tối đa còn lại cho món này là ${stock}.`, "error");
+    showSiteToast(`Sá»‘ lÆ°á»£ng tá»‘i Ä‘a cÃ²n láº¡i cho mÃ³n nÃ y lÃ  ${stock}.`, "error");
     return;
   }
 
@@ -1862,10 +1944,10 @@ function formatCountdown(seconds) {
 
 function getBankDisplayName(bankCode) {
   const bankNames = {
-    "970424": "Shinhan Bank Việt Nam"
+    "970424": "Shinhan Bank Viá»‡t Nam"
   };
 
-  return bankNames[String(bankCode || "")] || bankCode || "Ngân hàng";
+  return bankNames[String(bankCode || "")] || bankCode || "NgÃ¢n hÃ ng";
 }
 
 async function cancelActiveQrPayment(reason = "manual") {
@@ -1889,7 +1971,7 @@ async function cancelActiveQrPayment(reason = "manual") {
       body: JSON.stringify({ reason })
     });
   } catch (error) {
-    console.error("Không hủy được giao dịch QR:", error);
+    console.error("KhÃ´ng há»§y Ä‘Æ°á»£c giao dá»‹ch QR:", error);
   }
 }
 
@@ -1921,23 +2003,23 @@ function showQrPaymentDialog(order) {
     <div class="qr-payment-card" role="dialog" aria-modal="true" aria-labelledby="qrPaymentTitle">
       <div class="qr-payment-head">
         <div>
-          <h2 id="qrPaymentTitle">Thanh toán QR đơn #${order.id}</h2>
-          <p>Không rời trang trong lúc giao dịch đang chờ xử lý.</p>
+          <h2 id="qrPaymentTitle">Thanh toÃ¡n QR Ä‘Æ¡n #${order.id}</h2>
+          <p>KhÃ´ng rá»i trang trong lÃºc giao dá»‹ch Ä‘ang chá» xá»­ lÃ½.</p>
         </div>
-        <button type="button" class="qr-payment-close" aria-label="Hủy thanh toán">×</button>
+        <button type="button" class="qr-payment-close" aria-label="Há»§y thanh toÃ¡n">Ã—</button>
       </div>
-      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Mã QR thanh toán đơn ${order.id}">
+      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="MÃ£ QR thanh toÃ¡n Ä‘Æ¡n ${order.id}">
       <div class="qr-payment-info">
-        <div><span>Số tiền</span><strong>${formatMoney(session.amount)}</strong></div>
-        <div><span>Ngân hàng</span><strong>${escapeHtml(getBankDisplayName(session.bankCode))}</strong></div>
-        <div><span>Số tài khoản</span><strong>${escapeHtml(session.bankAccountNo)}</strong></div>
-        <div><span>Chủ tài khoản</span><strong>${escapeHtml(session.bankAccountName)}</strong></div>
-        <div><span>Nội dung</span><strong>${escapeHtml(session.transferContent)}</strong></div>
-        <div><span>Thời gian còn lại</span><strong id="qrPaymentCountdown">${formatCountdown(session.expiresInSeconds || 600)}</strong></div>
+        <div><span>Sá»‘ tiá»n</span><strong>${formatMoney(session.amount)}</strong></div>
+        <div><span>NgÃ¢n hÃ ng</span><strong>${escapeHtml(getBankDisplayName(session.bankCode))}</strong></div>
+        <div><span>Sá»‘ tÃ i khoáº£n</span><strong>${escapeHtml(session.bankAccountNo)}</strong></div>
+        <div><span>Chá»§ tÃ i khoáº£n</span><strong>${escapeHtml(session.bankAccountName)}</strong></div>
+        <div><span>Ná»™i dung</span><strong>${escapeHtml(session.transferContent)}</strong></div>
+        <div><span>Thá»i gian cÃ²n láº¡i</span><strong id="qrPaymentCountdown">${formatCountdown(session.expiresInSeconds || 600)}</strong></div>
       </div>
       <div class="qr-payment-actions">
-        <button type="button" class="social-link-btn" data-qr-cancel>Hủy giao dịch</button>
-        <a class="btn" href="track.html">Tôi đã chuyển khoản</a>
+        <button type="button" class="social-link-btn" data-qr-cancel>Há»§y giao dá»‹ch</button>
+        <a class="btn" href="track.html">TÃ´i Ä‘Ã£ chuyá»ƒn khoáº£n</a>
       </div>
     </div>
   `;
@@ -1952,14 +2034,14 @@ function showQrPaymentDialog(order) {
 
     if (remaining <= 0) {
       closeQrPaymentDialog({ cancel: true });
-      showSiteToast("Giao dịch QR đã hết hạn và được hủy.", "error");
+      showSiteToast("Giao dá»‹ch QR Ä‘Ã£ háº¿t háº¡n vÃ  Ä‘Æ°á»£c há»§y.", "error");
     }
   }, 1000);
 
   dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
   dialog.querySelector("[data-qr-cancel]")?.addEventListener("click", () => {
     closeQrPaymentDialog({ cancel: true });
-    showSiteToast("Đã hủy giao dich QR.");
+    showSiteToast("ÄÃ£ há»§y giao dich QR.");
   });
   dialog.querySelector("a.btn")?.addEventListener("click", () => {
     activeQrPayment = null;
@@ -1974,12 +2056,12 @@ async function submitOrder(event) {
   event.preventDefault();
 
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập để đặt hàng.", "cart.html");
+    requireLogin("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘áº·t hÃ ng.", "cart.html");
     return;
   }
 
   if (cart.length === 0) {
-    showSiteToast("Giỏ hàng đang trống. Vui lòng chọn món trước.", "error");
+    showSiteToast("Giá» hÃ ng Ä‘ang trá»‘ng. Vui lÃ²ng chá»n mÃ³n trÆ°á»›c.", "error");
     return;
   }
 
@@ -1991,7 +2073,7 @@ async function submitOrder(event) {
     : false;
 
   if (stockIssue) {
-    showSiteToast("Một số món trong giỏ hàng vượt quá số lượng còn. Vui lòng cập nhật lại.", "error");
+    showSiteToast("Má»™t sá»‘ mÃ³n trong giá» hÃ ng vÆ°á»£t quÃ¡ sá»‘ lÆ°á»£ng cÃ²n. Vui lÃ²ng cáº­p nháº­t láº¡i.", "error");
     return;
   }
 
@@ -2007,18 +2089,18 @@ async function submitOrder(event) {
   const token = getAuthToken();
 
   if (!name.trim() || !phone.trim() || !cityName || !wardName || !addressDetail.trim()) {
-    showSiteToast("Vui lòng cập nhật đầy đủ thông tin giao hàng trước khi đặt hàng.", "error");
-    setCheckoutAddressRequiredState(false, "Bạn cần cập nhật đầy đủ địa chỉ giao hàng trước khi đặt hàng.");
+    showSiteToast("Vui lÃ²ng cáº­p nháº­t Ä‘áº§y Ä‘á»§ thÃ´ng tin giao hÃ ng trÆ°á»›c khi Ä‘áº·t hÃ ng.", "error");
+    setCheckoutAddressRequiredState(false, "Báº¡n cáº§n cáº­p nháº­t Ä‘áº§y Ä‘á»§ Ä‘á»‹a chá»‰ giao hÃ ng trÆ°á»›c khi Ä‘áº·t hÃ ng.");
     return;
   }
 
   if (!["cod", "qr", "wallet"].includes(paymentMethod)) {
-    showSiteToast("Phương thức thanh toán không hợp lệ.", "error");
+    showSiteToast("PhÆ°Æ¡ng thá»©c thanh toÃ¡n khÃ´ng há»£p lá»‡.", "error");
     return;
   }
 
   submitButton.disabled = true;
-  submitButton.textContent = "Đang gửi đơn...";
+  submitButton.textContent = "Äang gá»­i Ä‘Æ¡n...";
 
   try {
     const response = await fetch(ORDERS_API, {
@@ -2044,12 +2126,12 @@ async function submitOrder(event) {
     if (response.status === 401) {
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "cart.html");
+      requireLogin(data.message || "PhiÃªn Ä‘Äƒng nháº­p da háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng nháº­p lai.", "cart.html");
       return;
     }
 
     if (!response.ok) {
-      showSiteToast(data.message || "Không thể đặt hàng. Vui lòng thử lại.", "error");
+      showSiteToast(data.message || "KhÃ´ng thá»ƒ Ä‘áº·t hÃ ng. Vui lÃ²ng thá»­ láº¡i.", "error");
       return;
     }
 
@@ -2060,20 +2142,20 @@ async function submitOrder(event) {
 
     if (data.order?.paymentMethod === "qr" && data.order?.paymentSession) {
       showQrPaymentDialog(data.order);
-      showSiteToast("Đã tạo mã QR. Vui lòng hoàn tất thanh toan.");
+      showSiteToast("ÄÃ£ táº¡o mÃ£ QR. Vui lÃ²ng hoÃ n táº¥t thanh toan.");
       return;
     }
-    showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
+    showSiteToast("Äáº·t hÃ ng thÃ nh cÃ´ng. Äang chuyá»ƒn sang trang tra cá»©u...");
 
     setTimeout(() => {
       window.location.href = "track.html";
     }, 900);
   } catch (error) {
-    showSiteToast("Không kết nối được server đặt hàng.", "error");
+    showSiteToast("KhÃ´ng káº¿t ná»‘i Ä‘Æ°á»£c server Ä‘áº·t hÃ ng.", "error");
     console.error(error);
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Xác nhận đặt hàng";
+    submitButton.textContent = "XÃ¡c nháº­n Ä‘áº·t hÃ ng";
   }
 }
 
@@ -2085,26 +2167,26 @@ async function trackOrder(event) {
 
   if (!input || !resultBox || !input.value) return;
 
-  resultBox.innerHTML = "<p>Đang tra cứu đơn hàng...</p>";
+  resultBox.innerHTML = "<p>Äang tra cá»©u Ä‘Æ¡n hÃ ng...</p>";
 
   try {
     const response = await fetch(`${ORDERS_API}/${input.value}`);
     const data = await response.json();
 
     if (!response.ok) {
-      resultBox.innerHTML = `<p>${data.message || "Không tìm thấy đơn hàng."}</p>`;
+      resultBox.innerHTML = `<p>${data.message || "KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng."}</p>`;
       return;
     }
 
     resultBox.innerHTML = `
       <div class="track-card">
-        <h3>Đơn #${data.id} - ${formatMoney(data.total_price)}</h3>
-        <p><strong>Trạng thái:</strong> ${getOrderStatusLabel(data.status)}</p>
-        <p><strong>Khách hàng:</strong> ${data.customer_name}</p>
-        <p><strong>Số điện thoại:</strong> ${data.phone}</p>
-        <p><strong>Địa chỉ:</strong> ${data.address}</p>
-        <p><strong>Thanh toán:</strong> ${getPaymentMethodLabel(data.payment_method)} - ${getPaymentStatusLabel(data.payment_status)}</p>
-        ${data.note ? `<p><strong>Ghi chú:</strong> ${data.note}</p>` : ""}
+        <h3>ÄÆ¡n #${data.id} - ${formatMoney(data.total_price)}</h3>
+        <p><strong>Tráº¡ng thÃ¡i:</strong> ${getOrderStatusLabel(data.status)}</p>
+        <p><strong>KhÃ¡ch hÃ ng:</strong> ${data.customer_name}</p>
+        <p><strong>Sá»‘ Ä‘iá»‡n thoáº¡i:</strong> ${data.phone}</p>
+        <p><strong>Äá»‹a chá»‰:</strong> ${data.address}</p>
+        <p><strong>Thanh toÃ¡n:</strong> ${getPaymentMethodLabel(data.payment_method)} - ${getPaymentStatusLabel(data.payment_status)}</p>
+        ${data.note ? `<p><strong>Ghi chÃº:</strong> ${data.note}</p>` : ""}
         <div>
           ${data.items.map(item => `
             <div class="track-line">
@@ -2116,7 +2198,7 @@ async function trackOrder(event) {
       </div>
     `;
   } catch (error) {
-    resultBox.innerHTML = "<p>Không kết nối được server.</p>";
+    resultBox.innerHTML = "<p>KhÃ´ng káº¿t ná»‘i Ä‘Æ°á»£c server.</p>";
     console.error(error);
   }
 }
@@ -2131,7 +2213,7 @@ async function loadOrderHistory(event) {
   if (!resultBox) return;
 
   if (!isLoggedIn()) {
-    requireLogin("Vui lòng đăng nhập để xem lịch sử đơn hàng.", "track.html");
+    requireLogin("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ xem lá»‹ch sá»­ Ä‘Æ¡n hÃ ng.", "track.html");
     return;
   }
 
@@ -2142,7 +2224,7 @@ async function loadOrderHistory(event) {
   if (searchValue) params.set("q", searchValue);
   if (dateValue) params.set("date", dateValue);
 
-  resultBox.innerHTML = "<p>Đang tải lịch sử đơn hàng...</p>";
+  resultBox.innerHTML = "<p>Äang táº£i lá»‹ch sá»­ Ä‘Æ¡n hÃ ng...</p>";
 
   try {
     const response = await fetch(`${ORDERS_API}?${params.toString()}`, {
@@ -2155,19 +2237,19 @@ async function loadOrderHistory(event) {
     if (response.status === 401) {
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "track.html");
+      requireLogin(data.message || "PhiÃªn Ä‘Äƒng nháº­p da háº¿t háº¡n. Vui lÃ²ng Ä‘Äƒng nháº­p lai.", "track.html");
       return;
     }
 
     if (!response.ok) {
-      resultBox.innerHTML = `<p>${data.message || "Không thể tải lịch sử đơn hàng."}</p>`;
+      resultBox.innerHTML = `<p>${data.message || "KhÃ´ng thá»ƒ táº£i lá»‹ch sá»­ Ä‘Æ¡n hÃ ng."}</p>`;
       return;
     }
 
     await loadFoodReviews();
     renderOrderHistory(data);
   } catch (error) {
-    resultBox.innerHTML = "<p>Không kết nối được server.</p>";
+    resultBox.innerHTML = "<p>KhÃ´ng káº¿t ná»‘i Ä‘Æ°á»£c server.</p>";
     console.error(error);
   }
 }
@@ -2180,8 +2262,8 @@ function renderOrderHistory(orders) {
   if (!orders.length) {
     resultBox.innerHTML = `
       <div class="empty-history">
-        <h3>Chưa có đơn hàng phù hợp</h3>
-        <p>Bạn có thể quay lại thực đơn để đặt món hoặc thử bộ lọc khác.</p>
+        <h3>ChÆ°a cÃ³ Ä‘Æ¡n hÃ ng phÃ¹ há»£p</h3>
+        <p>Báº¡n cÃ³ thá»ƒ quay láº¡i thá»±c Ä‘Æ¡n Ä‘á»ƒ Ä‘áº·t mÃ³n hoáº·c thá»­ bá»™ lá»c khÃ¡c.</p>
         <a href="menu.html" class="btn">Dat mon ngay</a>
       </div>
     `;
@@ -2192,7 +2274,7 @@ function renderOrderHistory(orders) {
     <article class="track-card order-card">
       <div class="order-history-top">
         <div>
-          <p class="order-code">Đơn hàng #${order.id}</p>
+          <p class="order-code">ÄÆ¡n hÃ ng #${order.id}</p>
           <h3>${formatMoney(order.total_price)}</h3>
           <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
         </div>
@@ -2201,18 +2283,18 @@ function renderOrderHistory(orders) {
 
       <div class="history-info">
         <div>
-          <small>Người nhận</small>
+          <small>NgÆ°á»i nháº­n</small>
           <p>${escapeHtml(order.customer_name)} - ${escapeHtml(order.phone)}</p>
         </div>
         <div>
-          <small>Địa chỉ giao hàng</small>
+          <small>Äá»‹a chá»‰ giao hÃ ng</small>
           <p>${escapeHtml(order.address)}</p>
         </div>
         <div>
-          <small>Thanh toán</small>
+          <small>Thanh toÃ¡n</small>
           <p>${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
         </div>
-        ${order.note ? `<div><small>Ghi chú</small><p>${escapeHtml(order.note)}</p></div>` : ""}
+        ${order.note ? `<div><small>Ghi chÃº</small><p>${escapeHtml(order.note)}</p></div>` : ""}
       </div>
 
       <div class="history-items">
@@ -2220,7 +2302,7 @@ function renderOrderHistory(orders) {
           <div class="track-line order-item-row">
             <div class="order-item-main">
               <span>${escapeHtml(item.food_name)}</span>
-              <small>Số lượng: ${Number(item.quantity)}</small>
+              <small>Sá»‘ lÆ°á»£ng: ${Number(item.quantity)}</small>
               ${renderOrderReviewControl(order, item)}
             </div>
             <strong>${formatMoney(item.subtotal)}</strong>
@@ -2243,12 +2325,12 @@ function resetOrderHistoryFilter() {
 
 function getOrderStatusLabel(status) {
   const labels = {
-    pending: "Chờ xác nhận",
-    confirmed: "Đã xác nhận",
-    delivering: "Đang giao",
-    done: "Hoàn tất",
-    cancelled: "Đã hủy",
-    pending_payment: "Chờ thanh toán"
+    pending: "Chá» xÃ¡c nháº­n",
+    confirmed: "ÄÃ£ xÃ¡c nháº­n",
+    delivering: "Äang giao",
+    done: "HoÃ n táº¥t",
+    cancelled: "ÄÃ£ há»§y",
+    pending_payment: "Chá» thanh toÃ¡n"
   };
 
   return labels[status] || status;
@@ -2256,24 +2338,24 @@ function getOrderStatusLabel(status) {
 
 function getPaymentMethodLabel(method) {
   const labels = {
-    cod: "Thanh toán khi nhận hàng",
-    qr: "Thanh toán bằng mã QR",
-    wallet: "Tiền trong tài khoản"
+    cod: "Thanh toÃ¡n khi nháº­n hÃ ng",
+    qr: "Thanh toÃ¡n báº±ng mÃ£ QR",
+    wallet: "Tiá»n trong tÃ i khoáº£n"
   };
 
-  return labels[method] || "Chưa xác định";
+  return labels[method] || "ChÆ°a xÃ¡c Ä‘á»‹nh";
 }
 
 function getPaymentStatusLabel(status) {
   const labels = {
-    unpaid: "Chưa thanh toán",
-    pending: "Chờ thanh toán",
-    paid: "Đã thanh toán",
-    failed: "Thanh toán thất bại",
-    refunded: "Đã hoàn tiền"
+    unpaid: "ChÆ°a thanh toÃ¡n",
+    pending: "Chá» thanh toÃ¡n",
+    paid: "ÄÃ£ thanh toÃ¡n",
+    failed: "Thanh toÃ¡n tháº¥t báº¡i",
+    refunded: "ÄÃ£ hoÃ n tiá»n"
   };
 
-  return labels[status] || "Chưa xác định";
+  return labels[status] || "ChÆ°a xÃ¡c Ä‘á»‹nh";
 }
 
 function renderUser() {
@@ -2286,31 +2368,31 @@ function renderUser() {
   if (user) {
     const isAdmin = String(user.role || "").toUpperCase() === "ADMIN";
     const menuLink = isAdmin
-      ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
-      : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
+      ? `<a href="admin.html?section=overview" class="account-menu-link">Quáº£n trá»‹</a>`
+      : `<a href="profile.html" class="account-menu-link">Há»“ sÆ¡ cÃ¡ nhÃ¢n</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
     const avatarSource = String(user.avatar || "").trim() || getDefaultAvatarDataUrl();
     const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
 
     userArea.innerHTML = `
       <div class="account-menu">
-        <button type="button" class="account-toggle" aria-label="Mở tài khoản" aria-expanded="false">
+        <button type="button" class="account-toggle" aria-label="Má»Ÿ tÃ i khoáº£n" aria-expanded="false">
           <span class="account-avatar">${avatarContent}</span>
         </button>
         <div class="account-dropdown">
           <div class="account-summary">
             <strong>${escapeHtml(user.fullname)}</strong>
-            <small>${escapeHtml(isAdmin ? "Quản trị viên" : "Khách hàng")}</small>
+            <small>${escapeHtml(isAdmin ? "Quáº£n trá»‹ viÃªn" : "KhÃ¡ch hÃ ng")}</small>
           </div>
           ${menuLink}
-          <button type="button" class="account-menu-link danger" onclick="logout()">Đăng xuất</button>
+          <button type="button" class="account-menu-link danger" onclick="logout()">ÄÄƒng xuáº¥t</button>
         </div>
       </div>
     `;
   } else {
     userArea.innerHTML = `
-      <a href="login.html" class="header-action primary">Đăng nhập</a>
-      <a href="register.html" class="header-action secondary">Đăng ký</a>
+      <a href="login.html" class="header-action primary">ÄÄƒng nháº­p</a>
+      <a href="register.html" class="header-action secondary">ÄÄƒng kÃ½</a>
     `;
   }
 }
@@ -2424,7 +2506,7 @@ function logout() {
   sessionStorage.removeItem(AUTH_USER_KEY);
   sessionStorage.removeItem(CART_KEY);
   cart = [];
-  showSiteToast("Đã đăng xuất");
+  showSiteToast("ÄÃ£ Ä‘Äƒng xuáº¥t");
 
   setTimeout(() => {
     window.location.href = "index.html";
@@ -2446,7 +2528,7 @@ function protectCheckoutPage() {
   if (isLoggedIn()) return true;
 
   const target = profileForm ? "profile.html" : orderHistory ? "track.html" : "cart.html";
-  requireLogin("Vui lòng đăng nhập để tiếp tục.", target);
+  requireLogin("Vui lÃ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c.", target);
   return false;
 }
 
@@ -2459,7 +2541,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kenh hỗ trợ FoodHub">
+    <div class="support-panel" aria-label="Kenh há»— trá»£ FoodHub">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -2469,7 +2551,7 @@ function initSupportWidget() {
         <strong>Messenger</strong>
       </a>
       <a href="tel:0123456789" class="support-link phone">
-        <span>☎</span>
+        <span>â˜Ž</span>
         <strong>Hotline</strong>
       </a>
       <a href="mailto:foodhub@gmail.com" class="support-link email">
@@ -2478,10 +2560,10 @@ function initSupportWidget() {
       </a>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>FoodHub đây!</strong>
-      <span>Bạn có cần tôi hỗ trợ gì không?</span>
+      <strong>FoodHub Ä‘Ã¢y!</strong>
+      <span>Báº¡n cÃ³ cáº§n tÃ´i há»— trá»£ gÃ¬ khÃ´ng?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Mo há»— trá»£" aria-expanded="false">
       <span aria-hidden="true">${robotIcon}</span>
     </button>
   `;
@@ -2528,7 +2610,7 @@ function initChatSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ FoodHub">
+    <div class="support-panel chat-panel" aria-label="Hop chat há»— trá»£ FoodHub">
       <div class="chat-header">
         <div class="chat-agent">
           <span class="chat-avatar" aria-hidden="true">
@@ -2540,37 +2622,37 @@ function initChatSupportWidget() {
           </div>
         </div>
         <div class="chat-header-actions">
-          <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
+          <button type="button" class="chat-menu" aria-label="Menu há»— trá»£">
             <span></span><span></span><span></span>
           </button>
-          <button type="button" class="chat-close" aria-label="Đóng hỗ trợ">&times;</button>
+          <button type="button" class="chat-close" aria-label="ÄÃ³ng há»— trá»£">&times;</button>
         </div>
       </div>
       <div class="chat-quick-menu" hidden>
-        <a href="menu.html">Xem thực đơn</a>
-        <a href="track.html">Lịch sử đơn hàng</a>
-        <a href="contact.html">Liên hệ FoodHub</a>
+        <a href="menu.html">Xem thá»±c Ä‘Æ¡n</a>
+        <a href="track.html">Lá»‹ch sá»­ Ä‘Æ¡n hÃ ng</a>
+        <a href="contact.html">LiÃªn há»‡ FoodHub</a>
       </div>
       <div class="chat-messages" aria-live="polite">
-        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, FoodHub có thể hỗ trợ gì cho bạn?</div>
-        <div class="chat-message bot muted">Đây là khung chat tạm thời. Sau này mình sẽ kết nối dữ liệu hệ thống để trả lời tự động.</div>
+        <div class="chat-message bot">Xin chÃ o ${escapeHtml(displayName)}, FoodHub cÃ³ thá»ƒ há»— trá»£ gÃ¬ cho báº¡n?</div>
+        <div class="chat-message bot muted">ÄÃ¢y lÃ  khung chat táº¡m thá»i. Sau nÃ y mÃ¬nh sáº½ káº¿t ná»‘i dá»¯ liá»‡u há»‡ thá»‘ng Ä‘á»ƒ tráº£ lá»i tá»± Ä‘á»™ng.</div>
       </div>
       <form class="chat-form">
-        <input type="file" class="chat-file" aria-label="Đính kèm tệp" hidden>
+        <input type="file" class="chat-file" aria-label="ÄÃ­nh kÃ¨m tá»‡p" hidden>
         <div class="chat-form-main">
-          <input type="text" class="chat-input" placeholder="Nhập nội dung..." aria-label="Nhập tin nhắn hỗ trợ">
+          <input type="text" class="chat-input" placeholder="Nháº­p ná»™i dung..." aria-label="Nháº­p tin nháº¯n há»— trá»£">
           <div class="chat-tools">
-            <button type="button" class="chat-tool chat-like" aria-label="Gửi like">
+            <button type="button" class="chat-tool chat-like" aria-label="Gá»­i like">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M7 10v10H4V10h3Zm4.2-7c.8 0 1.4.6 1.4 1.4v3.2H18c1.2 0 2 .9 1.8 2.1l-1.1 7.7c-.2 1-1 1.7-2 1.7H9V9.8l2-5.6c.2-.7.8-1.2 1.5-1.2h-1.3Z"></path>
               </svg>
             </button>
-            <button type="button" class="chat-tool chat-attach" aria-label="Đính kèm tệp">
+            <button type="button" class="chat-tool chat-attach" aria-label="ÄÃ­nh kÃ¨m tá»‡p">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M18.4 11.2 11 18.6a4.2 4.2 0 0 1-6-6L14 3.7a2.9 2.9 0 0 1 4.1 4.1L9.5 16.4a1.5 1.5 0 0 1-2.1-2.1l7.5-7.5"></path>
               </svg>
             </button>
-            <button type="button" class="chat-tool chat-emoji" aria-label="Chọn biểu tượng">
+            <button type="button" class="chat-tool chat-emoji" aria-label="Chá»n biá»ƒu tÆ°á»£ng">
               <svg viewBox="0 0 24 24" focusable="false">
                 <circle cx="12" cy="12" r="9"></circle>
                 <circle cx="9" cy="10" r="1"></circle>
@@ -2578,7 +2660,7 @@ function initChatSupportWidget() {
                 <path d="M8 14c1 1.4 2.3 2 4 2s3-.6 4-2"></path>
               </svg>
             </button>
-            <button type="submit" class="chat-send" aria-label="Gửi tin nhắn">
+            <button type="submit" class="chat-send" aria-label="Gá»­i tin nháº¯n">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path d="M4 12 20 4l-4 16-4-7-8-1Z"></path>
               </svg>
@@ -2595,10 +2677,10 @@ function initChatSupportWidget() {
       </form>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>FoodHub đây!</strong>
-      <span>Bạn có cần tôi hỗ trợ gì không?</span>
+      <strong>FoodHub Ä‘Ã¢y!</strong>
+      <span>Báº¡n cÃ³ cáº§n tÃ´i há»— trá»£ gÃ¬ khÃ´ng?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ" aria-expanded="false">
+    <button type="button" class="support-toggle" aria-label="Má»Ÿ há»— trá»£" aria-expanded="false">
       <span aria-hidden="true">${robotLogo}</span>
     </button>
   `;
@@ -2654,8 +2736,8 @@ function initChatSupportWidget() {
     if (!file) return;
 
     chatMessages.insertAdjacentHTML("beforeend", `
-      <div class="chat-message user file-message">Đã đính kèm: ${escapeHtml(file.name)}</div>
-      <div class="chat-message bot muted">FoodHub đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
+      <div class="chat-message user file-message">ÄÃ£ Ä‘Ã­nh kÃ¨m: ${escapeHtml(file.name)}</div>
+      <div class="chat-message bot muted">FoodHub Ä‘Ã£ nháº­n thÃ´ng tin tá»‡p. TÃ­nh nÄƒng gá»­i tá»‡p tháº­t sáº½ Ä‘Æ°á»£c káº¿t ná»‘i sau.</div>
     `);
     chatFile.value = "";
     hideChatPopovers();
@@ -2683,7 +2765,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận phản hồi của bạn.</div>
+      <div class="chat-message bot muted">Cáº£m Æ¡n ${escapeHtml(displayName)}, FoodHub Ä‘Ã£ nháº­n pháº£n há»“i cá»§a báº¡n.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -2696,7 +2778,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">FoodHub đã nhận tin nhắn của bạn. Chức năng trả lời tự động sẽ được cập nhật sau.</div>
+      <div class="chat-message bot muted">FoodHub Ä‘Ã£ nháº­n tin nháº¯n cá»§a báº¡n. Chá»©c nÄƒng tráº£ lá»i tá»± Ä‘á»™ng sáº½ Ä‘Æ°á»£c cáº­p nháº­t sau.</div>
     `);
     chatInput.value = "";
     hideChatPopovers();
@@ -2792,7 +2874,7 @@ if (protectCheckoutPage()) {
         && document.getElementById("customerAddress")?.value
       )
   );
-  setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
+  setCheckoutAddressRequiredState(hasCheckoutAddress, "Báº¡n cáº§n cáº­p nháº­t Ä‘á»‹a chá»‰ giao hÃ ng trong tÃ i khoáº£n trÆ°á»›c khi Ä‘áº·t hÃ ng.");
 
   loadPublicCategories();
   loadFoods();
