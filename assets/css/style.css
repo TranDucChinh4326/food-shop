@@ -1375,8 +1375,10 @@ body.food-detail-open {
   border-radius: 999px;
   display: grid;
   grid-template-columns: 40px 54px 40px;
+  justify-self: start;
   min-height: 48px;
   overflow: hidden;
+  width: 134px;
 }
 
 .food-detail-qty button {
