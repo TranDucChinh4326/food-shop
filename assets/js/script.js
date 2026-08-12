@@ -20,6 +20,7 @@ let announcementArchive = [];
 let announcementArchivePage = 1;
 let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
+let qrPaymentStatusTimer = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -1949,6 +1950,11 @@ async function cancelActiveQrPayment(reason = "manual") {
     qrPaymentCountdownTimer = null;
   }
 
+  if (qrPaymentStatusTimer) {
+    clearInterval(qrPaymentStatusTimer);
+    qrPaymentStatusTimer = null;
+  }
+
   try {
     await fetch(`${ORDERS_API}/${orderId}/payment/cancel`, {
       method: "POST",
@@ -1963,12 +1969,50 @@ async function cancelActiveQrPayment(reason = "manual") {
   }
 }
 
+function stopQrPaymentTimers() {
+  if (qrPaymentCountdownTimer) {
+    clearInterval(qrPaymentCountdownTimer);
+    qrPaymentCountdownTimer = null;
+  }
+
+  if (qrPaymentStatusTimer) {
+    clearInterval(qrPaymentStatusTimer);
+    qrPaymentStatusTimer = null;
+  }
+}
+
 function closeQrPaymentDialog({ cancel = true } = {}) {
   const dialog = document.getElementById("qrPaymentDialog");
 
   if (dialog) dialog.remove();
   document.body.classList.remove("qr-payment-open");
   if (cancel) cancelActiveQrPayment("closed");
+  if (!cancel) stopQrPaymentTimers();
+}
+
+async function checkQrPaymentStatus(orderId) {
+  try {
+    const response = await fetch(`${ORDERS_API}/${orderId}/payment/status`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    if (data.paymentStatus === "paid") {
+      activeQrPayment = null;
+      closeQrPaymentDialog({ cancel: false });
+      showSiteToast("Thanh toan QR thanh cong. Don hang dang cho xac nhan.");
+      setTimeout(() => {
+        window.location.href = "track.html";
+      }, 900);
+    }
+  } catch (error) {
+    console.error("Cannot check QR payment status:", error);
+  }
 }
 
 function showQrPaymentDialog(order) {
@@ -2026,6 +2070,10 @@ function showQrPaymentDialog(order) {
     }
   }, 1000);
 
+  qrPaymentStatusTimer = setInterval(() => {
+    if (activeQrPayment?.orderId) checkQrPaymentStatus(activeQrPayment.orderId);
+  }, 3000);
+
   dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
   dialog.querySelector("[data-qr-cancel]")?.addEventListener("click", () => {
     closeQrPaymentDialog({ cancel: true });
@@ -2033,10 +2081,7 @@ function showQrPaymentDialog(order) {
   });
   dialog.querySelector("a.btn")?.addEventListener("click", () => {
     activeQrPayment = null;
-    if (qrPaymentCountdownTimer) {
-      clearInterval(qrPaymentCountdownTimer);
-      qrPaymentCountdownTimer = null;
-    }
+    stopQrPaymentTimers();
   });
 }
 
