@@ -950,13 +950,13 @@ function renderReviewListCard(review, options = {}) {
     <article class="review-list-card">
       <div class="review-list-avatar">${renderReviewAvatar(review, "food-review-avatar")}</div>
       <div class="review-list-main">
-        <header class="review-list-head">
+        <div class="review-list-head">
           <div>
             <strong>${escapeHtml(customerName)}</strong>
             <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
           </div>
           <span class="review-list-stars">${renderStarText(review.rating)}</span>
-        </header>
+        </div>
         <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
         ${showFood ? `
           <a class="review-list-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
