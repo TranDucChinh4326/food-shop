@@ -107,7 +107,7 @@ function getDefaultAvatarDataUrl() {
 }
 
 function formatMoney(number) {
-  return Number(number).toLocaleString("vi-VN") + "Ä‘";
+  return Number(number).toLocaleString("vi-VN") + "\u0111";
 }
 
 function formatDateTime(value) {
@@ -778,7 +778,7 @@ function getReviewFood(review) {
 }
 
 function getReviewCustomerName(review) {
-  return review.customerName || "KhÃ¡ch hÃ ng FoodHub";
+  return review.customerName || "Kh\u00e1ch h\u00e0ng FoodHub";
 }
 
 function getReviewInitials(name) {
@@ -812,11 +812,11 @@ function formatReviewDate(value) {
 
 function renderStarText(rating = 5) {
   const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
-  return "â˜…".repeat(value) + "â˜†".repeat(5 - value);
+  return "\u2605".repeat(value) + "\u2606".repeat(5 - value);
 }
 
 function renderRatingLabel(rating, reviewCount = 0) {
-  if (!Number(reviewCount)) return "ChÆ°a cÃ³ Ä‘Ã¡nh giÃ¡";
+  if (!Number(reviewCount)) return "Ch\u01b0a c\u00f3 \u0111\u00e1nh gi\u00e1";
   return `${renderStarText(rating)} ${Number(rating || 0).toFixed(1)}`;
 }
 
@@ -1102,7 +1102,7 @@ function renderOrderReviewControl(order, item) {
           <div class="order-review-star-options">
             ${[5, 4, 3, 2, 1].map(star => `
               <input type="radio" id="${panelId}-star-${star}" name="rating" value="${star}" required>
-              <label for="${panelId}-star-${star}" title="${star} sao">â˜…</label>
+              <label for="${panelId}-star-${star}" title="${star} sao">\u2605</label>
             `).join("")}
           </div>
         </fieldset>
