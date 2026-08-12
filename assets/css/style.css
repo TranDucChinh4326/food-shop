@@ -835,14 +835,23 @@ nav a:hover,
 }
 
 .review-list-card {
-  background: linear-gradient(180deg, #fff, #fffaf7);
-  border: 1px solid #f1d9cc;
-  border-radius: 10px;
-  box-shadow: 0 12px 28px rgba(94, 48, 24, 0.06);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ead9cf;
+  border-radius: 0;
+  box-shadow: none;
   display: grid;
   gap: 16px;
   grid-template-columns: 46px minmax(0, 1fr);
-  padding: 18px;
+  padding: 18px 0;
+}
+
+.review-list-card:first-child {
+  padding-top: 0;
+}
+
+.review-list-card:last-child {
+  border-bottom: 0;
 }
 
 .review-list-avatar {
@@ -889,9 +898,9 @@ nav a:hover,
 
 .review-list-food {
   align-items: center;
-  background: #fff4ed;
-  border: 1px solid #f3d8c9;
-  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   color: #201814;
   display: inline-grid;
   font-size: 14px;
@@ -899,7 +908,7 @@ nav a:hover,
   gap: 9px;
   grid-template-columns: 42px minmax(0, 1fr);
   max-width: 280px;
-  padding: 7px 10px 7px 7px;
+  padding: 0;
   text-decoration: none;
   width: fit-content;
 }
@@ -4531,7 +4540,7 @@ footer {
 
   .review-list-card {
     grid-template-columns: 38px minmax(0, 1fr);
-    padding: 14px;
+    padding: 16px 0;
   }
 
   .review-list-head {
