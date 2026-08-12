@@ -872,7 +872,14 @@ nav a:hover,
   font-weight: 700;
   height: 34px;
   justify-content: center;
+  overflow: hidden;
   width: 34px;
+}
+
+.home-review-avatar img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .home-review-author strong {
@@ -1322,7 +1329,14 @@ body.food-detail-open {
   font-weight: 700;
   height: 38px;
   justify-content: center;
+  overflow: hidden;
   width: 38px;
+}
+
+.food-review-avatar img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .food-review-list header {

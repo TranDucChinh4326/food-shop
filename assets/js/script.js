@@ -787,6 +787,22 @@ function getReviewInitials(name) {
   return initials.toUpperCase();
 }
 
+function renderReviewAvatar(review, className) {
+  const customerName = getReviewCustomerName(review);
+  const initials = escapeHtml(getReviewInitials(customerName));
+  const avatar = String(review?.avatar || "").trim();
+
+  if (!avatar) {
+    return `<span class="${className}">${initials}</span>`;
+  }
+
+  return `
+    <span class="${className}">
+      <img src="${escapeHtml(avatar)}" alt="${escapeHtml(customerName)}" onerror="this.remove(); this.parentElement.textContent='${initials}';">
+    </span>
+  `;
+}
+
 function formatReviewDate(value) {
   if (!value) return "";
   const date = new Date(value);
@@ -921,7 +937,7 @@ function renderHomeReviewCard(review) {
       </a>
       <div class="home-review-body">
         <div class="home-review-author">
-          <span class="home-review-avatar">${escapeHtml(getReviewInitials(customerName))}</span>
+          ${renderReviewAvatar(review, "home-review-avatar")}
           <div>
             <strong>${escapeHtml(customerName)}</strong>
             <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
@@ -1205,7 +1221,7 @@ function showFoodDetail(foodId) {
         <div class="food-review-list">
           ${comments.length ? comments.map(comment => `
             <article>
-              <div class="food-review-avatar">${escapeHtml(getReviewInitials(getReviewCustomerName(comment)))}</div>
+              ${renderReviewAvatar(comment, "food-review-avatar")}
               <div>
                 <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
                 <span>${renderStarText(comment.rating)}</span>
@@ -1313,7 +1329,7 @@ function renderFoodDetailPage() {
           <div class="food-review-list">
             ${comments.length ? comments.map(comment => `
               <article>
-                <div class="food-review-avatar">${escapeHtml(getReviewInitials(getReviewCustomerName(comment)))}</div>
+                ${renderReviewAvatar(comment, "food-review-avatar")}
                 <div>
                   <header><strong>${escapeHtml(getReviewCustomerName(comment))}</strong><small>${escapeHtml(formatReviewDate(comment.createdAt))}</small></header>
                   <span>${renderStarText(comment.rating)}</span>
