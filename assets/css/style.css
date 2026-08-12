@@ -817,9 +817,13 @@ nav a:hover,
 }
 
 .home-review-grid {
-  display: grid;
+  display: flex;
   gap: 16px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow-x: auto;
+  padding: 2px 2px 16px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
 }
 
 .home-review-card {
@@ -828,37 +832,47 @@ nav a:hover,
   border-radius: 10px;
   box-shadow: 0 12px 30px rgba(94, 48, 24, 0.08);
   display: grid;
-  gap: 14px;
-  padding: 14px;
+  flex: 0 0 min(360px, calc((100% - 32px) / 3));
+  gap: 16px;
+  min-height: 210px;
+  padding: 18px;
+  scroll-snap-align: start;
 }
 
 .home-review-food {
   align-items: center;
+  align-self: end;
+  background: #fff8f3;
+  border: 1px solid #f2ded2;
+  border-radius: 8px;
   color: #201814;
   display: grid;
-  font-weight: 700;
-  gap: 12px;
-  grid-template-columns: 58px minmax(0, 1fr);
+  font-size: 14px;
+  font-weight: 800;
+  gap: 10px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  padding: 8px;
   text-decoration: none;
 }
 
 .home-review-food img {
   aspect-ratio: 1;
   background: #fff1e8;
-  border-radius: 8px;
+  border-radius: 6px;
   object-fit: cover;
-  width: 58px;
+  width: 44px;
 }
 
 .home-review-body {
   display: grid;
-  gap: 8px;
+  gap: 14px;
 }
 
 .home-review-author {
   align-items: center;
-  display: flex;
+  display: grid;
   gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .home-review-avatar {
@@ -895,6 +909,7 @@ nav a:hover,
 .home-review-stars {
   color: #ff8a00;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .home-review-card p,
@@ -903,6 +918,36 @@ nav a:hover,
   color: #5f4a3f;
   line-height: 1.6;
   margin: 0;
+}
+
+.home-review-card p {
+  display: -webkit-box;
+  font-size: 16px;
+  min-height: 52px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home-review-nav {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0d8cb;
+  border-radius: 50%;
+  color: #ff5722;
+  display: inline-flex;
+  font-size: 24px;
+  font-weight: 800;
+  height: 42px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0;
+  width: 42px;
+}
+
+.home-review-nav:hover {
+  background: #fff1e8;
+  color: #d94412;
 }
 
 .home-add-btn {
@@ -4126,11 +4171,14 @@ footer {
 
   .food-list,
   .home-food-grid,
-  .home-review-grid,
   .checkout-grid,
   .contact-grid,
   .profile-grid {
     grid-template-columns: 1fr;
+  }
+
+  .home-review-card {
+    flex-basis: min(340px, calc((100% - 16px) / 2));
   }
 
   .home-review-filters {
@@ -4353,6 +4401,18 @@ footer {
 @media (max-width: 560px) {
   body {
     font-size: 15px;
+  }
+
+  .home-review-card {
+    flex-basis: min(84vw, 320px);
+  }
+
+  .home-review-author {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .home-review-author .home-review-stars {
+    grid-column: 1 / -1;
   }
 
   header {

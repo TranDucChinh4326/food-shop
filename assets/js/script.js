@@ -926,15 +926,11 @@ function renderHomeFoodSections() {
 function renderHomeReviewCard(review) {
   const food = getReviewFood(review);
   const customerName = getReviewCustomerName(review);
-  const foodName = food?.name || review.foodName || "Món ăn";
+  const foodName = food?.name || review.foodName || "M\u00f3n \u0103n";
   const image = food?.image || review.foodImage || "";
 
   return `
     <article class="home-review-card">
-      <a class="home-review-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
-        <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
-        <span>${escapeHtml(foodName)}</span>
-      </a>
       <div class="home-review-body">
         <div class="home-review-author">
           ${renderReviewAvatar(review, "home-review-avatar")}
@@ -942,10 +938,14 @@ function renderHomeReviewCard(review) {
             <strong>${escapeHtml(customerName)}</strong>
             <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
           </div>
+          <span class="home-review-stars">${renderStarText(review.rating)}</span>
         </div>
-        <div class="home-review-stars">${renderStarText(review.rating)}</div>
-        <p>${escapeHtml(review.comment)}</p>
+        <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
       </div>
+      <a class="home-review-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
+        <span>${escapeHtml(foodName)}</span>
+      </a>
     </article>
   `;
 }
@@ -956,51 +956,36 @@ function renderHomeReviews() {
 
   if (!reviewBox && !filterBox) return;
 
-  const selectedRating = filterBox?.querySelector("[data-home-review-rating]")?.value || "all";
-  const selectedFood = filterBox?.querySelector("[data-home-review-food]")?.value || "all";
-
   if (filterBox) {
-    const foodOptions = foods
-      .filter(food => foodReviews.some(review => String(review.foodId) === String(food.id)))
-      .map(food => `<option value="${food.id}" ${String(selectedFood) === String(food.id) ? "selected" : ""}>${escapeHtml(food.name)}</option>`)
-      .join("");
-
     filterBox.innerHTML = `
-      <label>
-        <span>Số sao</span>
-        <select data-home-review-rating>
-          <option value="all" ${selectedRating === "all" ? "selected" : ""}>Tất cả</option>
-          <option value="5" ${selectedRating === "5" ? "selected" : ""}>5 sao</option>
-          <option value="4" ${selectedRating === "4" ? "selected" : ""}>4 sao</option>
-          <option value="3" ${selectedRating === "3" ? "selected" : ""}>3 sao</option>
-          <option value="2" ${selectedRating === "2" ? "selected" : ""}>2 sao</option>
-          <option value="1" ${selectedRating === "1" ? "selected" : ""}>1 sao</option>
-        </select>
-      </label>
-      <label>
-        <span>Món ăn</span>
-        <select data-home-review-food>
-          <option value="all" ${selectedFood === "all" ? "selected" : ""}>Tất cả món</option>
-          ${foodOptions}
-        </select>
-      </label>
+      <button type="button" class="home-review-nav" data-review-scroll="-1" aria-label="Xem binh luan truoc">&lsaquo;</button>
+      <button type="button" class="home-review-nav" data-review-scroll="1" aria-label="Xem binh luan tiep theo">&rsaquo;</button>
     `;
 
-    filterBox.querySelectorAll("select").forEach(select => {
-      select.addEventListener("change", renderHomeReviews);
+    filterBox.querySelectorAll("[data-review-scroll]").forEach(button => {
+      button.addEventListener("click", () => {
+        const direction = Number(button.dataset.reviewScroll || 1);
+        reviewBox?.scrollBy({
+          left: direction * Math.max(280, Math.floor(reviewBox.clientWidth * 0.85)),
+          behavior: "smooth"
+        });
+      });
     });
   }
 
   if (!reviewBox) return;
 
-  const filteredReviews = foodReviews
-    .filter(review => selectedRating === "all" || String(review.rating) === selectedRating)
-    .filter(review => selectedFood === "all" || String(review.foodId) === selectedFood)
-    .slice(0, 6);
+  const featuredReviews = [...foodReviews]
+    .sort((first, second) => {
+      const firstHasComment = String(first.comment || "").trim() ? 1 : 0;
+      const secondHasComment = String(second.comment || "").trim() ? 1 : 0;
+      return secondHasComment - firstHasComment || new Date(second.createdAt || 0) - new Date(first.createdAt || 0);
+    })
+    .slice(0, 10);
 
-  reviewBox.innerHTML = filteredReviews.length
-    ? filteredReviews.map(renderHomeReviewCard).join("")
-    : `<p class="home-review-empty">Chưa có bình luận phù hợp.</p>`;
+  reviewBox.innerHTML = featuredReviews.length
+    ? featuredReviews.map(renderHomeReviewCard).join("")
+    : `<p class="home-review-empty">Ch\u01b0a c\u00f3 b\u00ecnh lu\u1eadn ph\u00f9 h\u1ee3p.</p>`;
 }
 
 function hasReviewedOrderItem(orderId, foodId) {
