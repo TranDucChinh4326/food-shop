@@ -275,6 +275,24 @@ button:disabled {
   margin: 0;
 }
 
+.food-review-admin-card .table-actions {
+  justify-content: flex-end;
+}
+
+.food-review-admin-body {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 72px minmax(0, 1fr);
+}
+
+.food-review-admin-body .ad-thumb {
+  border-radius: 10px;
+  height: 72px;
+  object-fit: cover;
+  width: 72px;
+}
+
 .feedback-reply-form {
   display: grid;
   gap: 10px;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260812-review-admin">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -38,6 +38,7 @@
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
       <a class="admin-nav-btn" href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=food-reviews" data-admin-target="food-reviews"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">B&#236;nh lu&#7853;n m&#243;n</span></a>
     </nav>
   </aside>
 
@@ -509,12 +510,50 @@
       </section>
     </section>
 
+    <section class="admin-section" data-admin-section="food-reviews">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Qu&#7843;n l&#253; b&#236;nh lu&#7853;n m&#243;n &#259;n</h2>
+            <p><a href="index.html">Trang ch&#7911;</a> <span>/</span> B&#236;nh lu&#7853;n m&#243;n &#259;n</p>
+          </div>
+          <div class="heading-actions">
+            <button id="refreshFoodReviewsBtn" type="button" class="ghost-btn">T&#7843;i l&#7841;i</button>
+          </div>
+        </div>
+
+        <div class="feedback-admin-toolbar table-toolbar multi-filter">
+          <input type="search" id="foodReviewSearch" placeholder="T&#236;m theo m&#243;n, kh&#225;ch h&#224;ng, n&#7897;i dung">
+          <select id="foodReviewRatingFilter">
+            <option value="all">T&#7845;t c&#7843; sao</option>
+            <option value="5">5 sao</option>
+            <option value="4">4 sao</option>
+            <option value="3">3 sao</option>
+            <option value="2">2 sao</option>
+            <option value="1">1 sao</option>
+          </select>
+          <select id="foodReviewVisibilityFilter">
+            <option value="all">T&#7845;t c&#7843;</option>
+            <option value="visible">&#272;ang hi&#7875;n th&#7883;</option>
+            <option value="hidden">&#272;&#227; &#7849;n</option>
+          </select>
+          <select id="foodReviewPageSize" aria-label="S&#7889; d&#242;ng b&#236;nh lu&#7853;n m&#7895;i trang">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        <div id="foodReviewsList" class="accounts-list table-state">&#272;ang t&#7843;i b&#236;nh lu&#7853;n...</div>
+      </section>
+    </section>
+
   </main>
 
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/admin/admin-sidebar.js"></script>
-  <script src="assets/js/admin/admin.js"></script>
+  <script src="assets/js/admin/admin-sidebar.js?v=20260812-review-admin"></script>
+  <script src="assets/js/admin/admin.js?v=20260812-review-admin"></script>
 </body>
 </html>

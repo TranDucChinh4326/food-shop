@@ -64,6 +64,11 @@ const feedbackList = document.getElementById("feedbackList");
 const feedbackSearch = document.getElementById("feedbackSearch");
 const feedbackStatusFilter = document.getElementById("feedbackStatusFilter");
 const feedbackPageSize = document.getElementById("feedbackPageSize");
+const foodReviewsList = document.getElementById("foodReviewsList");
+const foodReviewSearch = document.getElementById("foodReviewSearch");
+const foodReviewRatingFilter = document.getElementById("foodReviewRatingFilter");
+const foodReviewVisibilityFilter = document.getElementById("foodReviewVisibilityFilter");
+const foodReviewPageSize = document.getElementById("foodReviewPageSize");
 let navButtons = [...document.querySelectorAll("[data-admin-target]")];
 let navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
@@ -111,6 +116,10 @@ let feedbackSearchTimer;
 let cachedFeedback = [];
 let feedbackPage = 1;
 let feedbackPerPage = 5;
+let foodReviewSearchTimer;
+let cachedFoodReviews = [];
+let foodReviewsPage = 1;
+let foodReviewsPerPage = 5;
 function refreshAdminNavElements() {
   navButtons = [...document.querySelectorAll("[data-admin-target]")];
   navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
@@ -1092,6 +1101,95 @@ function renderFeedbackTable() {
           <button type="button" class="${feedbackPage === index + 1 ? "active" : ""}" data-feedback-page="${index + 1}">${index + 1}</button>
         `).join("")}
         <button type="button" data-feedback-page="next" ${feedbackPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadFoodReviews() {
+  if (!foodReviewsList) return;
+
+  foodReviewsList.textContent = "Dang tai binh luan...";
+
+  try {
+    const params = new URLSearchParams();
+    if (foodReviewSearch?.value.trim()) params.set("search", foodReviewSearch.value.trim());
+    if (foodReviewRatingFilter?.value && foodReviewRatingFilter.value !== "all") {
+      params.set("rating", foodReviewRatingFilter.value);
+    }
+    if (foodReviewVisibilityFilter?.value && foodReviewVisibilityFilter.value !== "all") {
+      params.set("visibility", foodReviewVisibilityFilter.value);
+    }
+
+    cachedFoodReviews = await requestJson(`${ADMIN_API}/food-reviews?${params.toString()}`);
+    renderFoodReviewsTable();
+  } catch (error) {
+    foodReviewsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderFoodReviewStars(rating) {
+  const score = Math.max(0, Math.min(5, Number(rating) || 0));
+  return `<span class="feedback-admin-rating">${"★".repeat(score)}${"☆".repeat(5 - score)} <span>${score}/5</span></span>`;
+}
+
+function renderFoodReviewsTable() {
+  if (!foodReviewsList) return;
+
+  const total = cachedFoodReviews.length;
+  if (total === 0) {
+    foodReviewsList.innerHTML = `<p class="empty-note">Chua co binh luan nao.</p>`;
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / foodReviewsPerPage));
+  foodReviewsPage = Math.min(Math.max(foodReviewsPage, 1), totalPages);
+  const startIndex = (foodReviewsPage - 1) * foodReviewsPerPage;
+  const pageItems = cachedFoodReviews.slice(startIndex, startIndex + foodReviewsPerPage);
+  const from = startIndex + 1;
+  const to = Math.min(startIndex + pageItems.length, total);
+
+  foodReviewsList.innerHTML = `
+    <div class="feedback-admin-list">
+      ${pageItems.map(item => {
+        const isVisible = Number(item.is_visible) === 1;
+        return `
+          <article class="feedback-admin-card food-review-admin-card">
+            <div class="feedback-admin-head">
+              <div>
+                <h3>${escapeHtml(item.food_name)}</h3>
+                <p>
+                  <strong>${escapeHtml(item.customer_name)}</strong> - ${escapeHtml(item.customer_email || "")}<br>
+                  Don #${Number(item.order_id)} - ${formatDateTime(item.created_at)}
+                </p>
+              </div>
+              <span class="account-status ${isVisible ? "active" : "locked"}">${isVisible ? "Dang hien thi" : "Da an"}</span>
+            </div>
+            <div class="food-review-admin-body">
+              ${item.food_image ? `<img class="ad-thumb" src="${escapeHtml(item.food_image)}" alt="${escapeHtml(item.food_name)}">` : ""}
+              <div>
+                ${renderFoodReviewStars(item.rating)}
+                <p class="feedback-admin-content">${escapeHtml(item.comment || "Khach hang chi danh gia sao.")}</p>
+              </div>
+            </div>
+            <div class="table-actions">
+              <button type="button" class="ghost-btn" data-food-review-visibility="${item.id}" data-visible="${isVisible ? "0" : "1"}">
+                ${isVisible ? "An binh luan" : "Hien thi lai"}
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </div>
+    <div class="table-footer">
+      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      <div class="pager">
+        <button type="button" data-food-reviews-page="prev" ${foodReviewsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${foodReviewsPage === index + 1 ? "active" : ""}" data-food-reviews-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-food-reviews-page="next" ${foodReviewsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
   `;
@@ -2106,6 +2204,7 @@ advertisementImageFile?.addEventListener("change", async () => {
   }
 });
 document.getElementById("refreshFeedbackBtn")?.addEventListener("click", loadFeedback);
+document.getElementById("refreshFoodReviewsBtn")?.addEventListener("click", loadFoodReviews);
 feedbackStatusFilter?.addEventListener("change", () => {
   feedbackPage = 1;
   loadFeedback();
@@ -2119,6 +2218,24 @@ feedbackSearch?.addEventListener("input", () => {
   clearTimeout(feedbackSearchTimer);
   feedbackPage = 1;
   feedbackSearchTimer = setTimeout(loadFeedback, 300);
+});
+foodReviewRatingFilter?.addEventListener("change", () => {
+  foodReviewsPage = 1;
+  loadFoodReviews();
+});
+foodReviewVisibilityFilter?.addEventListener("change", () => {
+  foodReviewsPage = 1;
+  loadFoodReviews();
+});
+foodReviewPageSize?.addEventListener("change", () => {
+  foodReviewsPerPage = Number(foodReviewPageSize.value) || 5;
+  foodReviewsPage = 1;
+  renderFoodReviewsTable();
+});
+foodReviewSearch?.addEventListener("input", () => {
+  clearTimeout(foodReviewSearchTimer);
+  foodReviewsPage = 1;
+  foodReviewSearchTimer = setTimeout(loadFoodReviews, 300);
 });
 
 ordersList.addEventListener("change", async event => {
@@ -2387,6 +2504,43 @@ feedbackList?.addEventListener("submit", async event => {
   }
 });
 
+foodReviewsList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-food-reviews-page]");
+  if (pageButton) {
+    const pageAction = pageButton.dataset.foodReviewsPage;
+    const totalPages = Math.max(1, Math.ceil(cachedFoodReviews.length / foodReviewsPerPage));
+
+    if (pageAction === "prev") {
+      foodReviewsPage -= 1;
+    } else if (pageAction === "next") {
+      foodReviewsPage += 1;
+    } else {
+      foodReviewsPage = Number(pageAction);
+    }
+
+    foodReviewsPage = Math.min(Math.max(foodReviewsPage, 1), totalPages);
+    renderFoodReviewsTable();
+    return;
+  }
+
+  const visibilityButton = event.target.closest("[data-food-review-visibility]");
+  if (!visibilityButton) return;
+
+  visibilityButton.disabled = true;
+
+  try {
+    await requestJson(`${ADMIN_API}/food-reviews/${visibilityButton.dataset.foodReviewVisibility}/visibility`, {
+      method: "PATCH",
+      body: JSON.stringify({ isVisible: visibilityButton.dataset.visible === "1" })
+    });
+    showAdminToast("Da cap nhat hien thi binh luan.");
+    await loadFoodReviews();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+    visibilityButton.disabled = false;
+  }
+});
+
 requireAdminSession();
 const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
 const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
@@ -2425,4 +2579,5 @@ loadAnnouncements();
 loadDiscounts();
 loadAdvertisements();
 loadFeedback();
+loadFoodReviews();
 loadStats();
