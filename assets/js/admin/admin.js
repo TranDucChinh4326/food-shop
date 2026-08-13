@@ -545,7 +545,7 @@ function showPermissionDialog(account) {
       <div class="permission-dialog-head">
         <div>
           <h3 id="permissionDialogTitle">Phan quyen nhan vien</h3>
-          <p>${escapeHtml(account.fullname || account.email)} - ${escapeHtml(account.email || "")}</p>
+          <p>${escapeHtml(account.fullname || account.username || account.email)} - ${escapeHtml(account.username || account.email || "")}</p>
         </div>
         <button type="button" class="icon-btn" data-close-permission-dialog aria-label="Dong">&times;</button>
       </div>
@@ -638,7 +638,7 @@ function renderUsersTable() {
             <tr>
               <th>STT</th>
               <th>Họ tên</th>
-              <th>Email</th>
+              <th>${activeAccountType === "staff" ? "Ten dang nhap" : "Email"}</th>
               <th>Chuc nang duoc cap</th>
               <th>Xac thuc</th>
               <th>Trạng thái</th>
@@ -655,7 +655,7 @@ function renderUsersTable() {
                   <strong>${escapeHtml(account.fullname)}</strong>
                   <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
-                <td>${escapeHtml(account.email)}</td>
+                <td>${escapeHtml(activeAccountType === "staff" ? (account.username || "") : account.email)}</td>
                 <td><span class="permission-summary">${escapeHtml(isRootAdmin ? "Tat ca chuc nang" : formatPermissionSummary(account.permissions || []))}</span></td>
                 <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Đang hoạt động" : "Đã khóa"}</span></td>

@@ -25,6 +25,7 @@ const accountFormTitle = document.getElementById("accountFormTitle");
 const accountBreadcrumb = document.getElementById("accountBreadcrumb");
 const accountBackLink = document.getElementById("accountBackLink");
 const accountCancelLink = document.getElementById("accountCancelLink");
+const accountLoginLabel = document.getElementById("accountLoginLabel");
 
 let toastTimer;
 let adminPermissions = [];
@@ -126,6 +127,11 @@ function syncAccountMode() {
 
   if (accountBackLink) accountBackLink.href = listUrl;
   if (accountCancelLink) accountCancelLink.href = listUrl;
+  if (accountLoginLabel) accountLoginLabel.textContent = accountType === "customer" ? "Email" : "Ten dang nhap";
+  if (accountEmail) {
+    accountEmail.type = accountType === "customer" ? "email" : "text";
+    accountEmail.placeholder = accountType === "customer" ? "name@example.com" : "vd: ducchinhnv";
+  }
 
   accountRole.value = accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES");
 
@@ -193,7 +199,7 @@ async function loadAccount() {
   }
 
   accountName.value = account.fullname || "";
-  accountEmail.value = account.email || "";
+  accountEmail.value = accountType === "customer" ? (account.email || "") : (account.username || "");
   accountRole.value = accountType === "customer" ? "USER" : String(account.role || "STAFF_SALES").toUpperCase();
   currentAccountPermissions = Array.isArray(account.permissions) ? account.permissions : [];
   syncAccountMode();
@@ -204,7 +210,8 @@ async function saveAccount(event) {
 
   const payload = {
     fullname: accountName.value.trim(),
-    email: accountEmail.value.trim(),
+    email: accountType === "customer" ? accountEmail.value.trim() : "",
+    username: accountType === "customer" ? "" : accountEmail.value.trim(),
     role: accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES"),
     permissions: isEditMode ? currentAccountPermissions : []
   };
