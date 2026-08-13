@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-care-menu">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260814-care-menu">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-menu-accordion">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260814-menu-accordion">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -22,9 +22,7 @@
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="foods-menu" aria-expanded="false">
           <span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quản lý món ăn</span>
         </button>
-        <div class="admin-subnav" data-admin-food-categories>
-          <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả món</span></a>
-        </div>
+        <div class="admin-subnav" data-admin-food-categories></div>
       </div>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="accounts-menu" aria-expanded="false">
@@ -601,6 +599,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin.js?v=20260814-care-menu"></script>
+  <script src="assets/js/admin/admin.js?v=20260814-menu-accordion"></script>
 </body>
 </html>

@@ -216,6 +216,13 @@ function setAdminNavGroupOpen(toggleName, isOpen) {
 function showAdminSection(sectionId) {
   const exists = adminSections.some(section => section.dataset.adminSection === sectionId);
   const target = exists && canAccessSection(sectionId) ? sectionId : getFirstAllowedSection();
+  const activeToggle = target === "foods"
+    ? "foods-menu"
+    : target === "accounts"
+      ? "accounts-menu"
+      : target === "feedback" || target === "food-reviews"
+        ? "customer-care-menu"
+        : "";
 
   navButtons.forEach(button => {
     const isFoodNav = button.dataset.adminTarget === "foods";
@@ -234,17 +241,9 @@ function showAdminSection(sectionId) {
     section.classList.toggle("active", section.dataset.adminSection === target);
   });
 
-  if (target === "foods") {
-    setAdminNavGroupOpen("foods-menu", true);
-  }
-
-  if (target === "accounts") {
-    setAdminNavGroupOpen("accounts-menu", true);
-  }
-
-  if (target === "feedback" || target === "food-reviews") {
-    setAdminNavGroupOpen("customer-care-menu", true);
-  }
+  navToggles.forEach(toggle => {
+    setAdminNavGroupOpen(toggle.dataset.adminToggle, toggle.dataset.adminToggle === activeToggle);
+  });
 
   sessionStorage.setItem("foodhub_admin_section", target);
 }
@@ -1894,16 +1893,11 @@ function renderAdminFoodCategoryNav() {
   if (!container) return;
 
   const roots = getRootCategories(false);
-  container.innerHTML = `
-    <a href="admin.html?section=foods&foodCategory=all" data-admin-target="foods" data-food-category="all">
-      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Tất cả món</span>
+  container.innerHTML = roots.map(category => `
+    <a href="admin.html?section=foods&foodCategory=${escapeHtml(category.slug)}" data-admin-target="foods" data-food-category="${escapeHtml(category.slug)}">
+      <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">${escapeHtml(category.name)}</span>
     </a>
-    ${roots.map(category => `
-      <a href="admin.html?section=foods&foodCategory=${escapeHtml(category.slug)}" data-admin-target="foods" data-food-category="${escapeHtml(category.slug)}">
-        <span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">${escapeHtml(category.name)}</span>
-      </a>
-    `).join("")}
-  `;
+  `).join("");
 
   if (window.AdminSidebar?.refreshIcons) {
     window.AdminSidebar.refreshIcons(container);
