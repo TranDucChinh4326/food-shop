@@ -651,6 +651,7 @@ function fillDiscountForm(discount) {
   document.getElementById("discountCode").value = discount.code || "";
   document.getElementById("discountName").value = discount.name || "";
   document.getElementById("discountType").value = discount.discount_type || "percent";
+  document.getElementById("discountApplyTo").value = discount.apply_to || "order";
   document.getElementById("discountValue").value = discount.discount_value || "";
   document.getElementById("discountMinOrder").value = discount.min_order || 0;
   document.getElementById("discountMaxDiscount").value = discount.max_discount ?? "";
@@ -1408,6 +1409,12 @@ async function loadOrders() {
             <span>Phi giao hang</span>
             <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
           </div>
+          ${Number(order.discount_amount || 0) > 0 ? `
+            <div class="order-line">
+              <span>Ma giam gia ${escapeHtml(order.discount_code || "")}</span>
+              <strong>-${formatMoney(order.discount_amount)}</strong>
+            </div>
+          ` : ""}
         </div>
       </article>
     `).join("");

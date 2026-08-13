@@ -21,6 +21,7 @@ let announcementArchivePage = 1;
 let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 let qrPaymentStatusTimer = null;
+let appliedDiscount = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -1844,7 +1845,7 @@ function normalizeLocationName(value) {
 
 function calculateShippingFee(subtotal, cityName) {
   const amount = Math.max(0, Number(subtotal) || 0);
-  if (amount === 0 || amount >= 200000) return 0;
+  if (amount === 0) return 0;
 
   const city = normalizeLocationName(cityName);
   if (city.includes("vinh long")) return 15000;
@@ -1859,6 +1860,44 @@ function getCheckoutShippingFee(subtotal) {
   const cityName = document.getElementById("customerCity")?.value || "";
   if (!cityName) return null;
   return calculateShippingFee(subtotal, cityName);
+}
+
+async function applyCheckoutDiscount() {
+  const input = document.getElementById("discountCodeInput");
+  const message = document.getElementById("discountMessage");
+  const code = input?.value.trim();
+
+  if (!code) {
+    appliedDiscount = null;
+    if (message) message.textContent = "";
+    renderCart();
+    return;
+  }
+
+  const itemsSubtotal = cart.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+  const shippingFee = getCheckoutShippingFee(itemsSubtotal) || 0;
+
+  try {
+    const response = await fetch(`${ORDERS_API}/discount/preview`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ discountCode: code, itemsSubtotal, shippingFee })
+    });
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.message || "Ma giam gia khong hop le");
+
+    appliedDiscount = data;
+    if (message) message.textContent = `Da ap dung ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
+    renderCart();
+  } catch (error) {
+    appliedDiscount = null;
+    if (message) message.textContent = error.message;
+    renderCart();
+  }
 }
 
 function renderCart() {
@@ -1913,7 +1952,8 @@ function renderCart() {
 
   if (checkoutSummary) {
     const shippingFee = getCheckoutShippingFee(total);
-    const finalTotal = total + (shippingFee || 0);
+    const discountAmount = Number(appliedDiscount?.discountAmount || 0);
+    const finalTotal = Math.max(0, total + (shippingFee || 0) - discountAmount);
     const shippingText = shippingFee === null ? "Chua ap dung" : shippingFee === 0 ? "Mien phi" : formatMoney(shippingFee);
 
     totalPrice.textContent = formatMoney(finalTotal);
@@ -1922,6 +1962,7 @@ function renderCart() {
       <div><span>Tong mat hang</span><strong>${totalQuantity}</strong></div>
       <div><span>Tam tinh</span><strong>${formatMoney(total)}</strong></div>
       <div><span>Phi giao hang</span><strong>${shippingText}</strong></div>
+      ${discountAmount > 0 ? `<div><span>Ma giam gia ${escapeHtml(appliedDiscount.code || "")}</span><strong>-${formatMoney(discountAmount)}</strong></div>` : ""}
       <div class="checkout-summary-total"><span>Tong thanh toan</span><strong>${formatMoney(finalTotal)}</strong></div>
     `;
   }
@@ -2180,6 +2221,7 @@ async function submitOrder(event) {
         customerAddress: address,
         customerNote: note,
         paymentMethod,
+        discountCode: appliedDiscount?.code || document.getElementById("discountCodeInput")?.value.trim() || "",
         items: cart.map(item => ({
           foodId: item.id,
           quantity: item.quantity
@@ -2268,6 +2310,12 @@ async function trackOrder(event) {
             <span>Phi giao hang</span>
             <strong>${Number(data.shipping_fee || 0) > 0 ? formatMoney(data.shipping_fee) : "Mien phi"}</strong>
           </div>
+          ${Number(data.discount_amount || 0) > 0 ? `
+            <div class="track-line">
+              <span>Ma giam gia ${escapeHtml(data.discount_code || "")}</span>
+              <strong>-${formatMoney(data.discount_amount)}</strong>
+            </div>
+          ` : ""}
         </div>
       </div>
     `;
@@ -2388,6 +2436,14 @@ function renderOrderHistory(orders) {
           </div>
           <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
         </div>
+        ${Number(order.discount_amount || 0) > 0 ? `
+          <div class="track-line order-item-row">
+            <div class="order-item-main">
+              <span>Ma giam gia ${escapeHtml(order.discount_code || "")}</span>
+            </div>
+            <strong>-${formatMoney(order.discount_amount)}</strong>
+          </div>
+        ` : ""}
       </div>
     </article>
   `).join("");
@@ -2958,8 +3014,13 @@ if (protectCheckoutPage()) {
   setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
 
   ["customerCity", "customerWard", "customerAddress", "savedAddressSelect"].forEach(id => {
-    document.getElementById(id)?.addEventListener("change", renderCart);
+    document.getElementById(id)?.addEventListener("change", () => {
+      appliedDiscount = null;
+      document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
+      renderCart();
+    });
   });
+  document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
 
   loadPublicCategories();
   loadFoods();

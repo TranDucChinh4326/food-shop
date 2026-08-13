@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260813-shipping-fee">
+  <link rel="stylesheet" href="assets/css/style.css?v=20260813-discounts-shipping">
 </head>
 <body>
   <header>
@@ -175,6 +175,14 @@
           </div>
 
           <div class="checkout-confirm-panel">
+            <div class="discount-box">
+              <label for="discountCodeInput">M&#227; gi&#7843;m gi&#225;</label>
+              <div class="discount-apply-row">
+                <input id="discountCodeInput" type="text" placeholder="VD: FOODHUB10">
+                <button id="applyDiscountBtn" type="button" class="ghost-btn">&#193;p d&#7909;ng</button>
+              </div>
+              <p id="discountMessage" class="discount-message"></p>
+            </div>
             <div id="checkoutSummary" class="checkout-summary-box"></div>
             <p id="checkoutProfileWarning" class="checkout-warning" hidden></p>
             <button type="submit" class="btn">X&aacute;c nh&#7853;n &#273;&#7863;t h&agrave;ng</button>
@@ -204,6 +212,6 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/script.js?v=20260813-shipping-fee"></script>
+  <script src="assets/js/script.js?v=20260813-discounts-shipping"></script>
 </body>
 </html>

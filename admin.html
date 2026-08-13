@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260813-shipping-fee">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260813-discounts-shipping">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -411,11 +411,21 @@
               <select id="discountType">
                 <option value="percent">Phần trăm</option>
                 <option value="fixed">Số tiền</option>
+                <option value="free_shipping">Mi&#7877;n ph&#237; ship</option>
               </select>
             </label>
             <label>
               Giá trị
               <input id="discountValue" type="number" min="1" step="1" placeholder="10 hoặc 20000" required>
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              Ph&#7841;m vi &#225;p d&#7909;ng
+              <select id="discountApplyTo">
+                <option value="order">M&#243;n h&#224;ng / &#273;&#417;n h&#224;ng</option>
+                <option value="shipping">Ph&#237; giao h&#224;ng</option>
+              </select>
             </label>
           </div>
           <div class="announcement-date-grid">
@@ -553,7 +563,7 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/admin/admin-sidebar.js?v=20260813-shipping-fee"></script>
-  <script src="assets/js/admin/admin.js?v=20260813-shipping-fee"></script>
+  <script src="assets/js/admin/admin-sidebar.js?v=20260813-discounts-shipping"></script>
+  <script src="assets/js/admin/admin.js?v=20260813-discounts-shipping"></script>
 </body>
 </html>

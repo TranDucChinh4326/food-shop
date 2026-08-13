@@ -2090,6 +2090,26 @@ h2 {
   padding-top: 10px;
 }
 
+.discount-box {
+  border: 1px solid #f0d8cb;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.discount-apply-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.discount-message {
+  color: #8a4b2a;
+  font-size: 13px;
+  margin: 0;
+}
+
 .checkout-warning {
   background: #fff1eb;
   border: 1px solid #ffd1bd;
