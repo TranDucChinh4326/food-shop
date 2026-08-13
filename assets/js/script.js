@@ -2623,8 +2623,9 @@ function renderUser() {
   const user = getCurrentUser();
 
   if (user) {
-    const isAdmin = String(user.role || "").toUpperCase() === "ADMIN";
-    const menuLink = isAdmin
+    const role = String(user.role || "").toUpperCase();
+    const canOpenAdmin = role && role !== "USER";
+    const menuLink = canOpenAdmin
       ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
@@ -2639,7 +2640,7 @@ function renderUser() {
         <div class="account-dropdown">
           <div class="account-summary">
             <strong>${escapeHtml(user.fullname)}</strong>
-            <small>${escapeHtml(isAdmin ? "Quản trị viên" : "Khách hàng")}</small>
+            <small>${escapeHtml(canOpenAdmin ? "Nhân viên" : "Khách hàng")}</small>
           </div>
           ${menuLink}
           <button type="button" class="account-menu-link danger" onclick="logout()">Đăng xuất</button>
