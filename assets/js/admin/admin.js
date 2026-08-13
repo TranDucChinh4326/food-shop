@@ -1448,6 +1448,17 @@ function renderFoodReviewsTable() {
                 <p class="feedback-admin-content">${escapeHtml(item.comment || "Khách hàng chỉ đánh giá sao.")}</p>
               </div>
             </div>
+            ${item.admin_reply ? `
+              <div class="feedback-admin-reply">
+                <strong>Phản hồi của admin</strong>
+                <p>${escapeHtml(item.admin_reply)}</p>
+                <small>${item.replied_by_name ? `${escapeHtml(item.replied_by_name)} - ` : ""}${formatDateTime(item.replied_at)}</small>
+              </div>
+            ` : ""}
+            <form class="feedback-reply-form" data-food-review-reply-form="${item.id}">
+              <textarea name="reply" rows="3" maxlength="2000" placeholder="Nhập phản hồi cho bình luận này..." required>${item.admin_reply ? escapeHtml(item.admin_reply) : ""}</textarea>
+              <button type="submit" class="primary-btn">${item.admin_reply ? "Cập nhật phản hồi" : "Gửi phản hồi"}</button>
+            </form>
             <div class="table-actions">
               <button type="button" class="ghost-btn" data-food-review-visibility="${item.id}" data-visible="${isVisible ? "0" : "1"}">
                 ${isVisible ? "Ẩn bình luận" : "Hiển thị lại"}
@@ -3027,6 +3038,38 @@ foodReviewsList?.addEventListener("click", async event => {
   } catch (error) {
     showAdminToast(error.message, "error");
     visibilityButton.disabled = false;
+  }
+});
+
+foodReviewsList?.addEventListener("submit", async event => {
+  const form = event.target.closest("[data-food-review-reply-form]");
+  if (!form) return;
+
+  event.preventDefault();
+  const button = form.querySelector("button[type='submit']");
+  const reply = form.elements.reply.value.trim();
+
+  if (reply.length < 2) {
+    showAdminToast("Phản hồi phải có ít nhất 2 ký tự.", "error");
+    return;
+  }
+
+  button.disabled = true;
+  const originalText = button.textContent;
+  button.textContent = "Đang lưu...";
+
+  try {
+    await requestJson(`${ADMIN_API}/food-reviews/${form.dataset.foodReviewReplyForm}/reply`, {
+      method: "POST",
+      body: JSON.stringify({ reply })
+    });
+    showAdminToast("Đã lưu phản hồi bình luận.");
+    await loadFoodReviews();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
   }
 });
 

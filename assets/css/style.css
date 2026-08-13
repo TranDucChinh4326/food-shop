@@ -902,6 +902,26 @@ nav a:hover,
   max-width: 780px;
 }
 
+.review-admin-reply {
+  background: #fff7f0;
+  border: 1px solid #f5d2bf;
+  border-radius: 8px;
+  color: #4a2b1e;
+  display: grid;
+  gap: 6px;
+  max-width: 780px;
+  padding: 12px 14px;
+}
+
+.review-admin-reply strong {
+  color: #ff4f24;
+  font-size: 13px;
+}
+
+.review-admin-reply p {
+  font-size: 15px;
+}
+
 .review-list-food {
   align-items: center;
   background: transparent;

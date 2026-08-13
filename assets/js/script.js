@@ -962,6 +962,12 @@ function renderReviewListCard(review, options = {}) {
           <span class="review-list-stars">${renderStarText(review.rating)}</span>
         </div>
         <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
+        ${review.adminReply ? `
+          <div class="review-admin-reply">
+            <strong>FoodHub phản hồi</strong>
+            <p>${escapeHtml(review.adminReply)}</p>
+          </div>
+        ` : ""}
         ${showFood ? `
           <a class="review-list-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
             <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
