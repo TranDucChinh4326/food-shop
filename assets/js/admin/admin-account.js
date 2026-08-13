@@ -151,19 +151,15 @@ function getCheckedPermissions() {
   return [...accountPermissions.querySelectorAll("input[type='checkbox']:checked")].map(input => input.value);
 }
 
-function getPasswordStrengthError(password) {
+function getAdminPasswordError(password) {
   const value = String(password || "");
-  if (value.length < 8) return "Mật khẩu phải có ít nhất 8 ký tự.";
-  if (!/[a-z]/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ thường.";
-  if (!/[A-Z]/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ hoa.";
-  if (!/\d/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ số.";
-  if (!/[^A-Za-z0-9]/.test(value)) return "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.";
+  if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự.";
   return "";
 }
 
 function validatePasswordInput({ allowEmpty = false } = {}) {
   const password = accountPassword.value.trim();
-  const error = allowEmpty && !password ? "" : getPasswordStrengthError(password);
+  const error = allowEmpty && !password ? "" : getAdminPasswordError(password);
   accountPassword.setCustomValidity(error);
   passwordField?.classList.toggle("is-password-valid", Boolean(password) && !error);
   passwordField?.classList.toggle("is-password-invalid", Boolean(error));

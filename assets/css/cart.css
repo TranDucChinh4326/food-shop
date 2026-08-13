@@ -1,21 +1,5 @@
 /* Page-specific styles for cart.html. Shared styles live in base.css. */
 
-.cart-btn {
-  align-items: center;
-  background: #fff1eb;
-  border: 1px solid #ffd7c8;
-  color: #ff5722;
-  display: inline-flex;
-  gap: 8px;
-  justify-content: center;
-  min-height: 44px;
-  text-decoration: none;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 .cart-item-detail-link {
   color: inherit;
   text-decoration: none;

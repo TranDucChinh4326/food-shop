@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản - FoodHub Admin</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-css-split">
-  <link rel="stylesheet" href="assets/css/admin-account.css?v=20260814-strong-password">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-account-password">
+  <link rel="stylesheet" href="assets/css/admin-account.css?v=20260814-account-password">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -78,8 +78,8 @@
 
           <label id="passwordField">
             Mật khẩu
-            <input type="password" id="accountPassword" minlength="8" autocomplete="new-password" aria-describedby="passwordStrengthHint">
-            <small id="passwordStrengthHint" class="password-strength-hint">Ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</small>
+            <input type="password" id="accountPassword" minlength="6" autocomplete="new-password" aria-describedby="passwordHint">
+            <small id="passwordHint" class="password-hint">Tối thiểu 6 ký tự. Admin có thể đặt mật khẩu tạm đơn giản cho tài khoản.</small>
           </label>
           <input type="hidden" id="accountRole" value="STAFF_SALES">
         </div>
@@ -102,6 +102,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin-account.js?v=20260814-strong-password"></script>
+  <script src="assets/js/admin/admin-account.js?v=20260814-account-password"></script>
 </body>
 </html>

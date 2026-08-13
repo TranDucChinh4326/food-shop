@@ -251,6 +251,16 @@ async function handleFacebookResponse(response) {
   }
 }
 
+function getRegisterPasswordError(value) {
+  const password = String(value || "");
+  if (password.length < 8) return "Mật khẩu phải có ít nhất 8 ký tự.";
+  if (!/[a-z]/.test(password)) return "Mật khẩu phải có ít nhất 1 chữ thường.";
+  if (!/[A-Z]/.test(password)) return "Mật khẩu phải có ít nhất 1 chữ hoa.";
+  if (!/\d/.test(password)) return "Mật khẩu phải có ít nhất 1 chữ số.";
+  if (!/[^A-Za-z0-9]/.test(password)) return "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.";
+  return "";
+}
+
 async function register(event) {
   event.preventDefault();
 
@@ -260,6 +270,13 @@ async function register(event) {
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  const passwordError = getRegisterPasswordError(password);
+
+  if (passwordError) {
+    showToast(passwordError, "error");
+    document.getElementById("password").focus();
+    return;
+  }
 
   if (!pendingSocial?.provider || !pendingSocial?.accessToken) {
     showToast("Vui lòng xác thực bằng Google hoặc Facebook trước.", "error");

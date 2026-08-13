@@ -79,6 +79,42 @@ header.header-compact .header-tools {
   gap: 10px;
 }
 
+.btn,
+.food-card button,
+.qty-btn,
+.remove-btn {
+  background: #ff5722;
+  border: none;
+  border-radius: 25px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 700;
+  padding: 11px 22px;
+  text-decoration: none;
+}
+
+.btn:hover,
+.food-card button:hover {
+  background: #e64a19;
+}
+
+.cart-btn {
+  align-items: center;
+  background: #fff1eb;
+  border: 1px solid #ffd7c8;
+  border-radius: 999px;
+  color: #ff5722;
+  display: inline-flex;
+  font-weight: 700;
+  gap: 8px;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 
 
 @media (max-width: 900px) {

@@ -117,7 +117,7 @@
   padding-top: 18px;
 }
 
-.password-strength-hint {
+.password-hint {
   color: #64748b;
   display: block;
   font-size: 13px;
@@ -125,11 +125,11 @@
   margin-top: 8px;
 }
 
-#passwordField.is-password-invalid .password-strength-hint {
+#passwordField.is-password-invalid .password-hint {
   color: #dc2626;
 }
 
-#passwordField.is-password-valid .password-strength-hint {
+#passwordField.is-password-valid .password-hint {
   color: #047857;
 }
 

@@ -1,25 +1,5 @@
 /* Page-specific styles for index.html. Shared styles live in base.css. */
 
-.btn,
-.food-card button,
-.qty-btn,
-.remove-btn {
-  background: #ff5722;
-  color: white;
-  border: none;
-  padding: 11px 22px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn:hover,
-.food-card button:hover {
-  background: #e64a19;
-}
-
 .food-card-detail-link {
   color: inherit;
   display: block;
