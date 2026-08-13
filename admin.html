@@ -9,7 +9,7 @@
 <body>
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
-      <a href="index.html"><span class="brand-mark">&#127828;</span><span class="sidebar-label">FoodHub</span></a>
+      <a href="index.html"><span class="brand-mark">🍔</span><span class="sidebar-label">FoodHub</span></a>
       <span class="sidebar-label">Bảng quản trị</span>
     </div>
 
@@ -38,7 +38,7 @@
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
       <a class="admin-nav-btn" href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=food-reviews" data-admin-target="food-reviews"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">B&#236;nh lu&#7853;n m&#243;n</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=food-reviews" data-admin-target="food-reviews"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Bình luận món</span></a>
     </nav>
   </aside>
 
@@ -67,10 +67,10 @@
             <p>Chào mừng trở lại, Admin. Đây là những dữ liệu đang diễn ra hôm nay.</p>
           </div>
           <div class="stats-filter dashboard-filter">
-            <select id="statsTrendMode" aria-label="Ki&#7875;u th&#7889;ng k&#234;">
-              <option value="day">7 ng&#224;y</option>
-              <option value="month">Theo th&#225;ng</option>
-              <option value="year">Theo n&#259;m</option>
+            <select id="statsTrendMode" aria-label="Kiểu thống kê">
+              <option value="day">7 ngày</option>
+              <option value="month">Theo tháng</option>
+              <option value="year">Theo năm</option>
             </select>
             <input id="statsFromDate" type="date" aria-label="Từ ngày">
             <input id="statsToDate" type="date" aria-label="Đến ngày">
@@ -129,16 +129,16 @@
         </div>
 
         <div class="table-toolbar multi-filter order-toolbar">
-          <input id="orderSearch" type="search" placeholder="T&#236;m m&#227; &#273;&#417;n, t&#234;n, S&#272;T ho&#7863;c &#273;&#7883;a ch&#7881;">
-          <select id="orderStatusFilter" aria-label="L&#7885;c tr&#7841;ng th&#225;i &#273;&#417;n h&#224;ng">
-            <option value="all">T&#7845;t c&#7843; tr&#7841;ng th&#225;i</option>
-            <option value="pending">Ch&#7901; x&#225;c nh&#7853;n</option>
-            <option value="confirmed">&#272;&#227; x&#225;c nh&#7853;n</option>
-            <option value="delivering">&#272;ang giao</option>
-            <option value="done">Ho&#224;n t&#7845;t</option>
-            <option value="cancelled">&#272;&#227; h&#7911;y</option>
+          <input id="orderSearch" type="search" placeholder="Tìm mã đơn, tên, SĐT hoặc địa chỉ">
+          <select id="orderStatusFilter" aria-label="Lọc trạng thái đơn hàng">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="pending">Chờ xác nhận</option>
+            <option value="confirmed">Đã xác nhận</option>
+            <option value="delivering">Đang giao</option>
+            <option value="done">Hoàn tất</option>
+            <option value="cancelled">Đã hủy</option>
           </select>
-          <select id="orderPageSize" aria-label="S&#7889; &#273;&#417;n m&#7895;i trang">
+          <select id="orderPageSize" aria-label="Số đơn mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -440,7 +440,7 @@
               <select id="discountType">
                 <option value="percent">Phần trăm</option>
                 <option value="fixed">Số tiền</option>
-                <option value="free_shipping">Mi&#7877;n ph&#237; ship</option>
+                <option value="free_shipping">Miễn phí ship</option>
               </select>
             </label>
             <label>
@@ -450,10 +450,10 @@
           </div>
           <div class="announcement-date-grid">
             <label>
-              Ph&#7841;m vi &#225;p d&#7909;ng
+              Phạm vi áp dụng
               <select id="discountApplyTo">
-                <option value="order">M&#243;n h&#224;ng / &#273;&#417;n h&#224;ng</option>
-                <option value="shipping">Ph&#237; giao h&#224;ng</option>
+                <option value="order">Món hàng / đơn hàng</option>
+                <option value="shipping">Phí giao hàng</option>
               </select>
             </label>
           </div>
@@ -553,18 +553,18 @@
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
-            <h2>Qu&#7843;n l&#253; b&#236;nh lu&#7853;n m&#243;n &#259;n</h2>
-            <p><a href="index.html">Trang ch&#7911;</a> <span>/</span> B&#236;nh lu&#7853;n m&#243;n &#259;n</p>
+            <h2>Quản lý bình luận món ăn</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Bình luận món ăn</p>
           </div>
           <div class="heading-actions">
-            <button id="refreshFoodReviewsBtn" type="button" class="ghost-btn">T&#7843;i l&#7841;i</button>
+            <button id="refreshFoodReviewsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
         </div>
 
         <div class="feedback-admin-toolbar table-toolbar multi-filter">
-          <input type="search" id="foodReviewSearch" placeholder="T&#236;m theo m&#243;n, kh&#225;ch h&#224;ng, n&#7897;i dung">
+          <input type="search" id="foodReviewSearch" placeholder="Tìm theo món, khách hàng, nội dung">
           <select id="foodReviewRatingFilter">
-            <option value="all">T&#7845;t c&#7843; sao</option>
+            <option value="all">Tất cả sao</option>
             <option value="5">5 sao</option>
             <option value="4">4 sao</option>
             <option value="3">3 sao</option>
@@ -572,18 +572,18 @@
             <option value="1">1 sao</option>
           </select>
           <select id="foodReviewVisibilityFilter">
-            <option value="all">T&#7845;t c&#7843;</option>
-            <option value="visible">&#272;ang hi&#7875;n th&#7883;</option>
-            <option value="hidden">&#272;&#227; &#7849;n</option>
+            <option value="all">Tất cả</option>
+            <option value="visible">Đang hiển thị</option>
+            <option value="hidden">Đã ẩn</option>
           </select>
-          <select id="foodReviewPageSize" aria-label="S&#7889; d&#242;ng b&#236;nh lu&#7853;n m&#7895;i trang">
+          <select id="foodReviewPageSize" aria-label="Số dòng bình luận mỗi trang">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
           </select>
         </div>
 
-        <div id="foodReviewsList" class="accounts-list table-state">&#272;ang t&#7843;i b&#236;nh lu&#7853;n...</div>
+        <div id="foodReviewsList" class="accounts-list table-state">Đang tải bình luận...</div>
       </section>
     </section>
 

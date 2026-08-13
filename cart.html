@@ -34,7 +34,7 @@
     <nav>
       <a href="index.html">Trang chủ</a>
       <div class="nav-dropdown" data-public-category-menu="food">
-        <a class="nav-dropdown-toggle" href="menu.html?category=food">Đồ ăn <span aria-hidden="true">?</span></a>
+        <a class="nav-dropdown-toggle" href="menu.html?category=food">Đồ ăn <span aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel">
           <a href="menu.html?category=com">Cơm</a>
           <a href="menu.html?category=pho">Phở</a>
@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="nav-dropdown" data-public-category-menu="drink">
-        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Đồ uống <span aria-hidden="true">?</span></a>
+        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Đồ uống <span aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel">
           <a href="menu.html?category=tra">Trà</a>
           <a href="menu.html?category=ca-phe">Cà phê</a>
@@ -53,7 +53,7 @@
       </div>
       <a href="cart.html">Giỏ hàng</a>
       <a href="track.html">Lịch sử đơn</a>
-      <a href="feedback.html">Ph&#7843;n h&#7891;i</a>
+      <a href="feedback.html">Phản hồi</a>
       <a href="contact.html">Liên hệ</a>
     </nav>
   </header>
@@ -71,53 +71,53 @@
       <section class="checkout-card checkout-customer-card">
         <div class="section-heading">
           <div>
-            <h2>Th&ocirc;ng tin giao h&agrave;ng</h2>
-            <p>FoodHub s&#7869; li&ecirc;n h&#7879; x&aacute;c nh&#7853;n tr&#432;&#7899;c khi giao.</p>
+            <h2>Thông tin giao hàng</h2>
+            <p>FoodHub sẽ liên hệ xác nhận trước khi giao.</p>
           </div>
         </div>
 
         <div class="checkout-customer-fields">
           <label id="savedAddressSelectWrap" hidden>
-            Ch&#7885;n &#273;&#7883;a ch&#7881; &#273;&atilde; l&#432;u
+            Chọn địa chỉ đã lưu
             <select id="savedAddressSelect">
-              <option value="">Nh&#7853;p &#273;&#7883;a ch&#7881; m&#7899;i</option>
+              <option value="">Nhập địa chỉ mới</option>
             </select>
           </label>
 
           <label>
-            H&#7885; v&agrave; t&ecirc;n
-            <input type="text" id="customerName" placeholder="Nguy&#7877;n V&#259;n A" required>
+            Họ và tên
+            <input type="text" id="customerName" placeholder="Nguyễn Văn A" required>
           </label>
 
           <label>
-            S&#7889; &#273;i&#7879;n tho&#7841;i
+            Số điện thoại
             <input type="tel" id="customerPhone" placeholder="0900 000 000" required>
           </label>
 
           <div class="address-input-grid">
             <label>
-              Th&agrave;nh ph&#7889; / T&#7881;nh
+              Thành phố / Tỉnh
               <select id="customerCity" required>
-                <option value="">Ch&#7885;n th&agrave;nh ph&#7889;</option>
+                <option value="">Chọn thành phố</option>
               </select>
             </label>
             <label>
-              Ph&#432;&#7901;ng / X&atilde;
+              Phường / Xã
               <select id="customerWard" required>
-                <option value="">Ch&#7885;n ph&#432;&#7901;ng x&atilde;</option>
+                <option value="">Chọn phường xã</option>
               </select>
             </label>
           </div>
 
           <label>
-            &#272;&#7883;a ch&#7881; c&#7909; th&#7875;
-            <input type="text" id="customerAddress" placeholder="S&#7889; nh&agrave;, t&ecirc;n &#273;&#432;&#7901;ng, t&ograve;a nh&agrave;" list="customerAddressSuggestions" required>
+            Địa chỉ cụ thể
+            <input type="text" id="customerAddress" placeholder="Số nhà, tên đường, tòa nhà" list="customerAddressSuggestions" required>
           </label>
           <datalist id="customerAddressSuggestions"></datalist>
 
           <label>
-            Ghi ch&uacute;
-            <textarea id="customerNote" placeholder="V&iacute; d&#7909;: giao gi&#7901; ngh&#7881; tr&#432;a, &iacute;t cay..."></textarea>
+            Ghi chú
+            <textarea id="customerNote" placeholder="Ví dụ: giao giờ nghỉ trưa, ít cay..."></textarea>
           </label>
         </div>
       </section>
@@ -125,50 +125,50 @@
       <section class="checkout-card checkout-cart-card">
         <div class="section-heading">
           <div>
-            <h2>Gi&#7887; h&agrave;ng c&#7911;a b&#7841;n</h2>
-            <p>C&aacute;c m&oacute;n s&#7869; &#273;&#432;&#7907;c gi&#7919; trong tr&igrave;nh duy&#7879;t c&#7911;a b&#7841;n.</p>
+            <h2>Giỏ hàng của bạn</h2>
+            <p>Các món sẽ được giữ trong trình duyệt của bạn.</p>
           </div>
-          <a href="menu.html" class="text-link">Th&ecirc;m m&oacute;n</a>
+          <a href="menu.html" class="text-link">Thêm món</a>
         </div>
 
         <div id="cart-items"></div>
 
         <div class="cart-total">
-          T&#7893;ng ti&#7873;n: <span id="total-price">0&#273;</span>
+          Tổng tiền: <span id="total-price">0đ</span>
         </div>
       </section>
 
       <section class="checkout-card checkout-payment-card">
         <div class="checkout-payment-layout">
           <div class="checkout-payment-section">
-            <h3>Ph&#432;&#417;ng th&#7913;c thanh to&aacute;n</h3>
+            <h3>Phương thức thanh toán</h3>
             <div class="payment-options">
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="cod" checked>
                 <span>
-                  <strong>Thanh to&aacute;n khi nh&#7853;n h&agrave;ng</strong>
-                  <small>Tr&#7843; ti&#7873;n tr&#7921;c ti&#7871;p cho nh&acirc;n vi&ecirc;n giao h&agrave;ng.</small>
+                  <strong>Thanh toán khi nhận hàng</strong>
+                  <small>Trả tiền trực tiếp cho nhân viên giao hàng.</small>
                 </span>
               </label>
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="qr">
                 <span>
-                  <strong>Thanh to&aacute;n b&#7857;ng m&atilde; QR</strong>
-                  <small>H&#7879; th&#7889;ng ghi nh&#7853;n &#273;&#417;n ch&#7901; thanh to&aacute;n QR.</small>
+                  <strong>Thanh toán bằng mã QR</strong>
+                  <small>Hệ thống ghi nhận đơn chờ thanh toán QR.</small>
                 </span>
               </label>
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="vnpay">
                 <span>
-                  <strong>Thanh to&aacute;n qua VNPay</strong>
-                  <small>Chuy&#7875;n sang c&#7893;ng thanh to&aacute;n VNPay &#273;&#7875; ho&agrave;n t&#7845;t giao d&#7883;ch.</small>
+                  <strong>Thanh toán qua VNPay</strong>
+                  <small>Chuyển sang cổng thanh toán VNPay để hoàn tất giao dịch.</small>
                 </span>
               </label>
               <label class="payment-option">
                 <input type="radio" name="paymentMethod" value="wallet">
                 <span>
-                  <strong>Thanh to&aacute;n b&#7857;ng ti&#7873;n trong t&agrave;i kho&#7843;n</strong>
-                  <small>S&#7917; d&#7909;ng s&#7889; d&#432; FoodHub khi ch&#7913;c n&#259;ng v&iacute; &#273;&#432;&#7907;c k&iacute;ch ho&#7841;t.</small>
+                  <strong>Thanh toán bằng tiền trong tài khoản</strong>
+                  <small>Sử dụng số dư FoodHub khi chức năng ví được kích hoạt.</small>
                 </span>
               </label>
             </div>
@@ -176,17 +176,17 @@
 
           <div class="checkout-confirm-panel">
             <div class="discount-box">
-              <label for="discountCodeInput">M&#227; gi&#7843;m gi&#225;</label>
+              <label for="discountCodeInput">Mã giảm giá</label>
               <div class="discount-apply-row">
                 <input id="discountCodeInput" type="text" placeholder="VD: FOODHUB10">
-                <button id="applyDiscountBtn" type="button" class="ghost-btn">&#193;p d&#7909;ng</button>
+                <button id="applyDiscountBtn" type="button" class="ghost-btn">Áp dụng</button>
               </div>
               <select id="ownedVoucherSelect" class="voucher-select" aria-label="Voucher da nhan"><option value="">Chon voucher da nhan</option></select>
               <p id="discountMessage" class="discount-message"></p>
             </div>
             <div id="checkoutSummary" class="checkout-summary-box"></div>
             <p id="checkoutProfileWarning" class="checkout-warning" hidden></p>
-            <button type="submit" class="btn">X&aacute;c nh&#7853;n &#273;&#7863;t h&agrave;ng</button>
+            <button type="submit" class="btn">Xác nhận đặt hàng</button>
           </div>
         </div>
       </section>

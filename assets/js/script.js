@@ -983,12 +983,12 @@ function getReviewFoodOptions(selectedFood, options = {}) {
   const currentFoodId = options.currentFoodId ? String(options.currentFoodId) : "";
   const ids = new Set(foodReviews.map(review => String(review.foodId)));
   const currentOption = options.includeCurrent && currentFoodId
-    ? `<option value="current" ${selectedFood === "current" ? "selected" : ""}>M&oacute;n hi&#7879;n t&#7841;i</option>`
+    ? `<option value="current" ${selectedFood === "current" ? "selected" : ""}>Món hiện tại</option>`
     : "";
 
   return `
     ${currentOption}
-    <option value="all" ${selectedFood === "all" ? "selected" : ""}>T&#7845;t c&#7843; m&oacute;n</option>
+    <option value="all" ${selectedFood === "all" ? "selected" : ""}>Tất cả món</option>
     ${foods
       .filter(food => ids.has(String(food.id)))
       .map(food => `<option value="${food.id}" ${String(selectedFood) === String(food.id) ? "selected" : ""}>${escapeHtml(food.name)}</option>`)
@@ -1014,7 +1014,7 @@ function renderReviewPagination(totalPages, currentPage) {
   if (totalPages <= 1) return "";
 
   return `
-    <div class="review-pagination" aria-label="Ph&acirc;n trang b&igrave;nh lu&#7853;n">
+    <div class="review-pagination" aria-label="Phân trang bình luận">
       <button type="button" data-review-page="${Math.max(1, currentPage - 1)}" ${currentPage <= 1 ? "disabled" : ""}>&lsaquo;</button>
       ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
         <button type="button" class="${page === currentPage ? "active" : ""}" data-review-page="${page}">${page}</button>
@@ -1036,14 +1036,14 @@ function renderReviewPanel(scope, controlsElement, listElement, reviews, options
 
   if (controlsElement) {
     controlsElement.innerHTML = `
-      <label><span>S&#7889; sao</span><select data-review-filter="rating">
-        <option value="all" ${state.rating === "all" ? "selected" : ""}>T&#7845;t c&#7843;</option>
+      <label><span>Số sao</span><select data-review-filter="rating">
+        <option value="all" ${state.rating === "all" ? "selected" : ""}>Tất cả</option>
         ${[5, 4, 3, 2, 1].map(star => `<option value="${star}" ${String(state.rating) === String(star) ? "selected" : ""}>${star} sao</option>`).join("")}
       </select></label>
-      <label><span>M&oacute;n &#259;n</span><select data-review-filter="food">${getReviewFoodOptions(state.food, options)}</select></label>
-      <label><span>S&#7855;p x&#7871;p</span><select data-review-filter="sort">
-        <option value="newest" ${state.sort === "newest" ? "selected" : ""}>M&#7899;i nh&#7845;t</option>
-        <option value="oldest" ${state.sort === "oldest" ? "selected" : ""}>C&#361; nh&#7845;t</option>
+      <label><span>Món ăn</span><select data-review-filter="food">${getReviewFoodOptions(state.food, options)}</select></label>
+      <label><span>Sắp xếp</span><select data-review-filter="sort">
+        <option value="newest" ${state.sort === "newest" ? "selected" : ""}>Mới nhất</option>
+        <option value="oldest" ${state.sort === "oldest" ? "selected" : ""}>Cũ nhất</option>
       </select></label>
     `;
 
@@ -1058,7 +1058,7 @@ function renderReviewPanel(scope, controlsElement, listElement, reviews, options
 
   listElement.innerHTML = pageReviews.length
     ? `${pageReviews.map(review => renderReviewListCard(review, options)).join("")}${renderReviewPagination(totalPages, state.page)}`
-    : `<p class="home-review-empty">Ch&#432;a c&oacute; b&igrave;nh lu&#7853;n ph&ugrave; h&#7907;p.</p>`;
+    : `<p class="home-review-empty">Chưa có bình luận phù hợp.</p>`;
 
   listElement.querySelectorAll("[data-review-page]").forEach(button => {
     button.addEventListener("click", () => {
