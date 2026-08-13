@@ -151,6 +151,25 @@ function getCheckedPermissions() {
   return [...accountPermissions.querySelectorAll("input[type='checkbox']:checked")].map(input => input.value);
 }
 
+function getPasswordStrengthError(password) {
+  const value = String(password || "");
+  if (value.length < 8) return "Mật khẩu phải có ít nhất 8 ký tự.";
+  if (!/[a-z]/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ thường.";
+  if (!/[A-Z]/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ hoa.";
+  if (!/\d/.test(value)) return "Mật khẩu phải có ít nhất 1 chữ số.";
+  if (!/[^A-Za-z0-9]/.test(value)) return "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.";
+  return "";
+}
+
+function validatePasswordInput({ allowEmpty = false } = {}) {
+  const password = accountPassword.value.trim();
+  const error = allowEmpty && !password ? "" : getPasswordStrengthError(password);
+  accountPassword.setCustomValidity(error);
+  passwordField?.classList.toggle("is-password-valid", Boolean(password) && !error);
+  passwordField?.classList.toggle("is-password-invalid", Boolean(error));
+  return error;
+}
+
 function setModeText() {
   if (isEditMode) {
     accountFormTitle.textContent = accountType === "customer"
@@ -227,7 +246,20 @@ async function saveAccount(event) {
   };
 
   if (!isEditMode) {
+    const passwordError = validatePasswordInput();
+    if (passwordError) {
+      showAdminToast(passwordError, "error");
+      accountPassword.focus();
+      return;
+    }
     payload.password = accountPassword.value;
+  } else if (accountPassword.value.trim()) {
+    const passwordError = validatePasswordInput({ allowEmpty: true });
+    if (passwordError) {
+      showAdminToast(passwordError, "error");
+      accountPassword.focus();
+      return;
+    }
   }
 
   try {
@@ -262,6 +294,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 accountForm.addEventListener("submit", saveAccount);
+accountPassword.addEventListener("input", () => validatePasswordInput({ allowEmpty: isEditMode }));
 
 async function initAccountPage() {
   requireAdminSession();
