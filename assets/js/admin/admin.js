@@ -75,6 +75,18 @@ let navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
 const pageParams = new URLSearchParams(window.location.search);
+const SECTION_PERMISSIONS = {
+  overview: [],
+  orders: ["orders.manage"],
+  categories: ["foods.manage"],
+  foods: ["foods.manage"],
+  accounts: ["users.manage", "staff.manage"],
+  announcements: ["announcements.manage"],
+  advertisements: ["ads.manage"],
+  discounts: ["discounts.manage"],
+  feedback: ["feedback.manage"],
+  "food-reviews": ["feedback.manage"]
+};
 const statusLabels = {
   pending: "Chờ xác nhận",
   confirmed: "Đã xác nhận",
@@ -121,6 +133,40 @@ let foodReviewSearchTimer;
 let cachedFoodReviews = [];
 let foodReviewsPage = 1;
 let foodReviewsPerPage = 5;
+let currentAdmin = {
+  ...user,
+  permissions: Array.isArray(user?.permissions) ? user.permissions : []
+};
+
+function isRootAdmin() {
+  return String(currentAdmin?.role || "").toUpperCase() === "ADMIN";
+}
+
+function hasAdminPermission(permission) {
+  if (isRootAdmin()) return true;
+  return Array.isArray(currentAdmin?.permissions) && currentAdmin.permissions.includes(permission);
+}
+
+function canAccessSection(sectionId) {
+  if (sectionId === "overview") return true;
+  const permissions = SECTION_PERMISSIONS[sectionId] || [];
+  return permissions.length === 0 || permissions.some(hasAdminPermission);
+}
+
+function getFirstAllowedSection() {
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "feedback", "food-reviews"];
+  return preferred.find(canAccessSection) || "overview";
+}
+
+async function loadCurrentAdmin() {
+  const data = await requestJson(`${ADMIN_API}/me`);
+  currentAdmin = data;
+  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...data }));
+  document.querySelectorAll("[data-admin-user-name]").forEach(node => {
+    node.textContent = data.fullname || data.email || "admin";
+  });
+  return data;
+}
 function refreshAdminNavElements() {
   navButtons = [...document.querySelectorAll("[data-admin-target]")];
   navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
@@ -137,7 +183,8 @@ function setAdminNavGroupOpen(toggleName, isOpen) {
 }
 
 function showAdminSection(sectionId) {
-  const target = adminSections.some(section => section.dataset.adminSection === sectionId) ? sectionId : "overview";
+  const exists = adminSections.some(section => section.dataset.adminSection === sectionId);
+  const target = exists && canAccessSection(sectionId) ? sectionId : getFirstAllowedSection();
 
   navButtons.forEach(button => {
     const isFoodNav = button.dataset.adminTarget === "foods";
@@ -168,7 +215,39 @@ function showAdminSection(sectionId) {
 }
 
 function normalizeAccountType(value) {
-  return value === "customers" ? "customers" : "staff";
+  if (value === "customers" && hasAdminPermission("users.manage")) return "customers";
+  if (value === "staff" && hasAdminPermission("staff.manage")) return "staff";
+  if (hasAdminPermission("staff.manage")) return "staff";
+  if (hasAdminPermission("users.manage")) return "customers";
+  return "staff";
+}
+
+function applyAdminPermissionUi() {
+  document.querySelectorAll("[data-admin-target]").forEach(link => {
+    const section = link.dataset.adminTarget;
+    const accountType = link.dataset.accountType;
+    let allowed = canAccessSection(section);
+
+    if (section === "accounts" && accountType === "staff") allowed = hasAdminPermission("staff.manage");
+    if (section === "accounts" && accountType === "customers") allowed = hasAdminPermission("users.manage");
+
+    link.hidden = !allowed;
+  });
+
+  document.querySelectorAll("[data-admin-toggle]").forEach(toggle => {
+    const name = toggle.dataset.adminToggle;
+    const group = toggle.closest(".admin-nav-group");
+    const allowed = name === "foods-menu"
+      ? hasAdminPermission("foods.manage")
+      : name === "accounts-menu"
+        ? hasAdminPermission("users.manage") || hasAdminPermission("staff.manage")
+        : true;
+    if (group) group.hidden = !allowed;
+  });
+
+  adminSections.forEach(section => {
+    section.hidden = !canAccessSection(section.dataset.adminSection);
+  });
 }
 
 function getAccountTypeTitle() {
@@ -434,6 +513,12 @@ function getCheckedPermissions(container) {
 }
 
 async function loadAdminPermissions() {
+  if (!hasAdminPermission("roles.manage")) {
+    adminPermissions = [];
+    renderPermissionChecks(staffPermissions);
+    return;
+  }
+
   try {
     const data = await requestJson(`${ADMIN_API}/permissions`);
     adminPermissions = data.permissions || [];
@@ -2640,43 +2725,56 @@ foodReviewsList?.addEventListener("click", async event => {
   }
 });
 
-requireAdminSession();
-const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
-const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
-const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_size") || "5");
-const initialAccountType = pageParams.get("accountType") || sessionStorage.getItem("foodhub_account_type") || "staff";
-const initialUsersPageSize = Number(sessionStorage.getItem("foodhub_users_page_size") || "5");
+async function initAdminPage() {
+  requireAdminSession();
+  await loadCurrentAdmin();
+  applyAdminPermissionUi();
 
-activeFoodCategory = initialFoodCategory === "food"
-  ? "do-an"
-  : initialFoodCategory === "drink"
-    ? "nuoc-uong"
-    : initialFoodCategory || "all";
-activeFoodSubcategory = initialFoodSubcategory;
+  const initialFoodCategory = pageParams.get("foodCategory") || sessionStorage.getItem("foodhub_food_category") || "all";
+  const initialFoodSubcategory = sessionStorage.getItem("foodhub_food_subcategory") || "all";
+  const initialFoodPageSize = Number(sessionStorage.getItem("foodhub_food_page_size") || "5");
+  const initialAccountType = pageParams.get("accountType") || sessionStorage.getItem("foodhub_account_type") || "staff";
+  const initialUsersPageSize = Number(sessionStorage.getItem("foodhub_users_page_size") || "5");
 
-activeAccountType = normalizeAccountType(initialAccountType);
-sessionStorage.setItem("foodhub_account_type", activeAccountType);
+  activeFoodCategory = initialFoodCategory === "food"
+    ? "do-an"
+    : initialFoodCategory === "drink"
+      ? "nuoc-uong"
+      : initialFoodCategory || "all";
+  activeFoodSubcategory = initialFoodSubcategory;
 
-if ([5, 10, 20].includes(initialFoodPageSize) && foodPageSize) {
-  foodsPerPage = initialFoodPageSize;
-  foodPageSize.value = String(foodsPerPage);
+  activeAccountType = normalizeAccountType(initialAccountType);
+  sessionStorage.setItem("foodhub_account_type", activeAccountType);
+
+  if ([5, 10, 20].includes(initialFoodPageSize) && foodPageSize) {
+    foodsPerPage = initialFoodPageSize;
+    foodPageSize.value = String(foodsPerPage);
+  }
+
+  if ([5, 10, 20].includes(initialUsersPageSize) && userPageSize) {
+    usersPerPage = initialUsersPageSize;
+    userPageSize.value = String(usersPerPage);
+  }
+
+  showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || getFirstAllowedSection());
+  syncAccountView();
+  showAdvertisementListView();
+  await loadAdminPermissions();
+
+  if (canAccessSection("orders")) loadOrders();
+  if (hasAdminPermission("foods.manage")) {
+    loadCategories();
+    loadFoods();
+  }
+  if (canAccessSection("accounts")) loadUsers();
+  if (canAccessSection("announcements")) loadAnnouncements();
+  if (canAccessSection("discounts")) loadDiscounts();
+  if (canAccessSection("advertisements")) loadAdvertisements();
+  if (canAccessSection("feedback")) loadFeedback();
+  if (canAccessSection("food-reviews")) loadFoodReviews();
+  if (hasAdminPermission("stats.view") || hasAdminPermission("orders.manage")) loadStats();
 }
 
-if ([5, 10, 20].includes(initialUsersPageSize) && userPageSize) {
-  usersPerPage = initialUsersPageSize;
-  userPageSize.value = String(usersPerPage);
-}
-
-showAdminSection(pageParams.get("section") || sessionStorage.getItem("foodhub_admin_section") || "overview");
-syncAccountView();
-showAdvertisementListView();
-loadAdminPermissions().then(loadUsers);
-loadOrders();
-loadCategories();
-loadFoods();
-loadAnnouncements();
-loadDiscounts();
-loadAdvertisements();
-loadFeedback();
-loadFoodReviews();
-loadStats();
+initAdminPage().catch(error => {
+  showAdminToast(error.message, "error");
+});

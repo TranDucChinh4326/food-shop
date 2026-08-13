@@ -28,6 +28,19 @@ const accountCancelLink = document.getElementById("accountCancelLink");
 
 let toastTimer;
 let adminPermissions = [];
+let currentAdmin = {
+  ...user,
+  permissions: Array.isArray(user?.permissions) ? user.permissions : []
+};
+
+function isRootAdmin() {
+  return String(currentAdmin?.role || "").toUpperCase() === "ADMIN";
+}
+
+function hasAdminPermission(permission) {
+  if (isRootAdmin()) return true;
+  return Array.isArray(currentAdmin?.permissions) && currentAdmin.permissions.includes(permission);
+}
 
 function showAdminToast(message, type = "success") {
   const toast = document.getElementById("adminToast");
@@ -57,6 +70,16 @@ function requireAdminSession() {
     alert("Vui lòng đăng nhập bằng tài khoản quản trị.");
     window.location.href = "login.html";
   }
+}
+
+async function loadCurrentAdmin() {
+  const data = await requestJson(`${ADMIN_API}/me`);
+  currentAdmin = data;
+  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...data }));
+  document.querySelectorAll("[data-admin-user-name]").forEach(node => {
+    node.textContent = data.fullname || data.email || "admin";
+  });
+  return data;
 }
 
 async function requestJson(url, options = {}) {
@@ -116,7 +139,7 @@ function syncAccountMode() {
   }
 
   if (permissionPanel) {
-    permissionPanel.style.display = isCustomerMode() ? "none" : "block";
+    permissionPanel.style.display = isCustomerMode() || !hasAdminPermission("roles.manage") ? "none" : "block";
     const note = permissionPanel.querySelector(".form-note");
     if (note) {
       note.textContent = isCustomerMode()
@@ -149,9 +172,27 @@ function setModeText() {
 }
 
 async function loadPermissions() {
+  if (!hasAdminPermission("roles.manage")) {
+    adminPermissions = [];
+    renderPermissionChecks();
+    return;
+  }
+
   const data = await requestJson(`${ADMIN_API}/permissions`);
   adminPermissions = data.permissions || [];
   renderPermissionChecks();
+}
+
+function ensureAccountManageAccess() {
+  const allowed = accountType === "customer"
+    ? hasAdminPermission("users.manage")
+    : hasAdminPermission("staff.manage");
+
+  if (allowed) return true;
+
+  alert("Ban khong co quyen quan ly loai tai khoan nay.");
+  window.location.href = "admin.html";
+  return false;
 }
 
 async function loadAccount() {
@@ -216,12 +257,16 @@ accountRole.addEventListener("change", () => {
 
 accountForm.addEventListener("submit", saveAccount);
 
-requireAdminSession();
-setModeText();
-syncAccountMode();
-loadPermissions()
-  .then(loadAccount)
-  .then(() => {
-    syncAccountMode();
-  })
-  .catch(error => showAdminToast(error.message, "error"));
+async function initAccountPage() {
+  requireAdminSession();
+  await loadCurrentAdmin();
+  if (!ensureAccountManageAccess()) return;
+
+  setModeText();
+  syncAccountMode();
+  await loadPermissions();
+  await loadAccount();
+  syncAccountMode();
+}
+
+initAccountPage().catch(error => showAdminToast(error.message, "error"));
