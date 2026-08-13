@@ -54,7 +54,6 @@
       </div>
       <a href="cart.html">Giỏ hàng</a>
       <a href="track.html">Lịch sử đơn</a>
-      <a href="feedback.html">Phản hồi</a>
       <a href="contact.html">Liên hệ</a>
     </nav>
   </header>
@@ -62,7 +61,7 @@
   <main class="checkout-page">
     <div class="checkout-page-heading">
       <div>
-        <span class="section-kicker">Thanh toán</span>
+        <span class="section-kicker">Đặt món</span>
         <h1>Giỏ hàng & đặt món</h1>
       </div>
       <a href="menu.html" class="text-link">Tiếp tục chọn món</a>
@@ -141,34 +140,8 @@
 
       <section class="checkout-card checkout-payment-card">
         <div class="checkout-payment-layout">
-          <div class="checkout-payment-section">
-            <h3>Phương thức thanh toán</h3>
-            <div class="payment-options">
-              <label class="payment-option">
-                <input type="radio" name="paymentMethod" value="cod" checked>
-                <span>
-                  <strong>Thanh toán khi nhận hàng</strong>
-                  <small>Trả tiền trực tiếp cho nhân viên giao hàng.</small>
-                </span>
-              </label>
-              <label class="payment-option">
-                <input type="radio" name="paymentMethod" value="qr">
-                <span>
-                  <strong>Thanh toán bằng mã QR</strong>
-                  <small>Hệ thống ghi nhận đơn chờ thanh toán QR.</small>
-                </span>
-              </label>
-              <label class="payment-option">
-                <input type="radio" name="paymentMethod" value="vnpay">
-                <span>
-                  <strong>Thanh toán qua VNPay</strong>
-                  <small>Chuyển sang cổng thanh toán VNPay để hoàn tất giao dịch.</small>
-                </span>
-              </label>
-            </div>
-          </div>
-
           <div class="checkout-confirm-panel">
+            <input type="hidden" name="paymentMethod" value="cod">
             <div class="discount-box">
               <label for="discountCodeInput">Mã giảm giá</label>
               <div class="discount-apply-row">
@@ -199,7 +172,7 @@
         </div>
       </div>
       <div class="footer-links">
-        <div><h3>Khám phá</h3><a href="menu.html">Thực đơn</a><a href="feedback.html">Phản hồi</a><a href="contact.html">Hợp tác</a></div>
+        <div><h3>Khám phá</h3><a href="menu.html">Thực đơn</a><a href="contact.html">Hợp tác</a></div>
         <div><h3>Hỗ trợ</h3><a href="contact.html">Trung tâm hỗ trợ</a><a href="announcements.html">Thông báo</a><a href="track.html">Lịch sử đơn</a></div>
       </div>
       <div class="footer-bottom"><p>© 2026 FoodHub Delivery. All rights reserved.</p><p>Designed by Tran Duc Chinh IT</p></div>

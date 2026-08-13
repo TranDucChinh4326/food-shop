@@ -2312,7 +2312,7 @@ async function submitOrder(event) {
   const addressDetail = document.getElementById("customerAddress").value;
   const address = buildAddressString(cityName, "", wardName, addressDetail);
   const note = document.getElementById("customerNote").value;
-  const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value || "cod";
+  const paymentMethod = "cod";
   const submitButton = document.querySelector("#orderForm button[type='submit']");
   const token = getAuthToken();
 
@@ -2322,7 +2322,7 @@ async function submitOrder(event) {
     return;
   }
 
-  if (!["cod", "qr", "vnpay"].includes(paymentMethod)) {
+  if (paymentMethod !== "cod") {
     showSiteToast("Phương thức thanh toán không hợp lệ.", "error");
     return;
   }
@@ -2370,16 +2370,6 @@ async function submitOrder(event) {
     renderCart();
     document.getElementById("orderForm").reset();
 
-    if (data.order?.paymentMethod === "qr" && data.order?.paymentSession) {
-      showQrPaymentDialog(data.order);
-      showSiteToast("Đã tạo mã QR. Vui lòng hoàn tất thanh toan.");
-      return;
-    }
-
-    if (data.order?.paymentMethod === "vnpay" && data.order?.paymentSession?.paymentUrl) {
-      window.location.href = data.order.paymentSession.paymentUrl;
-      return;
-    }
     showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
 
     setTimeout(() => {
@@ -2598,8 +2588,6 @@ function getOrderStatusLabel(status) {
 function getPaymentMethodLabel(method) {
   const labels = {
     cod: "Thanh toán khi nhận hàng",
-    qr: "Thanh toán bằng mã QR",
-    vnpay: "Thanh toan qua VNPay",
   };
 
   return labels[method] || "Chưa xác định";
@@ -3025,7 +3013,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận phản hồi của bạn.</div>
+      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận tin nhắn của bạn.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
