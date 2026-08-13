@@ -53,6 +53,7 @@ const advertisementStatusFilter = document.getElementById("advertisementStatusFi
 const advertisementPageSize = document.getElementById("advertisementPageSize");
 const advertisementImageFile = document.getElementById("advertisementImageFile");
 const advertisementPreview = document.getElementById("advertisementPreview");
+const advertisementFoodLinkSelect = document.getElementById("advertisementFoodLinkSelect");
 const statsSummary = document.getElementById("statsSummary");
 const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
@@ -835,6 +836,50 @@ function getAdvertisementStatusClass(status) {
   return "locked";
 }
 
+function buildAdvertisementFoodLink(food) {
+  if (!food?.id) return "";
+
+  const category = getFoodRootSlug(food);
+  const url = new URL("food-detail.html", window.location.origin);
+  url.searchParams.set("id", food.id);
+  url.searchParams.set("from", "admin");
+  if (category && category !== "all") url.searchParams.set("category", category);
+  return url.href;
+}
+
+function findAdvertisementFoodByLink(link) {
+  if (!link) return null;
+
+  try {
+    const url = new URL(link, window.location.origin);
+    const id = Number(url.searchParams.get("id") || 0);
+    return cachedFoods.find(food => Number(food.id) === id) || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function renderAdvertisementFoodLinkOptions() {
+  if (!advertisementFoodLinkSelect) return;
+
+  const currentLink = document.getElementById("advertisementLink")?.value || "";
+  const linkedFood = findAdvertisementFoodByLink(currentLink);
+  const selectedId = String(linkedFood?.id || advertisementFoodLinkSelect.value || "");
+  const sortedFoods = [...cachedFoods].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
+
+  advertisementFoodLinkSelect.innerHTML = `<option value="">Khong chon mon</option>` + sortedFoods.map(food => `
+    <option value="${food.id}" ${String(food.id) === selectedId ? "selected" : ""}>${escapeHtml(food.name || `Mon #${food.id}`)}</option>
+  `).join("");
+}
+
+function syncAdvertisementFoodLink() {
+  if (!advertisementFoodLinkSelect) return;
+
+  const food = cachedFoods.find(item => String(item.id) === String(advertisementFoodLinkSelect.value));
+  const linkInput = document.getElementById("advertisementLink");
+  if (food && linkInput) linkInput.value = buildAdvertisementFoodLink(food);
+}
+
 function renderAdvertisementPreview(src) {
   if (!advertisementPreview) return;
 
@@ -882,6 +927,7 @@ function resetAdvertisementForm() {
   advertisementForm.reset();
   document.getElementById("advertisementId").value = "";
   document.getElementById("advertisementPosition").value = "both";
+  if (advertisementFoodLinkSelect) advertisementFoodLinkSelect.value = "";
   document.getElementById("advertisementSortOrder").value = "0";
   document.getElementById("advertisementIsActive").value = "1";
   pendingAdvertisementImage = "";
@@ -896,6 +942,7 @@ function fillAdvertisementForm(item) {
   document.getElementById("advertisementTitle").value = item.title || "";
   document.getElementById("advertisementPosition").value = item.position || "both";
   document.getElementById("advertisementLink").value = item.link_url || item.linkUrl || "";
+  renderAdvertisementFoodLinkOptions();
   document.getElementById("advertisementSortOrder").value = item.sort_order ?? item.sortOrder ?? 0;
   document.getElementById("advertisementStartsAt").value = formatDateInputValue(item.starts_at || item.startsAt);
   document.getElementById("advertisementExpiresAt").value = formatDateInputValue(item.expires_at || item.expiresAt);
@@ -1773,6 +1820,7 @@ async function loadFoods() {
     const foods = await requestJson(`${ADMIN_API}/foods`);
     cachedFoods = foods;
     if (foodsCount) foodsCount.textContent = foods.length;
+    renderAdvertisementFoodLinkOptions();
     renderFoodsTable();
   } catch (error) {
     foodsList.textContent = error.message;
@@ -2244,6 +2292,7 @@ advertisementSearch?.addEventListener("input", () => {
   advertisementsPage = 1;
   advertisementSearchTimer = setTimeout(loadAdvertisements, 300);
 });
+advertisementFoodLinkSelect?.addEventListener("change", syncAdvertisementFoodLink);
 advertisementImageFile?.addEventListener("change", () => {
   try {
     previewAdvertisementImageFile();
