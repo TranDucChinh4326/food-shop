@@ -683,7 +683,6 @@ function renderUsersTable() {
             <tr>
               <th>STT</th>
               <th>Họ tên</th>
-              <th>${activeAccountType === "staff" ? "T\u00ean \u0111\u0103ng nh\u1eadp" : "Email"}</th>
               <th>Lo\u1ea1i t\u00e0i kho\u1ea3n</th>
               <th>Xac thuc</th>
               <th>Trạng thái</th>
@@ -700,7 +699,6 @@ function renderUsersTable() {
                   <strong>${escapeHtml(account.fullname)}</strong>
                   <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
-                <td>${escapeHtml(activeAccountType === "staff" ? (account.username || "") : account.email)}</td>
                 <td><span class="permission-summary">${escapeHtml(formatAccountKind(account))}</span></td>
                 <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Đang hoạt động" : "Đã khóa"}</span></td>
