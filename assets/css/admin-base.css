@@ -223,6 +223,8 @@ button:disabled {
   border-radius: 14px;
   color: #334155;
   display: flex;
+  font: inherit;
+  font-weight: 500;
   gap: 12px;
   justify-content: flex-start;
   min-height: 48px;
@@ -414,6 +416,10 @@ button:disabled {
   background: var(--accent-soft);
   border-color: #bfdbfe;
   color: #1d4ed8;
+}
+
+.admin-nav-btn.active {
+  font-weight: 600;
 }
 
 
