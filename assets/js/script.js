@@ -2322,7 +2322,7 @@ async function submitOrder(event) {
     return;
   }
 
-  if (!["cod", "qr", "vnpay", "wallet"].includes(paymentMethod)) {
+  if (!["cod", "qr", "vnpay"].includes(paymentMethod)) {
     showSiteToast("Phương thức thanh toán không hợp lệ.", "error");
     return;
   }
@@ -2600,7 +2600,6 @@ function getPaymentMethodLabel(method) {
     cod: "Thanh toán khi nhận hàng",
     qr: "Thanh toán bằng mã QR",
     vnpay: "Thanh toan qua VNPay",
-    wallet: "Tiền trong tài khoản"
   };
 
   return labels[method] || "Chưa xác định";

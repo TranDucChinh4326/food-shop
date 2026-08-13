@@ -410,6 +410,41 @@ button.account-photo-badge {
   grid-column: 1 / -1;
 }
 
+.profile-voucher-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-voucher-card {
+  align-items: center;
+  background: #fffaf6;
+  border: 1px dashed #ffb08a;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 16px 18px;
+}
+
+.profile-voucher-card h3 {
+  color: #1f1712;
+  font-size: 18px;
+  margin: 6px 0;
+}
+
+.profile-voucher-card p,
+.profile-voucher-card small {
+  color: #6b5b52;
+  margin: 0;
+}
+
+.profile-voucher-code {
+  color: #ff4b22;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 .profile-page .social-link-card {
   grid-column: auto;
 }

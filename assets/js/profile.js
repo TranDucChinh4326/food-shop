@@ -357,6 +357,64 @@ function renderAccountSummary(user) {
   }
 }
 
+function getProfileVoucherLabel(entry) {
+  const discount = entry.discount || entry;
+  const applyText = discount.applyTo === "shipping" ? "Phí giao hàng" : "Đơn hàng";
+  const valueText = discount.discountType === "free_shipping"
+    ? "Miễn phí ship"
+    : discount.discountType === "percent"
+      ? `${Number(discount.discountValue || 0)}%`
+      : formatMoney(discount.discountValue || 0);
+  const minText = Number(discount.minOrder || 0) > 0 ? ` từ ${formatMoney(discount.minOrder)}` : " không yêu cầu đơn tối thiểu";
+  return `${valueText} cho ${applyText},${minText}`;
+}
+
+function renderProfileVouchers(vouchers = []) {
+  const container = document.getElementById("profileVoucherList");
+  if (!container) return;
+
+  if (!vouchers.length) {
+    container.innerHTML = `
+      <p class="empty-cart">Bạn chưa có voucher nào. Vào trang Thông báo để nhận voucher đang phát hành.</p>
+      <a class="social-link-btn" href="announcements.html">Xem voucher</a>
+    `;
+    return;
+  }
+
+  container.innerHTML = vouchers.map(item => {
+    const discount = item.discount || item;
+    return `
+      <article class="profile-voucher-card">
+        <div>
+          <span class="profile-voucher-code">${escapeHtml(discount.code || "")}</span>
+          <h3>${escapeHtml(discount.name || discount.code || "Voucher")}</h3>
+          <p>${escapeHtml(getProfileVoucherLabel(item))}</p>
+          <small>Còn ${Number(item.remaining || 0)} lượt${discount.expiresAt ? ` - Hết hạn ${new Date(discount.expiresAt).toLocaleString("vi-VN")}` : ""}</small>
+        </div>
+        <a class="social-link-btn" href="cart.html">Dùng ngay</a>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadProfileVouchers() {
+  const container = document.getElementById("profileVoucherList");
+  if (!container) return;
+
+  container.innerHTML = `<p class="empty-cart">Đang tải voucher...</p>`;
+
+  try {
+    const response = await fetch(`${ORDERS_API}/vouchers/mine`, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` }
+    });
+    const data = await response.json().catch(() => []);
+    if (!response.ok) throw new Error(data.message || "Không thể tải voucher.");
+    renderProfileVouchers(Array.isArray(data) ? data : []);
+  } catch (error) {
+    container.innerHTML = `<p class="empty-cart">${escapeHtml(error.message)}</p>`;
+  }
+}
+
 async function loadSocialAccounts() {
   try {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/accounts`);
@@ -657,6 +715,7 @@ async function loadProfile() {
     renderUser();
     await loadSocialAccounts();
     await loadSavedAddresses();
+    await loadProfileVouchers();
   } catch (error) {
     showSiteToast(error.message, "error");
   }

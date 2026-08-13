@@ -54,7 +54,6 @@
       </div>
       <a href="cart.html">Giỏ hàng</a>
       <a href="track.html">Lịch sử đơn</a>
-      <a href="feedback.html">Phản hồi</a>
       <a href="contact.html">Liên hệ</a>
     </nav>
   </header>
@@ -71,26 +70,18 @@
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>
         <span>Thông tin cá nhân</span>
       </button>
-      <a class="account-nav-item" href="track.html">
-        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10v18H7z"/><path d="M9 7h6M9 11h6M9 15h4"/><path d="M5 5h2M5 9h2M5 13h2M5 17h2"/></svg></span>
-        <span>Đơn hàng của tôi</span>
-      </a>
       <button type="button" class="account-nav-item" data-profile-tab="addresses">
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z"/><path d="M12 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span>
         <span>Địa chỉ đã lưu</span>
       </button>
-      <button type="button" class="account-nav-item" data-profile-tab="wallet">
-        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"/><path d="M4 9l3-4h10l3 4"/><path d="M16 13h3"/></svg></span>
-        <span>Thanh toán</span>
+      <button type="button" class="account-nav-item" data-profile-tab="vouchers">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M9 9h6M9 15h6"/></svg></span>
+        <span>Voucher của tôi</span>
       </button>
       <button type="button" class="account-nav-item" data-profile-tab="password">
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><path d="M5 11h14v10H5z"/><path d="M12 15v2"/></svg></span>
         <span>Đổi mật khẩu</span>
       </button>
-      <a class="account-nav-item" href="feedback.html">
-        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h14v10H8l-3 3z"/><path d="M8 9h8M8 12h5"/></svg></span>
-        <span>Phản hồi</span>
-      </a>
     </aside>
 
     <section class="account-summary-card">
@@ -102,10 +93,6 @@
       <div>
         <h1 id="profileDisplayName">FoodHub User</h1>
         <p id="profileDisplayEmail">user@email.com</p>
-        <div class="account-badges">
-          <span>✪ 450 points</span>
-          <span>Thành viên Vàng</span>
-        </div>
       </div>
       <div class="summary-social-links">
         <div id="socialAccounts" class="social-account-list compact"></div>
@@ -200,18 +187,14 @@
         </form>
       </section>
 
-      <section class="profile-card wallet-panel" data-profile-panel="wallet" hidden>
+      <section class="profile-card vouchers-panel" data-profile-panel="vouchers" hidden>
         <div class="section-heading">
           <div>
-            <h2>Thanh toán</h2>
-            <p>Quản lý số dư và phương thức thanh toán của tài khoản FoodHub.</p>
+            <h2>Voucher của tôi</h2>
+            <p>Danh sách voucher đã nhận và còn lượt sử dụng trong tài khoản.</p>
           </div>
         </div>
-        <div class="wallet-balance">
-          <span>Số dư hiện tại</span>
-          <strong>0đ</strong>
-        </div>
-        <button type="button" class="btn" disabled>Nạp tiền</button>
+        <div id="profileVoucherList" class="profile-voucher-list">Đang tải voucher...</div>
       </section>
 
       <form id="passwordForm" class="profile-card password-card" data-profile-panel="password" autocomplete="off" hidden>
@@ -276,7 +259,7 @@
         </div>
       </div>
       <div class="footer-links">
-        <div><h3>Khám phá</h3><a href="menu.html">Thực đơn</a><a href="feedback.html">Phản hồi</a><a href="contact.html">Hợp tác</a></div>
+        <div><h3>Khám phá</h3><a href="menu.html">Thực đơn</a><a href="contact.html">Hợp tác</a></div>
         <div><h3>Hỗ trợ</h3><a href="contact.html">Trung tâm hỗ trợ</a><a href="announcements.html">Thông báo</a><a href="track.html">Lịch sử đơn</a></div>
       </div>
       <div class="footer-bottom"><p>© 2026 FoodHub Delivery. All rights reserved.</p><p>Designed by Tran Duc Chinh IT</p></div>
