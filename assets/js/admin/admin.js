@@ -2769,6 +2769,9 @@ usersList?.addEventListener("click", async event => {
       showAdminToast("Đã đặt lại mật khẩu.");
     }
     if (permissionButton) {
+      if (adminPermissions.length === 0 && hasAdminPermission("roles.manage")) {
+        await loadAdminPermissions();
+      }
       const account = cachedUsers.find(item => String(item.id) === String(permissionButton.dataset.permissionUser));
       showPermissionDialog(account);
     }
