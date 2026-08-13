@@ -380,11 +380,38 @@ function renderFeedbackStars(rating) {
 }
 
 function formatDiscountValue(discount) {
+  if (discount.discount_type === "free_shipping") {
+    return "Mi\u1ec5n ph\u00ed ship";
+  }
+
   if (discount.discount_type === "fixed") {
     return formatMoney(discount.discount_value);
   }
 
   return `${Number(discount.discount_value).toLocaleString("vi-VN")}%`;
+}
+
+function formatDiscountScope(discount) {
+  return discount.apply_to === "shipping" ? "Ph\u00ed giao h\u00e0ng" : "\u0110\u01a1n h\u00e0ng";
+}
+
+function formatDiscountQuantity(discount) {
+  const claimed = Number(discount.claimed_count || 0);
+  const used = Number(discount.used_count || 0);
+
+  if (discount.usage_limit === null || discount.usage_limit === undefined) {
+    return `
+      <strong>Kh\u00f4ng gi\u1edbi h\u1ea1n</strong>
+      <small>\u0110\u00e3 nh\u1eadn ${claimed} - \u0110\u00e3 d\u00f9ng ${used}</small>
+    `;
+  }
+
+  const limit = Number(discount.usage_limit || 0);
+  const remaining = Math.max(0, limit - claimed);
+  return `
+    <strong>${remaining}/${limit} c\u00f2n l\u1ea1i</strong>
+    <small>\u0110\u00e3 nh\u1eadn ${claimed} - \u0110\u00e3 d\u00f9ng ${used}</small>
+  `;
 }
 
 function formatDateInputValue(value) {
@@ -963,6 +990,7 @@ function renderDiscountsTable() {
             <th>Mã</th>
             <th>Giá trị</th>
             <th>Điều kiện</th>
+            <th>S\u1ed1 l\u01b0\u1ee3ng</th>
             <th>Hiệu lực</th>
             <th>Trạng thái</th>
             <th>Chức năng</th>
@@ -978,9 +1006,10 @@ function renderDiscountsTable() {
               </td>
               <td>${formatDiscountValue(item)}</td>
               <td>
-                <strong>Từ ${formatMoney(item.min_order || 0)}</strong>
-                <small>${item.max_discount ? `Tối đa ${formatMoney(item.max_discount)}` : "Không giới hạn giam"}</small>
+                <strong>${formatDiscountScope(item)} - T\u1eeb ${formatMoney(item.min_order || 0)}</strong>
+                <small>${item.max_discount ? `Tối đa ${formatMoney(item.max_discount)}` : "Không giới hạn giảm"}</small>
               </td>
+              <td>${formatDiscountQuantity(item)}</td>
               <td>
                 <strong>${item.starts_at ? formatDateTime(item.starts_at) : "Bắt đầu ngay"}</strong>
                 <small>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</small>
