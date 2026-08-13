@@ -1477,8 +1477,8 @@ function renderFloatingAdItem(slot, advertisement) {
 
   if (linkUrl) {
     slot.href = linkUrl;
-    slot.target = "_blank";
-    slot.rel = "noopener noreferrer";
+    slot.removeAttribute("target");
+    slot.removeAttribute("rel");
   } else {
     slot.removeAttribute("href");
     slot.removeAttribute("target");
