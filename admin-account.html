@@ -71,24 +71,15 @@
           </label>
 
           <label>
-            <span id="accountLoginLabel">Tên đăng nhập</span>
+            <span id="accountLoginLabel">T&ecirc;n &#273;&#259;ng nh&#7853;p</span>
             <input type="text" id="accountEmail" required autocomplete="username">
           </label>
 
           <label id="passwordField">
-            Mật khẩu tạm
+            M&#7853;t kh&#7849;u
             <input type="password" id="accountPassword" minlength="6">
           </label>
-
-          <label id="accountRoleField" hidden>
-            Vai trò
-            <select id="accountRole" required>
-              <option value="STAFF_SALES">Nhân viên bán hàng</option>
-              <option value="STAFF_CONTENT">Quản lý món ăn</option>
-              <option value="STAFF_MANAGER">Quản lý nhân viên</option>
-              <option value="USER">Khách hàng</option>
-            </select>
-          </label>
+          <input type="hidden" id="accountRole" value="STAFF_SALES">
         </div>
 
         <div id="permissionPanel" hidden>
@@ -109,6 +100,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin-account.js?v=20260813-staff-username-login"></script>
+  <script src="assets/js/admin/admin-account.js?v=20260813-staff-account-password"></script>
 </body>
 </html>

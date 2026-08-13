@@ -138,6 +138,29 @@ let currentAdmin = {
   permissions: Array.isArray(user?.permissions) ? user.permissions : []
 };
 
+const STAFF_PERMISSION_GROUPS = [
+  {
+    value: "sales",
+    label: "Nh\u00e2n vi\u00ean b\u00e1n h\u00e0ng",
+    permissions: ["orders.manage"]
+  },
+  {
+    value: "content",
+    label: "Qu\u1ea3n l\u00fd m\u00f3n \u0103n",
+    permissions: ["foods.manage", "categories.manage", "advertisements.manage", "food-reviews.manage"]
+  },
+  {
+    value: "support",
+    label: "Ch\u0103m s\u00f3c kh\u00e1ch h\u00e0ng",
+    permissions: ["feedback.manage", "announcements.manage"]
+  },
+  {
+    value: "manager",
+    label: "Qu\u1ea3n l\u00fd v\u1eadn h\u00e0nh",
+    permissions: ["orders.manage", "foods.manage", "categories.manage", "discounts.manage", "staff.manage"]
+  }
+];
+
 function isRootAdmin() {
   return String(currentAdmin?.role || "").toUpperCase() === "ADMIN";
 }
@@ -528,6 +551,18 @@ function formatPermissionSummary(permissions = []) {
   return permissions.map(permission => labels.get(permission) || permission).join(", ");
 }
 
+function formatAccountKind(account) {
+  return String(account?.role || "").toUpperCase() === "ADMIN" ? "Admin" : "Nh\u00e2n vi\u00ean";
+}
+
+function detectPermissionGroup(permissions = []) {
+  const selected = new Set(Array.isArray(permissions) ? permissions : []);
+  const matched = STAFF_PERMISSION_GROUPS.find(group =>
+    group.permissions.length === selected.size && group.permissions.every(permission => selected.has(permission))
+  );
+  return matched?.value || "";
+}
+
 function closePermissionDialog() {
   document.getElementById("permissionDialog")?.remove();
 }
@@ -537,6 +572,7 @@ function showPermissionDialog(account) {
 
   closePermissionDialog();
 
+  const selectedGroup = detectPermissionGroup(account.permissions || []);
   const dialog = document.createElement("div");
   dialog.id = "permissionDialog";
   dialog.className = "permission-dialog";
@@ -550,6 +586,15 @@ function showPermissionDialog(account) {
         <button type="button" class="icon-btn" data-close-permission-dialog aria-label="Dong">&times;</button>
       </div>
       <form data-permission-form="${account.id}">
+        <label class="permission-group-field">
+          <span>Lo\u1ea1i t\u00e0i kho\u1ea3n</span>
+          <select data-permission-group>
+            <option value="">T\u00f9y ch\u1ec9nh</option>
+            ${STAFF_PERMISSION_GROUPS.map(group => `
+              <option value="${group.value}" ${group.value === selectedGroup ? "selected" : ""}>${group.label}</option>
+            `).join("")}
+          </select>
+        </label>
         <div class="permission-list account-permissions">
           ${adminPermissions.map(permission => `
             <label class="permission-item">
@@ -638,8 +683,8 @@ function renderUsersTable() {
             <tr>
               <th>STT</th>
               <th>Họ tên</th>
-              <th>${activeAccountType === "staff" ? "Ten dang nhap" : "Email"}</th>
-              <th>Chuc nang duoc cap</th>
+              <th>${activeAccountType === "staff" ? "T\u00ean \u0111\u0103ng nh\u1eadp" : "Email"}</th>
+              <th>Lo\u1ea1i t\u00e0i kho\u1ea3n</th>
               <th>Xac thuc</th>
               <th>Trạng thái</th>
               <th>Chức năng</th>
@@ -656,7 +701,7 @@ function renderUsersTable() {
                   <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
                 <td>${escapeHtml(activeAccountType === "staff" ? (account.username || "") : account.email)}</td>
-                <td><span class="permission-summary">${escapeHtml(isRootAdmin ? "Tat ca chuc nang" : formatPermissionSummary(account.permissions || []))}</span></td>
+                <td><span class="permission-summary">${escapeHtml(formatAccountKind(account))}</span></td>
                 <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Đang hoạt động" : "Đã khóa"}</span></td>
                 <td>
@@ -2568,6 +2613,19 @@ usersList?.addEventListener("click", async event => {
 
 document.addEventListener("click", event => {
   if (event.target.closest("[data-close-permission-dialog]")) closePermissionDialog();
+});
+
+document.addEventListener("change", event => {
+  const select = event.target.closest("[data-permission-group]");
+  if (!select) return;
+
+  const form = select.closest("[data-permission-form]");
+  const group = STAFF_PERMISSION_GROUPS.find(item => item.value === select.value);
+  const selectedPermissions = new Set(group?.permissions || []);
+
+  form?.querySelectorAll(".account-permissions input[type='checkbox']").forEach(input => {
+    input.checked = selectedPermissions.has(input.value);
+  });
 });
 
 document.addEventListener("submit", async event => {

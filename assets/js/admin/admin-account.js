@@ -133,7 +133,7 @@ function syncAccountMode() {
 
   if (accountBackLink) accountBackLink.href = listUrl;
   if (accountCancelLink) accountCancelLink.href = listUrl;
-  if (accountLoginLabel) accountLoginLabel.textContent = accountType === "customer" ? "Email" : "Ten dang nhap";
+  if (accountLoginLabel) accountLoginLabel.textContent = accountType === "customer" ? "Email" : "T\u00ean \u0111\u0103ng nh\u1eadp";
   if (accountEmail) {
     accountEmail.type = accountType === "customer" ? "email" : "text";
     accountEmail.placeholder = accountType === "customer" ? "name@example.com" : "vd: ducchinhnv";
@@ -154,18 +154,21 @@ function getCheckedPermissions() {
 function setModeText() {
   if (isEditMode) {
     accountFormTitle.textContent = accountType === "customer"
-      ? "Cập nhật tài khoản khách hàng"
-      : "Cập nhật tài khoản nhân viên";
-    accountBreadcrumb.textContent = "Cập nhật";
-    passwordField.hidden = true;
+      ? "C\u1eadp nh\u1eadt t\u00e0i kho\u1ea3n kh\u00e1ch h\u00e0ng"
+      : "C\u1eadp nh\u1eadt t\u00e0i kho\u1ea3n nh\u00e2n vi\u00ean";
+    accountBreadcrumb.textContent = "C\u1eadp nh\u1eadt";
+    passwordField.hidden = false;
     accountPassword.required = false;
+    accountPassword.placeholder = "\u0110\u1ec3 tr\u1ed1ng n\u1ebfu kh\u00f4ng \u0111\u1ed5i m\u1eadt kh\u1ea9u";
     return;
   }
 
   accountFormTitle.textContent = accountType === "customer"
-    ? "Tạo tài khoản khách hàng"
-    : "Thêm tài khoản nhân viên";
-  accountBreadcrumb.textContent = "Thêm mới";
+    ? "T\u1ea1o t\u00e0i kho\u1ea3n kh\u00e1ch h\u00e0ng"
+    : "Th\u00eam t\u00e0i kho\u1ea3n nh\u00e2n vi\u00ean";
+  accountBreadcrumb.textContent = "Th\u00eam m\u1edbi";
+  passwordField.hidden = false;
+  accountPassword.placeholder = "Nh\u1eadp m\u1eadt kh\u1ea9u ban \u0111\u1ea7u";
   accountPassword.required = true;
 }
 
@@ -200,7 +203,7 @@ async function loadAccount() {
   const account = users.find(item => String(item.id) === String(accountId));
 
   if (!account) {
-    showAdminToast("Không tìm thấy tài khoản.", "error");
+    showAdminToast("Kh\u00f4ng t\u00ecm th\u1ea5y t\u00e0i kho\u1ea3n.", "error");
     return;
   }
 
@@ -233,9 +236,16 @@ async function saveAccount(event) {
       body: JSON.stringify(payload)
     });
 
+    if (isEditMode && accountPassword.value.trim()) {
+      await requestJson(`${ADMIN_API}/users/${accountId}/password`, {
+        method: "PUT",
+        body: JSON.stringify({ newPassword: accountPassword.value.trim() })
+      });
+    }
+
     sessionStorage.setItem("foodhub_admin_section", "accounts");
     sessionStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
-    showAdminToast(isEditMode ? "Đã cập nhật tài khoản." : "Đã tạo tài khoản.");
+    showAdminToast(isEditMode ? "\u0110\u00e3 c\u1eadp nh\u1eadt t\u00e0i kho\u1ea3n." : "\u0110\u00e3 t\u1ea1o t\u00e0i kho\u1ea3n.");
     setTimeout(() => {
       window.location.href = `admin.html?section=accounts&accountType=${accountType === "customer" ? "customers" : "staff"}`;
     }, 700);
@@ -249,10 +259,6 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   sessionStorage.removeItem(AUTH_USER_KEY);
   sessionStorage.removeItem("foodhub_cart");
   window.location.href = "login.html";
-});
-
-accountRole.addEventListener("change", () => {
-  syncAccountMode();
 });
 
 accountForm.addEventListener("submit", saveAccount);

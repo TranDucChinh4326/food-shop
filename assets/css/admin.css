@@ -1001,6 +1001,27 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   margin: 0;
 }
 
+.permission-group-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.permission-group-field span {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.permission-group-field select {
+  background: #fff;
+  border: 1px solid #d7e0ee;
+  border-radius: 12px;
+  color: var(--text);
+  font: inherit;
+  min-height: 46px;
+  padding: 0 14px;
+}
+
 .permission-dialog-actions {
   align-items: center;
   border-top: 1px solid var(--line);
