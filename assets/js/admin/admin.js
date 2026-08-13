@@ -1404,6 +1404,10 @@ async function loadOrders() {
               <strong>${formatMoney(item.subtotal)}</strong>
             </div>
           `).join("")}
+          <div class="order-line">
+            <span>Phi giao hang</span>
+            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
+          </div>
         </div>
       </article>
     `).join("");

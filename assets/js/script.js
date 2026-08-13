@@ -1833,6 +1833,34 @@ function addToCart(foodId) {
   showSiteToast(`Đã thêm ${food.name} x ${cappedQuantity} vào giỏ hàng`);
 }
 
+function normalizeLocationName(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}
+
+function calculateShippingFee(subtotal, cityName) {
+  const amount = Math.max(0, Number(subtotal) || 0);
+  if (amount === 0 || amount >= 200000) return 0;
+
+  const city = normalizeLocationName(cityName);
+  if (city.includes("vinh long")) return 15000;
+
+  const nearProvinces = ["can tho", "dong thap", "tien giang", "ben tre", "tra vinh", "hau giang"];
+  if (nearProvinces.some(province => city.includes(province))) return 25000;
+
+  return 35000;
+}
+
+function getCheckoutShippingFee(subtotal) {
+  const cityName = document.getElementById("customerCity")?.value || "";
+  if (!cityName) return null;
+  return calculateShippingFee(subtotal, cityName);
+}
+
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
   const totalPrice = document.getElementById("total-price");
@@ -1883,14 +1911,18 @@ function renderCart() {
     `;
   }).join("");
 
-  totalPrice.textContent = formatMoney(total);
-
   if (checkoutSummary) {
+    const shippingFee = getCheckoutShippingFee(total);
+    const finalTotal = total + (shippingFee || 0);
+    const shippingText = shippingFee === null ? "Chua ap dung" : shippingFee === 0 ? "Mien phi" : formatMoney(shippingFee);
+
+    totalPrice.textContent = formatMoney(finalTotal);
+
     checkoutSummary.innerHTML = `
-      <div><span>Tổng mặt hàng</span><strong>${totalQuantity}</strong></div>
-      <div><span>Tạm tính</span><strong>${formatMoney(total)}</strong></div>
-      <div><span>Phí giao hàng</span><strong>Chưa áp dụng</strong></div>
-      <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Tong mat hang</span><strong>${totalQuantity}</strong></div>
+      <div><span>Tam tinh</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Phi giao hang</span><strong>${shippingText}</strong></div>
+      <div class="checkout-summary-total"><span>Tong thanh toan</span><strong>${formatMoney(finalTotal)}</strong></div>
     `;
   }
 }
@@ -2232,6 +2264,10 @@ async function trackOrder(event) {
               <strong>${formatMoney(item.subtotal)}</strong>
             </div>
           `).join("")}
+          <div class="track-line">
+            <span>Phi giao hang</span>
+            <strong>${Number(data.shipping_fee || 0) > 0 ? formatMoney(data.shipping_fee) : "Mien phi"}</strong>
+          </div>
         </div>
       </div>
     `;
@@ -2346,6 +2382,12 @@ function renderOrderHistory(orders) {
             <strong>${formatMoney(item.subtotal)}</strong>
           </div>
         `).join("")}
+        <div class="track-line order-item-row">
+          <div class="order-item-main">
+            <span>Phi giao hang</span>
+          </div>
+          <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
+        </div>
       </div>
     </article>
   `).join("");
@@ -2914,6 +2956,10 @@ if (protectCheckoutPage()) {
       )
   );
   setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
+
+  ["customerCity", "customerWard", "customerAddress", "savedAddressSelect"].forEach(id => {
+    document.getElementById(id)?.addEventListener("change", renderCart);
+  });
 
   loadPublicCategories();
   loadFoods();
