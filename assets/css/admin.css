@@ -917,22 +917,37 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .permission-list {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
 .permission-item {
   align-items: center;
-  background: var(--accent-soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ead7cb;
+  border-radius: 12px;
   display: flex !important;
-  font-size: 14px;
-  gap: 8px !important;
-  padding: 9px 10px;
+  font-size: 15px;
+  gap: 12px !important;
+  min-height: 52px;
+  padding: 12px 14px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.permission-item:has(input:checked) {
+  background: #fff3ec;
+  border-color: #ff9d78;
+  box-shadow: 0 10px 24px rgba(255, 79, 36, 0.1);
+}
+
+.permission-item:hover {
+  border-color: #ffb293;
 }
 
 .permission-item input {
-  width: auto;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
 }
 
 .user-toolbar {
@@ -1043,23 +1058,58 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .account-form-panel {
   margin: 0 auto;
-  max-width: 760px;
+  max-width: 920px;
+  overflow: hidden;
   padding: 0;
 }
 
 .form-page-heading {
+  background: #fffaf6;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 22px;
+  padding: 28px 32px 24px;
 }
 
 .account-page-form {
   display: grid;
-  gap: 24px;
-  padding: 26px 30px 30px;
+  gap: 26px;
+  padding: 30px 32px 34px;
 }
 
 .account-page-form h3 {
-  margin: 0 0 6px;
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.account-page-form label {
+  color: #334155;
+  display: grid;
+  font-weight: 700;
+  gap: 9px;
+}
+
+.account-page-form input,
+.account-page-form select {
+  background: #fff;
+  border: 1px solid #d8c7bc;
+  border-radius: 12px;
+  color: var(--ink);
+  min-height: 50px;
+  padding: 0 14px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.account-page-form input:focus,
+.account-page-form select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 79, 36, 0.12);
+  outline: none;
+}
+
+#permissionPanel {
+  background: #fffaf6;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px;
 }
 
 .announcement-page-form {
@@ -1313,12 +1363,19 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .form-note {
   color: var(--muted);
-  margin: 0 0 14px;
+  line-height: 1.55;
+  margin: 0 0 16px;
 }
 
 .account-form-actions {
-  border-top: 1px solid var(--line);
-  padding-top: 22px;
+  align-items: center;
+  background: #fffaf6;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 18px;
 }
 
 .staff-create-form.is-collapsed {
@@ -1333,7 +1390,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .staff-form-grid {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
