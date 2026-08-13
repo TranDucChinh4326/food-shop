@@ -242,6 +242,10 @@ function showAdminSection(sectionId) {
     setAdminNavGroupOpen("accounts-menu", true);
   }
 
+  if (target === "feedback" || target === "food-reviews") {
+    setAdminNavGroupOpen("customer-care-menu", true);
+  }
+
   sessionStorage.setItem("foodhub_admin_section", target);
 }
 
@@ -272,7 +276,9 @@ function applyAdminPermissionUi() {
       ? hasAdminPermission("foods.manage")
       : name === "accounts-menu"
         ? hasAdminPermission("users.manage") || hasAdminPermission("staff.manage")
-        : true;
+        : name === "customer-care-menu"
+          ? canAccessSection("feedback") || canAccessSection("food-reviews")
+          : true;
     if (group) group.hidden = !allowed;
   });
 

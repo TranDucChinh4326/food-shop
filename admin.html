@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-admin-form-fix">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260814-admin-form-fix">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260814-care-menu">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260814-care-menu">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -38,8 +38,15 @@
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=food-reviews" data-admin-target="food-reviews"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Bình luận món</span></a>
+      <div class="admin-nav-group">
+        <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="customer-care-menu" aria-expanded="false">
+          <span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Chăm sóc khách hàng</span>
+        </button>
+        <div class="admin-subnav">
+          <a href="admin.html?section=feedback" data-admin-target="feedback"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
+          <a href="admin.html?section=food-reviews" data-admin-target="food-reviews"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Bình luận món</span></a>
+        </div>
+      </div>
     </nav>
   </aside>
 
@@ -594,6 +601,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin.js?v=20260814-review-replies"></script>
+  <script src="assets/js/admin/admin.js?v=20260814-care-menu"></script>
 </body>
 </html>
