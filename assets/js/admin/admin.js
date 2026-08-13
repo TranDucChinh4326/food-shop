@@ -76,7 +76,7 @@ const adminSections = [...document.querySelectorAll("[data-admin-section]")];
 const shortcutButtons = [...document.querySelectorAll("[data-admin-shortcut]")];
 const pageParams = new URLSearchParams(window.location.search);
 const SECTION_PERMISSIONS = {
-  overview: [],
+  overview: ["stats.view"],
   orders: ["orders.manage"],
   categories: ["foods.manage"],
   foods: ["foods.manage"],
@@ -171,7 +171,6 @@ function hasAdminPermission(permission) {
 }
 
 function canAccessSection(sectionId) {
-  if (sectionId === "overview") return true;
   const permissions = SECTION_PERMISSIONS[sectionId] || [];
   return permissions.length === 0 || permissions.some(hasAdminPermission);
 }
