@@ -121,6 +121,12 @@ function isCustomerMode() {
   return accountType === "customer";
 }
 
+function getAccountRoleValue(rawRole = accountRole?.value) {
+  if (accountType === "customer") return "USER";
+  const normalizedRole = String(rawRole || "").toUpperCase();
+  return normalizedRole && normalizedRole !== "USER" ? normalizedRole : "STAFF_SALES";
+}
+
 function syncAccountMode() {
   const listType = accountType === "customer" ? "customers" : "staff";
   const listUrl = `admin.html?section=accounts&accountType=${listType}`;
@@ -133,7 +139,7 @@ function syncAccountMode() {
     accountEmail.placeholder = accountType === "customer" ? "name@example.com" : "vd: ducchinhnv";
   }
 
-  accountRole.value = accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES");
+  accountRole.value = getAccountRoleValue();
 
   if (permissionPanel) {
     permissionPanel.hidden = true;
@@ -200,7 +206,7 @@ async function loadAccount() {
 
   accountName.value = account.fullname || "";
   accountEmail.value = accountType === "customer" ? (account.email || "") : (account.username || "");
-  accountRole.value = accountType === "customer" ? "USER" : String(account.role || "STAFF_SALES").toUpperCase();
+  accountRole.value = getAccountRoleValue(account.role);
   currentAccountPermissions = Array.isArray(account.permissions) ? account.permissions : [];
   syncAccountMode();
 }
@@ -208,11 +214,12 @@ async function loadAccount() {
 async function saveAccount(event) {
   event.preventDefault();
 
+  const resolvedRole = getAccountRoleValue();
   const payload = {
     fullname: accountName.value.trim(),
     email: accountType === "customer" ? accountEmail.value.trim() : "",
     username: accountType === "customer" ? "" : accountEmail.value.trim(),
-    role: accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES"),
+    role: resolvedRole,
     permissions: isEditMode ? currentAccountPermissions : []
   };
 
