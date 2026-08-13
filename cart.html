@@ -141,8 +141,34 @@
 
       <section class="checkout-card checkout-payment-card">
         <div class="checkout-payment-layout">
+          <div class="checkout-payment-section">
+            <h3>Phương thức thanh toán</h3>
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="cod" checked>
+                <span>
+                  <strong>Thanh toán khi nhận hàng</strong>
+                  <small>Trả tiền trực tiếp cho nhân viên giao hàng.</small>
+                </span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="qr">
+                <span>
+                  <strong>Thanh toán bằng mã QR</strong>
+                  <small>Hệ thống ghi nhận đơn chờ thanh toán QR.</small>
+                </span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="paymentMethod" value="vnpay">
+                <span>
+                  <strong>Thanh toán qua VNPay</strong>
+                  <small>Chuyển sang cổng thanh toán VNPay để hoàn tất giao dịch.</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
           <div class="checkout-confirm-panel">
-            <input type="hidden" name="paymentMethod" value="cod">
             <div class="discount-box">
               <label for="discountCodeInput">Mã giảm giá</label>
               <div class="discount-apply-row">
