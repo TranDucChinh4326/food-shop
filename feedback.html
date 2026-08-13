@@ -3,10 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FoodHub</title>
-  <meta http-equiv="refresh" content="0; url=contact.html">
+  <title>Phản hồi khách hàng - FoodHub</title>
+  <link rel="stylesheet" href="assets/css/base.css?v=20260814-voucher-ui-fix">
+  <link rel="stylesheet" href="assets/css/feedback.css?v=20260814-voucher-ui-fix">
 </head>
 <body>
-  <script>window.location.replace("contact.html");</script>
+  <header>
+    <div class="header-top">
+      <a class="logo" href="index.html">🍔 FoodHub</a>
+
+      <div class="header-tools">
+        <a href="menu.html" class="top-icon" title="Tìm kiếm món ăn" aria-label="Tìm kiếm món ăn">⌕</a>
+        <a href="contact.html" class="top-icon" title="Hotline" aria-label="Hotline">☎</a>
+        <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo">🔔</a>
+        <div id="user-area">
+          <a href="login.html" class="header-action primary">Đăng nhập</a>
+          <a href="register.html" class="header-action secondary">Đăng ký</a>
+        </div>
+        <a href="cart.html" class="cart-btn">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
+      </div>
+    </div>
+
+    <section class="site-announcements" aria-label="Thông báo FoodHub">
+      <div class="announcement-shell">
+        <div id="publicAnnouncements" class="public-announcements">Đang tải thông báo...</div>
+      </div>
+    </section>
+
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <div class="nav-dropdown" data-public-category-menu="food">
+        <a class="nav-dropdown-toggle" href="menu.html?category=food">Đồ ăn <span aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown-panel">
+          <a href="menu.html?category=com">Cơm</a>
+          <a href="menu.html?category=pho">Phở</a>
+          <a href="menu.html?category=mi">Mì</a>
+          <a href="menu.html?category=bun">Bún</a>
+        </div>
+      </div>
+      <div class="nav-dropdown" data-public-category-menu="drink">
+        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Đồ uống <span aria-hidden="true">⌄</span></a>
+        <div class="nav-dropdown-panel">
+          <a href="menu.html?category=tra">Trà</a>
+          <a href="menu.html?category=ca-phe">Cà phê</a>
+          <a href="menu.html?category=nuoc-ep-sinh-to">Nước ép và sinh tố</a>
+          <a href="menu.html?category=nuoc-dong-chai">Nước đóng chai</a>
+        </div>
+      </div>
+      <a href="cart.html">Giỏ hàng</a>
+      <a href="track.html">Lịch sử đơn</a>
+      <a href="feedback.html">Phản hồi</a>
+      <a href="contact.html">Liên hệ</a>
+    </nav>
+  </header>
+
+  <main class="feedback-page">
+    <section class="feedback-hero">
+      <span class="badge">Góp ý riêng tư</span>
+      <h1>Đánh giá trải nghiệm FoodHub</h1>
+      <p>Gửi phản hồi để quản trị viên kiểm tra và cải thiện dịch vụ. Nội dung này chỉ hiển thị cho bạn và bộ phận quản trị.</p>
+    </section>
+
+    <section class="feedback-layout">
+      <form id="customerFeedbackForm" class="feedback-card">
+        <div class="section-heading">
+          <div>
+            <h2>Biểu mẫu phản hồi</h2>
+            <p>Chọn mức độ hài lòng và mô tả rõ trải nghiệm bạn muốn FoodHub khắc phục.</p>
+          </div>
+        </div>
+
+        <label>
+          Mức độ hài lòng
+          <div class="rating-picker" role="radiogroup" aria-label="Mức độ hài lòng">
+            <label><input type="radio" name="feedbackRating" value="1"><span>1</span><small>Rất tệ</small></label>
+            <label><input type="radio" name="feedbackRating" value="2"><span>2</span><small>Không tốt</small></label>
+            <label><input type="radio" name="feedbackRating" value="3"><span>3</span><small>Bình thường</small></label>
+            <label><input type="radio" name="feedbackRating" value="4"><span>4</span><small>Hài lòng</small></label>
+            <label><input type="radio" name="feedbackRating" value="5" checked><span>5</span><small>Rất hài lòng</small></label>
+          </div>
+        </label>
+
+        <label>
+          Nhóm phản hồi
+          <select id="feedbackCategory" required>
+            <option value="general">Trải nghiệm chung</option>
+            <option value="order">Đặt hàng</option>
+            <option value="food">Chất lượng món ăn</option>
+            <option value="delivery">Giao hàng</option>
+            <option value="payment">Thanh toán</option>
+            <option value="account">Tài khoản</option>
+          </select>
+        </label>
+
+        <label>
+          Tiêu đề
+          <input type="text" id="feedbackTitle" maxlength="150" placeholder="VD: Giao diện đặt hàng dễ sử dụng" required>
+        </label>
+
+        <label>
+          Nhận xét
+          <textarea id="feedbackContent" rows="6" maxlength="2000" placeholder="Mô tả trải nghiệm của bạn hoặc vấn đề cần FoodHub kiểm tra..." required></textarea>
+        </label>
+
+        <button type="submit" class="btn">Gửi phản hồi</button>
+      </form>
+
+      <section class="feedback-card">
+        <div class="section-heading">
+          <div>
+            <h2>Phản hồi của tôi</h2>
+            <p>Theo dõi các phản hồi đã gửi và câu trả lời từ quản trị viên.</p>
+          </div>
+        </div>
+        <div id="myFeedbackList" class="feedback-list-state">Đang tải phản hồi...</div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="footer-logo" href="index.html">FoodHub</a>
+        <p>Nền tảng giao đồ ăn hiện đại, mang đến trải nghiệm ẩm thực tuyệt vời ngay tại không gian của bạn.</p>
+        <div class="footer-socials" aria-label="Kênh liên hệ FoodHub">
+          <a href="index.html" aria-label="Website FoodHub" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z"/></svg></a>
+          <a href="mailto:foodhub@gmail.com" aria-label="Email FoodHub" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
+          <a href="tel:0123456789" aria-label="Hotline FoodHub" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div><h3>Khám phá</h3><a href="menu.html">Thực đơn</a><a href="feedback.html">Phản hồi</a><a href="feedback.html">Phản hồi</a></div>
+        <div><h3>Hỗ trợ</h3><a href="contact.html">Trung tâm hỗ trợ</a><a href="announcements.html">Thông báo</a><a href="track.html">Lịch sử đơn</a></div>
+      </div>
+      <div class="footer-bottom"><p>© 2026 FoodHub Delivery. All rights reserved.</p><p>Designed by Tran Duc Chinh IT</p></div>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="assets/js/script.js?v=20260813-vietnamese-copy"></script>
+  <script src="assets/js/feedback.js?v=20260805-feedback"></script>
 </body>
 </html>
