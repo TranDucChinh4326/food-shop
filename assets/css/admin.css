@@ -148,6 +148,11 @@ button:disabled {
   gap: 10px;
 }
 
+.admin-nav [hidden],
+.admin-section[hidden] {
+  display: none !important;
+}
+
 .admin-nav-group {
   display: grid;
   gap: 6px;
