@@ -1443,9 +1443,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 }
 
 .discount-form {
-  border-top: 1px solid var(--line);
+  background: #fffaf6;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: none;
   margin: 8px 30px 22px;
-  padding-top: 22px;
+  padding: 22px;
+}
+
+.discount-form.is-open {
+  display: grid;
 }
 
 .discount-form .form-actions {

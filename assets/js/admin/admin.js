@@ -646,6 +646,20 @@ function resetDiscountForm() {
   document.getElementById("saveDiscountBtn").textContent = "Lưu ma";
 }
 
+function openDiscountForm() {
+  if (!discountForm) return;
+
+  discountForm.classList.add("is-open");
+  discountForm.hidden = false;
+  discountForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeDiscountForm() {
+  if (!discountForm) return;
+
+  discountForm.classList.remove("is-open");
+  discountForm.hidden = true;
+}
 function fillDiscountForm(discount) {
   document.getElementById("discountId").value = discount.id;
   document.getElementById("discountCode").value = discount.code || "";
@@ -660,7 +674,7 @@ function fillDiscountForm(discount) {
   document.getElementById("discountExpiresAt").value = formatDateInputValue(discount.expires_at);
   document.getElementById("discountIsActive").value = discount.is_active ? "1" : "0";
   document.getElementById("saveDiscountBtn").textContent = "Cập nhật ma";
-  discountForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  openDiscountForm();
 }
 
 function readDiscountPayload() {
@@ -2011,7 +2025,10 @@ document.querySelector("[data-back-category-list]")?.addEventListener("click", (
   resetCategoryForm();
   showCategoryListView();
 });
-document.getElementById("resetDiscountFormBtn")?.addEventListener("click", resetDiscountForm);
+document.getElementById("resetDiscountFormBtn")?.addEventListener("click", () => {
+  resetDiscountForm();
+  openDiscountForm();
+});
 document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", () => {
   resetAdvertisementForm();
   showAdvertisementFormView();
@@ -2019,7 +2036,11 @@ document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", 
 categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
 discountForm?.addEventListener("submit", saveDiscount);
-discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", resetDiscountForm);
+discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", () => {
+  resetDiscountForm();
+  closeDiscountForm();
+});
+closeDiscountForm();
 advertisementForm?.addEventListener("submit", saveAdvertisement);
 advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", () => {
   resetAdvertisementForm();
