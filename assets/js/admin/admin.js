@@ -1632,29 +1632,34 @@ function renderSatisfaction(feedback) {
   `;
 }
 async function loadOrders() {
-  ordersList.textContent = "Đang tải đơn hàng...";
+  ordersList.textContent = "\u0110ang t\u1ea3i \u0111\u01a1n h\u00e0ng...";
 
   try {
     const orders = await requestJson(`${ADMIN_API}/orders`);
     if (ordersCount) ordersCount.textContent = orders.length;
 
     if (orders.length === 0) {
-      ordersList.textContent = "Chưa có đơn hàng.";
+      ordersList.textContent = "Ch\u01b0a c\u00f3 \u0111\u01a1n h\u00e0ng.";
       return;
     }
 
-    ordersList.innerHTML = orders.map(order => `
-      <article class="order-card">
+    ordersList.innerHTML = orders.map(order => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      const itemSummary = items.length
+        ? items.map(item => `${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}`).join(", ")
+        : "Ch\u01b0a c\u00f3 m\u00f3n";
+
+      return `
+      <article class="order-card compact-order-card">
         <div class="order-top">
           <div>
-            <h3>Đơn #${order.id} - ${formatMoney(order.total_price)}</h3>
+            <h3>\u0110\u01a1n #${order.id}</h3>
             <p class="order-meta">
-              <strong>${order.customer_name}</strong> - ${order.phone}<br>
-              ${order.address}<br>
-              ${order.note ? `Ghi chú: ${order.note}<br>` : ""}
-              Ngày đặt: ${new Date(order.created_at).toLocaleString("vi-VN")}
+              <strong>${escapeHtml(order.customer_name)}</strong> - ${escapeHtml(order.phone || "")}
+              <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
             </p>
           </div>
+          <strong class="order-total">${formatMoney(order.total_price)}</strong>
 
           <select class="status-select" data-order-id="${order.id}">
             ${Object.entries(statusLabels).map(([value, label]) => `
@@ -1663,26 +1668,37 @@ async function loadOrders() {
           </select>
         </div>
 
-        <div class="order-items">
-          ${order.items.map(item => `
+        <div class="order-brief">
+          <span>${itemSummary}</span>
+          <button type="button" class="ghost-btn compact-detail-btn" data-order-detail-toggle>Chi ti\u1ebft</button>
+        </div>
+        <div class="order-detail" hidden>
+          <p class="order-address">
+            ${escapeHtml(order.address || "")}
+            ${order.note ? `<br>Ghi ch\u00fa: ${escapeHtml(order.note)}` : ""}
+          </p>
+          <div class="order-items">
+            ${items.map(item => `
+              <div class="order-line">
+                <span>${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}</span>
+                <strong>${formatMoney(item.subtotal)}</strong>
+              </div>
+            `).join("")}
             <div class="order-line">
-              <span>${item.food_name} x ${item.quantity}</span>
-              <strong>${formatMoney(item.subtotal)}</strong>
+              <span>Ph\u00ed giao h\u00e0ng</span>
+              <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mi\u1ec5n ph\u00ed"}</strong>
             </div>
-          `).join("")}
-          <div class="order-line">
-            <span>Phí giao hàng</span>
-            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
+            ${Number(order.discount_amount || 0) > 0 ? `
+              <div class="order-line">
+                <span>M\u00e3 gi\u1ea3m gi\u00e1 ${escapeHtml(order.discount_code || "")}</span>
+                <strong>-${formatMoney(order.discount_amount)}</strong>
+              </div>
+            ` : ""}
           </div>
-          ${Number(order.discount_amount || 0) > 0 ? `
-            <div class="order-line">
-              <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
-              <strong>-${formatMoney(order.discount_amount)}</strong>
-            </div>
-          ` : ""}
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
   } catch (error) {
     ordersList.textContent = error.message;
     showAdminToast(error.message, "error");
@@ -2534,6 +2550,17 @@ ordersList.addEventListener("change", async event => {
     showAdminToast(error.message, "error");
     await loadOrders();
   }
+});
+
+ordersList.addEventListener("click", event => {
+  const button = event.target.closest("[data-order-detail-toggle]");
+  if (!button) return;
+
+  const detail = button.closest(".order-card")?.querySelector(".order-detail");
+  if (!detail) return;
+
+  detail.hidden = !detail.hidden;
+  button.textContent = detail.hidden ? "Chi tiết" : "Thu gọn";
 });
 
 foodsList?.addEventListener("click", event => {

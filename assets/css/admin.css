@@ -788,27 +788,72 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   padding: 16px;
 }
 
+.compact-order-card {
+  padding: 14px 18px;
+}
+
 .order-top {
-  align-items: flex-start;
+  align-items: center;
   display: grid;
   gap: 14px;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
 .order-top h3 {
-  font-size: 21px;
-  margin: 0 0 8px;
+  font-size: 20px;
+  margin: 0 0 6px;
 }
 
 .order-meta {
   color: #555;
-  line-height: 1.65;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  line-height: 1.4;
   margin: 0;
+}
+
+.order-total {
+  color: var(--accent);
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+.order-brief {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.order-brief span {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-detail-btn {
+  min-height: 38px;
+  padding: 0 16px;
+}
+
+.order-detail {
+  margin-top: 12px;
+}
+
+.order-address {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 0 10px;
 }
 
 .order-items {
   border-top: 1px solid var(--line);
-  margin-top: 14px;
+  margin-top: 10px;
   padding-top: 12px;
 }
 
@@ -2312,6 +2357,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   .admin-topbar,
   .panel-title,
   .order-top,
+  .order-brief,
   .food-row,
   .account-main,
   .user-toolbar,
