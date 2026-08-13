@@ -1,1 +1,252 @@
-/* Page-specific styles for admin.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for admin.html. Shared styles live in admin-base.css. */
+
+.overview-dashboard {
+  display: grid;
+  gap: 26px;
+}
+
+.dashboard-heading {
+  align-items: center;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: space-between;
+}
+
+.dashboard-heading h1 {
+  color: #171717;
+  font-size: 36px;
+  letter-spacing: 0;
+  line-height: 1.08;
+  margin: 0 0 10px;
+}
+
+.dashboard-heading p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dashboard-filter {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid #efd7cc;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(78, 45, 25, 0.07);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 8px;
+}
+
+.dashboard-filter input,
+.dashboard-filter select {
+  background: #fff;
+  border: 1px solid #ead6cc;
+  border-radius: 9px;
+  color: var(--ink);
+  min-height: 44px;
+  min-width: 148px;
+  padding: 0 13px;
+}
+
+.dashboard-filter .primary-btn {
+  background: var(--accent);
+  box-shadow: 0 12px 24px rgba(255, 79, 36, 0.18);
+  min-width: 106px;
+}
+
+.dashboard-filter .ghost-btn {
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  min-width: 104px;
+}
+
+.stats-filter input[type="date"] {
+  max-width: 190px;
+}
+
+.stats-filter button {
+  min-width: 110px;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats-card {
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #f0d7ca;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.06);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  min-height: 116px;
+  overflow: hidden;
+  padding: 20px 22px;
+  position: relative;
+}
+
+.stats-card::before {
+  background: linear-gradient(90deg, #ff4f24 0%, #ff8a1f 100%);
+  content: "";
+  height: 3px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.stats-card span {
+  color: #5f6b7a;
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stats-card strong {
+  color: #111827;
+  display: block;
+  font-size: 30px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin-top: 9px;
+}
+
+.stats-card small {
+  color: #047857;
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 9px;
+}
+
+.stats-card em {
+  align-items: center;
+  background: #fff4ee;
+  border: 1px solid #ffc7b3;
+  border-radius: 10px;
+  color: var(--accent);
+  display: inline-flex;
+  flex: 0 0 40px;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 800;
+  height: 40px;
+  justify-content: center;
+}
+
+.stats-card em svg {
+  fill: none;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+  width: 20px;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 0.95fr);
+}
+
+.dashboard-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(78, 45, 25, 0.08);
+  overflow: hidden;
+}
+
+.dashboard-card-title {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 22px 26px 8px;
+}
+
+.dashboard-card-title h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.dashboard-card-title span {
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.category-card .dashboard-card-title,
+.satisfaction-card .dashboard-card-title {
+  display: grid;
+  gap: 6px;
+}
+
+.category-card .dashboard-card-title span,
+.satisfaction-card .dashboard-card-title span {
+  text-align: left;
+}
+
+.revenue-card,
+.top-foods-card {
+  min-height: 300px;
+}
+
+.top-foods-card {
+  grid-column: 1 / 2;
+}
+
+.satisfaction-card {
+  min-height: 290px;
+}
+
+.dashboard-chart {
+  min-height: 220px;
+}
+
+.revenue-svg {
+  background:
+    repeating-linear-gradient(to top, transparent 0 32px, rgba(240, 216, 204, 0.78) 33px),
+    linear-gradient(180deg, rgba(255, 243, 236, 0.9), rgba(255, 255, 255, 0));
+  border-radius: 8px;
+  display: block;
+  height: 150px;
+  padding: 8px 0 0;
+  width: 100%;
+}
+
+.satisfaction-score {
+  align-content: center;
+  display: grid;
+  justify-items: center;
+  min-height: 220px;
+}
+
+.satisfaction-score strong {
+  color: var(--accent);
+  font-size: 54px;
+  line-height: 1;
+}
+
+.satisfaction-score span {
+  color: var(--muted);
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.satisfaction-score small {
+  color: #0f9f63;
+  font-weight: 700;
+  margin-top: 18px;
+}

@@ -1,1 +1,447 @@
-/* Page-specific styles for index.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for index.html. Shared styles live in base.css. */
+
+.btn,
+.food-card button,
+.qty-btn,
+.remove-btn {
+  background: #ff5722;
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover,
+.food-card button:hover {
+  background: #e64a19;
+}
+
+.food-card-detail-link {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.home-shop-section {
+  padding: 34px 8%;
+}
+
+.home-section-heading,
+.home-category-heading {
+  align-items: end;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.home-section-heading h2,
+.home-category-heading h3 {
+  margin: 0;
+}
+
+.home-section-heading a,
+.home-category-heading a {
+  color: #ff5722;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.best-seller-strip {
+  overflow: hidden;
+  position: relative;
+}
+
+.best-seller-track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+}
+
+.best-seller-track.is-animated {
+  animation: bestSellerMarquee 22s linear infinite;
+}
+
+.best-seller-strip:hover .best-seller-track.is-animated {
+  animation-play-state: paused;
+}
+
+.best-seller-card {
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(58, 34, 19, 0.13);
+  cursor: pointer;
+  flex: 0 0 min(360px, 72vw);
+  min-height: 190px;
+  overflow: hidden;
+  position: relative;
+}
+
+.best-seller-card img {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.best-seller-card::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.72));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.best-seller-overlay {
+  bottom: 0;
+  color: #fff;
+  display: grid;
+  gap: 6px;
+  left: 0;
+  padding: 18px;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+.best-seller-overlay span,
+.home-food-category {
+  background: #ff7a1a;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  justify-self: start;
+  padding: 4px 8px;
+}
+
+.best-seller-overlay h3,
+.best-seller-overlay p {
+  margin: 0;
+}
+
+.home-food-sections {
+  display: grid;
+  gap: 30px;
+}
+
+.home-category-block {
+  border-top: 1px solid #f0e5dc;
+  padding-top: 22px;
+}
+
+.home-food-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.home-food-card {
+  background: #fff;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(78, 45, 25, 0.08);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-food-card:hover {
+  box-shadow: 0 16px 34px rgba(78, 45, 25, 0.13);
+  transform: translateY(-2px);
+}
+
+.home-food-detail-trigger {
+  background: transparent;
+  border: 0;
+  inset: 0;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.home-food-card img {
+  aspect-ratio: 4 / 3;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.home-food-card-body {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.home-food-category {
+  background: #fff1eb;
+  color: #e64a19;
+}
+
+.home-food-card h3 {
+  font-size: 17px;
+  margin: 0;
+}
+
+.home-food-card p {
+  color: #6f5d54;
+  display: -webkit-box;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+  min-height: 40px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home-food-meta,
+.home-food-bottom {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.home-food-meta {
+  color: #8a6a58;
+  font-size: 13px;
+}
+
+.home-food-bottom strong {
+  color: #e64a19;
+}
+
+.home-reviews-section {
+  padding-top: 18px;
+}
+
+.home-review-filters {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.home-review-filters label,
+.review-filter-bar label {
+  color: #6f584d;
+  display: grid;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+}
+
+.home-review-filters select,
+.review-filter-bar select {
+  background: #fff;
+  border: 1px solid #f0d8cb;
+  border-radius: 8px;
+  color: #201814;
+  min-height: 40px;
+  min-width: 150px;
+  padding: 0 34px 0 12px;
+}
+
+.home-review-grid,
+.review-list {
+  display: grid;
+  gap: 14px;
+}
+
+.home-review-card {
+  background: #fff;
+  border: 1px solid #f1d9cc;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(94, 48, 24, 0.08);
+  display: grid;
+  flex: 0 0 min(360px, calc((100% - 32px) / 3));
+  gap: 16px;
+  min-height: 210px;
+  padding: 18px;
+  scroll-snap-align: start;
+}
+
+.home-review-food {
+  align-items: center;
+  align-self: end;
+  background: #fff8f3;
+  border: 1px solid #f2ded2;
+  border-radius: 8px;
+  color: #201814;
+  display: grid;
+  font-size: 14px;
+  font-weight: 800;
+  gap: 10px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  padding: 8px;
+  text-decoration: none;
+}
+
+.home-review-food img {
+  aspect-ratio: 1;
+  background: #fff1e8;
+  border-radius: 6px;
+  object-fit: cover;
+  width: 44px;
+}
+
+.home-review-body {
+  display: grid;
+  gap: 14px;
+}
+
+.home-review-author {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.home-review-avatar {
+  align-items: center;
+  background: #ffe4d2;
+  border-radius: 50%;
+  color: #a64008;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  height: 34px;
+  justify-content: center;
+  overflow: hidden;
+  width: 34px;
+}
+
+.home-review-avatar img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.home-review-author strong {
+  color: #201814;
+  display: block;
+  font-size: 14px;
+}
+
+.home-review-author small {
+  color: #8a6f62;
+}
+
+.home-review-stars {
+  color: #ff8a00;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.home-review-card p,
+.home-review-empty,
+.food-review-empty {
+  color: #5f4a3f;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.home-review-card p {
+  display: -webkit-box;
+  font-size: 16px;
+  min-height: 52px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home-review-nav {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0d8cb;
+  border-radius: 50%;
+  color: #ff5722;
+  display: inline-flex;
+  font-size: 24px;
+  font-weight: 800;
+  height: 42px;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0;
+  width: 42px;
+}
+
+.home-review-nav:hover {
+  background: #fff1e8;
+  color: #d94412;
+}
+
+.home-add-btn {
+  align-items: center;
+  background: #ff7a1a;
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 20px;
+  height: 34px;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0;
+  position: relative;
+  width: 34px;
+  z-index: 3;
+}
+
+.food-card {
+  background: white;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(78, 45, 25, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.food-card:hover {
+  box-shadow: 0 16px 34px rgba(78, 45, 25, 0.13);
+  transform: translateY(-3px);
+}
+
+.food-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.food-card h3 {
+  font-size: 21px;
+  margin: 0 0 8px;
+  padding: 18px 18px 0;
+}
+
+.food-card p {
+  color: #666;
+  flex: 1;
+  line-height: 1.5;
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+.food-card button {
+  border-radius: 0;
+  margin-top: auto;
+  padding: 14px 18px;
+  width: 100%;
+}
+
+.food-card button:disabled {
+  background: #c5c5c5;
+  cursor: not-allowed;
+}

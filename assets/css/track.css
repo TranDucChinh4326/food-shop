@@ -1,1 +1,85 @@
-/* Page-specific styles for track.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for track.html. Shared styles live in base.css. */
+
+.track-hero {
+  background:
+    linear-gradient(90deg, rgba(34, 28, 23, 0.8), rgba(34, 28, 23, 0.18)),
+    url("https://images.unsplash.com/photo-1556742049-0cfed4f6a45d") center/cover;
+}
+
+.track-page-compact {
+  padding-top: 28px;
+}
+
+.track-page-compact .track-card-shell {
+  margin: 0 auto;
+  max-width: 1180px;
+}
+
+.track-form {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 0 auto 24px;
+  max-width: 720px;
+}
+
+.track-form input,
+.history-filter input {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  min-width: 0;
+  outline: none;
+  padding: 13px 16px;
+}
+
+.track-result {
+  margin: 0 auto;
+  max-width: 1180px;
+  text-align: left;
+}
+
+.track-card {
+  background: #fff;
+  border: 1px solid #f1d9cc;
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(94, 48, 24, 0.08);
+  padding: 20px;
+}
+
+.track-card + .track-card {
+  margin-top: 16px;
+}
+
+.track-card h3 {
+  color: #ff5722;
+  font-size: 22px;
+  margin: 4px 0 2px;
+}
+
+.track-line {
+  align-items: start;
+  border-bottom: 1px solid #f5e6dc;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 0;
+  padding: 14px 0;
+}
+
+.track-line:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.track-line strong {
+  color: #201814;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.track-line > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}

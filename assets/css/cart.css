@@ -1,1 +1,255 @@
-/* Page-specific styles for cart.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for cart.html. Shared styles live in base.css. */
+
+.cart-btn {
+  align-items: center;
+  background: #fff1eb;
+  border: 1px solid #ffd7c8;
+  color: #ff5722;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  min-height: 44px;
+  text-decoration: none;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.cart-item-detail-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cart-section {
+  background: white;
+}
+
+.checkout-page {
+  margin: 0 auto;
+  max-width: 1320px;
+  padding-top: 28px;
+}
+
+.checkout-page-heading {
+  align-items: end;
+  border-bottom: 1px solid #f0ded4;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+}
+
+.checkout-page-heading .text-link {
+  background: #fff1e8;
+  border: 1px solid #ffd6c2;
+  border-radius: 999px;
+  padding: 10px 16px;
+}
+
+.checkout-page-heading h1 {
+  color: #201814;
+  font-size: 34px;
+  line-height: 1.15;
+  margin: 4px 0 0;
+}
+
+.checkout-grid,
+.checkout-stack {
+  display: grid;
+  gap: 24px;
+}
+
+.checkout-card {
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.checkout-card .section-heading {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+}
+
+.checkout-customer-fields {
+  display: grid;
+  gap: 15px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkout-customer-fields label,
+.checkout-customer-fields .address-input-grid,
+.checkout-customer-fields datalist {
+  min-width: 0;
+}
+
+.checkout-customer-fields label:has(textarea),
+.checkout-customer-fields label:has(#customerAddress),
+.checkout-customer-fields #savedAddressSelectWrap,
+.checkout-customer-fields .address-input-grid {
+  grid-column: 1 / -1;
+}
+
+.checkout-payment-layout {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  align-items: start;
+}
+
+.checkout-confirm-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.order-form > .btn[type="submit"],
+.checkout-confirm-panel > .btn[type="submit"] {
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  min-height: 50px;
+}
+
+.checkout-payment-section {
+  display: grid;
+  gap: 12px;
+}
+
+.checkout-payment-section h3 {
+  color: #2a211d;
+  font-size: 18px;
+  margin: 0;
+}
+
+.payment-options {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-option {
+  align-items: flex-start;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 16px 18px;
+}
+
+.payment-option:has(input:checked) {
+  background: #fff6f1;
+  border-color: #ff9b78;
+}
+
+.payment-option input {
+  accent-color: #ff5722;
+  height: 18px;
+  width: 18px;
+}
+
+.payment-option strong,
+.payment-option small {
+  display: block;
+}
+
+.payment-option small {
+  color: #77675f;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.checkout-summary-box {
+  background: #fff8f3;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+}
+
+.checkout-summary-box div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkout-summary-box span {
+  color: #6f5d54;
+}
+
+.checkout-summary-total {
+  border-top: 1px solid #ead8cf;
+  color: #2a211d;
+  font-size: 18px;
+  padding-top: 10px;
+}
+
+.discount-box {
+  border: 1px solid #f0d8cb;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.discount-apply-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.discount-message {
+  color: #8a4b2a;
+  font-size: 13px;
+  margin: 0;
+}
+
+.checkout-warning {
+  background: #fff1eb;
+  border: 1px solid #ffd1bd;
+  border-radius: 8px;
+  color: #a3410a;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+  padding: 12px;
+}
+
+.checkout-warning a {
+  color: #d9480f;
+  text-decoration: underline;
+}
+
+.cart-item {
+  align-items: center;
+  background: #fffaf7;
+  border: 1px solid #f0e5dc;
+  border-radius: 10px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  margin-bottom: 12px;
+  padding: 16px;
+  text-align: left;
+}
+
+.cart-item h4 {
+  margin-bottom: 5px;
+}
+
+.cart-item p {
+  color: #6f584d;
+  margin: 0;
+}
+
+.cart-total {
+  background: #fff1eb;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 16px;
+  padding: 18px;
+  text-align: right;
+  color: #ff5722;
+}

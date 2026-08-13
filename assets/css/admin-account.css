@@ -1,1 +1,316 @@
-/* Page-specific styles for admin-account.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for admin-account.html. Shared styles live in admin-base.css. */
+
+.permission-list {
+  display: grid;
+  gap: 12px;
+}
+
+.permission-item {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ead7cb;
+  border-radius: 12px;
+  display: flex !important;
+  font-size: 15px;
+  gap: 12px !important;
+  min-height: 52px;
+  padding: 12px 14px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.permission-item:has(input:checked) {
+  background: #fff3ec;
+  border-color: #ff9d78;
+  box-shadow: 0 10px 24px rgba(255, 79, 36, 0.1);
+}
+
+.permission-item:hover {
+  border-color: #ffb293;
+}
+
+.permission-item input {
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.permission-summary {
+  color: #475569;
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 340px;
+}
+
+.permission-dialog {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.42);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 200;
+}
+
+.permission-dialog-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  max-height: min(86vh, 720px);
+  max-width: 760px;
+  overflow: auto;
+  padding: 24px;
+  width: min(100%, 760px);
+}
+
+.permission-dialog-head {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+}
+
+.permission-dialog-head h3 {
+  font-size: 24px;
+  margin: 0 0 6px;
+}
+
+.permission-dialog-head p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.permission-group-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.permission-group-field span {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.permission-group-field select {
+  background: #fff;
+  border: 1px solid #d7e0ee;
+  border-radius: 12px;
+  color: var(--text);
+  font: inherit;
+  min-height: 46px;
+  padding: 0 14px;
+}
+
+.permission-dialog-actions {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 18px;
+}
+
+.user-toolbar input,
+.user-toolbar select,
+.account-controls select {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.admin-lock-note {
+  color: #64748b;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  max-width: 120px;
+}
+
+.staff-create-form {
+  border-bottom: 1px solid var(--line);
+  margin: 0 30px 18px;
+  padding: 20px 0;
+}
+
+.account-form-panel {
+  margin: 0 auto;
+  max-width: 920px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.account-page-form {
+  display: grid;
+  gap: 26px;
+  padding: 30px 32px 34px;
+}
+
+.account-page-form h3 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.account-page-form label {
+  color: #334155;
+  display: grid;
+  font-weight: 700;
+  gap: 9px;
+}
+
+.account-page-form input,
+.account-page-form select {
+  background: #fff;
+  border: 1px solid #d8c7bc;
+  border-radius: 12px;
+  color: var(--ink);
+  min-height: 50px;
+  padding: 0 14px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.account-page-form input:focus,
+.account-page-form select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 79, 36, 0.12);
+  outline: none;
+}
+
+.account-form-actions {
+  align-items: center;
+  background: #fffaf6;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 18px;
+}
+
+.staff-create-form.is-collapsed {
+  display: none;
+}
+
+.staff-form-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.staff-form-grid .permission-list {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-detail-row {
+  display: none;
+}
+
+.account-detail-row.is-open {
+  display: table-row;
+}
+
+.account-detail {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 220px 1fr auto;
+  padding: 16px;
+}
+
+.account-detail label {
+  color: var(--ink);
+  display: grid;
+  font-weight: 600;
+  gap: 7px;
+}
+
+.account-detail select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.account-detail-actions {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+}
+
+.account-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.account-main {
+  align-items: start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.account-main h3,
+.account-main p {
+  margin: 0 0 5px;
+}
+
+.account-main small {
+  color: var(--muted);
+}
+
+.account-status {
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.account-status.active {
+  background: #e8f8ef;
+  color: #15803d;
+}
+
+.account-status.locked {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.account-controls {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 190px 1fr;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.account-controls > label {
+  color: #444;
+  display: grid;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.account-permissions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}

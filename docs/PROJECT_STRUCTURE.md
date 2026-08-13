@@ -29,6 +29,13 @@ Repo này chứa frontend tĩnh để deploy lên Cloudflare Pages.
 - `admin-announcement.html` + `assets/css/admin-announcement.css`: thêm, sửa thông báo.
 - `assets/js/admin/`: logic riêng của admin.
 
+## CSS
+
+- `assets/css/base.css`: nền chung của các trang khách hàng, header, footer và component dùng lại.
+- `assets/css/admin-base.css`: nền chung của khu quản trị.
+- `assets/css/auth-base.css`: nền chung của trang đăng nhập, đăng ký và xác thực.
+- `assets/css/<ten-trang>.css`: style riêng của từng trang. File có thể rất nhỏ nếu trang đó hiện chỉ dùng style chung.
+
 ## Tài sản dùng chung
 
 - `assets/js/script.js`: header, giỏ hàng, menu, thông báo, quảng cáo, chat box.

@@ -1,1 +1,52 @@
-/* Page-specific styles for contact.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for contact.html. Shared styles live in base.css. */
+
+.contact-hero {
+  background:
+    linear-gradient(90deg, rgba(34, 28, 23, 0.82), rgba(34, 28, 23, 0.12)),
+    url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d") center/cover;
+}
+
+.contact-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.contact-card {
+  background: #fff;
+  border: 1px solid #f0e5dc;
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(78, 45, 25, 0.08);
+  padding: 26px;
+  text-align: left;
+}
+
+.contact-icon {
+  align-items: center;
+  background: #fff1eb;
+  border-radius: 8px;
+  color: #ff5722;
+  display: inline-flex;
+  font-size: 24px;
+  font-weight: 700;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: 18px;
+  width: 48px;
+}
+
+.contact-card h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.contact-card p {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.contact-card small {
+  color: #666;
+  line-height: 1.5;
+}

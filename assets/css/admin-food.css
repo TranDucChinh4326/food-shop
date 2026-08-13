@@ -1,1 +1,73 @@
-/* Page-specific styles for admin-food.html. Shared styles live in the matching base CSS file. */
+/* Page-specific styles for admin-food.html. Shared styles live in admin-base.css. */
+
+.food-management-grid {
+  align-items: start;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(340px, 0.42fr) minmax(0, 1fr);
+}
+
+.food-form {
+  display: grid;
+  gap: 13px;
+}
+
+.food-form h3 {
+  margin: 0 0 8px;
+}
+
+.food-form label {
+  color: #444;
+  display: grid;
+  font-weight: 600;
+  gap: 7px;
+}
+
+.food-form input,
+.food-form select,
+.food-form textarea {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 11px 12px;
+}
+
+.food-row {
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 78px 1fr auto;
+  padding: 14px;
+}
+
+.food-row img {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  object-fit: cover;
+  width: 78px;
+}
+
+.food-row h3 {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+
+.food-row p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.food-actions button,
+.food-row > button {
+  min-height: 38px;
+  padding: 0 13px;
+}
+
+.admin-food-thumb {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: cover;
+  width: 58px;
+}
