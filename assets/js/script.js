@@ -1575,16 +1575,14 @@ function getDateInputValue(value) {
 
 function getFilteredAnnouncementArchive() {
   const search = document.getElementById("announcementArchiveSearch")?.value.trim().toLowerCase() || "";
-  const status = document.getElementById("announcementArchiveStatus")?.value || "all";
   const date = document.getElementById("announcementArchiveDate")?.value || "";
 
   return announcementArchive.filter(item => {
     const haystack = `${item.title || ""} ${item.content || ""}`.toLowerCase();
     const matchesSearch = !search || haystack.includes(search);
-    const matchesStatus = status === "all" || item.status === status;
     const matchesDate = !date || getDateInputValue(item.published_at) === date;
 
-    return matchesSearch && matchesStatus && matchesDate;
+    return matchesSearch && matchesDate;
   });
 }
 
@@ -1670,14 +1668,13 @@ async function loadAnnouncementArchive() {
 
 function initAnnouncementArchiveFilters() {
   const search = document.getElementById("announcementArchiveSearch");
-  const status = document.getElementById("announcementArchiveStatus");
   const date = document.getElementById("announcementArchiveDate");
   const pageSize = document.getElementById("announcementArchivePageSize");
   const pager = document.getElementById("announcementArchivePager");
 
-  if (!search && !status && !date && !pageSize && !pager) return;
+  if (!search && !date && !pageSize && !pager) return;
 
-  [search, status, date, pageSize].forEach(control => {
+  [search, date, pageSize].forEach(control => {
     control?.addEventListener("input", () => {
       announcementArchivePage = 1;
       renderAnnouncementArchive();
