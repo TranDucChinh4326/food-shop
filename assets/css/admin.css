@@ -1689,8 +1689,11 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 }
 
 .table-actions {
+  align-items: center;
   display: flex;
   gap: 8px;
+  justify-content: flex-end;
+  white-space: nowrap;
 }
 
 .icon-btn {
@@ -1717,6 +1720,10 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .icon-btn.key {
   color: #f97316;
+}
+
+.icon-btn.permission {
+  color: #2563eb;
 }
 
 .icon-btn.delete {

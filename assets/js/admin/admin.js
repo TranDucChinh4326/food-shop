@@ -396,6 +396,15 @@ function keyIcon() {
   `;
 }
 
+function shieldIcon() {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3 19 6v5c0 4.5-2.8 8-7 10-4.2-2-7-5.5-7-10V6Z"></path>
+      <path d="M9 12l2 2 4-5"></path>
+    </svg>
+  `;
+}
+
 function trashIcon() {
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -656,7 +665,7 @@ function renderUsersTable() {
                       ? `<span class="admin-lock-note">Quản trị cao nhat</span>`
                       : `
                         <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
-                        ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-text-btn" data-permission-user="${account.id}">Phan quyen</button>` : ""}
+                        ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-btn permission" title="Phan quyen" aria-label="Phan quyen" data-permission-user="${account.id}">${shieldIcon()}</button>` : ""}
                         <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
                         <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tài khoản" : "Mo khoa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
                       `}
