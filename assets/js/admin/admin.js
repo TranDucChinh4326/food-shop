@@ -512,6 +512,54 @@ function getCheckedPermissions(container) {
   return [...container.querySelectorAll("input[type='checkbox']:checked")].map(input => input.value);
 }
 
+function formatPermissionSummary(permissions = []) {
+  if (!Array.isArray(permissions) || permissions.length === 0) return "Chua cap quyen";
+
+  const labels = new Map(adminPermissions.map(permission => [permission.value, permission.label]));
+  return permissions.map(permission => labels.get(permission) || permission).join(", ");
+}
+
+function closePermissionDialog() {
+  document.getElementById("permissionDialog")?.remove();
+}
+
+function showPermissionDialog(account) {
+  if (!account || !hasAdminPermission("roles.manage")) return;
+
+  closePermissionDialog();
+
+  const dialog = document.createElement("div");
+  dialog.id = "permissionDialog";
+  dialog.className = "permission-dialog";
+  dialog.innerHTML = `
+    <div class="permission-dialog-card" role="dialog" aria-modal="true" aria-labelledby="permissionDialogTitle">
+      <div class="permission-dialog-head">
+        <div>
+          <h3 id="permissionDialogTitle">Phan quyen nhan vien</h3>
+          <p>${escapeHtml(account.fullname || account.email)} - ${escapeHtml(account.email || "")}</p>
+        </div>
+        <button type="button" class="icon-btn" data-close-permission-dialog aria-label="Dong">&times;</button>
+      </div>
+      <form data-permission-form="${account.id}">
+        <div class="permission-list account-permissions">
+          ${adminPermissions.map(permission => `
+            <label class="permission-item">
+              <input type="checkbox" value="${permission.value}" ${(account.permissions || []).includes(permission.value) ? "checked" : ""}>
+              <span>${permission.label}</span>
+            </label>
+          `).join("")}
+        </div>
+        <div class="permission-dialog-actions">
+          <button type="button" class="ghost-btn" data-close-permission-dialog>Huy</button>
+          <button type="submit" class="primary-btn">Luu phan quyen</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+}
+
 async function loadAdminPermissions() {
   if (!hasAdminPermission("roles.manage")) {
     adminPermissions = [];
@@ -582,8 +630,8 @@ function renderUsersTable() {
               <th>STT</th>
               <th>Họ tên</th>
               <th>Email</th>
-              <th>Vai trò</th>
-              <th>Xác thực</th>
+              <th>Chuc nang duoc cap</th>
+              <th>Xac thuc</th>
               <th>Trạng thái</th>
               <th>Chức năng</th>
             </tr>
@@ -599,7 +647,7 @@ function renderUsersTable() {
                   <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
                 <td>${escapeHtml(account.email)}</td>
-                <td>${formatRole(account.role)}</td>
+                <td><span class="permission-summary">${escapeHtml(isRootAdmin ? "Tat ca chuc nang" : formatPermissionSummary(account.permissions || []))}</span></td>
                 <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
                 <td><span class="account-status ${account.isActive ? "active" : "locked"}">${account.isActive ? "Đang hoạt động" : "Đã khóa"}</span></td>
                 <td>
@@ -608,6 +656,7 @@ function renderUsersTable() {
                       ? `<span class="admin-lock-note">Quản trị cao nhat</span>`
                       : `
                         <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
+                        ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-text-btn" data-permission-user="${account.id}">Phan quyen</button>` : ""}
                         <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
                         <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tài khoản" : "Mo khoa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
                       `}
@@ -2468,6 +2517,7 @@ usersList?.addEventListener("click", async event => {
   const pageButton = event.target.closest("[data-users-page]");
   const toggleButton = event.target.closest("[data-toggle-user]");
   const resetButton = event.target.closest("[data-reset-password]");
+  const permissionButton = event.target.closest("[data-permission-user]");
 
   try {
     if (pageButton) {
@@ -2497,8 +2547,40 @@ usersList?.addEventListener("click", async event => {
       await resetAccountPassword(resetButton.dataset.resetPassword);
       showAdminToast("Đã đặt lại mật khẩu.");
     }
+    if (permissionButton) {
+      const account = cachedUsers.find(item => String(item.id) === String(permissionButton.dataset.permissionUser));
+      showPermissionDialog(account);
+    }
+
   } catch (error) {
     showAdminToast(error.message, "error");
+  }
+});
+
+document.addEventListener("click", event => {
+  if (event.target.closest("[data-close-permission-dialog]")) closePermissionDialog();
+});
+
+document.addEventListener("submit", async event => {
+  const form = event.target.closest("[data-permission-form]");
+  if (!form) return;
+
+  event.preventDefault();
+  const button = form.querySelector("button[type='submit']");
+  const permissions = getCheckedPermissions(form.querySelector(".account-permissions"));
+  if (button) button.disabled = true;
+
+  try {
+    await requestJson(`${ADMIN_API}/users/${form.dataset.permissionForm}/permissions`, {
+      method: "PATCH",
+      body: JSON.stringify({ permissions })
+    });
+    showAdminToast("Da cap nhat phan quyen nhan vien.");
+    closePermissionDialog();
+    await loadUsers();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+    if (button) button.disabled = false;
   }
 });
 

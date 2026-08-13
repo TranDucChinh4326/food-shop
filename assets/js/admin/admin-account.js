@@ -28,6 +28,7 @@ const accountCancelLink = document.getElementById("accountCancelLink");
 
 let toastTimer;
 let adminPermissions = [];
+let currentAccountPermissions = [];
 let currentAdmin = {
   ...user,
   permissions: Array.isArray(user?.permissions) ? user.permissions : []
@@ -116,7 +117,7 @@ function renderPermissionChecks(selected = []) {
 }
 
 function isCustomerMode() {
-  return accountType === "customer" || accountRole.value === "USER";
+  return accountType === "customer";
 }
 
 function syncAccountMode() {
@@ -126,26 +127,11 @@ function syncAccountMode() {
   if (accountBackLink) accountBackLink.href = listUrl;
   if (accountCancelLink) accountCancelLink.href = listUrl;
 
-  [...accountRole.options].forEach(option => {
-    if (accountType === "customer") {
-      option.hidden = option.value !== "USER";
-    } else {
-      option.hidden = option.value === "USER";
-    }
-  });
-
-  if (!isEditMode) {
-    accountRole.value = accountType === "customer" ? "USER" : "STAFF_SALES";
-  }
+  accountRole.value = accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES");
 
   if (permissionPanel) {
-    permissionPanel.style.display = isCustomerMode() || !hasAdminPermission("roles.manage") ? "none" : "block";
-    const note = permissionPanel.querySelector(".form-note");
-    if (note) {
-      note.textContent = isCustomerMode()
-        ? "Khách hàng không được cấp quyền quản trị."
-        : "Chọn các khu vực nhân viên được phép xem và thao tác trong trang quản trị.";
-    }
+    permissionPanel.hidden = true;
+    permissionPanel.style.display = "none";
   }
 }
 
@@ -208,8 +194,8 @@ async function loadAccount() {
 
   accountName.value = account.fullname || "";
   accountEmail.value = account.email || "";
-  accountRole.value = account.role || "USER";
-  renderPermissionChecks(account.permissions || []);
+  accountRole.value = accountType === "customer" ? "USER" : String(account.role || "STAFF_SALES").toUpperCase();
+  currentAccountPermissions = Array.isArray(account.permissions) ? account.permissions : [];
   syncAccountMode();
 }
 
@@ -219,8 +205,8 @@ async function saveAccount(event) {
   const payload = {
     fullname: accountName.value.trim(),
     email: accountEmail.value.trim(),
-    role: accountRole.value,
-    permissions: accountRole.value === "USER" ? [] : getCheckedPermissions()
+    role: accountType === "customer" ? "USER" : (accountRole.value || "STAFF_SALES"),
+    permissions: isEditMode ? currentAccountPermissions : []
   };
 
   if (!isEditMode) {
