@@ -1,35 +1,36 @@
-# Cau truc frontend FoodHub
+# Cấu trúc frontend FoodHub
 
-Repo này chỉ chứa frontend tĩnh để deploy lên Cloudflare Pages.
+Repo này chứa frontend tĩnh để deploy lên Cloudflare Pages.
 
 ## Trang người dùng
 
-- `index.html`: trang chủ.
-- `menu.html`: hiển thị món ăn, do uong va cac danh mục con.
-- `cart.html`: giỏ hàng va đặt hàng.
-- `track.html`: lịch sử đơn hàng của tài khoản đăng nhập.
-- `announcements.html`: danh sách thông báo he thong.
-- `contact.html`: liên hệ.
-- `profile.html`: hồ sơ va liên kết tài khoản.
+- `index.html` + `assets/css/index.css`: trang chủ.
+- `menu.html` + `assets/css/menu.css`: thực đơn, món ăn và danh mục.
+- `food-detail.html` + `assets/css/food-detail.css`: chi tiết món ăn.
+- `cart.html` + `assets/css/cart.css`: giỏ hàng và đặt hàng.
+- `track.html` + `assets/css/track.css`: lịch sử đơn hàng.
+- `announcements.html` + `assets/css/announcements.css`: danh sách thông báo.
+- `contact.html` + `assets/css/contact.css`: liên hệ.
+- `profile.html` + `assets/css/profile.css`: hồ sơ và liên kết tài khoản.
+- `feedback.html` + `assets/css/feedback.css`: phản hồi khách hàng.
 
 ## Đăng nhập
 
-- `login.html`, `register.html`, `verify-email.html`: giao dien xác thực.
-- `assets/css/auth.css`: giao dien auth.
-- `assets/js/auth.js`, `assets/js/verify-email.js`: logic auth.
+- `login.html` + `assets/css/login.css`: đăng nhập.
+- `register.html` + `assets/css/register.css`: đăng ký.
+- `verify-email.html` + `assets/css/verify-email.css`: xác thực email.
+- `assets/js/auth.js`, `assets/js/verify-email.js`: logic xác thực.
 
 ## Quản trị
 
-- `admin.html`: tong quan va cac khu quản lý chung.
-- `admin-food.html`: them, sửa món ăn.
-- `admin-account.html`: them, sửa tài khoản.
-- `admin-announcement.html`: them, sửa thông báo.
-- `assets/css/admin.css`: giao dien quản trị.
-- `assets/js/admin/`: logic rieng của admin.
+- `admin.html` + `assets/css/admin.css`: tổng quan và các khu quản lý chung.
+- `admin-food.html` + `assets/css/admin-food.css`: thêm, sửa món ăn.
+- `admin-account.html` + `assets/css/admin-account.css`: thêm, sửa tài khoản.
+- `admin-announcement.html` + `assets/css/admin-announcement.css`: thêm, sửa thông báo.
+- `assets/js/admin/`: logic riêng của admin.
 
-## Tai san dung chung
+## Tài sản dùng chung
 
-- `assets/css/style.css`: giao dien website khách hàng.
 - `assets/js/script.js`: header, giỏ hàng, menu, thông báo, quảng cáo, chat box.
 - `assets/js/profile.js`: hồ sơ người dùng.
-- `config.js`: địa chỉ API backend va mã OAuth.
+- `config.js`: địa chỉ API backend và mã OAuth.
