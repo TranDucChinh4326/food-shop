@@ -1734,6 +1734,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   width: 140px;
 }
 
+.admin-food-thumb {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: block;
+  height: 58px;
+  object-fit: cover;
+  width: 58px;
+}
+
 
 
 .admin-table strong {

@@ -63,11 +63,3 @@
   min-height: 38px;
   padding: 0 13px;
 }
-
-.admin-food-thumb {
-  aspect-ratio: 1;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  object-fit: cover;
-  width: 58px;
-}
