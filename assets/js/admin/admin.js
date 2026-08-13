@@ -668,6 +668,7 @@ function readDiscountPayload() {
     code: document.getElementById("discountCode").value,
     name: document.getElementById("discountName").value,
     discountType: document.getElementById("discountType").value,
+    applyTo: document.getElementById("discountApplyTo").value,
     discountValue: document.getElementById("discountValue").value,
     minOrder: document.getElementById("discountMinOrder").value,
     maxDiscount: document.getElementById("discountMaxDiscount").value,

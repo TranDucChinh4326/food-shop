@@ -22,6 +22,8 @@ let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 let qrPaymentStatusTimer = null;
 let appliedDiscount = null;
+let ownedVouchers = [];
+let availableVouchers = [];
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -1862,12 +1864,129 @@ function getCheckoutShippingFee(subtotal) {
   return calculateShippingFee(subtotal, cityName);
 }
 
+function getVoucherLabel(entry) {
+  const discount = entry.discount || entry;
+  const applyText = discount.applyTo === "shipping" ? "Phi ship" : "Don hang";
+  const valueText = discount.discountType === "free_shipping"
+    ? "Mien phi ship"
+    : discount.discountType === "percent"
+      ? `${Number(discount.discountValue || 0)}%`
+      : formatMoney(discount.discountValue || 0);
+  const minText = Number(discount.minOrder || 0) > 0 ? ` - tu ${formatMoney(discount.minOrder)}` : "";
+  return `${discount.code} - ${valueText} ${applyText}${minText}`;
+}
+
+function renderOwnedVoucherSelect() {
+  const select = document.getElementById("ownedVoucherSelect");
+  if (!select) return;
+
+  const selected = String(appliedDiscount?.userDiscountId || select.value || "");
+  select.innerHTML = `<option value="">Chon voucher da nhan</option>` + ownedVouchers.map(item => `
+    <option value="${item.userDiscountId}" ${String(item.userDiscountId) === selected ? "selected" : ""}>
+      ${escapeHtml(getVoucherLabel(item))} (${item.remaining} luot)
+    </option>
+  `).join("");
+}
+
+async function loadOwnedVouchers() {
+  const select = document.getElementById("ownedVoucherSelect");
+  if (!select || !isLoggedIn()) return;
+
+  try {
+    const response = await fetch(`${ORDERS_API}/vouchers/mine`, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Khong the tai voucher");
+    ownedVouchers = Array.isArray(data) ? data : [];
+    renderOwnedVoucherSelect();
+  } catch (error) {
+    ownedVouchers = [];
+    renderOwnedVoucherSelect();
+  }
+}
+
+function renderAvailableVouchers() {
+  const box = document.getElementById("availableVouchersList");
+  if (!box) return;
+
+  if (!isLoggedIn()) {
+    box.innerHTML = `<p>Dang nhap de nhan va luu voucher vao tai khoan.</p>`;
+    return;
+  }
+
+  if (!availableVouchers.length) {
+    box.innerHTML = `<p>Hien chua co voucher dang phat hanh.</p>`;
+    return;
+  }
+
+  box.innerHTML = availableVouchers.map(item => `
+    <article class="voucher-card">
+      <div>
+        <span class="voucher-code">${escapeHtml(item.code)}</span>
+        <h3>${escapeHtml(item.name || item.code)}</h3>
+        <p>${escapeHtml(getVoucherLabel(item))}</p>
+        <small>${item.remainingGlobal === null ? "Khong gioi han so luong" : `Con ${item.remainingGlobal} voucher`} - Dang co ${Number(item.ownedRemaining || 0)} trong vi</small>
+      </div>
+      <button type="button" class="ghost-btn" data-claim-voucher="${item.id}">Nhan voucher</button>
+    </article>
+  `).join("");
+}
+
+async function loadAvailableVouchers() {
+  const box = document.getElementById("availableVouchersList");
+  if (!box) return;
+
+  if (!isLoggedIn()) {
+    renderAvailableVouchers();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${ORDERS_API}/vouchers/available`, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Khong the tai voucher");
+    availableVouchers = Array.isArray(data) ? data : [];
+    renderAvailableVouchers();
+  } catch (error) {
+    box.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+  }
+}
+
+async function claimVoucher(discountId) {
+  if (!isLoggedIn()) {
+    requireLogin("Vui long dang nhap de nhan voucher.", "announcements.html");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${ORDERS_API}/vouchers/claim`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ discountId })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Khong the nhan voucher");
+    showSiteToast(data.message || "Da nhan voucher vao vi.");
+    await Promise.all([loadAvailableVouchers(), loadOwnedVouchers()]);
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
 async function applyCheckoutDiscount() {
   const input = document.getElementById("discountCodeInput");
+  const select = document.getElementById("ownedVoucherSelect");
   const message = document.getElementById("discountMessage");
   const code = input?.value.trim();
+  const userDiscountId = select?.value || "";
 
-  if (!code) {
+  if (!code && !userDiscountId) {
     appliedDiscount = null;
     if (message) message.textContent = "";
     renderCart();
@@ -1884,14 +2003,15 @@ async function applyCheckoutDiscount() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getAuthToken()}`
       },
-      body: JSON.stringify({ discountCode: code, itemsSubtotal, shippingFee })
+      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee })
     });
     const data = await response.json();
 
-    if (!response.ok) throw new Error(data.message || "Ma giam gia khong hop le");
+    if (!response.ok) throw new Error(data.message || "Voucher khong hop le");
 
     appliedDiscount = data;
     if (message) message.textContent = `Da ap dung ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
+    renderOwnedVoucherSelect();
     renderCart();
   } catch (error) {
     appliedDiscount = null;
@@ -1899,7 +2019,6 @@ async function applyCheckoutDiscount() {
     renderCart();
   }
 }
-
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
   const totalPrice = document.getElementById("total-price");
@@ -2221,7 +2340,8 @@ async function submitOrder(event) {
         customerAddress: address,
         customerNote: note,
         paymentMethod,
-        discountCode: appliedDiscount?.code || document.getElementById("discountCodeInput")?.value.trim() || "",
+        discountCode: appliedDiscount?.userDiscountId ? "" : (appliedDiscount?.code || document.getElementById("discountCodeInput")?.value.trim() || ""),
+        userDiscountId: appliedDiscount?.userDiscountId || document.getElementById("ownedVoucherSelect")?.value || null,
         items: cart.map(item => ({
           foodId: item.id,
           quantity: item.quantity
@@ -3021,6 +3141,15 @@ if (protectCheckoutPage()) {
     });
   });
   document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
+  document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {
+    const input = document.getElementById("discountCodeInput");
+    if (input) input.value = "";
+    applyCheckoutDiscount();
+  });
+  document.getElementById("availableVouchersList")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-claim-voucher]");
+    if (button) claimVoucher(Number(button.dataset.claimVoucher));
+  });
 
   loadPublicCategories();
   loadFoods();
@@ -3034,6 +3163,8 @@ if (protectCheckoutPage()) {
   initTrackPage();
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
+  loadAvailableVouchers();
+  loadOwnedVouchers();
   initChatSupportWidget();
   })();
 }

@@ -5457,11 +5457,72 @@ footer {
     width: 100%;
   }
 
-  .floating-ad,
-  .floating-ad-left,
-  .floating-ad-right,
-  .floating-ad.left,
-  .floating-ad.right {
+.floating-ad,
+.floating-ad-left,
+.floating-ad-right,
+.floating-ad.left,
+.floating-ad.right {
     display: none;
+  }
+}
+
+.voucher-select {
+  background: #fff;
+  border: 1px solid #f0cdbc;
+  border-radius: 12px;
+  color: #2a211d;
+  font: inherit;
+  min-height: 46px;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.voucher-panel {
+  background: #fff;
+  border: 1px solid #f2d6c9;
+  border-radius: 14px;
+  margin: 0 auto 24px;
+  max-width: 1180px;
+  padding: 24px;
+}
+
+.voucher-list {
+  display: grid;
+  gap: 14px;
+}
+
+.voucher-card {
+  align-items: center;
+  background: #fffaf6;
+  border: 1px dashed #ff8a4a;
+  border-radius: 12px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.voucher-card h3 {
+  font-size: 18px;
+  margin: 6px 0;
+}
+
+.voucher-card p,
+.voucher-card small {
+  color: #6f5a50;
+  display: block;
+  margin: 0;
+}
+
+.voucher-code {
+  color: #ff4f24;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+@media (max-width: 720px) {
+  .voucher-card {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
