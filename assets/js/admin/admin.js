@@ -843,6 +843,24 @@ function renderAdvertisementPreview(src) {
     : "Chưa chọn anh";
 }
 
+function previewAdvertisementImageFile() {
+  const file = advertisementImageFile?.files?.[0];
+  if (!file) {
+    renderAdvertisementPreview(pendingAdvertisementImage);
+    return;
+  }
+
+  const validTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Chi ho tro anh JPG, PNG hoac WebP.");
+  }
+
+  if (file.size > 1.5 * 1024 * 1024) {
+    throw new Error("Anh quang cao toi da 1.5MB.");
+  }
+
+  renderAdvertisementPreview(URL.createObjectURL(file));
+}
 function showAdvertisementListView() {
   if (!advertisementLayout) return;
 
@@ -2226,14 +2244,13 @@ advertisementSearch?.addEventListener("input", () => {
   advertisementsPage = 1;
   advertisementSearchTimer = setTimeout(loadAdvertisements, 300);
 });
-advertisementImageFile?.addEventListener("change", async () => {
+advertisementImageFile?.addEventListener("change", () => {
   try {
-    const src = await readAdvertisementImageFile();
-    pendingAdvertisementImage = src;
-    renderAdvertisementPreview(src);
+    previewAdvertisementImageFile();
   } catch (error) {
     showAdminToast(error.message, "error");
     advertisementImageFile.value = "";
+    renderAdvertisementPreview(pendingAdvertisementImage);
   }
 });
 document.getElementById("refreshFeedbackBtn")?.addEventListener("click", loadFeedback);
