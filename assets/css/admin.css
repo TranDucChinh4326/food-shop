@@ -1627,6 +1627,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   width: 96px;
 }
 
+.table-toolbar.multi-filter #orderStatusFilter {
+  width: 220px;
+}
+
+.table-toolbar.multi-filter #orderPageSize {
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  width: 96px;
+}
+
 .table-toolbar.multi-filter #categoryTypeFilter {
   width: 150px;
 }

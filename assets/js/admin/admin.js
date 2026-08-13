@@ -11,6 +11,9 @@ const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
 const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
 
 const ordersList = document.getElementById("ordersList");
+const orderSearch = document.getElementById("orderSearch");
+const orderStatusFilter = document.getElementById("orderStatusFilter");
+const orderPageSize = document.getElementById("orderPageSize");
 const foodsList = document.getElementById("foodsList");
 const ordersCount = document.getElementById("ordersCount");
 const foodsCount = document.getElementById("foodsCount");
@@ -88,15 +91,19 @@ const SECTION_PERMISSIONS = {
   "food-reviews": ["feedback.manage"]
 };
 const statusLabels = {
-  pending: "Chờ xác nhận",
-  confirmed: "Đã xác nhận",
-  delivering: "Đang giao",
-  done: "Hoàn tất",
-  cancelled: "Đã hủy"
+  pending: "Ch\u1edd x\u00e1c nh\u1eadn",
+  confirmed: "\u0110\u00e3 x\u00e1c nh\u1eadn",
+  delivering: "\u0110ang giao",
+  done: "Ho\u00e0n t\u1ea5t",
+  cancelled: "\u0110\u00e3 h\u1ee7y"
 };
 
 let toastTimer;
 let adminPermissions = [];
+let orderSearchTimer;
+let cachedOrders = [];
+let ordersPage = 1;
+let ordersPerPage = 5;
 let cachedFoods = [];
 let cachedCategories = [];
 let categorySearchTimer;
@@ -1631,74 +1638,129 @@ function renderSatisfaction(feedback) {
     <small>${total.toLocaleString("vi-VN")} phản hồi</small>
   `;
 }
+function getFilteredOrders() {
+  const search = String(orderSearch?.value || "").trim().toLowerCase();
+  const status = orderStatusFilter?.value || "all";
+
+  return cachedOrders.filter(order => {
+    const matchesStatus = status === "all" || order.status === status;
+    const searchText = [
+      order.id,
+      order.customer_name,
+      order.phone,
+      order.address,
+      order.note,
+      ...(Array.isArray(order.items) ? order.items.map(item => item.food_name) : [])
+    ].join(" ").toLowerCase();
+    return matchesStatus && (!search || searchText.includes(search));
+  });
+}
+
+function renderOrdersList() {
+  if (!ordersList) return;
+
+  const filteredOrders = getFilteredOrders();
+  ordersPerPage = Number(orderPageSize?.value || ordersPerPage || 5);
+  const total = filteredOrders.length;
+  const totalPages = Math.max(1, Math.ceil(total / ordersPerPage));
+  ordersPage = Math.min(Math.max(ordersPage, 1), totalPages);
+  const startIndex = (ordersPage - 1) * ordersPerPage;
+  const pageOrders = filteredOrders.slice(startIndex, startIndex + ordersPerPage);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageOrders.length;
+
+  if (total === 0) {
+    ordersList.innerHTML = `<p class="empty-note">Kh\u00f4ng c\u00f3 \u0111\u01a1n h\u00e0ng ph\u00f9 h\u1ee3p.</p>`;
+    return;
+  }
+
+  ordersList.innerHTML = `
+    <div class="orders-compact-list">
+      ${pageOrders.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemSummary = items.length
+          ? items.map(item => `${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}`).join(", ")
+          : "Ch\u01b0a c\u00f3 m\u00f3n";
+
+        return `
+        <article class="order-card compact-order-card">
+          <div class="order-top">
+            <div>
+              <h3>\u0110\u01a1n #${order.id}</h3>
+              <p class="order-meta">
+                <strong>${escapeHtml(order.customer_name)}</strong> - ${escapeHtml(order.phone || "")}
+                <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
+              </p>
+            </div>
+            <strong class="order-total">${formatMoney(order.total_price)}</strong>
+
+            <select class="status-select" data-order-id="${order.id}">
+              ${Object.entries(statusLabels).map(([value, label]) => `
+                <option value="${value}" ${order.status === value ? "selected" : ""}>${label}</option>
+              `).join("")}
+            </select>
+          </div>
+
+          <div class="order-brief">
+            <span>${itemSummary}</span>
+            <button type="button" class="ghost-btn compact-detail-btn" data-order-detail-toggle>Chi ti\u1ebft</button>
+          </div>
+          <div class="order-detail" hidden>
+            <p class="order-address">
+              ${escapeHtml(order.address || "")}
+              ${order.note ? `<br>Ghi ch\u00fa: ${escapeHtml(order.note)}` : ""}
+            </p>
+            <div class="order-items">
+              ${items.map(item => `
+                <div class="order-line">
+                  <span>${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}</span>
+                  <strong>${formatMoney(item.subtotal)}</strong>
+                </div>
+              `).join("")}
+              <div class="order-line">
+                <span>Ph\u00ed giao h\u00e0ng</span>
+                <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mi\u1ec5n ph\u00ed"}</strong>
+              </div>
+              ${Number(order.discount_amount || 0) > 0 ? `
+                <div class="order-line">
+                  <span>M\u00e3 gi\u1ea3m gi\u00e1 ${escapeHtml(order.discount_code || "")}</span>
+                  <strong>-${formatMoney(order.discount_amount)}</strong>
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        </article>
+      `;
+      }).join("")}
+    </div>
+    <div class="table-footer">
+      \u0110ang hi\u1ec3n th\u1ecb t\u1eeb ${from} \u0111\u1ebfn ${to} c\u1ee7a ${total} \u0111\u01a1n h\u00e0ng
+      <div class="pager">
+        <button type="button" data-orders-page="prev" ${ordersPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${Array.from({ length: totalPages }, (_, index) => `
+          <button type="button" class="${ordersPage === index + 1 ? "active" : ""}" data-orders-page="${index + 1}">${index + 1}</button>
+        `).join("")}
+        <button type="button" data-orders-page="next" ${ordersPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
 async function loadOrders() {
-  ordersList.textContent = "\u0110ang t\u1ea3i \u0111\u01a1n h\u00e0ng...";
+  ordersList.textContent = "?ang t?i ??n h?ng...";
 
   try {
     const orders = await requestJson(`${ADMIN_API}/orders`);
-    if (ordersCount) ordersCount.textContent = orders.length;
+    cachedOrders = Array.isArray(orders) ? orders : [];
+    if (ordersCount) ordersCount.textContent = cachedOrders.length;
 
-    if (orders.length === 0) {
-      ordersList.textContent = "Ch\u01b0a c\u00f3 \u0111\u01a1n h\u00e0ng.";
+    if (cachedOrders.length === 0) {
+      ordersList.textContent = "Ch?a c? ??n h?ng.";
       return;
     }
 
-    ordersList.innerHTML = orders.map(order => {
-      const items = Array.isArray(order.items) ? order.items : [];
-      const itemSummary = items.length
-        ? items.map(item => `${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}`).join(", ")
-        : "Ch\u01b0a c\u00f3 m\u00f3n";
-
-      return `
-      <article class="order-card compact-order-card">
-        <div class="order-top">
-          <div>
-            <h3>\u0110\u01a1n #${order.id}</h3>
-            <p class="order-meta">
-              <strong>${escapeHtml(order.customer_name)}</strong> - ${escapeHtml(order.phone || "")}
-              <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
-            </p>
-          </div>
-          <strong class="order-total">${formatMoney(order.total_price)}</strong>
-
-          <select class="status-select" data-order-id="${order.id}">
-            ${Object.entries(statusLabels).map(([value, label]) => `
-              <option value="${value}" ${order.status === value ? "selected" : ""}>${label}</option>
-            `).join("")}
-          </select>
-        </div>
-
-        <div class="order-brief">
-          <span>${itemSummary}</span>
-          <button type="button" class="ghost-btn compact-detail-btn" data-order-detail-toggle>Chi ti\u1ebft</button>
-        </div>
-        <div class="order-detail" hidden>
-          <p class="order-address">
-            ${escapeHtml(order.address || "")}
-            ${order.note ? `<br>Ghi ch\u00fa: ${escapeHtml(order.note)}` : ""}
-          </p>
-          <div class="order-items">
-            ${items.map(item => `
-              <div class="order-line">
-                <span>${escapeHtml(item.food_name)} x ${Number(item.quantity || 0)}</span>
-                <strong>${formatMoney(item.subtotal)}</strong>
-              </div>
-            `).join("")}
-            <div class="order-line">
-              <span>Ph\u00ed giao h\u00e0ng</span>
-              <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mi\u1ec5n ph\u00ed"}</strong>
-            </div>
-            ${Number(order.discount_amount || 0) > 0 ? `
-              <div class="order-line">
-                <span>M\u00e3 gi\u1ea3m gi\u00e1 ${escapeHtml(order.discount_code || "")}</span>
-                <strong>-${formatMoney(order.discount_amount)}</strong>
-              </div>
-            ` : ""}
-          </div>
-        </div>
-      </article>
-    `;
-    }).join("");
+    ordersPage = Math.min(ordersPage, Math.ceil(cachedOrders.length / ordersPerPage)) || 1;
+    renderOrdersList();
   } catch (error) {
     ordersList.textContent = error.message;
     showAdminToast(error.message, "error");
@@ -2287,6 +2349,20 @@ document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDi
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
+orderStatusFilter?.addEventListener("change", () => {
+  ordersPage = 1;
+  renderOrdersList();
+});
+orderPageSize?.addEventListener("change", () => {
+  ordersPerPage = Number(orderPageSize.value || 5);
+  ordersPage = 1;
+  renderOrdersList();
+});
+orderSearch?.addEventListener("input", () => {
+  clearTimeout(orderSearchTimer);
+  ordersPage = 1;
+  orderSearchTimer = setTimeout(renderOrdersList, 250);
+});
 document.getElementById("resetCategoryFormBtn")?.addEventListener("click", resetCategoryForm);
 document.querySelector("[data-back-category-list]")?.addEventListener("click", () => {
   resetCategoryForm();
@@ -2545,7 +2621,10 @@ ordersList.addEventListener("change", async event => {
 
   try {
     await updateOrderStatus(event.target.dataset.orderId, event.target.value);
+    const order = cachedOrders.find(item => String(item.id) === String(event.target.dataset.orderId));
+    if (order) order.status = event.target.value;
     showAdminToast("Đã cập nhật trạng thái đơn hàng.");
+    renderOrdersList();
   } catch (error) {
     showAdminToast(error.message, "error");
     await loadOrders();
@@ -2553,6 +2632,24 @@ ordersList.addEventListener("change", async event => {
 });
 
 ordersList.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-orders-page]");
+  if (pageButton) {
+    const pageAction = pageButton.dataset.ordersPage;
+    const totalPages = Math.max(1, Math.ceil(getFilteredOrders().length / ordersPerPage));
+
+    if (pageAction === "prev") {
+      ordersPage -= 1;
+    } else if (pageAction === "next") {
+      ordersPage += 1;
+    } else {
+      ordersPage = Number(pageAction);
+    }
+
+    ordersPage = Math.min(Math.max(ordersPage, 1), totalPages);
+    renderOrdersList();
+    return;
+  }
+
   const button = event.target.closest("[data-order-detail-toggle]");
   if (!button) return;
 
