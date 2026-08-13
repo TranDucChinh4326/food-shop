@@ -1940,6 +1940,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   justify-content: center;
 }
 
+.stats-card em svg {
+  fill: none;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+  width: 20px;
+}
+
 .dashboard-grid {
   display: grid;
   gap: 22px;

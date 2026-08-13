@@ -1498,31 +1498,38 @@ function renderStats(data) {
   const summary = data.summary || {};
   const totalOrders = Number(summary.total_orders || 0);
   const doneOrders = Number(summary.done_orders || 0);
+  const customerCount = Number(summary.customers || 0);
   const successRate = totalOrders ? (doneOrders / totalOrders) * 100 : 0;
+  const statIcons = {
+    revenue: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M8 7h6.5a3.5 3.5 0 0 1 0 7H8M8 14h8" /></svg>',
+    orders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10l2 4v12H5V8l2-4Z" /><path d="M5 8h14M9 12h6M9 16h4" /></svg>',
+    customers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="M20 20a3 3 0 0 0-3-3M4 20a3 3 0 0 1 3-3" /></svg>',
+    success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7" /></svg>'
+  };
   const statCards = [
     {
-      label: "Tổng doanh thu",
+      label: "T\u1ed5ng doanh thu",
       value: formatMoney(summary.revenue || 0),
-      hint: `${Number(summary.done_orders || 0).toLocaleString("vi-VN")} đơn hoàn tất`,
-      icon: "₫"
+      hint: `${Number(summary.done_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n ho\u00e0n t\u1ea5t`,
+      icon: statIcons.revenue
     },
     {
-      label: "Tổng đơn hàng",
+      label: "T\u1ed5ng \u0111\u01a1n h\u00e0ng",
       value: Number(summary.total_orders || 0).toLocaleString("vi-VN"),
-      hint: `${Number(summary.pending_orders || 0).toLocaleString("vi-VN")} đơn chờ xử lý`,
-      icon: "□"
+      hint: `${Number(summary.pending_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n ch\u1edd x\u1eed l\u00fd`,
+      icon: statIcons.orders
     },
     {
-      label: "Khách hàng",
-      value: Number(summary.customers || 0).toLocaleString("vi-VN"),
-      hint: `${Number(summary.total_users || 0).toLocaleString("vi-VN")} tài khoản trong hệ thống`,
-      icon: "♙"
+      label: "Kh\u00e1ch h\u00e0ng",
+      value: customerCount.toLocaleString("vi-VN"),
+      hint: `${customerCount.toLocaleString("vi-VN")} t\u00e0i kho\u1ea3n kh\u00e1ch h\u00e0ng`,
+      icon: statIcons.customers
     },
     {
-      label: "Tỷ lệ thành công",
+      label: "T\u1ef7 l\u1ec7 th\u00e0nh c\u00f4ng",
       value: `${successRate.toFixed(1)}%`,
-      hint: `${Number(summary.cancelled_orders || 0).toLocaleString("vi-VN")} đơn đã hủy`,
-      icon: "✓"
+      hint: `${Number(summary.cancelled_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n \u0111\u00e3 h\u1ee7y`,
+      icon: statIcons.success
     }
   ];
 
