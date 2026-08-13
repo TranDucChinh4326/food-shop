@@ -1,46 +1,5 @@
 /* Page-specific styles for admin-announcement.html. Shared styles live in admin-base.css. */
 
-.announcement-page-form {
-  gap: 18px;
-}
-
-.announcement-page-form label {
-  color: #334155;
-  display: grid;
-  font-weight: 600;
-  gap: 8px;
-}
-
-.announcement-page-form input,
-.announcement-page-form select,
-.announcement-page-form textarea {
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  min-height: 46px;
-  padding: 11px 12px;
-  resize: vertical;
-}
-
-.announcement-page-form input:focus,
-.announcement-page-form select:focus,
-.announcement-page-form textarea:focus {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
-.announcement-checks {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.announcement-date-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .admin-editor-grid {
   display: grid;
   gap: 26px;
