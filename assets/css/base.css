@@ -99,6 +99,31 @@ header.header-compact .header-tools {
   background: #e64a19;
 }
 
+.ghost-btn {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f0cdbc;
+  border-radius: 999px;
+  color: #ff5722;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+
+.ghost-btn:hover {
+  background: #fff1eb;
+  border-color: #ffb08e;
+  color: #e64a19;
+  transform: translateY(-1px);
+}
+
 .cart-btn {
   align-items: center;
   background: #fff1eb;
@@ -4511,19 +4536,21 @@ footer {
 
 .voucher-card {
   align-items: center;
-  background: #fffaf6;
-  border: 1px dashed #ff8a4a;
+  background: linear-gradient(135deg, #fffaf6 0%, #fff 100%);
+  border: 1px solid #f3d5c6;
   border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(78, 45, 25, 0.07);
   display: flex;
   gap: 16px;
   justify-content: space-between;
-  padding: 16px;
+  padding: 18px 20px;
 }
 
 
 
 .voucher-card h3 {
-  font-size: 18px;
+  color: #1f2937;
+  font-size: 19px;
   margin: 6px 0;
 }
 
