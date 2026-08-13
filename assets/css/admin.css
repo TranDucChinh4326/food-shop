@@ -683,56 +683,66 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .overview-dashboard {
   display: grid;
-  gap: 20px;
+  gap: 26px;
 }
 
 .dashboard-heading {
   align-items: center;
-  display: flex;
-  gap: 18px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
   justify-content: space-between;
 }
 
 .dashboard-heading h1 {
-  font-size: 32px;
+  color: #171717;
+  font-size: 36px;
   letter-spacing: 0;
-  margin: 0 0 6px;
+  line-height: 1.08;
+  margin: 0 0 10px;
 }
 
 .dashboard-heading p {
   color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
   margin: 0;
 }
 
 .dashboard-filter {
   align-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid #efd7cc;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(78, 45, 25, 0.07);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: flex-end;
+  padding: 8px;
 }
 
 .dashboard-filter input {
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid #ead6cc;
+  border-radius: 9px;
   color: var(--ink);
   min-height: 44px;
-  min-width: 150px;
-  padding: 0 12px;
+  min-width: 148px;
+  padding: 0 13px;
 }
 
 .dashboard-filter .primary-btn {
   background: var(--accent);
-  box-shadow: 0 14px 28px rgba(255, 79, 36, 0.18);
-  min-width: 116px;
+  box-shadow: 0 12px 24px rgba(255, 79, 36, 0.18);
+  min-width: 106px;
 }
 
 .dashboard-filter .ghost-btn {
   background: #fff;
   border: 1px solid var(--line);
   color: var(--ink);
-  min-width: 112px;
+  min-width: 104px;
 }
 
 .food-management-grid {
@@ -1863,57 +1873,70 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 .stats-grid {
   display: grid;
-  gap: 18px;
+  gap: 14px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .stats-card {
+  align-items: flex-start;
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.08);
+  border: 1px solid #f0d7ca;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.06);
   display: flex;
-  gap: 14px;
+  gap: 16px;
   justify-content: space-between;
-  min-height: 120px;
-  padding: 20px;
+  min-height: 116px;
+  overflow: hidden;
+  padding: 20px 22px;
+  position: relative;
+}
+
+.stats-card::before {
+  background: linear-gradient(90deg, #ff4f24 0%, #ff8a1f 100%);
+  content: "";
+  height: 3px;
+  inset: 0 0 auto;
+  position: absolute;
 }
 
 .stats-card span {
-  color: var(--muted);
+  color: #5f6b7a;
   display: block;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .stats-card strong {
-  color: var(--ink);
+  color: #111827;
   display: block;
   font-size: 30px;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .stats-card small {
-  color: #0f8d56;
+  color: #047857;
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  margin-top: 10px;
+  line-height: 1.35;
+  margin-top: 9px;
 }
 
 .stats-card em {
   align-items: center;
-  background: var(--accent-soft);
-  border: 1px solid #ffd5c5;
-  border-radius: 8px;
+  background: #fff4ee;
+  border: 1px solid #ffc7b3;
+  border-radius: 10px;
   color: var(--accent);
   display: inline-flex;
-  flex: 0 0 34px;
+  flex: 0 0 40px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 800;
-  height: 34px;
+  height: 40px;
   justify-content: center;
 }
 
@@ -2347,7 +2370,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
   .dashboard-heading {
     align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .dashboard-filter {
@@ -2414,6 +2437,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
   .admin-hero h2 {
     font-size: 32px;
+  }
+
+  .dashboard-filter input,
+  .dashboard-filter .primary-btn,
+  .dashboard-filter .ghost-btn {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 
   .form-actions,
