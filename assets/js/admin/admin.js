@@ -64,6 +64,8 @@ const statsCategories = document.getElementById("statsCategories");
 const statsSatisfaction = document.getElementById("statsSatisfaction");
 const statsFromDate = document.getElementById("statsFromDate");
 const statsToDate = document.getElementById("statsToDate");
+const statsTrendMode = document.getElementById("statsTrendMode");
+const statsTrendLabel = document.getElementById("statsTrendLabel");
 const feedbackList = document.getElementById("feedbackList");
 const feedbackSearch = document.getElementById("feedbackSearch");
 const feedbackStatusFilter = document.getElementById("feedbackStatusFilter");
@@ -1481,6 +1483,7 @@ async function loadStats() {
     const params = new URLSearchParams();
     if (statsFromDate?.value) params.set("from", statsFromDate.value);
     if (statsToDate?.value) params.set("to", statsToDate.value);
+    if (statsTrendMode?.value) params.set("trend", statsTrendMode.value);
 
     const data = await requestJson(`${ADMIN_API}/stats?${params.toString()}`);
     renderStats(data);
@@ -1496,6 +1499,7 @@ async function loadStats() {
 
 function renderStats(data) {
   const summary = data.summary || {};
+  const trendMode = data.trend || statsTrendMode?.value || "day";
   const totalOrders = Number(summary.total_orders || 0);
   const doneOrders = Number(summary.done_orders || 0);
   const customerCount = Number(summary.customers || 0);
@@ -1544,14 +1548,22 @@ function renderStats(data) {
     </article>
   `).join("");
 
-  if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || []);
+  if (statsTrendLabel) {
+    statsTrendLabel.textContent = trendMode === "year"
+      ? "6 n\u0103m g\u1ea7n nh\u1ea5t"
+      : trendMode === "month"
+        ? "12 th\u00e1ng g\u1ea7n nh\u1ea5t"
+        : "7 ng\u00e0y g\u1ea7n nh\u1ea5t";
+  }
+  if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || [], trendMode);
   if (statsTopFoods) statsTopFoods.innerHTML = renderTopFoodsList(data.topFoods || []);
   if (statsCategories) statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
   if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
 
-function renderRevenueTrend(rows) {
-  const ordered = [...rows].reverse().slice(-7);
+function renderRevenueTrend(rows, trendMode = "day") {
+  const limits = { day: 7, month: 12, year: 6 };
+  const ordered = [...rows].reverse().slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
   const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
@@ -1584,11 +1596,26 @@ function renderRevenueTrend(rows) {
       ${ordered.map(item => `
         <span>
           <strong>${formatMoney(item.revenue || 0)}</strong>
-          ${new Date(item.order_date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}
+          ${escapeHtml(formatTrendLabel(item, trendMode))}
         </span>
       `).join("")}
     </div>
   `;
+}
+
+function formatTrendLabel(item, trendMode) {
+  const rawLabel = item.order_label || item.order_date || "";
+  if (trendMode === "year") return String(rawLabel).slice(0, 4);
+  if (trendMode === "month") {
+    const [year, month] = String(rawLabel).split("-");
+    return month && year ? `${month}/${year}` : String(rawLabel);
+  }
+
+  const date = new Date(item.order_date || rawLabel);
+  if (!Number.isNaN(date.getTime())) {
+    return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
+  }
+  return String(rawLabel);
 }
 
 function renderTopFoodsList(rows) {
@@ -2356,6 +2383,7 @@ document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDi
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
+statsTrendMode?.addEventListener("change", loadStats);
 orderStatusFilter?.addEventListener("change", () => {
   ordersPage = 1;
   renderOrdersList();

@@ -722,7 +722,8 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   padding: 8px;
 }
 
-.dashboard-filter input {
+.dashboard-filter input,
+.dashboard-filter select {
   background: #fff;
   border: 1px solid #ead6cc;
   border-radius: 9px;
@@ -2450,6 +2451,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   }
 
   .dashboard-filter input,
+  .dashboard-filter select,
   .dashboard-filter .primary-btn,
   .dashboard-filter .ghost-btn {
     width: 100%;

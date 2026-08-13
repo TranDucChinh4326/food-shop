@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260813-overview-polish">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260813-stats-trend">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -67,6 +67,11 @@
             <p>Chào mừng trở lại, Admin. Đây là những dữ liệu đang diễn ra hôm nay.</p>
           </div>
           <div class="stats-filter dashboard-filter">
+            <select id="statsTrendMode" aria-label="Ki&#7875;u th&#7889;ng k&#234;">
+              <option value="day">7 ng&#224;y</option>
+              <option value="month">Theo th&#225;ng</option>
+              <option value="year">Theo n&#259;m</option>
+            </select>
             <input id="statsFromDate" type="date" aria-label="Từ ngày">
             <input id="statsToDate" type="date" aria-label="Đến ngày">
             <button id="applyStatsFilterBtn" type="button" class="primary-btn">Lọc</button>
@@ -80,7 +85,7 @@
           <section class="dashboard-card revenue-card">
             <div class="dashboard-card-title">
               <h2>Xu hướng doanh thu</h2>
-              <span>7 ngày gần nhất</span>
+              <span id="statsTrendLabel">7 ngày gần nhất</span>
             </div>
             <div id="statsDaily" class="dashboard-chart table-state compact-state">Đang tải...</div>
           </section>
@@ -588,6 +593,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin.js?v=20260813-overview-icons"></script>
+  <script src="assets/js/admin/admin.js?v=20260813-stats-trend"></script>
 </body>
 </html>
