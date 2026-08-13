@@ -191,7 +191,7 @@ function ensureAccountManageAccess() {
 
   if (allowed) return true;
 
-  alert("Ban khong co quyen quan ly loai tai khoan nay.");
+  alert("Bạn không có quyền quản lý loại tài khoản này.");
   window.location.href = "admin.html";
   return false;
 }

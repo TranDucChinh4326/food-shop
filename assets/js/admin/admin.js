@@ -544,7 +544,7 @@ function getCheckedPermissions(container) {
 }
 
 function formatPermissionSummary(permissions = []) {
-  if (!Array.isArray(permissions) || permissions.length === 0) return "Chua cap quyen";
+  if (!Array.isArray(permissions) || permissions.length === 0) return "Chưa cấp quyền";
 
   const labels = new Map(adminPermissions.map(permission => [permission.value, permission.label]));
   return permissions.map(permission => labels.get(permission) || permission).join(", ");
@@ -579,10 +579,10 @@ function showPermissionDialog(account) {
     <div class="permission-dialog-card" role="dialog" aria-modal="true" aria-labelledby="permissionDialogTitle">
       <div class="permission-dialog-head">
         <div>
-          <h3 id="permissionDialogTitle">Phan quyen nhan vien</h3>
+          <h3 id="permissionDialogTitle">Phân quyền nhân viên</h3>
           <p>${escapeHtml(account.fullname || account.username || account.email)} - ${escapeHtml(account.username || account.email || "")}</p>
         </div>
-        <button type="button" class="icon-btn" data-close-permission-dialog aria-label="Dong">&times;</button>
+        <button type="button" class="icon-btn" data-close-permission-dialog aria-label="Đóng">&times;</button>
       </div>
       <form data-permission-form="${account.id}">
         <label class="permission-group-field">
@@ -603,8 +603,8 @@ function showPermissionDialog(account) {
           `).join("")}
         </div>
         <div class="permission-dialog-actions">
-          <button type="button" class="ghost-btn" data-close-permission-dialog>Huy</button>
-          <button type="submit" class="primary-btn">Luu phan quyen</button>
+          <button type="button" class="ghost-btn" data-close-permission-dialog>Hủy</button>
+          <button type="submit" class="primary-btn">Lưu phân quyền</button>
         </div>
       </form>
     </div>
@@ -683,7 +683,7 @@ function renderUsersTable() {
               <th>STT</th>
               <th>Họ tên</th>
               <th>Lo\u1ea1i t\u00e0i kho\u1ea3n</th>
-              <th>Xac thuc</th>
+              <th>Xác thực</th>
               <th>Trạng thái</th>
               <th>Chức năng</th>
             </tr>
@@ -707,9 +707,9 @@ function renderUsersTable() {
                       ? `<span class="admin-lock-note">Quản trị cao nhat</span>`
                       : `
                         <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
-                        ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-btn permission" title="Phan quyen" aria-label="Phan quyen" data-permission-user="${account.id}">${shieldIcon()}</button>` : ""}
+                        ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-btn permission" title="Phân quyền" aria-label="Phân quyền" data-permission-user="${account.id}">${shieldIcon()}</button>` : ""}
                         <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
-                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khoa" : "Mo khoa"}" aria-label="${account.isActive ? "Khoa tài khoản" : "Mo khoa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
+                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khóa" : "Mở khóa"}" aria-label="${account.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
                       `}
                   </div>
                 </td>
@@ -964,7 +964,7 @@ function renderDiscountsTable() {
               </td>
               <td>${formatDiscountValue(item)}</td>
               <td>
-                <strong>Tu ${formatMoney(item.min_order || 0)}</strong>
+                <strong>Từ ${formatMoney(item.min_order || 0)}</strong>
                 <small>${item.max_discount ? `Tối đa ${formatMoney(item.max_discount)}` : "Không giới hạn giam"}</small>
               </td>
               <td>
@@ -1052,8 +1052,8 @@ function renderAdvertisementFoodLinkOptions() {
   const selectedId = String(linkedFood?.id || advertisementFoodLinkSelect.value || "");
   const sortedFoods = [...cachedFoods].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"));
 
-  advertisementFoodLinkSelect.innerHTML = `<option value="">Khong chon mon</option>` + sortedFoods.map(food => `
-    <option value="${food.id}" ${String(food.id) === selectedId ? "selected" : ""}>${escapeHtml(food.name || `Mon #${food.id}`)}</option>
+  advertisementFoodLinkSelect.innerHTML = `<option value="">Không chọn món</option>` + sortedFoods.map(food => `
+    <option value="${food.id}" ${String(food.id) === selectedId ? "selected" : ""}>${escapeHtml(food.name || `Món #${food.id}`)}</option>
   `).join("");
 }
 
@@ -1086,7 +1086,7 @@ function previewAdvertisementImageFile() {
   }
 
   if (file.size > 1.5 * 1024 * 1024) {
-    throw new Error("Anh quang cao toi da 1.5MB.");
+    throw new Error("Ảnh quảng cáo tối đa 1.5MB.");
   }
 
   renderAdvertisementPreview(URL.createObjectURL(file));
@@ -1375,7 +1375,7 @@ function renderFeedbackTable() {
 async function loadFoodReviews() {
   if (!foodReviewsList) return;
 
-  foodReviewsList.textContent = "Dang tai binh luan...";
+  foodReviewsList.textContent = "Đang tải bình luận...";
 
   try {
     const params = new URLSearchParams();
@@ -1405,7 +1405,7 @@ function renderFoodReviewsTable() {
 
   const total = cachedFoodReviews.length;
   if (total === 0) {
-    foodReviewsList.innerHTML = `<p class="empty-note">Chua co binh luan nao.</p>`;
+    foodReviewsList.innerHTML = `<p class="empty-note">Chưa có bình luận nào.</p>`;
     return;
   }
 
@@ -1427,21 +1427,21 @@ function renderFoodReviewsTable() {
                 <h3>${escapeHtml(item.food_name)}</h3>
                 <p>
                   <strong>${escapeHtml(item.customer_name)}</strong> - ${escapeHtml(item.customer_email || "")}<br>
-                  Don #${Number(item.order_id)} - ${formatDateTime(item.created_at)}
+                  Đơn #${Number(item.order_id)} - ${formatDateTime(item.created_at)}
                 </p>
               </div>
-              <span class="account-status ${isVisible ? "active" : "locked"}">${isVisible ? "Dang hien thi" : "Da an"}</span>
+              <span class="account-status ${isVisible ? "active" : "locked"}">${isVisible ? "Đang hiển thị" : "Đã ẩn"}</span>
             </div>
             <div class="food-review-admin-body">
               ${item.food_image ? `<img class="ad-thumb" src="${escapeHtml(item.food_image)}" alt="${escapeHtml(item.food_name)}">` : ""}
               <div>
                 ${renderFoodReviewStars(item.rating)}
-                <p class="feedback-admin-content">${escapeHtml(item.comment || "Khach hang chi danh gia sao.")}</p>
+                <p class="feedback-admin-content">${escapeHtml(item.comment || "Khách hàng chỉ đánh giá sao.")}</p>
               </div>
             </div>
             <div class="table-actions">
               <button type="button" class="ghost-btn" data-food-review-visibility="${item.id}" data-visible="${isVisible ? "0" : "1"}">
-                ${isVisible ? "An binh luan" : "Hien thi lai"}
+                ${isVisible ? "Ẩn bình luận" : "Hiển thị lại"}
               </button>
             </div>
           </article>
@@ -1449,7 +1449,7 @@ function renderFoodReviewsTable() {
       }).join("")}
     </div>
     <div class="table-footer">
-      Dang hien thi tu ${from} den ${to} cua ${total} ket qua
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-food-reviews-page="prev" ${foodReviewsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${Array.from({ length: totalPages }, (_, index) => `
@@ -1671,12 +1671,12 @@ async function loadOrders() {
             </div>
           `).join("")}
           <div class="order-line">
-            <span>Phi giao hang</span>
-            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
+            <span>Phí giao hàng</span>
+            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
           </div>
           ${Number(order.discount_amount || 0) > 0 ? `
             <div class="order-line">
-              <span>Ma giam gia ${escapeHtml(order.discount_code || "")}</span>
+              <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
               <strong>-${formatMoney(order.discount_amount)}</strong>
             </div>
           ` : ""}
@@ -2639,7 +2639,7 @@ document.addEventListener("submit", async event => {
       method: "PATCH",
       body: JSON.stringify({ permissions })
     });
-    showAdminToast("Da cap nhat phan quyen nhan vien.");
+    showAdminToast("Đã cập nhật phân quyền nhân viên.");
     closePermissionDialog();
     await loadUsers();
   } catch (error) {
@@ -2863,7 +2863,7 @@ foodReviewsList?.addEventListener("click", async event => {
       method: "PATCH",
       body: JSON.stringify({ isVisible: visibilityButton.dataset.visible === "1" })
     });
-    showAdminToast("Da cap nhat hien thi binh luan.");
+    showAdminToast("Đã cập nhật hiển thị bình luận.");
     await loadFoodReviews();
   } catch (error) {
     showAdminToast(error.message, "error");

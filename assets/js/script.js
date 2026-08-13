@@ -1423,7 +1423,7 @@ async function loadPublicAnnouncements() {
     const announcements = await response.json();
 
     if (!response.ok || announcements.length === 0) {
-      box.innerHTML = `<span class="announcement-empty">Hien chưa có thông báo mới.</span>`;
+      box.innerHTML = `<span class="announcement-empty">Hiện chưa có thông báo mới.</span>`;
       return;
     }
 
@@ -1866,13 +1866,13 @@ function getCheckoutShippingFee(subtotal) {
 
 function getVoucherLabel(entry) {
   const discount = entry.discount || entry;
-  const applyText = discount.applyTo === "shipping" ? "Phi ship" : "Don hang";
+  const applyText = discount.applyTo === "shipping" ? "Phí ship" : "Đơn hàng";
   const valueText = discount.discountType === "free_shipping"
-    ? "Mien phi ship"
+    ? "Miễn phí ship"
     : discount.discountType === "percent"
       ? `${Number(discount.discountValue || 0)}%`
       : formatMoney(discount.discountValue || 0);
-  const minText = Number(discount.minOrder || 0) > 0 ? ` - tu ${formatMoney(discount.minOrder)}` : "";
+  const minText = Number(discount.minOrder || 0) > 0 ? ` - từ ${formatMoney(discount.minOrder)}` : "";
   return `${discount.code} - ${valueText} ${applyText}${minText}`;
 }
 
@@ -1897,7 +1897,7 @@ async function loadOwnedVouchers() {
       headers: { Authorization: `Bearer ${getAuthToken()}` }
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Khong the tai voucher");
+    if (!response.ok) throw new Error(data.message || "Không thể tải voucher");
     ownedVouchers = Array.isArray(data) ? data : [];
     renderOwnedVoucherSelect();
   } catch (error) {
@@ -1911,12 +1911,12 @@ function renderAvailableVouchers() {
   if (!box) return;
 
   if (!isLoggedIn()) {
-    box.innerHTML = `<p>Dang nhap de nhan va luu voucher vao tai khoan.</p>`;
+    box.innerHTML = `<p>Đăng nhập để nhận và lưu voucher vào tài khoản.</p>`;
     return;
   }
 
   if (!availableVouchers.length) {
-    box.innerHTML = `<p>Hien chua co voucher dang phat hanh.</p>`;
+    box.innerHTML = `<p>Hiện chưa có voucher đang phát hành.</p>`;
     return;
   }
 
@@ -1926,9 +1926,9 @@ function renderAvailableVouchers() {
         <span class="voucher-code">${escapeHtml(item.code)}</span>
         <h3>${escapeHtml(item.name || item.code)}</h3>
         <p>${escapeHtml(getVoucherLabel(item))}</p>
-        <small>${item.remainingGlobal === null ? "Khong gioi han so luong" : `Con ${item.remainingGlobal} voucher`} - Dang co ${Number(item.ownedRemaining || 0)} trong vi</small>
+        <small>${item.remainingGlobal === null ? "Không giới hạn số lượng" : `Còn ${item.remainingGlobal} voucher`} - Đang có ${Number(item.ownedRemaining || 0)} trong ví</small>
       </div>
-      <button type="button" class="ghost-btn" data-claim-voucher="${item.id}">Nhan voucher</button>
+      <button type="button" class="ghost-btn" data-claim-voucher="${item.id}">Nhận voucher</button>
     </article>
   `).join("");
 }
@@ -1947,7 +1947,7 @@ async function loadAvailableVouchers() {
       headers: { Authorization: `Bearer ${getAuthToken()}` }
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Khong the tai voucher");
+    if (!response.ok) throw new Error(data.message || "Không thể tải voucher");
     availableVouchers = Array.isArray(data) ? data : [];
     renderAvailableVouchers();
   } catch (error) {
@@ -1971,8 +1971,8 @@ async function claimVoucher(discountId) {
       body: JSON.stringify({ discountId })
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Khong the nhan voucher");
-    showSiteToast(data.message || "Da nhan voucher vao vi.");
+    if (!response.ok) throw new Error(data.message || "Không thể nhận voucher");
+    showSiteToast(data.message || "Đã nhận voucher vào ví.");
     await Promise.all([loadAvailableVouchers(), loadOwnedVouchers()]);
   } catch (error) {
     showSiteToast(error.message, "error");
@@ -2010,7 +2010,7 @@ async function applyCheckoutDiscount() {
     if (!response.ok) throw new Error(data.message || "Voucher khong hop le");
 
     appliedDiscount = data;
-    if (message) message.textContent = `Da ap dung ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
+    if (message) message.textContent = `Đã áp dụng ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
     renderOwnedVoucherSelect();
     renderCart();
   } catch (error) {
@@ -2073,16 +2073,16 @@ function renderCart() {
     const shippingFee = getCheckoutShippingFee(total);
     const discountAmount = Number(appliedDiscount?.discountAmount || 0);
     const finalTotal = Math.max(0, total + (shippingFee || 0) - discountAmount);
-    const shippingText = shippingFee === null ? "Chua ap dung" : shippingFee === 0 ? "Mien phi" : formatMoney(shippingFee);
+    const shippingText = shippingFee === null ? "Chưa áp dụng" : shippingFee === 0 ? "Miễn phí" : formatMoney(shippingFee);
 
     totalPrice.textContent = formatMoney(finalTotal);
 
     checkoutSummary.innerHTML = `
-      <div><span>Tong mat hang</span><strong>${totalQuantity}</strong></div>
-      <div><span>Tam tinh</span><strong>${formatMoney(total)}</strong></div>
-      <div><span>Phi giao hang</span><strong>${shippingText}</strong></div>
-      ${discountAmount > 0 ? `<div><span>Ma giam gia ${escapeHtml(appliedDiscount.code || "")}</span><strong>-${formatMoney(discountAmount)}</strong></div>` : ""}
-      <div class="checkout-summary-total"><span>Tong thanh toan</span><strong>${formatMoney(finalTotal)}</strong></div>
+      <div><span>Tổng mặt hàng</span><strong>${totalQuantity}</strong></div>
+      <div><span>Tạm tính</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Phí giao hàng</span><strong>${shippingText}</strong></div>
+      ${discountAmount > 0 ? `<div><span>Mã giảm giá ${escapeHtml(appliedDiscount.code || "")}</span><strong>-${formatMoney(discountAmount)}</strong></div>` : ""}
+      <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(finalTotal)}</strong></div>
     `;
   }
 }
@@ -2197,7 +2197,7 @@ async function checkQrPaymentStatus(orderId) {
     if (data.paymentStatus === "paid") {
       activeQrPayment = null;
       closeQrPaymentDialog({ cancel: false });
-      showSiteToast("Thanh toan QR thanh cong. Don hang dang cho xac nhan.");
+      showSiteToast("Thanh toan QR thanh cong. Đơn hàng dang cho xac nhan.");
       setTimeout(() => {
         window.location.href = "track.html";
       }, 900);
@@ -2427,12 +2427,12 @@ async function trackOrder(event) {
             </div>
           `).join("")}
           <div class="track-line">
-            <span>Phi giao hang</span>
-            <strong>${Number(data.shipping_fee || 0) > 0 ? formatMoney(data.shipping_fee) : "Mien phi"}</strong>
+            <span>Phí giao hàng</span>
+            <strong>${Number(data.shipping_fee || 0) > 0 ? formatMoney(data.shipping_fee) : "Miễn phí"}</strong>
           </div>
           ${Number(data.discount_amount || 0) > 0 ? `
             <div class="track-line">
-              <span>Ma giam gia ${escapeHtml(data.discount_code || "")}</span>
+              <span>Mã giảm giá ${escapeHtml(data.discount_code || "")}</span>
               <strong>-${formatMoney(data.discount_amount)}</strong>
             </div>
           ` : ""}
@@ -2552,14 +2552,14 @@ function renderOrderHistory(orders) {
         `).join("")}
         <div class="track-line order-item-row">
           <div class="order-item-main">
-            <span>Phi giao hang</span>
+            <span>Phí giao hàng</span>
           </div>
-          <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mien phi"}</strong>
+          <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
         </div>
         ${Number(order.discount_amount || 0) > 0 ? `
           <div class="track-line order-item-row">
             <div class="order-item-main">
-              <span>Ma giam gia ${escapeHtml(order.discount_code || "")}</span>
+              <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
             </div>
             <strong>-${formatMoney(order.discount_amount)}</strong>
           </div>
