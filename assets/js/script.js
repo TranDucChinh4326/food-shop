@@ -2929,6 +2929,73 @@ function getMatchedChatFoods(message, limit = 3) {
     .slice(0, limit);
 }
 
+function getCategoryChatFoods(message, limit = 3) {
+  const normalized = slugify(message);
+  const categoryHints = [
+    { pattern: /do-uong|nuoc|tra|ca-phe|coffee|sinh-to|nuoc-ep|drink/, label: "do uong" },
+    { pattern: /do-an|mon-an|com|pho|bun|mi|pizza|burger|ga|food/, label: "do an" }
+  ];
+  const hint = categoryHints.find(item => item.pattern.test(normalized));
+  if (!hint) return [];
+
+  return foods
+    .filter(food => {
+      const haystack = slugify([
+        food.name,
+        food.category,
+        food.subcategory,
+        food.categoryName,
+        food.parentCategoryName
+      ].filter(Boolean).join(" "));
+
+      if (hint.label === "do uong") {
+        return /do-uong|nuoc-uong|drink|tra|ca-phe|sinh-to|nuoc-ep|nuoc/.test(haystack);
+      }
+
+      return /do-an|food|com|pho|bun|mi|pizza|burger|ga/.test(haystack);
+    })
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0))
+    .slice(0, limit);
+}
+
+function getBudgetFromMessage(message) {
+  const normalized = slugify(message);
+  const rawNumbers = String(message || "").match(/\d+([\.,]\d+)?/g) || [];
+  const numbers = rawNumbers
+    .map(value => Number(value.replace(",", ".")))
+    .filter(value => Number.isFinite(value) && value > 0)
+    .map(value => value < 1000 ? value * 1000 : value);
+
+  if (/duoi|toi-da|tam|khoang|re|gia-re|binh-dan/.test(normalized)) {
+    return numbers.length ? Math.max(...numbers) : 50000;
+  }
+
+  if (/tren|dat|cao-cap/.test(normalized)) {
+    return numbers.length ? Math.max(...numbers) : 50000;
+  }
+
+  return numbers.length ? Math.max(...numbers) : 0;
+}
+
+function getBudgetChatFoods(message, limit = 3) {
+  const budget = getBudgetFromMessage(message);
+  if (!budget) return [];
+
+  const normalized = slugify(message);
+  const compare = /tren|dat|cao-cap/.test(normalized) ? "gte" : "lte";
+
+  return foods
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .filter(food => compare === "gte" ? Number(food.price || 0) >= budget : Number(food.price || 0) <= budget)
+    .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(first.price || 0) - Number(second.price || 0))
+    .slice(0, limit);
+}
+
+function hasChatIntent(normalized, patterns) {
+  return patterns.some(pattern => pattern.test(normalized));
+}
+
 async function getChatBotReply(rawMessage) {
   const message = String(rawMessage || "").trim();
   const normalized = slugify(message);
@@ -2939,7 +3006,58 @@ async function getChatBotReply(rawMessage) {
     return "Hien FoodHub chua tai duoc du lieu mon an. Ban bam Thuc don de xem mon truc tiep nhe.";
   }
 
-  if (/ban-chay|best|hot|nhieu-nguoi|goi-y|nen-an|mon-ngon|pho-bien/.test(normalized)) {
+  if (hasChatIntent(normalized, [/^xin-chao|^chao|hello|hi|alo|tu-van|ho-tro/])) {
+    return "Chao ban, minh co the goi y mon ban chay, mon moi, do uong, mon theo gia, voucher, thanh toan va cach theo doi don hang.";
+  }
+
+  if (hasChatIntent(normalized, [/gio-hang|dat-hang|dat-mon|order|mua/])) {
+    return "Ban chon mon trong Thuc don, bam them vao gio, vao Gio hang de chon dia chi, voucher va phuong thuc thanh toan.";
+  }
+
+  if (hasChatIntent(normalized, [/don-hang|lich-su|theo-doi|kiem-tra-don|track/])) {
+    return "Ban vao muc Lich su don de xem trang thai don hang. Neu vua dat xong, he thong se chuyen sang trang tra cuu don.";
+  }
+
+  if (hasChatIntent(normalized, [/giao-hang|ship|phi-ship|van-chuyen|dia-chi/])) {
+    return "Phi giao hang se tinh trong gio hang theo dia chi va voucher dang ap dung. Ban nen luu dia chi trong Ho so de dat mon nhanh hon.";
+  }
+
+  if (hasChatIntent(normalized, [/thanh-toan|qr|vnpay|cod|tien-mat|tra-tien/])) {
+    return "FoodHub ho tro thanh toan khi nhan hang, QR va VNPay. Phuong thuc tien/vi rieng cua web khong duoc hien trong checkout.";
+  }
+
+  if (hasChatIntent(normalized, [/voucher|ma-giam|giam-gia|khuyen-mai|uu-dai/])) {
+    return "Ban vao trang Thong bao de nhan voucher dang phat hanh. Neu da nhan, vao Ho so > Voucher cua toi hoac chon voucher o gio hang.";
+  }
+
+  if (hasChatIntent(normalized, [/con-hang|het-hang|con-mon|stock/])) {
+    const matched = getMatchedChatFoods(message, 5);
+    const items = matched.length ? matched : getTopChatFoods(5);
+    return items.length
+      ? `Cac mon dang con hang minh goi y:\n${items.map(getChatFoodLine).join("\n")}`
+      : "Hien chua co mon con hang de goi y.";
+  }
+
+  if (hasChatIntent(normalized, [/gia|bao-nhieu|re|duoi|tren|tam|khoang|binh-dan|cao-cap/])) {
+    const budgetItems = getBudgetChatFoods(message);
+    if (budgetItems.length) {
+      return `Cac mon hop voi muc gia ban hoi:\n${budgetItems.map(getChatFoodLine).join("\n")}`;
+    }
+
+    const matched = getMatchedChatFoods(message);
+    if (matched.length) {
+      return `Minh tim thay mon phu hop:\n${matched.map(getChatFoodLine).join("\n")}`;
+    }
+  }
+
+  if (hasChatIntent(normalized, [/do-uong|nuoc|tra|ca-phe|coffee|sinh-to|nuoc-ep|do-an|com|pho|bun|mi|pizza|burger/])) {
+    const items = getCategoryChatFoods(message);
+    if (items.length) {
+      return `Minh goi y theo nhom mon ban hoi:\n${items.map(getChatFoodLine).join("\n")}`;
+    }
+  }
+
+  if (hasChatIntent(normalized, [/ban-chay|best|hot|nhieu-nguoi|goi-y|nen-an|mon-ngon|pho-bien|an-gi/])) {
     const items = getTopChatFoods();
     return items.length
       ? `May mon dang ban chay hom nay:\n${items.map(getChatFoodLine).join("\n")}\nBan co the bam Thuc don de them vao gio.`
@@ -2951,10 +3069,6 @@ async function getChatBotReply(rawMessage) {
     return items.length
       ? `Mon moi/cap nhat gan day:\n${items.map(getChatFoodLine).join("\n")}`
       : "Hien chua co mon moi de goi y.";
-  }
-
-  if (/voucher|ma-giam|giam-gia|khuyen-mai|uu-dai/.test(normalized)) {
-    return "Ban vao trang Thong bao de nhan voucher dang phat hanh. Neu da nhan, vao Ho so > Voucher cua toi hoac chon voucher o gio hang.";
   }
 
   const matched = getMatchedChatFoods(message);
