@@ -2860,6 +2860,112 @@ function getFoodHubRobotIcon(showWordmark = false) {
   `;
 }
 
+async function ensureChatFoodData() {
+  if (foods.length) return foods;
+
+  try {
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`Foods API returned ${response.status}`);
+
+    const data = await response.json();
+    foods = data.map(food => ({
+      id: food.id,
+      name: food.name,
+      category: getCategoryKey(food),
+      subcategory: getSubCategoryKey(food),
+      categoryName: food.category_name,
+      parentCategoryName: food.parent_category_name,
+      price: food.price,
+      stockQuantity: Number(food.stock_quantity ?? food.quantity ?? 0),
+      soldCount: Number(food.sold_count || 0),
+      rating: Number(food.rating || 0),
+      reviewCount: Number(food.review_count || 0),
+      desc: food.description,
+      image: food.image
+    }));
+  } catch (error) {
+    console.error("Cannot load foods for chat:", error);
+  }
+
+  return foods;
+}
+
+function getChatFoodLine(food, index) {
+  const soldText = Number(food.soldCount || 0) > 0 ? `, da ban ${Number(food.soldCount || 0)}` : "";
+  const stockText = Number(food.stockQuantity || 0) > 0 ? "con mon" : "tam het";
+  return `${index + 1}. ${food.name} - ${formatMoney(food.price)} (${stockText}${soldText})`;
+}
+
+function getTopChatFoods(limit = 3) {
+  return [...foods]
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.rating || 0) - Number(first.rating || 0))
+    .slice(0, limit);
+}
+
+function getNewChatFoods(limit = 3) {
+  return [...foods]
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .sort((first, second) => Number(second.id || 0) - Number(first.id || 0))
+    .slice(0, limit);
+}
+
+function getMatchedChatFoods(message, limit = 3) {
+  const words = slugify(message).split("-").filter(word => word.length >= 2);
+  if (!words.length) return [];
+
+  return foods
+    .filter(food => {
+      const haystack = slugify([
+        food.name,
+        food.categoryName,
+        food.parentCategoryName,
+        food.desc
+      ].filter(Boolean).join(" "));
+
+      return words.some(word => haystack.includes(word));
+    })
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .slice(0, limit);
+}
+
+async function getChatBotReply(rawMessage) {
+  const message = String(rawMessage || "").trim();
+  const normalized = slugify(message);
+
+  await ensureChatFoodData();
+
+  if (!foods.length) {
+    return "Hien FoodHub chua tai duoc du lieu mon an. Ban bam Thuc don de xem mon truc tiep nhe.";
+  }
+
+  if (/ban-chay|best|hot|nhieu-nguoi|goi-y|nen-an|mon-ngon|pho-bien/.test(normalized)) {
+    const items = getTopChatFoods();
+    return items.length
+      ? `May mon dang ban chay hom nay:\n${items.map(getChatFoodLine).join("\n")}\nBan co the bam Thuc don de them vao gio.`
+      : "Hien chua co thong ke ban chay, ban co the xem cac mon dang con hang trong Thuc don.";
+  }
+
+  if (/mon-moi|moi|new|vua-them/.test(normalized)) {
+    const items = getNewChatFoods();
+    return items.length
+      ? `Mon moi/cap nhat gan day:\n${items.map(getChatFoodLine).join("\n")}`
+      : "Hien chua co mon moi de goi y.";
+  }
+
+  if (/voucher|ma-giam|giam-gia|khuyen-mai|uu-dai/.test(normalized)) {
+    return "Ban vao trang Thong bao de nhan voucher dang phat hanh. Neu da nhan, vao Ho so > Voucher cua toi hoac chon voucher o gio hang.";
+  }
+
+  const matched = getMatchedChatFoods(message);
+  if (matched.length) {
+    return `Minh goi y cac mon nay theo noi dung ban hoi:\n${matched.map(getChatFoodLine).join("\n")}`;
+  }
+
+  const fallbackItems = getTopChatFoods().length ? getTopChatFoods() : getNewChatFoods();
+  return `Ban co the tham khao vai mon noi bat:\n${fallbackItems.map(getChatFoodLine).join("\n")}\nHoi \"mon ban chay\", \"mon moi\", hoac ten mon ban muon tim nhe.`;
+}
+
 function initChatSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
@@ -3031,7 +3137,7 @@ function initChatSupportWidget() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
-  chatForm.addEventListener("submit", event => {
+  chatForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const message = chatInput.value.trim();
@@ -3043,6 +3149,14 @@ function initChatSupportWidget() {
     `);
     chatInput.value = "";
     hideChatPopovers();
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const botMessages = chatMessages.querySelectorAll(".chat-message.bot.muted");
+    const lastBotMessage = botMessages[botMessages.length - 1];
+    const reply = await getChatBotReply(message);
+    if (lastBotMessage) {
+      lastBotMessage.innerHTML = escapeHtml(reply).replace(/\n/g, "<br>");
+    }
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 
