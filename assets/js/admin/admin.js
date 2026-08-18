@@ -49,6 +49,8 @@ const discountForm = document.getElementById("discountForm");
 const discountSearch = document.getElementById("discountSearch");
 const discountStatusFilter = document.getElementById("discountStatusFilter");
 const discountPageSize = document.getElementById("discountPageSize");
+const shippingMethodForm = document.getElementById("shippingMethodForm");
+const shippingMethodsList = document.getElementById("shippingMethodsList");
 const advertisementsList = document.getElementById("advertisementsList");
 const advertisementForm = document.getElementById("advertisementForm");
 const advertisementLayout = document.querySelector(".advertisement-admin-layout");
@@ -92,6 +94,7 @@ const SECTION_PERMISSIONS = {
   announcements: ["announcements.manage"],
   advertisements: ["ads.manage"],
   discounts: ["discounts.manage"],
+  shipping: ["shipping.manage"],
   feedback: ["feedback.manage"],
   "food-reviews": ["feedback.manage"]
 };
@@ -132,6 +135,7 @@ let discountSearchTimer;
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
+let cachedShippingMethods = [];
 let advertisementSearchTimer;
 let cachedAdvertisements = [];
 let advertisementsPage = 1;
@@ -174,7 +178,7 @@ const STAFF_PERMISSION_GROUPS = [
   {
     value: "manager",
     label: "Qu\u1ea3n l\u00fd v\u1eadn h\u00e0nh",
-    permissions: ["orders.manage", "foods.manage", "categories.manage", "discounts.manage", "staff.manage"]
+    permissions: ["orders.manage", "foods.manage", "categories.manage", "discounts.manage", "shipping.manage", "staff.manage"]
   }
 ];
 
@@ -193,7 +197,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "feedback", "food-reviews"];
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -1083,6 +1087,119 @@ function renderDiscountsTable() {
   `;
 }
 
+function resetShippingMethodForm() {
+  if (!shippingMethodForm) return;
+
+  shippingMethodForm.reset();
+  document.getElementById("shippingMethodId").value = "";
+  document.getElementById("shippingMethodSortOrder").value = "0";
+  document.getElementById("shippingMethodIsActive").value = "1";
+}
+
+function fillShippingMethodForm(method) {
+  document.getElementById("shippingMethodId").value = method.id;
+  document.getElementById("shippingMethodName").value = method.name || "";
+  document.getElementById("shippingMethodFee").value = method.fee ?? 0;
+  document.getElementById("shippingMethodEstimatedTime").value = method.estimated_time || "";
+  document.getElementById("shippingMethodSortOrder").value = method.sort_order ?? 0;
+  document.getElementById("shippingMethodDescription").value = method.description || "";
+  document.getElementById("shippingMethodIsActive").value = Number(method.is_active) ? "1" : "0";
+  shippingMethodForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function getShippingMethodPayload() {
+  return {
+    name: document.getElementById("shippingMethodName").value,
+    fee: document.getElementById("shippingMethodFee").value,
+    estimatedTime: document.getElementById("shippingMethodEstimatedTime").value,
+    sortOrder: document.getElementById("shippingMethodSortOrder").value,
+    description: document.getElementById("shippingMethodDescription").value,
+    isActive: document.getElementById("shippingMethodIsActive").value === "1"
+  };
+}
+
+async function saveShippingMethod(event) {
+  event.preventDefault();
+
+  const methodId = document.getElementById("shippingMethodId").value;
+  const button = shippingMethodForm.querySelector("button[type='submit']");
+  button.disabled = true;
+
+  try {
+    await requestJson(`${ADMIN_API}/shipping-methods${methodId ? `/${methodId}` : ""}`, {
+      method: methodId ? "PUT" : "POST",
+      body: JSON.stringify(getShippingMethodPayload())
+    });
+    showAdminToast(methodId ? "Đã cập nhật phí vận chuyển." : "Đã tạo phí vận chuyển.");
+    resetShippingMethodForm();
+    await loadShippingMethodsAdmin();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function loadShippingMethodsAdmin() {
+  if (!shippingMethodsList) return;
+
+  shippingMethodsList.textContent = "Đang tải phí vận chuyển...";
+
+  try {
+    cachedShippingMethods = await requestJson(`${ADMIN_API}/shipping-methods`);
+    renderShippingMethodsTable();
+  } catch (error) {
+    shippingMethodsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderShippingMethodsTable() {
+  if (!shippingMethodsList) return;
+
+  if (!cachedShippingMethods.length) {
+    shippingMethodsList.textContent = "Chưa có hình thức giao hàng.";
+    return;
+  }
+
+  shippingMethodsList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Tên hình thức</th>
+            <th>Phí</th>
+            <th>Thời gian</th>
+            <th>Thứ tự</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${cachedShippingMethods.map(method => `
+            <tr>
+              <td>
+                <strong>${escapeHtml(method.name)}</strong>
+                <small>${escapeHtml(method.description || "")}</small>
+              </td>
+              <td>${Number(method.fee || 0) > 0 ? formatMoney(method.fee) : "Miễn phí"}</td>
+              <td>${escapeHtml(method.estimated_time || "")}</td>
+              <td>${Number(method.sort_order || 0).toLocaleString("vi-VN")}</td>
+              <td><span class="account-status ${Number(method.is_active) ? "active" : "locked"}">${Number(method.is_active) ? "Hoạt động" : "Đã ẩn"}</span></td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa phí vận chuyển" data-edit-shipping-method="${method.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa" aria-label="Xóa phí vận chuyển" data-delete-shipping-method="${method.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
 function formatAdvertisementPosition(position) {
   const labels = {
     both: "Hai ben",
@@ -1883,7 +2000,7 @@ function renderOrdersList() {
                 </div>
               `).join("")}
               <div class="order-line">
-                <span>Ph\u00ed giao h\u00e0ng</span>
+                <span>Ph\u00ed giao h\u00e0ng${order.shipping_method_name ? ` - ${escapeHtml(order.shipping_method_name)}` : ""}</span>
                 <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Mi\u1ec5n ph\u00ed"}</strong>
               </div>
               ${Number(order.discount_amount || 0) > 0 ? `
@@ -2545,6 +2662,8 @@ discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", 
   closeDiscountForm();
 });
 closeDiscountForm();
+shippingMethodForm?.addEventListener("submit", saveShippingMethod);
+shippingMethodForm?.querySelector("[data-reset-shipping-method]")?.addEventListener("click", resetShippingMethodForm);
 advertisementForm?.addEventListener("submit", saveAdvertisement);
 advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", () => {
   resetAdvertisementForm();
@@ -3029,6 +3148,32 @@ discountsList?.addEventListener("click", async event => {
   }
 });
 
+shippingMethodsList?.addEventListener("click", async event => {
+  const editButton = event.target.closest("[data-edit-shipping-method]");
+  const deleteButton = event.target.closest("[data-delete-shipping-method]");
+
+  try {
+    if (editButton) {
+      const method = cachedShippingMethods.find(item => String(item.id) === String(editButton.dataset.editShippingMethod));
+      if (method) fillShippingMethodForm(method);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("Xóa vĩnh viễn phí vận chuyển này?")) return;
+
+      await requestJson(`${ADMIN_API}/shipping-methods/${deleteButton.dataset.deleteShippingMethod}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Đã xóa phí vận chuyển.");
+      resetShippingMethodForm();
+      await loadShippingMethodsAdmin();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
 advertisementsList?.addEventListener("click", async event => {
   const pageButton = event.target.closest("[data-advertisements-page]");
   const editButton = event.target.closest("[data-edit-advertisement]");
@@ -3269,6 +3414,7 @@ async function initAdminPage() {
   if (canAccessSection("accounts")) loadUsers();
   if (canAccessSection("announcements")) loadAnnouncements();
   if (canAccessSection("discounts")) loadDiscounts();
+  if (canAccessSection("shipping")) loadShippingMethodsAdmin();
   if (canAccessSection("advertisements")) loadAdvertisements();
   if (canAccessSection("feedback")) loadFeedback();
   if (canAccessSection("food-reviews")) loadFoodReviews();

@@ -37,6 +37,7 @@
       <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=shipping" data-admin-target="shipping"><span class="nav-icon" data-icon="delivery" aria-hidden="true"></span><span class="nav-text">Phí vận chuyển</span></a>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="customer-care-menu" aria-expanded="false">
           <span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Chăm sóc khách hàng</span>
@@ -533,6 +534,58 @@
       </section>
     </section>
 
+    <section class="admin-section" data-admin-section="shipping">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quản lý phí vận chuyển</h2>
+            <p>Thêm, sửa, xóa và ẩn/hiện các hình thức giao hàng để khách lựa chọn khi đặt đơn.</p>
+          </div>
+        </div>
+
+        <form id="shippingMethodForm" class="discount-form">
+          <input type="hidden" id="shippingMethodId">
+          <div class="announcement-date-grid">
+            <label>
+              Tên hình thức
+              <input id="shippingMethodName" type="text" placeholder="VD: Giao hàng thường" required>
+            </label>
+            <label>
+              Phí vận chuyển
+              <input id="shippingMethodFee" type="number" min="0" step="1000" required>
+            </label>
+          </div>
+          <div class="announcement-date-grid">
+            <label>
+              Thời gian dự kiến
+              <input id="shippingMethodEstimatedTime" type="text" placeholder="VD: 30-45 phút">
+            </label>
+            <label>
+              Thứ tự hiển thị
+              <input id="shippingMethodSortOrder" type="number" min="0" step="1" value="0">
+            </label>
+          </div>
+          <label>
+            Mô tả
+            <input id="shippingMethodDescription" type="text" placeholder="Mô tả ngắn cho khách hàng">
+          </label>
+          <label>
+            Trạng thái
+            <select id="shippingMethodIsActive">
+              <option value="1">Hoạt động</option>
+              <option value="0">Ẩn</option>
+            </select>
+          </label>
+          <div class="account-form-actions form-actions">
+            <button type="submit" class="primary-btn">Lưu phí vận chuyển</button>
+            <button type="button" class="ghost-btn" data-reset-shipping-method>Nhập lại</button>
+          </div>
+        </form>
+
+        <div id="shippingMethodsList" class="accounts-list table-state">Đang tải phí vận chuyển...</div>
+      </section>
+    </section>
+
     <section class="admin-section" data-admin-section="feedback">
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
@@ -608,7 +661,7 @@
   <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-customer-stats"></script>
+  <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-shipping-methods"></script>
 </body>
 </html>

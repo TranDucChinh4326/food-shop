@@ -30,6 +30,8 @@ let qrPaymentStatusTimer = null;
 let appliedDiscount = null;
 let ownedVouchers = [];
 let availableVouchers = [];
+let shippingMethods = [];
+let selectedShippingMethodId = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -1907,9 +1909,57 @@ function calculateShippingFee(subtotal, cityName) {
 }
 
 function getCheckoutShippingFee(subtotal) {
+  const selectedMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId))
+    || shippingMethods[0];
+  if (selectedMethod) return Math.max(0, Number(selectedMethod.fee || 0));
+
   const cityName = document.getElementById("customerCity")?.value || "";
   if (!cityName) return null;
   return calculateShippingFee(subtotal, cityName);
+}
+
+function renderShippingMethodOptions() {
+  const container = document.getElementById("shippingMethodOptions");
+  if (!container) return;
+
+  if (!shippingMethods.length) {
+    container.innerHTML = `<p class="empty-cart">Chưa có hình thức giao hàng khả dụng.</p>`;
+    return;
+  }
+
+  if (!shippingMethods.some(method => String(method.id) === String(selectedShippingMethodId))) {
+    selectedShippingMethodId = shippingMethods[0].id;
+  }
+
+  container.innerHTML = shippingMethods.map(method => `
+    <label class="payment-option shipping-option">
+      <input type="radio" name="shippingMethod" value="${method.id}" ${String(method.id) === String(selectedShippingMethodId) ? "checked" : ""}>
+      <span>
+        <strong>${escapeHtml(method.name)}</strong>
+        <small>${escapeHtml(method.description || method.estimatedTime || "")}</small>
+        <em>${method.estimatedTime ? `${escapeHtml(method.estimatedTime)} - ` : ""}${Number(method.fee || 0) > 0 ? formatMoney(method.fee) : "Miễn phí"}</em>
+      </span>
+    </label>
+  `).join("");
+}
+
+async function loadShippingMethods() {
+  const container = document.getElementById("shippingMethodOptions");
+  if (!container) return;
+
+  try {
+    const response = await fetch(`${ORDERS_API}/shipping-methods`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Không thể tải hình thức giao hàng");
+
+    shippingMethods = Array.isArray(data) ? data : [];
+    renderShippingMethodOptions();
+    renderCart();
+  } catch (error) {
+    shippingMethods = [];
+    container.innerHTML = `<p class="empty-cart">${escapeHtml(error.message)}</p>`;
+    renderCart();
+  }
 }
 
 function getVoucherLabel(entry) {
@@ -2051,7 +2101,7 @@ async function applyCheckoutDiscount() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getAuthToken()}`
       },
-      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee })
+      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee, shippingMethodId: selectedShippingMethodId })
     });
     const data = await response.json();
 
@@ -2388,6 +2438,7 @@ async function submitOrder(event) {
         customerAddress: address,
         customerNote: note,
         paymentMethod,
+        shippingMethodId: selectedShippingMethodId,
         discountCode: appliedDiscount?.userDiscountId ? "" : (appliedDiscount?.code || document.getElementById("discountCodeInput")?.value.trim() || ""),
         userDiscountId: appliedDiscount?.userDiscountId || document.getElementById("ownedVoucherSelect")?.value || null,
         items: cart.map(item => ({
@@ -2476,7 +2527,7 @@ async function trackOrder(event) {
             </div>
           `).join("")}
           <div class="track-line">
-            <span>Phí giao hàng</span>
+            <span>Phí giao hàng${data.shipping_method_name ? ` - ${escapeHtml(data.shipping_method_name)}` : ""}</span>
             <strong>${Number(data.shipping_fee || 0) > 0 ? formatMoney(data.shipping_fee) : "Miễn phí"}</strong>
           </div>
           ${Number(data.discount_amount || 0) > 0 ? `
@@ -2601,7 +2652,7 @@ function renderOrderHistory(orders) {
         `).join("")}
         <div class="track-line order-item-row">
           <div class="order-item-main">
-            <span>Phí giao hàng</span>
+            <span>Phí giao hàng${order.shipping_method_name ? ` - ${escapeHtml(order.shipping_method_name)}` : ""}</span>
           </div>
           <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
         </div>
@@ -3281,6 +3332,15 @@ if (protectCheckoutPage()) {
     if (input) input.value = "";
     applyCheckoutDiscount();
   });
+  document.getElementById("shippingMethodOptions")?.addEventListener("change", event => {
+    const input = event.target.closest("input[name='shippingMethod']");
+    if (!input) return;
+
+    selectedShippingMethodId = input.value;
+    appliedDiscount = null;
+    document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
+    renderCart();
+  });
   document.getElementById("availableVouchersList")?.addEventListener("click", event => {
     const button = event.target.closest("[data-claim-voucher]");
     if (button) claimVoucher(Number(button.dataset.claimVoucher));
@@ -3300,6 +3360,7 @@ if (protectCheckoutPage()) {
   loadAnnouncementArchive();
   loadAvailableVouchers();
   loadOwnedVouchers();
+  loadShippingMethods();
   initChatSupportWidget();
   })();
 }

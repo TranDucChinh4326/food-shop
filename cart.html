@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260818-mobile-drawer-nav-offset">
-  <link rel="stylesheet" href="assets/css/cart.css?v=20260818-mobile-checkout">
+  <link rel="stylesheet" href="assets/css/cart.css?v=20260818-shipping-methods">
 </head>
 <body>
   <header>
@@ -143,6 +143,11 @@
       <section class="checkout-card checkout-payment-card">
         <div class="checkout-payment-layout">
           <div class="checkout-payment-section">
+            <h3>Hình thức giao hàng</h3>
+            <div id="shippingMethodOptions" class="payment-options shipping-options">
+              <p class="empty-cart">Đang tải hình thức giao hàng...</p>
+            </div>
+
             <h3>Phương thức thanh toán</h3>
             <div class="payment-options">
               <label class="payment-option">
@@ -242,6 +247,6 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/script.js?v=20260818-role-label"></script>
+  <script src="assets/js/script.js?v=20260818-shipping-methods"></script>
 </body>
 </html>

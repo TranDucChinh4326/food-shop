@@ -143,6 +143,14 @@
   margin-top: 3px;
 }
 
+.shipping-option em {
+  color: #ff5722;
+  display: block;
+  font-style: normal;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
 .checkout-summary-box {
   background: #fff8f3;
   border: 1px solid #f0dfd5;
