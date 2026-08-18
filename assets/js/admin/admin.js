@@ -166,6 +166,11 @@ const STAFF_PERMISSION_GROUPS = [
     permissions: ["feedback.manage", "announcements.manage"]
   },
   {
+    value: "account_admin",
+    label: "Qu\u1ea3n tr\u1ecb t\u00e0i kho\u1ea3n",
+    permissions: ["users.manage", "staff.manage", "roles.manage", "password.reset"]
+  },
+  {
     value: "manager",
     label: "Qu\u1ea3n l\u00fd v\u1eadn h\u00e0nh",
     permissions: ["orders.manage", "foods.manage", "categories.manage", "discounts.manage", "staff.manage"]
