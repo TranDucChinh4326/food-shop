@@ -505,6 +505,19 @@ function initResetPasswordForm() {
   }
 }
 
+function initAuthPasswordToggles() {
+  document.querySelectorAll("[data-auth-toggle-password]").forEach(button => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.authTogglePassword);
+      if (!input) return;
+
+      const shouldShow = input.type === "password";
+      input.type = shouldShow ? "text" : "password";
+      button.textContent = shouldShow ? "\u1ea8n" : "Hi\u1ec7n";
+    });
+  });
+}
+
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
@@ -556,5 +569,6 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+initAuthPasswordToggles();
 initResetPasswordForm();
 initSocialSetupForm();

@@ -151,6 +151,36 @@ body {
   box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.12);
 }
 
+.auth-password-wrap {
+  display: block;
+  position: relative;
+}
+
+.auth-password-wrap input {
+  padding-right: 76px;
+}
+
+.auth-password-toggle {
+  background: transparent;
+  border: 0;
+  color: #ff5722;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 10px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.auth-password-toggle:hover,
+.auth-password-toggle:focus-visible {
+  color: #c2410c;
+}
+
 .primary-btn {
   background: #ff5722;
   border: none;
