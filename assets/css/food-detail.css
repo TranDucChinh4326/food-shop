@@ -412,6 +412,7 @@ body.food-detail-open {
   }
 
   .food-detail-qty {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     justify-self: stretch;
     width: 100%;
   }
