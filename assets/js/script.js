@@ -2815,13 +2815,18 @@ function initMobileMenu() {
 
   overlay.addEventListener("click", closeMenu);
 
-  header.querySelectorAll(".nav-dropdown-toggle").forEach(dropdownToggle => {
-    dropdownToggle.addEventListener("click", event => {
-      if (!isMobile()) return;
-      event.preventDefault();
-      event.stopPropagation();
-      dropdownToggle.closest(".nav-dropdown")?.classList.toggle("open");
+  header.querySelector("nav")?.addEventListener("click", event => {
+    const dropdownToggle = event.target.closest(".nav-dropdown-toggle");
+    if (!dropdownToggle || !isMobile()) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const currentDropdown = dropdownToggle.closest(".nav-dropdown");
+    header.querySelectorAll(".nav-dropdown.open").forEach(dropdown => {
+      if (dropdown !== currentDropdown) dropdown.classList.remove("open");
     });
+    currentDropdown?.classList.toggle("open");
   });
 
   header.querySelectorAll("nav a").forEach(link => {
