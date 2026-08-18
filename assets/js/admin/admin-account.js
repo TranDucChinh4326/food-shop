@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Trang tạo/sửa tài khoản trong admin.
+// File này đọc quyền hiện có, hiển thị form theo loại khách/nhân viên và gửi thay đổi về API quản trị.
 const ADMIN_API = `${API_BASE_URL}/admin`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -75,6 +77,8 @@ function requireAdminSession() {
 }
 
 async function loadCurrentAdmin() {
+  // Lấy lại thông tin admin hiện tại từ backend.
+  // Cần để kiểm tra quyền mới nhất trước khi cho tạo/sửa user hoặc nhân viên.
   const data = await requestJson(`${ADMIN_API}/me`);
   currentAdmin = data;
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...data }));
@@ -109,6 +113,8 @@ async function requestJson(url, options = {}) {
 }
 
 function renderPermissionChecks(selected = []) {
+  // Render danh sách checkbox quyền cho tài khoản nhân viên.
+  // Input selected là quyền đã có; output là UI để admin chọn quyền gửi về backend.
   accountPermissions.innerHTML = adminPermissions.map(permission => `
     <label class="permission-item">
       <input type="checkbox" value="${permission.value}" ${selected.includes(permission.value) ? "checked" : ""}>

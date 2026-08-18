@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Dashboard admin dùng các endpoint này để quản lý dữ liệu thật trong backend.
+// Token admin được gửi kèm request để backend kiểm tra role/permissions trước khi cho thao tác.
 const ADMIN_API = `${API_BASE_URL}/admin`;
 const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
@@ -511,6 +513,8 @@ function authHeaders() {
 }
 
 function requireAdminSession() {
+  // Chặn người dùng thường truy cập trang quản trị từ frontend.
+  // Backend vẫn là lớp bảo vệ chính, hàm này chỉ giúp điều hướng UX sớm về trang đăng nhập.
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
@@ -520,6 +524,8 @@ function requireAdminSession() {
 }
 
 async function requestJson(url, options = {}) {
+  // Wrapper gọi API admin dạng JSON.
+  // Tự gắn Authorization header, xử lý hết phiên đăng nhập và chuẩn hóa lỗi để các màn hình dùng chung.
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -1516,6 +1522,8 @@ function renderFoodReviewsTable() {
 }
 
 async function loadStats() {
+  // Tải số liệu dashboard từ GET /api/admin/stats.
+  // Filter ngày/trend lấy từ UI, backend trả doanh thu, đơn hàng, top món, danh mục và phản hồi.
   if (!statsSummary) return;
 
   statsSummary.textContent = "Đang tải thống kê...";

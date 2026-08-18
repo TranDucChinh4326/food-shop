@@ -1,4 +1,6 @@
 const PROFILE_AUTH_API = `${API_BASE_URL}/auth`;
+// Trang hồ sơ dùng API auth để đọc/cập nhật thông tin cá nhân, địa chỉ, avatar và liên kết mạng xã hội.
+// Mọi request riêng tư đều gắn token đăng nhập để backend xác thực đúng người dùng.
 const PROFILE_GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
 const PROFILE_FACEBOOK_APP_ID = window.FOODHUB_CONFIG?.FACEBOOK_APP_ID || "";
 const PROFILE_FACEBOOK_SDK_VERSION = "v25.0";
@@ -21,6 +23,8 @@ function getProfileAuthHeaders() {
 }
 
 async function requestProfileJson(url, options = {}) {
+  // Wrapper gọi API JSON cho trang hồ sơ.
+  // Tự gắn token, xử lý 401 bằng cách xóa session và chuyển người dùng về đăng nhập.
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -45,6 +49,8 @@ async function requestProfileJson(url, options = {}) {
 }
 
 async function requestProfileFormData(url, formData, options = {}) {
+  // Wrapper upload FormData, chủ yếu dùng cho avatar.
+  // Không đặt Content-Type thủ công để trình duyệt tự sinh boundary multipart chính xác.
   const response = await fetch(url, {
     ...options,
     method: options.method || "POST",
@@ -571,6 +577,8 @@ function editAddress(addressId) {
 }
 
 async function postSocialLink(provider, accessToken) {
+  // Gửi accessToken mạng xã hội lên backend để liên kết với tài khoản FoodHub hiện tại.
+  // Frontend không tự lưu token social, chỉ dùng một lần để backend xác thực provider.
   const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/link/${provider}`, {
     method: "POST",
     body: JSON.stringify({ accessToken })

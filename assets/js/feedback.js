@@ -1,4 +1,6 @@
 const FEEDBACK_API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Trang phản hồi khách hàng.
+// User phải đăng nhập; frontend gửi token để backend lưu/xem phản hồi đúng tài khoản.
 const FEEDBACK_API = `${FEEDBACK_API_BASE_URL}/feedback`;
 const FEEDBACK_TOKEN_KEY = "foodhub_token";
 
@@ -56,6 +58,8 @@ function requireFeedbackLogin() {
 }
 
 async function feedbackRequest(url, options = {}) {
+  // Wrapper gọi API feedback, tự gắn JWT và chuyển về login nếu phiên hết hạn.
+  // Output là JSON đã parse hoặc throw Error để UI hiển thị toast/trạng thái lỗi.
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -79,6 +83,8 @@ async function feedbackRequest(url, options = {}) {
 }
 
 async function loadMyFeedback() {
+  // Tải các phản hồi đã gửi của người dùng hiện tại.
+  // Dữ liệu liên kết với customer_feedback và phần admin quản lý phản hồi.
   if (!myFeedbackList) return;
 
   myFeedbackList.textContent = "Đang tải phản hồi...";

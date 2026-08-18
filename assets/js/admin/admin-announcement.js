@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Trang tạo/sửa thông báo trong admin.
+// File này quản lý ngày đăng, ngày hết hạn và gửi nội dung thông báo về API quản trị.
 const ADMIN_API = `${API_BASE_URL}/admin`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -55,6 +57,8 @@ function requireAdminSession() {
 }
 
 async function requestJson(url, options = {}) {
+  // Wrapper gọi API admin cho thông báo, tự gắn token và xử lý hết phiên đăng nhập.
+  // Các thao tác tạo/sửa phụ thuộc backend kiểm quyền ANNOUNCEMENTS_MANAGE.
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -106,6 +110,8 @@ function getPublishDate() {
 }
 
 function updateExpiresAtPreview() {
+  // Tính trước ngày hết hạn dựa trên ngày đăng và số ngày hiệu lực.
+  // Output chỉ điền vào input expiresAt để admin kiểm tra trước khi lưu.
   const days = Number(announcementValidityDays.value);
 
   if (!Number.isFinite(days) || days <= 0) {

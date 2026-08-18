@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// File điều khiển đăng nhập/đăng ký frontend.
+// Các endpoint auth trả JWT và user; frontend lưu vào sessionStorage để gọi API riêng tư sau đó.
 const AUTH_API = `${API_BASE_URL}/auth`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -59,6 +61,8 @@ function setSubmitState(form, isLoading, loadingText) {
 }
 
 function getSafeRedirectUrl() {
+  // Chỉ cho redirect về cùng origin sau khi đăng nhập.
+  // Bước này tránh việc URL redirect bị lợi dụng để chuyển người dùng sang website lạ.
   const params = new URLSearchParams(window.location.search);
   const redirectUrl = params.get("redirect") || sessionStorage.getItem("foodhub_after_login") || "index.html";
 
@@ -71,6 +75,8 @@ function getSafeRedirectUrl() {
 }
 
 function finishLogin(data) {
+  // Hoàn tất đăng nhập ở frontend: lưu token/user, bật gợi ý chat và điều hướng về trang trước đó.
+  // Input là response backend gồm token và user đã được publicUser chuẩn hóa.
   if (!data.token || !data.user) {
     showToast(data.message || "Thiếu thong tin đăng nhập.", "error");
     return;

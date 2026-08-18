@@ -2,6 +2,8 @@ const VERIFY_API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://local
 const VERIFY_AUTH_API = `${VERIFY_API_BASE_URL}/auth`;
 
 async function verifyEmail() {
+  // Đọc token xác minh từ URL và gửi lên backend.
+  // Backend kiểm tra hash trong email_verification_tokens rồi cập nhật trạng thái email_verified của user.
   const message = document.getElementById("verifyMessage");
   const action = document.getElementById("verifyAction");
   const token = new URLSearchParams(window.location.search).get("token");

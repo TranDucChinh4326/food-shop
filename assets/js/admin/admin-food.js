@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Trang tạo/sửa món riêng trong admin.
+// File này đọc danh mục, upload ảnh nếu có và gửi payload món về API quản trị.
 const ADMIN_API = `${API_BASE_URL}/admin`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -64,6 +66,8 @@ function requireAdminSession() {
 }
 
 async function requestJson(url, options = {}) {
+  // Wrapper gọi API admin cho trang món ăn, tự gắn token và chuẩn hóa lỗi trả về.
+  // Các thao tác tạo/sửa món phụ thuộc vào backend kiểm quyền FOODS_MANAGE.
   const response = await fetch(url, {
     ...options,
     headers: {

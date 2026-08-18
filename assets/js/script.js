@@ -1,4 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+// Các endpoint frontend dùng để lấy dữ liệu thật từ backend.
+// Những hằng số này liên kết menu, giỏ hàng, đánh giá, thông báo và chatbot với API Express.
 const API_URL = `${API_BASE_URL}/foods`;
 const CATEGORIES_API = `${API_BASE_URL}/foods/categories`;
 const ORDERS_API = `${API_BASE_URL}/orders`;
@@ -12,6 +14,8 @@ const CART_KEY = "foodhub_cart";
 const CHAT_SESSION_KEY = "foodhub_chat_session";
 
 let foods = [];
+// State phía trình duyệt: lưu dữ liệu đã tải, giỏ hàng session và trạng thái thanh toán/voucher đang thao tác.
+// Các biến này giúp nhiều trang dùng chung script mà không phải gọi lại API cho từng thao tác nhỏ.
 let foodReviews = [];
 let publicCategories = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
@@ -2863,6 +2867,8 @@ function getFoodHubRobotIcon(showWordmark = false) {
 }
 
 function getChatSessionId() {
+  // Tạo/đọc sessionId cho chatbox trong sessionStorage.
+  // sessionId được gửi lên backend để lưu và tải lại lịch sử chat đúng phiên của trình duyệt.
   let sessionId = sessionStorage.getItem(CHAT_SESSION_KEY);
   if (!sessionId) {
     sessionId = `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -2873,6 +2879,8 @@ function getChatSessionId() {
 }
 
 async function requestChatReply(message) {
+  // Gửi câu hỏi chatbox lên POST /api/chat.
+  // Input là tin nhắn người dùng; output là message backend trả về từ dữ liệu Database, không xử lý gợi ý ở frontend.
   const headers = { "Content-Type": "application/json" };
   const token = getAuthToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -2904,6 +2912,8 @@ function renderChatMessage(container, sender, message) {
 }
 
 async function loadChatHistory(container) {
+  // Tải lịch sử chat từ backend khi mở widget.
+  // Nếu user đã đăng nhập, token giúp backend kiểm tra quyền với session chat cá nhân.
   if (!container) return;
 
   try {
@@ -2924,6 +2934,8 @@ async function loadChatHistory(container) {
 }
 
 function initChatSupportWidget() {
+  // Khởi tạo widget hỗ trợ nổi trên frontend.
+  // Hàm dựng HTML, gắn sự kiện mở/đóng/gửi tin và kết nối với API chat backend.
   if (document.getElementById("support-widget")) return;
 
   const user = getCurrentUser();

@@ -1,4 +1,6 @@
 const ADMIN_SIDEBAR_COLLAPSED_KEY = "foodhub_admin_sidebar_collapsed";
+// Điều khiển sidebar dùng chung cho các trang admin.
+// File này render icon, đồng bộ tên admin và lưu trạng thái thu gọn/mở menu theo session.
 const ADMIN_MOBILE_QUERY = "(max-width: 1100px)";
 
 const ADMIN_ICONS = {
@@ -18,6 +20,8 @@ const ADMIN_ICONS = {
 };
 
 function renderAdminIcons() {
+  // Gắn SVG icon vào các phần tử có data-icon.
+  // HTML admin chỉ cần khai báo tên icon, còn SVG được quản lý tập trung tại đây.
   document.querySelectorAll("[data-icon]").forEach(icon => {
     const name = icon.getAttribute("data-icon");
     if (ADMIN_ICONS[name]) icon.innerHTML = ADMIN_ICONS[name];
@@ -43,6 +47,8 @@ function syncAdminUserName() {
 }
 
 function initAdminSidebar() {
+  // Khởi tạo sidebar desktop/mobile.
+  // Desktop lưu trạng thái collapsed; mobile dùng backdrop và phím Escape để đóng menu.
   const sidebar = document.querySelector(".admin-sidebar");
   const toggle = document.querySelector("[data-sidebar-toggle]");
 
