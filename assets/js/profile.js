@@ -194,7 +194,7 @@ function renderPasswordMode(user) {
   }
 
   if (title) {
-    title.textContent = hasPasswordSet ? "Doi mật khẩu" : "Tạo mật khẩu đăng nhập";
+    title.textContent = hasPasswordSet ? "Đổi mật khẩu" : "Tạo mật khẩu đăng nhập";
   }
 
   if (hint) {
@@ -204,7 +204,7 @@ function renderPasswordMode(user) {
   }
 
   if (button) {
-    button.textContent = hasPasswordSet ? "Doi mật khẩu" : "Tạo mật khẩu";
+    button.textContent = hasPasswordSet ? "Đổi mật khẩu" : "Tạo mật khẩu";
   }
 }
 
@@ -824,7 +824,7 @@ async function changePassword(event) {
   const captchaAnswer = document.getElementById("passwordCaptchaAnswer").value.trim().toLowerCase();
 
   if (newPassword !== confirmPassword) {
-    showSiteToast("Mật khẩu mới nhập lai không khớp.", "error");
+    showSiteToast("Mật khẩu mới nhập lại không khớp.", "error");
     return;
   }
 
