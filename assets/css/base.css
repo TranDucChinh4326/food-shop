@@ -455,6 +455,15 @@ header.header-compact .header-tools {
   opacity: 0.45;
 }
 
+.archive-pager-buttons button.ellipsis:disabled,
+.review-pagination button.ellipsis:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: #8a6a58;
+  cursor: default;
+  opacity: 1;
+}
+
 
 
 .floating-ads {

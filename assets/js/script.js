@@ -1032,15 +1032,44 @@ function filterAndSortReviews(reviews, state, options = {}) {
     });
 }
 
+function getCompactPaginationItems(totalPages, currentPage) {
+  const total = Math.max(1, Number(totalPages) || 1);
+  const current = Math.min(Math.max(1, Number(currentPage) || 1), total);
+  if (total <= 5) {
+    return Array.from({ length: total }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sortedPages = [...pages]
+    .filter(page => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
+
+  return sortedPages.reduce((items, page, index) => {
+    if (index > 0 && page - sortedPages[index - 1] > 1) {
+      items.push("ellipsis");
+    }
+    items.push(page);
+    return items;
+  }, []);
+}
+
+function renderPaginationButton(page, currentPage, dataName) {
+  if (page === "ellipsis") {
+    return `<button type="button" class="ellipsis" disabled>...</button>`;
+  }
+
+  return `<button type="button" class="${page === currentPage ? "active" : ""}" data-${dataName}-page="${page}">${page}</button>`;
+}
+
 function renderReviewPagination(totalPages, currentPage) {
   if (totalPages <= 1) return "";
+
+  const pageItems = getCompactPaginationItems(totalPages, currentPage);
 
   return `
     <div class="review-pagination" aria-label="Phân trang bình luận">
       <button type="button" data-review-page="${Math.max(1, currentPage - 1)}" ${currentPage <= 1 ? "disabled" : ""}>&lsaquo;</button>
-      ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
-        <button type="button" class="${page === currentPage ? "active" : ""}" data-review-page="${page}">${page}</button>
-      `).join("")}
+      ${pageItems.map(page => renderPaginationButton(page, currentPage, "review")).join("")}
       <button type="button" data-review-page="${Math.min(totalPages, currentPage + 1)}" ${currentPage >= totalPages ? "disabled" : ""}>&rsaquo;</button>
     </div>
   `;
@@ -1653,9 +1682,7 @@ function renderAnnouncementArchive() {
     <span>Đang hiển thị từ ${from} đến ${to} của ${total} thông báo</span>
     <div class="archive-pager-buttons">
       <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""}>&lsaquo;</button>
-      ${Array.from({ length: totalPages }, (_, index) => `
-        <button type="button" class="${announcementArchivePage === index + 1 ? "active" : ""}" data-archive-page="${index + 1}">${index + 1}</button>
-      `).join("")}
+      ${getCompactPaginationItems(totalPages, announcementArchivePage).map(page => renderPaginationButton(page, announcementArchivePage, "archive")).join("")}
       <button type="button" data-archive-page="next" ${announcementArchivePage === totalPages ? "disabled" : ""}>&rsaquo;</button>
     </div>
   `;

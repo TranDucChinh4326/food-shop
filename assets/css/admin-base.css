@@ -2316,6 +2316,14 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   color: var(--accent);
 }
 
+.pager button.ellipsis:disabled {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  cursor: default;
+  opacity: 1;
+}
+
 
 
 .admin-toast {

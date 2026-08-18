@@ -601,6 +601,35 @@ function formatAccountKind(account) {
   return String(account?.role || "").toUpperCase() === "ADMIN" ? "Admin" : "Nh\u00e2n vi\u00ean";
 }
 
+function getCompactPaginationItems(totalPages, currentPage) {
+  const total = Math.max(1, Number(totalPages) || 1);
+  const current = Math.min(Math.max(1, Number(currentPage) || 1), total);
+  if (total <= 5) {
+    return Array.from({ length: total }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sortedPages = [...pages]
+    .filter(page => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
+
+  return sortedPages.reduce((items, page, index) => {
+    if (index > 0 && page - sortedPages[index - 1] > 1) {
+      items.push("ellipsis");
+    }
+    items.push(page);
+    return items;
+  }, []);
+}
+
+function renderAdminPaginationButton(page, currentPage, dataName) {
+  if (page === "ellipsis") {
+    return `<button type="button" class="ellipsis" disabled>...</button>`;
+  }
+
+  return `<button type="button" class="${page === currentPage ? "active" : ""}" data-${dataName}-page="${page}">${page}</button>`;
+}
+
 function detectPermissionGroup(permissions = []) {
   const selected = new Set(Array.isArray(permissions) ? permissions : []);
   const matched = STAFF_PERMISSION_GROUPS.find(group =>
@@ -770,9 +799,7 @@ function renderUsersTable() {
         Đang hiển thị từ ${from} đến ${to} của ${totalUsers} kết quả
         <div class="pager">
           <button type="button" data-users-page="prev" ${usersPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-          ${Array.from({ length: totalPages }, (_, index) => `
-            <button type="button" class="${usersPage === index + 1 ? "active" : ""}" data-users-page="${index + 1}">${index + 1}</button>
-          `).join("")}
+          ${getCompactPaginationItems(totalPages, usersPage).map(page => renderAdminPaginationButton(page, usersPage, "users")).join("")}
           <button type="button" data-users-page="next" ${usersPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
         </div>
       </div>
@@ -860,9 +887,7 @@ function renderAnnouncementsTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-announcements-page="prev" ${announcementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${announcementsPage === index + 1 ? "active" : ""}" data-announcements-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, announcementsPage).map(page => renderAdminPaginationButton(page, announcementsPage, "announcements")).join("")}
         <button type="button" data-announcements-page="next" ${announcementsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -1036,9 +1061,7 @@ function renderDiscountsTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-discounts-page="prev" ${discountsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${discountsPage === index + 1 ? "active" : ""}" data-discounts-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, discountsPage).map(page => renderAdminPaginationButton(page, discountsPage, "discounts")).join("")}
         <button type="button" data-discounts-page="next" ${discountsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -1329,9 +1352,7 @@ function renderAdvertisementsTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-advertisements-page="prev" ${advertisementsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${advertisementsPage === index + 1 ? "active" : ""}" data-advertisements-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, advertisementsPage).map(page => renderAdminPaginationButton(page, advertisementsPage, "advertisements")).join("")}
         <button type="button" data-advertisements-page="next" ${advertisementsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -1412,9 +1433,7 @@ function renderFeedbackTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-feedback-page="prev" ${feedbackPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${feedbackPage === index + 1 ? "active" : ""}" data-feedback-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, feedbackPage).map(page => renderAdminPaginationButton(page, feedbackPage, "feedback")).join("")}
         <button type="button" data-feedback-page="next" ${feedbackPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -1512,9 +1531,7 @@ function renderFoodReviewsTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-food-reviews-page="prev" ${foodReviewsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${foodReviewsPage === index + 1 ? "active" : ""}" data-food-reviews-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, foodReviewsPage).map(page => renderAdminPaginationButton(page, foodReviewsPage, "food-reviews")).join("")}
         <button type="button" data-food-reviews-page="next" ${foodReviewsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -1824,9 +1841,7 @@ function renderOrdersList() {
       \u0110ang hi\u1ec3n th\u1ecb t\u1eeb ${from} \u0111\u1ebfn ${to} c\u1ee7a ${total} \u0111\u01a1n h\u00e0ng
       <div class="pager">
         <button type="button" data-orders-page="prev" ${ordersPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${ordersPage === index + 1 ? "active" : ""}" data-orders-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, ordersPage).map(page => renderAdminPaginationButton(page, ordersPage, "orders")).join("")}
         <button type="button" data-orders-page="next" ${ordersPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -2105,9 +2120,7 @@ function renderCategoriesTable() {
       Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
       <div class="pager">
         <button type="button" data-categories-page="prev" ${categoriesPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${categoriesPage === index + 1 ? "active" : ""}" data-categories-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, categoriesPage).map(page => renderAdminPaginationButton(page, categoriesPage, "categories")).join("")}
         <button type="button" data-categories-page="next" ${categoriesPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
@@ -2332,9 +2345,7 @@ function renderFoodsTable() {
       Đang hiển thị từ ${from} đến ${to} của ${totalFoods} kết quả
       <div class="pager">
         <button type="button" data-foods-page="prev" ${foodsPage === 1 ? "disabled" : ""}>&lsaquo;</button>
-        ${Array.from({ length: totalPages }, (_, index) => `
-          <button type="button" class="${foodsPage === index + 1 ? "active" : ""}" data-foods-page="${index + 1}">${index + 1}</button>
-        `).join("")}
+        ${getCompactPaginationItems(totalPages, foodsPage).map(page => renderAdminPaginationButton(page, foodsPage, "foods")).join("")}
         <button type="button" data-foods-page="next" ${foodsPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
       </div>
     </div>
