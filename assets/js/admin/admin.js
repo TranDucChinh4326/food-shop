@@ -470,6 +470,15 @@ function shieldIcon() {
   `;
 }
 
+function lockIcon(isActive = true) {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+      ${isActive ? '<path d="M8 11V7a4 4 0 0 1 8 0v4"></path>' : '<path d="M8 11V7a4 4 0 0 1 7.2-2.4"></path><path d="M3 3l18 18"></path>'}
+    </svg>
+  `;
+}
+
 function trashIcon() {
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -785,7 +794,8 @@ function renderUsersTable() {
                         <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
                         ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-btn permission" title="Phân quyền" aria-label="Phân quyền" data-permission-user="${account.id}">${shieldIcon()}</button>` : ""}
                         <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
-                        <button type="button" class="icon-btn delete" title="${account.isActive ? "Khóa" : "Mở khóa"}" aria-label="${account.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${trashIcon()}</button>
+                        <button type="button" class="icon-btn" title="${account.isActive ? "Khóa" : "Mở khóa"}" aria-label="${account.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${lockIcon(account.isActive)}</button>
+                        <button type="button" class="icon-btn delete" title="Xóa vĩnh viễn" aria-label="Xóa vĩnh viễn tài khoản" data-delete-user="${account.id}">${trashIcon()}</button>
                       `}
                   </div>
                 </td>
@@ -2421,6 +2431,12 @@ async function toggleAccount(userId, isActive) {
   });
 }
 
+async function deleteAccount(userId) {
+  await requestJson(`${ADMIN_API}/users/${userId}`, {
+    method: "DELETE"
+  });
+}
+
 async function resetAccountPassword(userId) {
   const newPassword = prompt("Nhập mật khẩu mới tối thiểu 6 ky từ cho tài khoản này:");
 
@@ -2791,6 +2807,7 @@ foodsList?.addEventListener("click", event => {
 usersList?.addEventListener("click", async event => {
   const pageButton = event.target.closest("[data-users-page]");
   const toggleButton = event.target.closest("[data-toggle-user]");
+  const deleteButton = event.target.closest("[data-delete-user]");
   const resetButton = event.target.closest("[data-reset-password]");
   const permissionButton = event.target.closest("[data-permission-user]");
 
@@ -2816,6 +2833,18 @@ usersList?.addEventListener("click", async event => {
       await toggleAccount(toggleButton.dataset.toggleUser, toggleButton.dataset.active === "1");
       showAdminToast("Đã cập nhật trạng thái tài khoản.");
       await loadUsers();
+    }
+
+    if (deleteButton) {
+      const account = cachedUsers.find(item => String(item.id) === String(deleteButton.dataset.deleteUser));
+      const label = account?.email || account?.fullname || "tài khoản này";
+      const confirmed = confirm(`Xóa vĩnh viễn ${label}? Đơn hàng cũ vẫn được giữ trong hệ thống.`);
+      if (!confirmed) return;
+
+      await deleteAccount(deleteButton.dataset.deleteUser);
+      showAdminToast("Đã xóa tài khoản.");
+      await loadUsers();
+      return;
     }
 
     if (resetButton) {
