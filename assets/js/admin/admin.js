@@ -1723,9 +1723,11 @@ async function loadStats() {
 
   try {
     const params = new URLSearchParams();
-    if (statsFromDate?.value) params.set("from", statsFromDate.value);
-    if (statsToDate?.value) params.set("to", statsToDate.value);
     if (statsTrendMode?.value) params.set("trend", statsTrendMode.value);
+    if (statsTrendMode?.value === "custom") {
+      if (statsFromDate?.value) params.set("from", statsFromDate.value);
+      if (statsToDate?.value) params.set("to", statsToDate.value);
+    }
 
     const data = await requestJson(`${ADMIN_API}/stats?${params.toString()}`);
     renderStats(data);
@@ -1738,6 +1740,15 @@ async function loadStats() {
     if (statsSatisfaction) statsSatisfaction.textContent = "";
     showAdminToast(error.message, "error");
   }
+}
+
+function syncStatsDateInputs() {
+  const isCustomRange = statsTrendMode?.value === "custom";
+  [statsFromDate, statsToDate].forEach(input => {
+    if (!input) return;
+    input.disabled = !isCustomRange;
+    if (!isCustomRange) input.value = "";
+  });
 }
 
 function renderStats(data) {
@@ -1792,13 +1803,15 @@ function renderStats(data) {
   `).join("");
 
   if (statsTrendLabel) {
-    statsTrendLabel.textContent = trendMode === "year"
+    statsTrendLabel.textContent = trendMode === "custom"
+      ? `${statsFromDate?.value || "Từ ngày"} đến ${statsToDate?.value || "Đến ngày"}`
+      : trendMode === "year"
       ? "6 n\u0103m g\u1ea7n nh\u1ea5t"
       : trendMode === "quarter"
         ? "8 qu\u00fd g\u1ea7n nh\u1ea5t"
       : trendMode === "month"
         ? "12 th\u00e1ng g\u1ea7n nh\u1ea5t"
-        : "7 ng\u00e0y g\u1ea7n nh\u1ea5t";
+        : "Theo tuần";
   }
   if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || [], trendMode);
   if (statsTopFoods) statsTopFoods.innerHTML = renderTopFoodsList(data.topFoods || []);
@@ -1808,7 +1821,7 @@ function renderStats(data) {
 }
 
 function renderRevenueTrend(rows, trendMode = "day") {
-  const limits = { day: 7, month: 12, quarter: 8, year: 6 };
+  const limits = { day: 7, custom: 366, month: 12, quarter: 8, year: 6 };
   const ordered = [...rows].reverse().slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
@@ -2807,7 +2820,10 @@ document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDi
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
-statsTrendMode?.addEventListener("change", loadStats);
+statsTrendMode?.addEventListener("change", () => {
+  syncStatsDateInputs();
+  loadStats();
+});
 orderStatusFilter?.addEventListener("change", () => {
   ordersPage = 1;
   renderOrdersList();
@@ -3616,6 +3632,7 @@ async function initAdminPage() {
   if (canAccessSection("advertisements")) loadAdvertisements();
   if (canAccessSection("feedback")) loadFeedback();
   if (canAccessSection("food-reviews")) loadFoodReviews();
+  syncStatsDateInputs();
   if (hasAdminPermission("stats.view") || hasAdminPermission("orders.manage")) loadStats();
 }
 
