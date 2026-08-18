@@ -160,6 +160,11 @@ body {
   padding-right: 54px;
 }
 
+.auth-password-wrap input::-ms-reveal,
+.auth-password-wrap input::-ms-clear {
+  display: none;
+}
+
 .auth-password-toggle {
   align-items: center;
   background: transparent;
