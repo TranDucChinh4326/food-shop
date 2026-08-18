@@ -1886,36 +1886,12 @@ function addToCart(foodId) {
   showSiteToast(`Đã thêm ${food.name} x ${cappedQuantity} vào giỏ hàng`);
 }
 
-function normalizeLocationName(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase();
-}
-
-function calculateShippingFee(subtotal, cityName) {
-  const amount = Math.max(0, Number(subtotal) || 0);
-  if (amount === 0) return 0;
-
-  const city = normalizeLocationName(cityName);
-  if (city.includes("vinh long")) return 15000;
-
-  const nearProvinces = ["can tho", "dong thap", "tien giang", "ben tre", "tra vinh", "hau giang"];
-  if (nearProvinces.some(province => city.includes(province))) return 25000;
-
-  return 35000;
-}
-
 function getCheckoutShippingFee(subtotal) {
   const selectedMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId))
     || shippingMethods[0];
   if (selectedMethod) return Math.max(0, Number(selectedMethod.fee || 0));
 
-  const cityName = document.getElementById("customerCity")?.value || "";
-  if (!cityName) return null;
-  return calculateShippingFee(subtotal, cityName);
+  return null;
 }
 
 function renderShippingMethodOptions() {
