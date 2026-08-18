@@ -165,7 +165,23 @@
   }
 
   .rating-picker {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .rating-picker label {
+    gap: 0;
+    min-height: 48px;
+    padding: 6px;
+  }
+
+  .rating-picker span {
+    height: 32px;
+    width: 32px;
+  }
+
+  .rating-picker small {
+    display: none;
   }
 
   .feedback-history-head {
@@ -195,7 +211,7 @@
   }
 
   .rating-picker {
-    grid-template-columns: 1fr;
+    gap: 6px;
   }
 }
 
