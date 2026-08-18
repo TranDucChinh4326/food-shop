@@ -541,9 +541,13 @@
             <h2>Quản lý phí vận chuyển</h2>
             <p>Thêm, sửa, xóa và ẩn/hiện các hình thức giao hàng để khách lựa chọn khi đặt đơn.</p>
           </div>
+          <div class="heading-actions">
+            <button id="resetShippingMethodFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshShippingMethodsBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
         </div>
 
-        <form id="shippingMethodForm" class="discount-form is-open">
+        <form id="shippingMethodForm" class="announcement-page-form discount-form">
           <div class="form-edit-status" data-shipping-edit-status>Đang thêm hình thức giao hàng mới</div>
           <input type="hidden" id="shippingMethodId">
           <div class="announcement-date-grid">
@@ -663,6 +667,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-shipping-edit-state"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-shipping-form-toggle"></script>
 </body>
 </html>

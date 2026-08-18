@@ -1103,6 +1103,21 @@ function resetShippingMethodForm() {
   if (reset) reset.textContent = "Nhập lại";
 }
 
+function openShippingMethodForm() {
+  if (!shippingMethodForm) return;
+
+  shippingMethodForm.classList.add("is-open");
+  shippingMethodForm.hidden = false;
+  shippingMethodForm.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeShippingMethodForm() {
+  if (!shippingMethodForm) return;
+
+  shippingMethodForm.classList.remove("is-open");
+  shippingMethodForm.hidden = true;
+}
+
 function fillShippingMethodForm(method) {
   document.getElementById("shippingMethodId").value = method.id;
   document.getElementById("shippingMethodName").value = method.name || "";
@@ -1118,7 +1133,7 @@ function fillShippingMethodForm(method) {
   if (status) status.textContent = `Đang chỉnh sửa: ${method.name || "Hình thức giao hàng"}`;
   if (submit) submit.textContent = "Cập nhật phí vận chuyển";
   if (reset) reset.textContent = "Hủy sửa";
-  shippingMethodForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  openShippingMethodForm();
 }
 
 function getShippingMethodPayload() {
@@ -1146,6 +1161,7 @@ async function saveShippingMethod(event) {
     });
     showAdminToast(methodId ? "Đã cập nhật phí vận chuyển." : "Đã tạo phí vận chuyển.");
     resetShippingMethodForm();
+    closeShippingMethodForm();
     await loadShippingMethodsAdmin();
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -2809,6 +2825,11 @@ document.getElementById("resetDiscountFormBtn")?.addEventListener("click", () =>
   resetDiscountForm();
   openDiscountForm();
 });
+document.getElementById("resetShippingMethodFormBtn")?.addEventListener("click", () => {
+  resetShippingMethodForm();
+  openShippingMethodForm();
+});
+document.getElementById("refreshShippingMethodsBtn")?.addEventListener("click", loadShippingMethodsAdmin);
 document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", () => {
   resetAdvertisementForm();
   showAdvertisementFormView();
@@ -2822,7 +2843,11 @@ discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", 
 });
 closeDiscountForm();
 shippingMethodForm?.addEventListener("submit", saveShippingMethod);
-shippingMethodForm?.querySelector("[data-reset-shipping-method]")?.addEventListener("click", resetShippingMethodForm);
+shippingMethodForm?.querySelector("[data-reset-shipping-method]")?.addEventListener("click", () => {
+  resetShippingMethodForm();
+  closeShippingMethodForm();
+});
+closeShippingMethodForm();
 advertisementForm?.addEventListener("submit", saveAdvertisement);
 advertisementForm?.querySelector("[data-reset-advertisement]")?.addEventListener("click", () => {
   resetAdvertisementForm();
