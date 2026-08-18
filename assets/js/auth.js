@@ -400,13 +400,17 @@ async function forgotPassword(event) {
 
   setSubmitState(form, true, "Đang gửi...");
 
+  const controller = new AbortController();
+  const requestTimeout = setTimeout(() => controller.abort(), 20000);
+
   try {
     const response = await fetch(`${AUTH_API}/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email }),
+      signal: controller.signal
     });
     const data = await response.json().catch(() => ({}));
 
@@ -421,9 +425,10 @@ async function forgotPassword(event) {
       window.location.href = "reset-password.html";
     }, 900);
   } catch (error) {
-    showToast("Không kết nối được server.", "error");
+    showToast(error.name === "AbortError" ? "Gửi OTP quá lâu, vui lòng kiểm tra cấu hình mail hoặc thử lại." : "Không kết nối được server.", "error");
     console.error(error);
   } finally {
+    clearTimeout(requestTimeout);
     setSubmitState(form, false);
   }
 }
