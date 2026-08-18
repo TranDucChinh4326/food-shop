@@ -830,6 +830,22 @@ function renderRatingLabel(rating, reviewCount = 0) {
   return `${renderStarText(rating)} ${Number(rating || 0).toFixed(1)}`;
 }
 
+function getFoodRatingStats(food) {
+  const comments = getFoodComments(food);
+  const reviewCount = comments.length || Number(food.reviewCount || 0);
+  const rating = reviewCount
+    ? (comments.length
+      ? comments.reduce((sum, review) => sum + Number(review.rating || 0), 0) / comments.length
+      : Number(food.rating || 0))
+    : 0;
+
+  return {
+    rating: Math.max(0, Math.min(5, Number(rating) || 0)),
+    reviewCount,
+    comments
+  };
+}
+
 function getFoodDetailUrl(foodId, options = {}) {
   const params = new URLSearchParams({ id: String(foodId) });
 
@@ -1245,10 +1261,8 @@ function showFoodDetail(foodId) {
   if (oldDialog) oldDialog.remove();
 
   const sold = Number(food.soldCount || 0);
-  const reviewCount = Number(food.reviewCount || 0);
   const stock = Number(food.stockQuantity || 0);
-  const rating = Number(food.rating || 4.8);
-  const comments = getFoodComments(food);
+  const { rating, reviewCount, comments } = getFoodRatingStats(food);
   const category = getFoodDisplayCategory(food);
   const image = food.image || "";
   const dialog = document.createElement("div");
@@ -1266,7 +1280,7 @@ function showFoodDetail(foodId) {
           <h2 id="foodDetailTitle">${escapeHtml(food.name)}</h2>
           <div class="food-detail-stats">
             <span class="food-detail-stars">${renderStarText(rating)}</span>
-            <span>${rating.toFixed(1)} sao</span>
+            <span>${reviewCount ? `${rating.toFixed(1)} sao` : "Chưa có đánh giá"}</span>
             <span>${sold} lượt mua</span>
             <span>${reviewCount} đánh giá</span>
           </div>
@@ -1352,10 +1366,8 @@ function renderFoodDetailPage() {
   }
 
   const sold = Number(food.soldCount || 0);
-  const reviewCount = Number(food.reviewCount || 0);
   const stock = Number(food.stockQuantity || 0);
-  const rating = Number(food.rating || 4.8);
-  const comments = getFoodComments(food);
+  const { rating, reviewCount, comments } = getFoodRatingStats(food);
   const category = getFoodDisplayCategory(food);
   const image = food.image || "";
 
@@ -1373,7 +1385,7 @@ function renderFoodDetailPage() {
             <h1>${escapeHtml(food.name)}</h1>
             <div class="food-detail-stats">
               <span class="food-detail-stars">${renderStarText(rating)}</span>
-              <span>${rating.toFixed(1)} sao</span>
+              <span>${reviewCount ? `${rating.toFixed(1)} sao` : "Chưa có đánh giá"}</span>
               <span>${sold} lượt mua</span>
               <span>${reviewCount} đánh giá</span>
             </div>
