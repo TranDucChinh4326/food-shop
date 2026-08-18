@@ -416,11 +416,6 @@ async function forgotPassword(event) {
     }
 
     showToast(data.message || "Nếu email tồn tại, FoodHub đã gửi hướng dẫn đặt lại mật khẩu.", "success");
-    if (data.resetUrl) {
-      setTimeout(() => {
-        window.location.href = data.resetUrl;
-      }, 900);
-    }
   } catch (error) {
     showToast("Không kết nối được server.", "error");
     console.error(error);
