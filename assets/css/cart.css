@@ -227,6 +227,87 @@
   margin: 0;
 }
 
+@media (max-width: 900px) {
+  .checkout-page {
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: 22px 5% 44px;
+  }
+
+  .checkout-page-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .checkout-page-heading h1 {
+    font-size: 28px;
+  }
+
+  .checkout-stack {
+    gap: 18px;
+  }
+
+  .checkout-customer-fields,
+  .checkout-payment-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout-card {
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .payment-option {
+    grid-template-columns: 22px minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .payment-option strong,
+  .payment-option small {
+    overflow-wrap: anywhere;
+  }
+
+  .cart-item {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    text-align: left;
+  }
+
+  .qty-box,
+  .remove-btn {
+    width: 100%;
+  }
+
+  .discount-apply-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout-summary-box div {
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .checkout-page {
+    padding: 18px 16px 36px;
+  }
+
+  .checkout-page-heading .text-link,
+  .checkout-confirm-panel > .btn[type="submit"] {
+    width: 100%;
+  }
+
+  .checkout-summary-box div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cart-total {
+    text-align: left;
+  }
+}
+
 .cart-total {
   background: #fff1eb;
   border-radius: 8px;
@@ -234,7 +315,7 @@
   font-weight: bold;
   margin-top: 16px;
   padding: 18px;
-  text-align: right;
+  text-align: left;
   color: #ff5722;
 }
 /* Style cho trang giỏ hàng: danh sách món, tổng tiền, voucher, phí giao hàng và khối thanh toán. */
