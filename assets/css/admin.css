@@ -267,8 +267,9 @@
 
   .dashboard-filter {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: stretch;
+    padding: 10px;
   }
 
   .dashboard-filter input,
@@ -278,6 +279,10 @@
     max-width: none;
     min-width: 0;
     width: 100%;
+  }
+
+  .dashboard-filter #statsTrendMode {
+    grid-column: 1 / -1;
   }
 
   .stats-grid {
@@ -311,6 +316,10 @@
 @media (max-width: 520px) {
   .dashboard-heading h1 {
     font-size: 28px;
+  }
+
+  .dashboard-filter {
+    gap: 8px;
   }
 
   .stats-grid {
