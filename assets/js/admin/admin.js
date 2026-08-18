@@ -1536,6 +1536,9 @@ function renderFoodReviewsTable() {
               <button type="button" class="ghost-btn" data-food-review-visibility="${item.id}" data-visible="${isVisible ? "0" : "1"}">
                 ${isVisible ? "Ẩn bình luận" : "Hiển thị lại"}
               </button>
+              <button type="button" class="ghost-btn danger-btn" data-delete-food-review="${item.id}">
+                Xóa bình luận
+              </button>
             </div>
           </article>
         `;
@@ -3114,6 +3117,27 @@ foodReviewsList?.addEventListener("click", async event => {
   }
 
   const visibilityButton = event.target.closest("[data-food-review-visibility]");
+  const deleteButton = event.target.closest("[data-delete-food-review]");
+
+  if (deleteButton) {
+    const confirmed = confirm("Xóa vĩnh viễn bình luận này?");
+    if (!confirmed) return;
+
+    deleteButton.disabled = true;
+
+    try {
+      await requestJson(`${ADMIN_API}/food-reviews/${deleteButton.dataset.deleteFoodReview}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Đã xóa bình luận.");
+      await loadFoodReviews();
+    } catch (error) {
+      showAdminToast(error.message, "error");
+      deleteButton.disabled = false;
+    }
+    return;
+  }
+
   if (!visibilityButton) return;
 
   visibilityButton.disabled = true;
