@@ -1822,7 +1822,7 @@ function renderStats(data) {
 
 function renderRevenueTrend(rows, trendMode = "day") {
   const limits = { day: 7, custom: 366, month: 12, quarter: 8, year: 6 };
-  const ordered = [...rows].reverse().slice(-(limits[trendMode] || 7));
+  const ordered = normalizeRevenueTrendRows(rows, trendMode).slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
   const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
@@ -1860,6 +1860,56 @@ function renderRevenueTrend(rows, trendMode = "day") {
       `).join("")}
     </div>
   `;
+}
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeRevenueTrendRows(rows, trendMode = "day") {
+  const ordered = [...rows].reverse();
+  if (!["day", "custom"].includes(trendMode)) return ordered;
+
+  const revenueByDate = new Map(ordered.map(item => {
+    const rawDate = item.order_date || item.order_label;
+    const date = new Date(rawDate);
+    const key = Number.isNaN(date.getTime()) ? String(rawDate).slice(0, 10) : formatDateKey(date);
+    return [key, item];
+  }));
+
+  const today = new Date();
+  let startDate;
+  let endDate;
+
+  if (trendMode === "custom" && statsFromDate?.value && statsToDate?.value) {
+    startDate = new Date(`${statsFromDate.value}T00:00:00`);
+    endDate = new Date(`${statsToDate.value}T00:00:00`);
+  } else {
+    endDate = today;
+    startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 6);
+  }
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return ordered;
+  if (startDate > endDate) [startDate, endDate] = [endDate, startDate];
+
+  const filledRows = [];
+  const cursor = new Date(startDate);
+  while (cursor <= endDate && filledRows.length < 366) {
+    const key = formatDateKey(cursor);
+    filledRows.push(revenueByDate.get(key) || {
+      order_label: key,
+      order_date: key,
+      orders_count: 0,
+      revenue: 0
+    });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return filledRows;
 }
 
 function formatTrendLabel(item, trendMode) {
