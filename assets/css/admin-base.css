@@ -519,23 +519,25 @@ button:disabled {
 
 
 body.sidebar-collapsed {
-  grid-template-columns: 108px minmax(0, 1fr);
+  grid-template-columns: 96px minmax(0, 1fr);
 }
 
 
 
 body.sidebar-collapsed .admin-sidebar {
   align-items: center;
-  padding-inline: 20px;
-  width: 108px;
+  overflow-x: hidden;
+  padding-inline: 16px;
+  scrollbar-gutter: auto;
+  width: 96px;
 }
 
 
 
 body.sidebar-collapsed .admin-sidebar:hover {
-  box-shadow: 16px 0 40px rgba(15, 23, 42, 0.08);
-  padding-inline: 18px;
-  width: 272px;
+  box-shadow: none;
+  padding-inline: 16px;
+  width: 96px;
 }
 
 
@@ -566,22 +568,12 @@ body.sidebar-collapsed .admin-nav-toggle::after {
 
 
 
-body.sidebar-collapsed .admin-sidebar:hover .sidebar-label,
-body.sidebar-collapsed .admin-sidebar:hover .nav-text,
-body.sidebar-collapsed .admin-sidebar:hover .admin-nav-toggle::after {
-  max-width: 190px;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-
 body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand a,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav a,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav button,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer a,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
+body.sidebar-collapsed .admin-nav-btn,
+body.sidebar-collapsed .admin-subnav a,
+body.sidebar-collapsed .admin-subnav button,
+body.sidebar-collapsed .sidebar-footer a,
+body.sidebar-collapsed .sidebar-footer button {
   align-items: center;
   justify-content: center;
   padding-inline: 0;
@@ -589,21 +581,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav {
+body.sidebar-collapsed .admin-subnav {
   display: none;
 }
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav,
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-group {
+body.sidebar-collapsed .admin-nav,
+body.sidebar-collapsed .admin-nav-group {
   justify-items: center;
   width: 64px;
 }
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn {
+body.sidebar-collapsed .admin-nav-btn {
   aspect-ratio: 1;
   display: inline-grid;
   gap: 0;
@@ -615,7 +607,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn {
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon {
+body.sidebar-collapsed .nav-icon {
   align-items: center;
   flex-basis: 24px;
   height: 24px;
@@ -626,13 +618,13 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon {
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon[data-icon="utensils"] svg {
+body.sidebar-collapsed .nav-icon[data-icon="utensils"] svg {
   transform: translateX(2px);
 }
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
+body.sidebar-collapsed .sidebar-brand > .sidebar-label {
   height: 0;
   margin: 0;
 }
