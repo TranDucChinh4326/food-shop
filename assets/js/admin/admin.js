@@ -1839,13 +1839,23 @@ function renderRevenueTrend(rows, trendMode = "day") {
   const ordered = normalizeRevenueTrendRows(rows, trendMode).slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
-  const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
+  const revenues = ordered.map(item => Number(item.revenue || 0));
+  const maxRevenue = Math.max(...revenues, 1);
+  const minRevenue = Math.min(...revenues);
+  const revenueRange = Math.max(maxRevenue - minRevenue, 1);
   const totalRevenue = ordered.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
   const points = ordered.map((item, index) => {
     const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
-    const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
+    const revenue = Number(item.revenue || 0);
+    const y = totalRevenue === 0 ? 86 : 86 - ((revenue - minRevenue) / revenueRange) * 66;
     return `${x},${y}`;
   }).join(" ");
+  const pointNodes = ordered.map((item, index) => {
+    const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
+    const revenue = Number(item.revenue || 0);
+    const y = totalRevenue === 0 ? 86 : 86 - ((revenue - minRevenue) / revenueRange) * 66;
+    return `<circle cx="${x}" cy="${y}" r="1.7"></circle>`;
+  }).join("");
   const areaPoints = `0,92 ${points} 100,92`;
   const labelIndexes = getRevenueTrendLabelIndexes(ordered.length);
 
@@ -1865,6 +1875,7 @@ function renderRevenueTrend(rows, trendMode = "day") {
       </defs>
       <polygon points="${areaPoints}" fill="url(#revenueFill)"></polygon>
       <polyline points="${points}" fill="none" stroke="#ff7a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      <g class="revenue-points">${pointNodes}</g>
     </svg>
     <div class="chart-labels">
       ${ordered.map((item, index) => !labelIndexes.has(index) ? "" : `
