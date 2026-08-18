@@ -1889,9 +1889,31 @@ function addToCart(foodId) {
 function getCheckoutShippingFee(subtotal) {
   const selectedMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId))
     || shippingMethods[0];
-  if (selectedMethod) return Math.max(0, Number(selectedMethod.fee || 0));
+  if (selectedMethod) {
+    const cityName = document.getElementById("customerCity")?.value || "";
+    return Math.max(0, Number(selectedMethod.fee || 0)) + calculateShippingAreaSurcharge(cityName);
+  }
 
   return null;
+}
+
+function normalizeShippingArea(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}
+
+function calculateShippingAreaSurcharge(cityName) {
+  const city = normalizeShippingArea(cityName);
+  if (!city || city.includes("vinh long")) return 0;
+
+  const nearProvinces = ["can tho", "dong thap", "tien giang", "ben tre", "tra vinh", "hau giang"];
+  if (nearProvinces.some(province => city.includes(province))) return 10000;
+
+  return 20000;
 }
 
 function renderShippingMethodOptions() {
@@ -2069,6 +2091,10 @@ async function applyCheckoutDiscount() {
 
   const itemsSubtotal = cart.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
   const shippingFee = getCheckoutShippingFee(itemsSubtotal) || 0;
+  const cityName = document.getElementById("customerCity")?.value || "";
+  const wardName = document.getElementById("customerWard")?.value || "";
+  const addressDetail = document.getElementById("customerAddress")?.value || "";
+  const customerAddress = buildAddressString(cityName, "", wardName, addressDetail);
 
   try {
     const response = await fetch(`${ORDERS_API}/discount/preview`, {
@@ -2077,7 +2103,7 @@ async function applyCheckoutDiscount() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getAuthToken()}`
       },
-      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee, shippingMethodId: selectedShippingMethodId })
+      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee, shippingMethodId: selectedShippingMethodId, customerAddress })
     });
     const data = await response.json();
 
