@@ -781,7 +781,6 @@ function renderUsersTable() {
                 <td>${startIndex + index + 1}</td>
                 <td>
                   <strong>${escapeHtml(account.fullname)}</strong>
-                  <small>${account.passwordSet ? "Co mật khẩu" : "Chưa đặt mật khẩu"}</small>
                 </td>
                 <td><span class="permission-summary">${escapeHtml(formatAccountKind(account))}</span></td>
                 <td>${account.emailVerified ? "Đã xác thực" : "Chưa xác thực"}</td>
