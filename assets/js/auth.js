@@ -506,14 +506,32 @@ function initResetPasswordForm() {
 }
 
 function initAuthPasswordToggles() {
+  const eyeIcon = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  `;
+  const eyeOffIcon = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 3l18 18"></path>
+      <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17.5 17.5 0 0 1-3.1 4"></path>
+      <path d="M6.1 6.8A17.6 17.6 0 0 0 2 12s3.5 7 10 7a10.8 10.8 0 0 0 3.9-.7"></path>
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path>
+    </svg>
+  `;
+
   document.querySelectorAll("[data-auth-toggle-password]").forEach(button => {
+    button.innerHTML = eyeIcon;
+
     button.addEventListener("click", () => {
       const input = document.getElementById(button.dataset.authTogglePassword);
       if (!input) return;
 
       const shouldShow = input.type === "password";
       input.type = shouldShow ? "text" : "password";
-      button.textContent = shouldShow ? "\u1ea8n" : "Hi\u1ec7n";
+      button.innerHTML = shouldShow ? eyeOffIcon : eyeIcon;
+      button.setAttribute("aria-label", shouldShow ? "\u1ea8n m\u1eadt kh\u1ea9u" : "Hi\u1ec7n m\u1eadt kh\u1ea9u");
     });
   });
 }
