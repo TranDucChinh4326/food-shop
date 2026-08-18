@@ -416,6 +416,10 @@ async function forgotPassword(event) {
     }
 
     showToast(data.message || "Nếu email tồn tại, FoodHub đã gửi hướng dẫn đặt lại mật khẩu.", "success");
+    sessionStorage.setItem("foodhub_reset_email", email);
+    setTimeout(() => {
+      window.location.href = "reset-password.html";
+    }, 900);
   } catch (error) {
     showToast("Không kết nối được server.", "error");
     console.error(error);
@@ -425,17 +429,23 @@ async function forgotPassword(event) {
 }
 
 async function resetPassword(event) {
-  // Đặt lại mật khẩu bằng token trong URL email.
-  // Frontend kiểm tra mật khẩu trước, backend vẫn kiểm tra lại token và hash password mới.
+  // Đặt lại mật khẩu bằng email và mã OTP nhận trong email.
+  // Frontend kiểm tra format trước, backend vẫn kiểm tra lại OTP và hash password mới.
   event.preventDefault();
 
   const form = event.currentTarget;
-  const token = new URLSearchParams(window.location.search).get("token") || "";
+  const email = document.getElementById("resetEmail")?.value.trim() || "";
+  const otp = document.getElementById("resetOtp")?.value.trim() || "";
   const password = document.getElementById("resetPassword")?.value || "";
   const confirmPassword = document.getElementById("resetConfirmPassword")?.value || "";
 
-  if (!token) {
-    showToast("Link đặt lại mật khẩu không hợp lệ.", "error");
+  if (!email) {
+    showToast("Vui lòng nhập email.", "error");
+    return;
+  }
+
+  if (!/^\d{6}$/.test(otp)) {
+    showToast("Mã OTP phải gồm 6 chữ số.", "error");
     return;
   }
 
@@ -458,7 +468,7 @@ async function resetPassword(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ token, password, confirmPassword })
+      body: JSON.stringify({ email, otp, password, confirmPassword })
     });
     const data = await response.json().catch(() => ({}));
 
@@ -468,6 +478,7 @@ async function resetPassword(event) {
     }
 
     showToast(data.message || "Đặt lại mật khẩu thành công.", "success");
+    sessionStorage.removeItem("foodhub_reset_email");
     setTimeout(() => {
       window.location.href = "login.html";
     }, 1100);
@@ -476,6 +487,16 @@ async function resetPassword(event) {
     console.error(error);
   } finally {
     setSubmitState(form, false);
+  }
+}
+
+function initResetPasswordForm() {
+  const emailInput = document.getElementById("resetEmail");
+  if (!emailInput) return;
+
+  const rememberedEmail = sessionStorage.getItem("foodhub_reset_email") || "";
+  if (rememberedEmail && !emailInput.value) {
+    emailInput.value = rememberedEmail;
   }
 }
 
@@ -530,4 +551,5 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+initResetPasswordForm();
 initSocialSetupForm();
