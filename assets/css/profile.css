@@ -546,6 +546,26 @@ button.account-photo-badge {
     padding: 18px;
   }
 
+  .profile-page .captcha-row {
+    align-items: end;
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    padding: 12px;
+  }
+
+  .profile-page .captcha-canvas {
+    height: 52px;
+    width: 100%;
+  }
+
+  .profile-page .captcha-row .social-link-btn {
+    font-size: 14px;
+    min-height: 52px;
+    padding: 0 10px;
+    width: 96px;
+  }
+
   .profile-page .profile-card .btn {
     justify-self: stretch;
     width: 100%;
