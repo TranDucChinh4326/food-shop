@@ -647,8 +647,6 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 
 #logoutBtn,
-#refreshOrdersBtn,
-#refreshFoodsBtn,
 #resetFoodFormBtn {
   background: #475569;
 }
