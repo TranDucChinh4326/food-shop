@@ -4475,8 +4475,7 @@ footer {
     min-width: 0;
   }
 
-  .header-tools .top-icon:not([href="announcements.html"]),
-  .header-tools .account-menu {
+  .header-tools .top-icon:not([href="announcements.html"]) {
     display: none;
   }
 
@@ -4543,6 +4542,51 @@ footer {
     height: 46px;
     justify-self: stretch;
     position: relative;
+  }
+
+  header #user-area .account-menu {
+    display: block;
+    position: static;
+    width: 100%;
+  }
+
+  header #user-area .account-toggle {
+    display: none;
+  }
+
+  header #user-area .account-dropdown {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    opacity: 1;
+    padding: 0;
+    pointer-events: auto;
+    position: static;
+    transform: none;
+    width: 100%;
+  }
+
+  header #user-area .account-summary {
+    background: #fff;
+    border: 1px solid #f1e3d8;
+    border-radius: 14px;
+    margin: 0;
+    padding: 12px 16px;
+  }
+
+  header #user-area .account-menu-link {
+    background: #fffaf6;
+    border: 1px solid #f1e3d8;
+    border-radius: 14px;
+    min-height: 50px;
+    padding: 0 16px;
+  }
+
+  header #user-area .account-menu-link.danger {
+    background: #fff3ef;
   }
 
   nav > a,
