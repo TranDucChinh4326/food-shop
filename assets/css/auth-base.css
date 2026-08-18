@@ -9,7 +9,7 @@ body {
     linear-gradient(135deg, rgba(255, 87, 34, 0.94), rgba(255, 177, 153, 0.9)),
     url("https://images.unsplash.com/photo-1504674900247-0877df9cc836") center/cover;
   color: #202020;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   min-height: 100vh;
 }
 
@@ -104,7 +104,6 @@ body {
 .facebook span {
   background: #eef4ff;
   color: #1877f2;
-  font-family: Georgia, serif;
 }
 
 .auth-divider {
@@ -385,7 +384,6 @@ body {
 
 .support-link.messenger span {
   background: #1877f2;
-  font-family: Georgia, serif;
 }
 
 .support-link.phone span {
