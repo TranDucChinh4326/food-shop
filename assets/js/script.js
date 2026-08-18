@@ -2673,6 +2673,7 @@ function renderUser() {
   if (user) {
     const role = String(user.role || "").toUpperCase();
     const canOpenAdmin = role && role !== "USER";
+    const roleLabel = role === "ADMIN" ? "Quản trị viên" : canOpenAdmin ? "Nhân viên" : "Khách hàng";
     const menuLink = canOpenAdmin
       ? `<a href="admin.html?section=overview" class="account-menu-link">Quản trị</a>`
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
@@ -2688,7 +2689,7 @@ function renderUser() {
         <div class="account-dropdown">
           <div class="account-summary">
             <strong>${escapeHtml(user.fullname)}</strong>
-            <small>${escapeHtml(canOpenAdmin ? "Nhân viên" : "Khách hàng")}</small>
+            <small>${escapeHtml(roleLabel)}</small>
           </div>
           ${menuLink}
           <button type="button" class="account-menu-link danger" onclick="logout()">Đăng xuất</button>
