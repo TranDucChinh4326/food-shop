@@ -220,7 +220,7 @@
     overscroll-behavior-x: contain;
     padding: 0 16px 8px;
     scroll-snap-type: x proximity;
-    touch-action: pan-y;
+    touch-action: auto;
     -webkit-overflow-scrolling: touch;
   }
 
