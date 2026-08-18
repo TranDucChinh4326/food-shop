@@ -2657,3 +2657,72 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
     padding: 0 10px;
   }
 }
+
+
+
+@media (max-width: 520px) {
+  .admin-main {
+    padding-inline: 10px;
+  }
+
+  .admin-topbar {
+    gap: 8px;
+  }
+
+  .admin-title h1 {
+    font-size: 20px;
+  }
+
+  .admin-page-actions {
+    gap: 6px;
+  }
+
+  .admin-page-home,
+  .admin-user-menu summary,
+  .sidebar-toggle {
+    height: 40px;
+  }
+
+  .admin-user-menu summary {
+    max-width: 142px;
+  }
+
+  .admin-table-page {
+    border-radius: 8px;
+    margin-inline: 0;
+  }
+
+  .table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .admin-table {
+    min-width: 760px;
+  }
+
+  .table-toolbar,
+  .page-heading,
+  .table-state,
+  .table-footer,
+  .discount-form,
+  .staff-create-form {
+    margin-inline: 0;
+    padding-inline: 14px;
+  }
+
+  .table-footer {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .pager {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pager button {
+    border-radius: 8px;
+    flex: 0 0 auto;
+  }
+}

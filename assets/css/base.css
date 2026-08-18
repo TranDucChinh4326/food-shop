@@ -4672,3 +4672,50 @@ footer {
     flex-direction: column;
   }
 }
+
+
+
+@media (max-width: 640px) {
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-socials {
+    margin-bottom: 24px;
+  }
+
+  .archive-pager-buttons,
+  .review-pagination {
+    justify-content: flex-start;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .archive-pager-buttons button,
+  .review-pagination button {
+    flex: 0 0 auto;
+  }
+
+  .food-detail-dialog {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .food-detail-card {
+    max-height: none;
+    width: 100%;
+  }
+
+  .food-detail-image {
+    max-height: 260px;
+    object-fit: cover;
+  }
+
+  .food-detail-stats {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
