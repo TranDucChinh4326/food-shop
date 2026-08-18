@@ -946,6 +946,7 @@ function renderHomeFoodSections() {
         </div>
       </section>
     `).join("");
+    bindHomeFoodCarouselDrag();
   }
 }
 
@@ -3238,8 +3239,56 @@ window.addEventListener("pagehide", () => {
   navigator.sendBeacon(`${ORDERS_API}/${activeQrPayment.orderId}/payment/cancel?token=${encodeURIComponent(token || "")}`, blob);
 });
 
+let homeFoodDragState = null;
+
+function bindHomeFoodCarouselDrag() {
+  document.querySelectorAll(".home-food-grid").forEach(grid => {
+    if (grid.dataset.dragReady === "1") return;
+    grid.dataset.dragReady = "1";
+
+    grid.addEventListener("touchstart", event => {
+      const touch = event.touches[0];
+      homeFoodDragState = {
+        grid,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        scrollLeft: grid.scrollLeft,
+        moved: false
+      };
+    }, { passive: true });
+
+    grid.addEventListener("touchmove", event => {
+      if (!homeFoodDragState || homeFoodDragState.grid !== grid) return;
+
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - homeFoodDragState.startX;
+      const deltaY = touch.clientY - homeFoodDragState.startY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY) + 6) {
+        homeFoodDragState.moved = true;
+        grid.scrollLeft = homeFoodDragState.scrollLeft - deltaX;
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    grid.addEventListener("touchend", () => {
+      if (!homeFoodDragState || homeFoodDragState.grid !== grid) return;
+      grid.dataset.dragMoved = homeFoodDragState.moved ? "1" : "0";
+      homeFoodDragState = null;
+      window.setTimeout(() => {
+        grid.dataset.dragMoved = "0";
+      }, 80);
+    });
+
+    grid.addEventListener("touchcancel", () => {
+      if (homeFoodDragState?.grid === grid) homeFoodDragState = null;
+    });
+  });
+}
+
 document.addEventListener("click", event => {
   const detailCard = event.target.closest("[data-open-food-detail]");
+  if (detailCard?.closest(".home-food-grid")?.dataset.dragMoved === "1") return;
   if (!detailCard || event.target.closest("button, input, a, select, textarea")) return;
   window.location.href = getFoodDetailUrl(detailCard.dataset.openFoodDetail, {
     from: detailCard.dataset.detailFrom || "home",
