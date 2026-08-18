@@ -5,9 +5,11 @@ const ORDERS_API = `${API_BASE_URL}/orders`;
 const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
 const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const FOOD_REVIEWS_API = `${API_BASE_URL}/food-reviews`;
+const CHAT_API = `${API_BASE_URL}/chat`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
+const CHAT_SESSION_KEY = "foodhub_chat_session";
 
 let foods = [];
 let foodReviews = [];
@@ -3080,6 +3082,67 @@ async function getChatBotReply(rawMessage) {
   return `Ban co the tham khao vai mon noi bat:\n${fallbackItems.map(getChatFoodLine).join("\n")}\nHoi \"mon ban chay\", \"mon moi\", hoac ten mon ban muon tim nhe.`;
 }
 
+function getChatSessionId() {
+  let sessionId = sessionStorage.getItem(CHAT_SESSION_KEY);
+  if (!sessionId) {
+    sessionId = `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    sessionStorage.setItem(CHAT_SESSION_KEY, sessionId);
+  }
+
+  return sessionId;
+}
+
+async function requestChatReply(message) {
+  const headers = { "Content-Type": "application/json" };
+  const token = getAuthToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(CHAT_API, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      message,
+      sessionId: getChatSessionId()
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || "Không thể kết nối chatbot.");
+  }
+
+  return data.message || "Xin lỗi, mình chưa có câu trả lời phù hợp.";
+}
+
+function renderChatMessage(container, sender, message) {
+  if (!container || !message) return;
+
+  const senderClass = sender === "user" ? "user" : "bot muted";
+  container.insertAdjacentHTML("beforeend", `
+    <div class="chat-message ${senderClass}">${escapeHtml(message).replace(/\n/g, "<br>")}</div>
+  `);
+}
+
+async function loadChatHistory(container) {
+  if (!container) return;
+
+  try {
+    const headers = {};
+    const token = getAuthToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const response = await fetch(`${CHAT_API}/${encodeURIComponent(getChatSessionId())}/messages`, { headers });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.success === false || !Array.isArray(data.messages) || data.messages.length === 0) return;
+
+    container.innerHTML = "";
+    data.messages.forEach(item => renderChatMessage(container, item.sender, item.message));
+    container.scrollTop = container.scrollHeight;
+  } catch (error) {
+    console.error("Cannot load chat history:", error);
+  }
+}
+
 function initChatSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
@@ -3116,7 +3179,7 @@ function initChatSupportWidget() {
       </div>
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, FoodHub có thể hỗ trợ gì cho bạn?</div>
-        <div class="chat-message bot muted">Đây là khung chat tạm thời. Sau này mình sẽ kết nối dữ liệu hệ thống để trả lời tự động.</div>
+        <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, giá, khuyến mãi, giao hàng, giỏ hàng hoặc trạng thái đơn.</div>
       </div>
       <form class="chat-form">
         <input type="file" class="chat-file" aria-label="Đính kèm tệp" hidden>
@@ -3178,6 +3241,8 @@ function initChatSupportWidget() {
   const emojiPicker = widget.querySelector(".chat-emoji-picker");
   const likeButton = widget.querySelector(".chat-like");
   const chatMessages = widget.querySelector(".chat-messages");
+
+  loadChatHistory(chatMessages);
 
   const hideChatPopovers = () => {
     quickMenu.hidden = true;
@@ -3259,7 +3324,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">FoodHub đã nhận tin nhắn của bạn. Chức năng trả lời tự động sẽ được cập nhật sau.</div>
+      <div class="chat-message bot muted">FoodHub đang xử lý câu hỏi của bạn...</div>
     `);
     chatInput.value = "";
     hideChatPopovers();
@@ -3267,9 +3332,15 @@ function initChatSupportWidget() {
 
     const botMessages = chatMessages.querySelectorAll(".chat-message.bot.muted");
     const lastBotMessage = botMessages[botMessages.length - 1];
-    const reply = await getChatBotReply(message);
-    if (lastBotMessage) {
-      lastBotMessage.innerHTML = escapeHtml(reply).replace(/\n/g, "<br>");
+    try {
+      const reply = await requestChatReply(message);
+      if (lastBotMessage) {
+        lastBotMessage.innerHTML = escapeHtml(reply).replace(/\n/g, "<br>");
+      }
+    } catch (error) {
+      if (lastBotMessage) {
+        lastBotMessage.textContent = error.message || "Xin lỗi, chatbot đang gặp lỗi. Bạn thử lại sau nhé.";
+      }
     }
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
