@@ -897,6 +897,13 @@ function renderBestSellerCard(food) {
   `;
 }
 
+function compareFoodsBySalesAndRating(first, second) {
+  return Number(second.soldCount || 0) - Number(first.soldCount || 0)
+    || Number(second.rating || 0) - Number(first.rating || 0)
+    || Number(second.reviewCount || 0) - Number(first.reviewCount || 0)
+    || Number(second.id || 0) - Number(first.id || 0);
+}
+
 function renderHomeFoodSections() {
   const bestSellerBox = document.getElementById("homeBestSellers");
   const sectionBox = document.getElementById("homeFoodSections");
@@ -912,7 +919,7 @@ function renderHomeFoodSections() {
   if (bestSellerBox) {
     const bestSellers = [...foods]
       .filter(food => Number(food.soldCount || 0) > 0)
-      .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0) || Number(second.id) - Number(first.id))
+      .sort(compareFoodsBySalesAndRating)
       .slice(0, 5);
 
     if (!bestSellers.length) {
@@ -1241,7 +1248,7 @@ function getFeaturedCategoryItems(items, limit = 4) {
   }
 
   return [...items]
-    .sort((first, second) => Number(second.soldCount || 0) - Number(first.soldCount || 0))
+    .sort(compareFoodsBySalesAndRating)
     .slice(0, limit);
 }
 
