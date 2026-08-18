@@ -1621,6 +1621,8 @@ function renderStats(data) {
   if (statsTrendLabel) {
     statsTrendLabel.textContent = trendMode === "year"
       ? "6 n\u0103m g\u1ea7n nh\u1ea5t"
+      : trendMode === "quarter"
+        ? "8 qu\u00fd g\u1ea7n nh\u1ea5t"
       : trendMode === "month"
         ? "12 th\u00e1ng g\u1ea7n nh\u1ea5t"
         : "7 ng\u00e0y g\u1ea7n nh\u1ea5t";
@@ -1632,7 +1634,7 @@ function renderStats(data) {
 }
 
 function renderRevenueTrend(rows, trendMode = "day") {
-  const limits = { day: 7, month: 12, year: 6 };
+  const limits = { day: 7, month: 12, quarter: 8, year: 6 };
   const ordered = [...rows].reverse().slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
@@ -1679,6 +1681,10 @@ function formatTrendLabel(item, trendMode) {
   if (trendMode === "month") {
     const [year, month] = String(rawLabel).split("-");
     return month && year ? `${month}/${year}` : String(rawLabel);
+  }
+  if (trendMode === "quarter") {
+    const [, year, quarter] = String(rawLabel).match(/^(\d{4})-Q([1-4])$/) || [];
+    return year && quarter ? `Qu\u00fd ${quarter}/${year}` : String(rawLabel);
   }
 
   const date = new Date(item.order_date || rawLabel);
