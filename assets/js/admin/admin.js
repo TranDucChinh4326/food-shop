@@ -1938,6 +1938,148 @@ function getFilteredOrders() {
   });
 }
 
+function getOrderPaymentLabel(order) {
+  const paymentLabels = {
+    cod: "Thanh toán khi nhận hàng",
+    qr: "Thanh toán bằng mã QR",
+    vnpay: "Thanh toán qua VNPay"
+  };
+  const paymentStatusLabels = {
+    unpaid: "Chưa thanh toán",
+    pending: "Chờ thanh toán",
+    paid: "Đã thanh toán",
+    cancelled: "Đã hủy"
+  };
+
+  const method = paymentLabels[order.payment_method] || order.payment_method || "Chưa có";
+  const status = paymentStatusLabels[order.payment_status] || order.payment_status || "Chưa có";
+  return `${method} - ${status}`;
+}
+
+function buildOrderPrintHtml(order) {
+  const items = Array.isArray(order.items) ? order.items : [];
+  const subtotal = items.reduce((sum, item) => sum + Number(item.subtotal || 0), 0);
+
+  return `<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Hóa đơn đơn hàng #${order.id}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { color: #171717; font-family: Arial, sans-serif; margin: 0; padding: 28px; }
+    .invoice { margin: 0 auto; max-width: 760px; }
+    .header { align-items: flex-start; border-bottom: 2px solid #ff4f24; display: flex; justify-content: space-between; padding-bottom: 16px; }
+    h1 { color: #ff4f24; font-size: 28px; margin: 0 0 6px; }
+    h2 { font-size: 22px; margin: 22px 0 8px; }
+    p { line-height: 1.5; margin: 4px 0; }
+    .muted { color: #666; }
+    .grid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin-top: 18px; }
+    .box { border: 1px solid #ead6cc; border-radius: 8px; padding: 14px; }
+    table { border-collapse: collapse; margin-top: 18px; width: 100%; }
+    th, td { border-bottom: 1px solid #ead6cc; padding: 10px 8px; text-align: left; }
+    th { background: #fff4ee; color: #5f4a3f; }
+    td:last-child, th:last-child { text-align: right; }
+    .totals { margin-left: auto; margin-top: 18px; max-width: 360px; }
+    .line { display: flex; justify-content: space-between; padding: 7px 0; }
+    .grand { border-top: 2px solid #ff4f24; color: #ff4f24; font-size: 20px; font-weight: 700; margin-top: 6px; padding-top: 10px; }
+    .actions { margin: 22px auto 0; max-width: 760px; text-align: right; }
+    button { background: #ff4f24; border: 0; border-radius: 8px; color: white; cursor: pointer; font-size: 15px; font-weight: 700; padding: 12px 18px; }
+    @media print {
+      body { padding: 0; }
+      .actions { display: none; }
+      .invoice { max-width: none; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="invoice">
+    <section class="header">
+      <div>
+        <h1>FoodHub</h1>
+        <p class="muted">Hóa đơn bán hàng</p>
+      </div>
+      <div>
+        <h2>Đơn #${order.id}</h2>
+        <p>${formatDateTime(order.created_at)}</p>
+        <p>${escapeHtml(statusLabels[order.status] || order.status || "")}</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="box">
+        <strong>Người nhận</strong>
+        <p>${escapeHtml(order.customer_name || "")}</p>
+        <p>${escapeHtml(order.phone || "")}</p>
+      </div>
+      <div class="box">
+        <strong>Giao hàng</strong>
+        <p>${escapeHtml(order.address || "")}</p>
+        ${order.note ? `<p>Ghi chú: ${escapeHtml(order.note)}</p>` : ""}
+      </div>
+    </section>
+
+    <section class="box" style="margin-top: 16px;">
+      <strong>Thanh toán</strong>
+      <p>${escapeHtml(getOrderPaymentLabel(order))}</p>
+      <p>${escapeHtml(order.shipping_method_name || "Giao hàng")}</p>
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Món ăn</th>
+          <th>SL</th>
+          <th>Đơn giá</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(item => `
+          <tr>
+            <td>${escapeHtml(item.food_name || "")}</td>
+            <td>${Number(item.quantity || 0)}</td>
+            <td>${formatMoney(item.price)}</td>
+            <td>${formatMoney(item.subtotal)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+
+    <section class="totals">
+      <div class="line"><span>Tạm tính</span><strong>${formatMoney(subtotal)}</strong></div>
+      <div class="line"><span>Phí giao hàng</span><strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong></div>
+      ${Number(order.discount_amount || 0) > 0 ? `<div class="line"><span>Giảm giá ${escapeHtml(order.discount_code || "")}</span><strong>-${formatMoney(order.discount_amount)}</strong></div>` : ""}
+      <div class="line grand"><span>Tổng thanh toán</span><strong>${formatMoney(order.total_price)}</strong></div>
+    </section>
+  </main>
+  <div class="actions">
+    <button type="button" onclick="window.print()">In hóa đơn</button>
+  </div>
+</body>
+</html>`;
+}
+
+function printOrderInvoice(orderId) {
+  const order = cachedOrders.find(item => String(item.id) === String(orderId));
+  if (!order) {
+    showAdminToast("Không tìm thấy dữ liệu đơn hàng để in.", "error");
+    return;
+  }
+
+  const printWindow = window.open("", "_blank", "width=900,height=720");
+  if (!printWindow) {
+    showAdminToast("Trình duyệt đang chặn cửa sổ in. Vui lòng cho phép popup.", "error");
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(buildOrderPrintHtml(order));
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.addEventListener("load", () => printWindow.print(), { once: true });
+}
+
 function renderOrdersList() {
   if (!ordersList) return;
 
@@ -1985,7 +2127,10 @@ function renderOrdersList() {
 
           <div class="order-brief">
             <span>${itemSummary}</span>
-            <button type="button" class="ghost-btn compact-detail-btn" data-order-detail-toggle>Chi ti\u1ebft</button>
+            <div class="order-actions">
+              <button type="button" class="ghost-btn compact-detail-btn" data-order-detail-toggle>Chi ti\u1ebft</button>
+              <button type="button" class="ghost-btn compact-detail-btn print-order-btn" data-order-print="${order.id}">In</button>
+            </div>
           </div>
           <div class="order-detail" hidden>
             <p class="order-address">
@@ -2931,7 +3076,11 @@ ordersList.addEventListener("click", event => {
   }
 
   const button = event.target.closest("[data-order-detail-toggle]");
-  if (!button) return;
+  if (!button) {
+    const printButton = event.target.closest("[data-order-print]");
+    if (printButton) printOrderInvoice(printButton.dataset.orderPrint);
+    return;
+  }
 
   const detail = button.closest(".order-card")?.querySelector(".order-detail");
   if (!detail) return;

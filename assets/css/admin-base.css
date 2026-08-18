@@ -1009,11 +1009,23 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   white-space: nowrap;
 }
 
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 
 
 .compact-detail-btn {
   min-height: 38px;
   padding: 0 16px;
+}
+
+.print-order-btn {
+  border-color: #ffc7b3;
+  color: var(--accent);
 }
 
 
