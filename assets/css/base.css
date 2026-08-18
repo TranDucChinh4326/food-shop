@@ -2432,7 +2432,7 @@ footer {
 
 
 .footer-brand {
-  max-width: 560px;
+  max-width: 520px;
 }
 
 
@@ -2451,7 +2451,31 @@ footer {
   color: rgba(255, 247, 237, 0.88);
   font-size: 18px;
   line-height: 1.7;
-  margin: 0 0 24px;
+  margin: 0 0 18px;
+}
+
+
+
+.footer-contact-list {
+  color: rgba(255, 247, 237, 0.82);
+  display: grid;
+  font-size: 15px;
+  gap: 9px;
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+
+
+.footer-contact-list a {
+  color: #fff7ed;
+  font-weight: 700;
+}
+
+
+
+.footer-contact-list a:hover {
+  color: #ffffff;
 }
 
 
@@ -2498,10 +2522,10 @@ footer {
 
 .footer-links {
   display: grid;
-  gap: 32px;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 28px;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
   margin-bottom: 36px;
-  max-width: 560px;
+  width: 100%;
 }
 
 
@@ -2517,7 +2541,8 @@ footer {
 
 
 
-.footer-links a {
+.footer-links a,
+.footer-links span {
   color: rgba(255, 247, 237, 0.86);
   display: block;
   font-size: 17px;
@@ -2551,7 +2576,7 @@ footer {
   .footer-inner {
     column-gap: 80px;
     display: grid;
-    grid-template-columns: minmax(320px, 1fr) minmax(360px, 0.9fr);
+    grid-template-columns: minmax(320px, 0.85fr) minmax(560px, 1.15fr);
   }
 
   .footer-brand,
@@ -2562,6 +2587,14 @@ footer {
   .footer-bottom {
     grid-column: 1 / -1;
     margin-top: 36px;
+  }
+}
+
+
+
+@media (min-width: 1040px) {
+  .footer-links {
+    grid-template-columns: repeat(4, minmax(130px, 1fr));
   }
 }
 
@@ -2582,7 +2615,8 @@ footer {
   }
 
   .footer-links h3,
-  .footer-links a {
+  .footer-links a,
+  .footer-links span {
     font-size: 16px;
   }
 }
