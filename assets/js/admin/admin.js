@@ -51,6 +51,8 @@ const discountStatusFilter = document.getElementById("discountStatusFilter");
 const discountPageSize = document.getElementById("discountPageSize");
 const shippingMethodForm = document.getElementById("shippingMethodForm");
 const shippingMethodsList = document.getElementById("shippingMethodsList");
+const shippingListView = document.getElementById("shippingListView");
+const shippingFormView = document.getElementById("shippingFormView");
 const advertisementsList = document.getElementById("advertisementsList");
 const advertisementForm = document.getElementById("advertisementForm");
 const advertisementLayout = document.querySelector(".advertisement-admin-layout");
@@ -1095,27 +1097,29 @@ function resetShippingMethodForm() {
   document.getElementById("shippingMethodSortOrder").value = "0";
   document.getElementById("shippingMethodIsActive").value = "1";
   shippingMethodForm.dataset.mode = "create";
-  const status = shippingMethodForm.querySelector("[data-shipping-edit-status]");
+  const status = shippingFormView?.querySelector("[data-shipping-edit-status]");
+  const title = shippingFormView?.querySelector("[data-shipping-form-title]");
   const submit = shippingMethodForm.querySelector("[data-shipping-submit]");
   const reset = shippingMethodForm.querySelector("[data-reset-shipping-method]");
-  if (status) status.textContent = "Đang thêm hình thức giao hàng mới";
+  if (title) title.textContent = "Thêm phương thức giao hàng";
+  if (status) status.textContent = "Tạo hình thức giao hàng mới để khách lựa chọn khi đặt đơn.";
   if (submit) submit.textContent = "Thêm phí vận chuyển";
   if (reset) reset.textContent = "Nhập lại";
 }
 
 function openShippingMethodForm() {
-  if (!shippingMethodForm) return;
+  if (!shippingFormView) return;
 
-  shippingMethodForm.classList.add("is-open");
-  shippingMethodForm.hidden = false;
-  shippingMethodForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (shippingListView) shippingListView.hidden = true;
+  shippingFormView.hidden = false;
+  shippingFormView.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function closeShippingMethodForm() {
-  if (!shippingMethodForm) return;
+  if (!shippingFormView) return;
 
-  shippingMethodForm.classList.remove("is-open");
-  shippingMethodForm.hidden = true;
+  shippingFormView.hidden = true;
+  if (shippingListView) shippingListView.hidden = false;
 }
 
 function fillShippingMethodForm(method) {
@@ -1127,9 +1131,11 @@ function fillShippingMethodForm(method) {
   document.getElementById("shippingMethodDescription").value = method.description || "";
   document.getElementById("shippingMethodIsActive").value = Number(method.is_active) ? "1" : "0";
   shippingMethodForm.dataset.mode = "edit";
-  const status = shippingMethodForm.querySelector("[data-shipping-edit-status]");
+  const status = shippingFormView?.querySelector("[data-shipping-edit-status]");
+  const title = shippingFormView?.querySelector("[data-shipping-form-title]");
   const submit = shippingMethodForm.querySelector("[data-shipping-submit]");
   const reset = shippingMethodForm.querySelector("[data-reset-shipping-method]");
+  if (title) title.textContent = "Cập nhật phương thức giao hàng";
   if (status) status.textContent = `Đang chỉnh sửa: ${method.name || "Hình thức giao hàng"}`;
   if (submit) submit.textContent = "Cập nhật phí vận chuyển";
   if (reset) reset.textContent = "Hủy sửa";
@@ -2828,6 +2834,10 @@ document.getElementById("resetDiscountFormBtn")?.addEventListener("click", () =>
 document.getElementById("resetShippingMethodFormBtn")?.addEventListener("click", () => {
   resetShippingMethodForm();
   openShippingMethodForm();
+});
+document.querySelector("[data-back-shipping-list]")?.addEventListener("click", () => {
+  resetShippingMethodForm();
+  closeShippingMethodForm();
 });
 document.getElementById("refreshShippingMethodsBtn")?.addEventListener("click", loadShippingMethodsAdmin);
 document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", () => {

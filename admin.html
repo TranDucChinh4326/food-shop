@@ -547,47 +547,59 @@
           </div>
         </div>
 
-        <form id="shippingMethodForm" class="announcement-page-form discount-form">
-          <div class="form-edit-status" data-shipping-edit-status>Đang thêm hình thức giao hàng mới</div>
-          <input type="hidden" id="shippingMethodId">
-          <div class="announcement-date-grid">
-            <label>
-              Tên hình thức
-              <input id="shippingMethodName" type="text" placeholder="VD: Giao hàng thường" required>
-            </label>
-            <label>
-              Phí vận chuyển
-              <input id="shippingMethodFee" type="number" min="0" step="1000" required>
-            </label>
-          </div>
-          <div class="announcement-date-grid">
-            <label>
-              Thời gian dự kiến
-              <input id="shippingMethodEstimatedTime" type="text" placeholder="VD: 30-45 phút">
-            </label>
-            <label>
-              Thứ tự hiển thị
-              <input id="shippingMethodSortOrder" type="number" min="0" step="1" value="0">
-            </label>
-          </div>
-          <label>
-            Mô tả
-            <input id="shippingMethodDescription" type="text" placeholder="Mô tả ngắn cho khách hàng">
-          </label>
-          <label>
-            Trạng thái
-            <select id="shippingMethodIsActive">
-              <option value="1">Hoạt động</option>
-              <option value="0">Ẩn</option>
-            </select>
-          </label>
-          <div class="account-form-actions form-actions">
-            <button type="submit" class="primary-btn" data-shipping-submit>Thêm phí vận chuyển</button>
-            <button type="button" class="ghost-btn" data-reset-shipping-method>Nhập lại</button>
-          </div>
-        </form>
+        <div id="shippingListView" class="category-list-view">
+          <div id="shippingMethodsList" class="accounts-list table-state">Đang tải phí vận chuyển...</div>
+        </div>
 
-        <div id="shippingMethodsList" class="accounts-list table-state">Đang tải phí vận chuyển...</div>
+        <div id="shippingFormView" class="category-form-view" hidden>
+          <div class="form-page-heading category-form-heading">
+            <div>
+              <p class="kicker">Phí vận chuyển</p>
+              <h3 data-shipping-form-title>Thêm phương thức giao hàng</h3>
+              <p data-shipping-edit-status>Tạo hoặc cập nhật hình thức giao hàng để khách lựa chọn khi đặt đơn.</p>
+            </div>
+            <button type="button" class="ghost-btn" data-back-shipping-list>Về danh sách</button>
+          </div>
+
+          <form id="shippingMethodForm" class="announcement-page-form category-page-form">
+            <input type="hidden" id="shippingMethodId">
+            <div class="announcement-date-grid">
+              <label>
+                Tên hình thức
+                <input id="shippingMethodName" type="text" placeholder="VD: Giao hàng thường" required>
+              </label>
+              <label>
+                Phí vận chuyển
+                <input id="shippingMethodFee" type="number" min="0" step="1000" required>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Thời gian dự kiến
+                <input id="shippingMethodEstimatedTime" type="text" placeholder="VD: 30-45 phút">
+              </label>
+              <label>
+                Thứ tự hiển thị
+                <input id="shippingMethodSortOrder" type="number" min="0" step="1" value="0">
+              </label>
+            </div>
+            <label>
+              Mô tả
+              <input id="shippingMethodDescription" type="text" placeholder="Mô tả ngắn cho khách hàng">
+            </label>
+            <label>
+              Trạng thái
+              <select id="shippingMethodIsActive">
+                <option value="1">Hoạt động</option>
+                <option value="0">Ẩn</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn" data-shipping-submit>Thêm phí vận chuyển</button>
+              <button type="button" class="ghost-btn" data-reset-shipping-method>Nhập lại</button>
+            </div>
+          </form>
+        </div>
       </section>
     </section>
 
@@ -667,6 +679,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-shipping-form-toggle"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-shipping-page-view"></script>
 </body>
 </html>
