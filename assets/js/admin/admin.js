@@ -1725,6 +1725,7 @@ async function loadStats() {
     const params = new URLSearchParams();
     if (statsTrendMode?.value) params.set("trend", statsTrendMode.value);
     if (statsTrendMode?.value === "custom") {
+      ensureStatsDateRange();
       if (statsFromDate?.value) params.set("from", statsFromDate.value);
       if (statsToDate?.value) params.set("to", statsToDate.value);
     }
@@ -1749,6 +1750,13 @@ function syncStatsDateInputs() {
     input.disabled = !isCustomRange;
     if (!isCustomRange) input.value = "";
   });
+  if (isCustomRange) ensureStatsDateRange();
+}
+
+function ensureStatsDateRange() {
+  const today = formatDateKey(new Date());
+  if (statsToDate && !statsToDate.value) statsToDate.value = today;
+  if (statsFromDate && !statsFromDate.value) statsFromDate.value = statsToDate?.value || today;
 }
 
 function renderStats(data) {
@@ -1804,7 +1812,7 @@ function renderStats(data) {
 
   if (statsTrendLabel) {
     statsTrendLabel.textContent = trendMode === "custom"
-      ? `${statsFromDate?.value || "Từ ngày"} đến ${statsToDate?.value || "Đến ngày"}`
+      ? `${formatStatsDateLabel(statsFromDate?.value || statsToDate?.value)} đến ${formatStatsDateLabel(statsToDate?.value || formatDateKey(new Date()))}`
       : trendMode === "year"
       ? "6 n\u0103m g\u1ea7n nh\u1ea5t"
       : trendMode === "quarter"
@@ -1820,6 +1828,12 @@ function renderStats(data) {
   if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
 
+function formatStatsDateLabel(value) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "Chọn ngày";
+  return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
 function renderRevenueTrend(rows, trendMode = "day") {
   const limits = { day: 7, custom: 366, month: 12, quarter: 8, year: 6 };
   const ordered = normalizeRevenueTrendRows(rows, trendMode).slice(-(limits[trendMode] || 7));
@@ -1833,6 +1847,7 @@ function renderRevenueTrend(rows, trendMode = "day") {
     return `${x},${y}`;
   }).join(" ");
   const areaPoints = `0,92 ${points} 100,92`;
+  const labelIndexes = getRevenueTrendLabelIndexes(ordered.length);
 
   return `
     ${totalRevenue === 0 ? `
@@ -1852,7 +1867,7 @@ function renderRevenueTrend(rows, trendMode = "day") {
       <polyline points="${points}" fill="none" stroke="#ff7a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
     </svg>
     <div class="chart-labels">
-      ${ordered.map(item => `
+      ${ordered.map((item, index) => !labelIndexes.has(index) ? "" : `
         <span>
           <strong>${formatMoney(item.revenue || 0)}</strong>
           ${escapeHtml(formatTrendLabel(item, trendMode))}
@@ -1860,6 +1875,17 @@ function renderRevenueTrend(rows, trendMode = "day") {
       `).join("")}
     </div>
   `;
+}
+
+function getRevenueTrendLabelIndexes(total) {
+  if (total <= 7) return new Set(Array.from({ length: total }, (_, index) => index));
+
+  const indexes = new Set();
+  const lastIndex = total - 1;
+  for (let step = 0; step < 7; step += 1) {
+    indexes.add(Math.round((step / 6) * lastIndex));
+  }
+  return indexes;
 }
 
 function formatDateKey(date) {
@@ -1884,9 +1910,9 @@ function normalizeRevenueTrendRows(rows, trendMode = "day") {
   let startDate;
   let endDate;
 
-  if (trendMode === "custom" && statsFromDate?.value && statsToDate?.value) {
-    startDate = new Date(`${statsFromDate.value}T00:00:00`);
-    endDate = new Date(`${statsToDate.value}T00:00:00`);
+  if (trendMode === "custom") {
+    endDate = statsToDate?.value ? new Date(`${statsToDate.value}T00:00:00`) : today;
+    startDate = statsFromDate?.value ? new Date(`${statsFromDate.value}T00:00:00`) : new Date(endDate);
   } else {
     endDate = today;
     startDate = new Date(today);

@@ -75,15 +75,15 @@
             <p>Chào mừng trở lại, Admin. Đây là những dữ liệu đang diễn ra hôm nay.</p>
           </div>
           <div class="stats-filter dashboard-filter">
+            <input id="statsFromDate" type="date" aria-label="Từ ngày">
+            <input id="statsToDate" type="date" aria-label="Đến ngày">
             <select id="statsTrendMode" aria-label="Kiểu thống kê">
               <option value="day">Theo tuần</option>
-              <option value="custom">Khoảng ngày</option>
+              <option value="custom">Theo ngày</option>
               <option value="month">Theo tháng</option>
               <option value="quarter">Theo quý</option>
               <option value="year">Theo năm</option>
             </select>
-            <input id="statsFromDate" type="date" aria-label="Từ ngày">
-            <input id="statsToDate" type="date" aria-label="Đến ngày">
             <button id="applyStatsFilterBtn" type="button" class="primary-btn">Lọc</button>
             <button id="refreshStatsBtn" type="button" class="ghost-btn">Tải lại</button>
           </div>
@@ -680,6 +680,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-fill-empty-revenue-days"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-clean-stats-date-filter"></script>
 </body>
 </html>
