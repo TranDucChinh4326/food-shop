@@ -213,24 +213,20 @@
   }
 
   .home-food-grid {
-    display: flex;
+    display: grid;
     gap: 14px;
-    margin-inline: -16px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding: 0 16px 8px;
-    scroll-snap-type: x proximity;
-    touch-action: auto;
-    -webkit-overflow-scrolling: touch;
+    grid-template-columns: 1fr;
+    margin-inline: 0;
+    overflow: visible;
+    padding: 0;
   }
 
   .home-food-card {
-    flex: 0 0 230px;
-    scroll-snap-align: start;
+    min-width: 0;
   }
 
   .home-food-detail-trigger {
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   .home-food-card h3 {
@@ -252,7 +248,7 @@
 
 @media (max-width: 420px) {
   .home-food-card {
-    flex-basis: 76vw;
+    width: 100%;
   }
 }
 
