@@ -214,8 +214,8 @@
 
   .home-food-grid {
     display: grid;
-    gap: 14px;
-    grid-template-columns: 1fr;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-inline: 0;
     overflow: visible;
     padding: 0;
@@ -225,30 +225,74 @@
     min-width: 0;
   }
 
+  .home-food-card img {
+    aspect-ratio: 1 / 0.78;
+  }
+
+  .home-food-card-body {
+    gap: 7px;
+    padding: 10px;
+  }
+
   .home-food-detail-trigger {
     pointer-events: auto;
   }
 
   .home-food-card h3 {
-    font-size: 21px;
+    font-size: 16px;
     line-height: 1.22;
   }
 
   .home-food-card p {
-    font-size: 15px;
+    font-size: 13px;
+    line-height: 1.35;
+    min-height: 35px;
   }
 
   .home-food-meta,
   .home-food-bottom {
     align-items: flex-start;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+  }
+
+  .home-food-meta {
+    font-size: 12px;
+  }
+
+  .home-food-bottom strong {
+    font-size: 16px;
+  }
+
+  .home-food-bottom .btn {
+    align-self: flex-start;
+    border-radius: 50%;
+    font-size: 0;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    width: 38px;
+  }
+
+  .home-food-bottom .btn::before {
+    content: "+";
+    font-size: 24px;
+    line-height: 1;
   }
 }
 
 @media (max-width: 420px) {
-  .home-food-card {
-    width: 100%;
+  .home-food-grid {
+    gap: 10px;
+  }
+
+  .home-food-card h3 {
+    font-size: 15px;
+  }
+
+  .home-food-card p,
+  .home-food-meta {
+    font-size: 12px;
   }
 }
 
