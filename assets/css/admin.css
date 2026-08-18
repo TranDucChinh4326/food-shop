@@ -238,12 +238,6 @@
   width: 100%;
 }
 
-.revenue-points circle {
-  fill: #fff;
-  stroke: #ff7a1a;
-  stroke-width: 1.7;
-}
-
 .satisfaction-score {
   align-content: center;
   display: grid;

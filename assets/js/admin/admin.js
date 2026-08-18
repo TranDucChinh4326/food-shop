@@ -1846,11 +1846,6 @@ function renderRevenueTrend(rows, trendMode = "day") {
     const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
     return `${x},${y}`;
   }).join(" ");
-  const pointNodes = ordered.map((item, index) => {
-    const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
-    const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
-    return `<circle cx="${x}" cy="${y}" r="1.7"></circle>`;
-  }).join("");
   const areaPoints = `0,92 ${points} 100,92`;
   const labelIndexes = getRevenueTrendLabelIndexes(ordered.length);
 
@@ -1870,7 +1865,6 @@ function renderRevenueTrend(rows, trendMode = "day") {
       </defs>
       <polygon points="${areaPoints}" fill="url(#revenueFill)"></polygon>
       <polyline points="${points}" fill="none" stroke="#ff7a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-      <g class="revenue-points">${pointNodes}</g>
     </svg>
     <div class="chart-labels">
       ${ordered.map((item, index) => {
