@@ -63,6 +63,7 @@ const statsSummary = document.getElementById("statsSummary");
 const statsTopFoods = document.getElementById("statsTopFoods");
 const statsDaily = document.getElementById("statsDaily");
 const statsCategories = document.getElementById("statsCategories");
+const statsCustomers = document.getElementById("statsCustomers");
 const statsSatisfaction = document.getElementById("statsSatisfaction");
 const statsFromDate = document.getElementById("statsFromDate");
 const statsToDate = document.getElementById("statsToDate");
@@ -1564,6 +1565,7 @@ async function loadStats() {
   if (statsTopFoods) statsTopFoods.textContent = "Đang tải...";
   if (statsDaily) statsDaily.textContent = "Đang tải...";
   if (statsCategories) statsCategories.textContent = "Đang tải...";
+  if (statsCustomers) statsCustomers.textContent = "Đang tải...";
   if (statsSatisfaction) statsSatisfaction.textContent = "Đang tải...";
 
   try {
@@ -1579,6 +1581,7 @@ async function loadStats() {
     if (statsTopFoods) statsTopFoods.textContent = "";
     if (statsDaily) statsDaily.textContent = "";
     if (statsCategories) statsCategories.textContent = "";
+    if (statsCustomers) statsCustomers.textContent = "";
     if (statsSatisfaction) statsSatisfaction.textContent = "";
     showAdminToast(error.message, "error");
   }
@@ -1647,6 +1650,7 @@ function renderStats(data) {
   if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || [], trendMode);
   if (statsTopFoods) statsTopFoods.innerHTML = renderTopFoodsList(data.topFoods || []);
   if (statsCategories) statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
+  if (statsCustomers) statsCustomers.innerHTML = renderCustomerStats(data.customerStats || []);
   if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
 
@@ -1749,6 +1753,40 @@ function renderCategorySummary(rows) {
       ${rows.slice(0, 4).map((item, index) => `
         <p><i style="--i:${index};"></i>${escapeHtml(item.category_name || "Chưa phân loại")}<strong>${Number(item.quantity || 0).toLocaleString("vi-VN")}</strong></p>
       `).join("")}
+    </div>
+  `;
+}
+
+function renderCustomerStats(rows) {
+  if (!rows.length) return `<p class="empty-note">Chưa có tài khoản khách hàng.</p>`;
+
+  return `
+    <div class="table-wrap customer-stats-table">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Khách hàng</th>
+            <th>Đơn</th>
+            <th>Hoàn tất</th>
+            <th>Doanh thu</th>
+            <th>Đơn gần nhất</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(item => `
+            <tr>
+              <td>
+                <strong>${escapeHtml(item.customer_name)}</strong>
+                <small>${escapeHtml(item.email || "")}</small>
+              </td>
+              <td>${Number(item.total_orders || 0).toLocaleString("vi-VN")}</td>
+              <td>${Number(item.done_orders || 0).toLocaleString("vi-VN")}</td>
+              <td>${formatMoney(item.revenue || 0)}</td>
+              <td>${item.last_order_at ? formatDateTime(item.last_order_at) : "Chưa có"}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
     </div>
   `;
 }

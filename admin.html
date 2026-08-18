@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
   <link rel="stylesheet" href="assets/css/admin-base.css?v=20260818-sidebar-active-icon-center">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260818-mobile-filter-polish">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260818-customer-stats">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -112,6 +112,14 @@
               <span>Top món theo lượt bán</span>
             </div>
             <div id="statsTopFoods" class="table-state compact-state">Đang tải...</div>
+          </section>
+
+          <section class="dashboard-card customer-stats-card">
+            <div class="dashboard-card-title">
+              <h2>Thống kê khách hàng</h2>
+              <span>Theo từng tài khoản</span>
+            </div>
+            <div id="statsCustomers" class="table-state compact-state">Đang tải...</div>
           </section>
 
           <section class="dashboard-card satisfaction-card">
@@ -601,6 +609,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260813-staff-username-login"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-delete-food-review"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-customer-stats"></script>
 </body>
 </html>

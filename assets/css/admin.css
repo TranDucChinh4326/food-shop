@@ -207,6 +207,18 @@
   grid-column: 1 / 2;
 }
 
+.customer-stats-card {
+  grid-column: 1 / -1;
+}
+
+.customer-stats-table {
+  padding: 0 26px 24px;
+}
+
+.customer-stats-table .admin-table {
+  min-width: 760px;
+}
+
 .satisfaction-card {
   min-height: 290px;
 }
