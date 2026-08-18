@@ -385,6 +385,105 @@ async function login(event) {
   }
 }
 
+async function forgotPassword(event) {
+  // Gửi email quên mật khẩu đến backend.
+  // Backend trả thông báo chung để tránh lộ email nào đang tồn tại trong hệ thống.
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const email = document.getElementById("forgotEmail")?.value.trim();
+
+  if (!email) {
+    showToast("Vui lòng nhập email.", "error");
+    return;
+  }
+
+  setSubmitState(form, true, "Đang gửi...");
+
+  try {
+    const response = await fetch(`${AUTH_API}/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      showToast(data.message || "Không thể gửi yêu cầu đặt lại mật khẩu.", "error");
+      return;
+    }
+
+    showToast(data.message || "Nếu email tồn tại, FoodHub đã gửi hướng dẫn đặt lại mật khẩu.", "success");
+    if (data.resetUrl) {
+      setTimeout(() => {
+        window.location.href = data.resetUrl;
+      }, 900);
+    }
+  } catch (error) {
+    showToast("Không kết nối được server.", "error");
+    console.error(error);
+  } finally {
+    setSubmitState(form, false);
+  }
+}
+
+async function resetPassword(event) {
+  // Đặt lại mật khẩu bằng token trong URL email.
+  // Frontend kiểm tra mật khẩu trước, backend vẫn kiểm tra lại token và hash password mới.
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const token = new URLSearchParams(window.location.search).get("token") || "";
+  const password = document.getElementById("resetPassword")?.value || "";
+  const confirmPassword = document.getElementById("resetConfirmPassword")?.value || "";
+
+  if (!token) {
+    showToast("Link đặt lại mật khẩu không hợp lệ.", "error");
+    return;
+  }
+
+  const passwordError = getRegisterPasswordError(password);
+  if (passwordError) {
+    showToast(passwordError, "error");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showToast("Mật khẩu xác nhận không khớp.", "error");
+    return;
+  }
+
+  setSubmitState(form, true, "Đang cập nhật...");
+
+  try {
+    const response = await fetch(`${AUTH_API}/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ token, password, confirmPassword })
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      showToast(data.message || "Không thể đặt lại mật khẩu.", "error");
+      return;
+    }
+
+    showToast(data.message || "Đặt lại mật khẩu thành công.", "success");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1100);
+  } catch (error) {
+    showToast("Không kết nối được server.", "error");
+    console.error(error);
+  } finally {
+    setSubmitState(form, false);
+  }
+}
+
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
