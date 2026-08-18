@@ -1777,6 +1777,18 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 
 
+.form-edit-status {
+  background: #fff4ee;
+  border: 1px solid #ffc7b3;
+  border-radius: 8px;
+  color: var(--accent-strong);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+
+
 .discount-form .form-actions {
   grid-template-columns: minmax(180px, 0.3fr) minmax(180px, 0.3fr);
 }

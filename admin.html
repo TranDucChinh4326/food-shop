@@ -543,7 +543,8 @@
           </div>
         </div>
 
-        <form id="shippingMethodForm" class="discount-form">
+        <form id="shippingMethodForm" class="discount-form is-open">
+          <div class="form-edit-status" data-shipping-edit-status>Đang thêm hình thức giao hàng mới</div>
           <input type="hidden" id="shippingMethodId">
           <div class="announcement-date-grid">
             <label>
@@ -577,7 +578,7 @@
             </select>
           </label>
           <div class="account-form-actions form-actions">
-            <button type="submit" class="primary-btn">Lưu phí vận chuyển</button>
+            <button type="submit" class="primary-btn" data-shipping-submit>Thêm phí vận chuyển</button>
             <button type="button" class="ghost-btn" data-reset-shipping-method>Nhập lại</button>
           </div>
         </form>
@@ -662,6 +663,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260818-order-print"></script>
+  <script src="assets/js/admin/admin.js?v=20260818-shipping-edit-state"></script>
 </body>
 </html>
