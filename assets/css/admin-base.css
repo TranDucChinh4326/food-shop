@@ -611,6 +611,13 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn {
 
 
 
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn .nav-text,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-toggle::after {
+  display: none;
+}
+
+
+
 body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn.active {
   border-radius: 18px;
   margin-inline: auto;
