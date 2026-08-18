@@ -217,13 +217,20 @@
     gap: 14px;
     margin-inline: -16px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     padding: 0 16px 8px;
     scroll-snap-type: x proximity;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
   }
 
   .home-food-card {
     flex: 0 0 230px;
     scroll-snap-align: start;
+  }
+
+  .home-food-detail-trigger {
+    pointer-events: none;
   }
 
   .home-food-card h3 {
