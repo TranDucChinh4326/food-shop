@@ -582,7 +582,6 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav a,
 body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav button,
 body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer a,
 body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-footer button {
-  align-items: center;
   justify-content: center;
   padding-inline: 0;
 }
@@ -598,30 +597,23 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-subnav {
 body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav,
 body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-group {
   justify-items: center;
-  width: 64px;
+  width: 58px;
 }
 
 
 
 body.sidebar-collapsed .admin-sidebar:not(:hover) .admin-nav-btn {
-  aspect-ratio: 1;
-  display: inline-grid;
+  display: grid;
   gap: 0;
-  min-height: 56px;
-  padding: 0;
   place-items: center;
-  width: 56px;
+  width: 58px;
 }
 
 
 
 body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon {
-  align-items: center;
   flex-basis: 24px;
-  height: 24px;
-  justify-content: center;
   margin: 0;
-  width: 24px;
 }
 
 
