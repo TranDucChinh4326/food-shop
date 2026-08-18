@@ -452,3 +452,100 @@ button.account-photo-badge {
 .profile-page [hidden] {
   display: none !important;
 }
+
+@media (max-width: 900px) {
+  .profile-page {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 22px 5% 44px;
+  }
+
+  .account-sidebar,
+  .account-summary-card,
+  .profile-page .profile-grid {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .account-sidebar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    position: static;
+  }
+
+  .account-nav-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .account-summary-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .summary-social-links {
+    grid-column: 1 / -1;
+  }
+
+  .summary-social-links .social-account-list {
+    justify-content: flex-start;
+  }
+
+  .profile-page #profileForm,
+  .profile-page .password-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .profile-page {
+    gap: 12px;
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: 18px 16px 36px;
+  }
+
+  .account-sidebar {
+    margin-inline: -16px;
+    padding: 0 16px 8px;
+  }
+
+  .account-nav-item {
+    min-height: 44px;
+    padding: 0 14px;
+  }
+
+  .account-summary-card {
+    align-items: flex-start;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .account-photo-wrap {
+    justify-self: start;
+  }
+
+  .summary-social-links .social-account-list,
+  .profile-page .profile-grid,
+  .address-book-form,
+  .saved-address-card,
+  .profile-voucher-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .summary-social-links .social-account-item,
+  .social-account-item {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .profile-page .profile-card {
+    padding: 18px;
+  }
+
+  .profile-page .profile-card .btn {
+    justify-self: stretch;
+    width: 100%;
+  }
+}
