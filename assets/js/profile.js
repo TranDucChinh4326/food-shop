@@ -880,7 +880,7 @@ function togglePasswordVisibility(event) {
 
   const shouldShow = input.type === "password";
   input.type = shouldShow ? "text" : "password";
-  button.textContent = shouldShow ? "Ẩn" : "Hiện";
+  button.textContent = shouldShow ? "\u1ea8n" : "Hi\u1ec7n";
 }
 
 document.getElementById("profileForm").addEventListener("submit", saveProfile);
