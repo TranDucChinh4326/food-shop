@@ -193,6 +193,62 @@
   color: #e64a19;
 }
 
+@media (max-width: 760px) {
+  .home-shop-section {
+    padding: 28px 16px;
+  }
+
+  .home-section-heading,
+  .home-category-heading {
+    align-items: center;
+    gap: 12px;
+  }
+
+  .home-category-heading h3 {
+    font-size: 28px;
+  }
+
+  .home-category-heading a {
+    flex: 0 0 auto;
+  }
+
+  .home-food-grid {
+    display: flex;
+    gap: 14px;
+    margin-inline: -16px;
+    overflow-x: auto;
+    padding: 0 16px 8px;
+    scroll-snap-type: x proximity;
+  }
+
+  .home-food-card {
+    flex: 0 0 230px;
+    scroll-snap-align: start;
+  }
+
+  .home-food-card h3 {
+    font-size: 21px;
+    line-height: 1.22;
+  }
+
+  .home-food-card p {
+    font-size: 15px;
+  }
+
+  .home-food-meta,
+  .home-food-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-food-card {
+    flex-basis: 76vw;
+  }
+}
+
 .home-reviews-section {
   padding-top: 18px;
 }

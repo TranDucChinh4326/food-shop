@@ -4070,6 +4070,15 @@ footer {
     height: 190px;
   }
 
+  .food-list {
+    grid-template-columns: 1fr;
+  }
+
+  .food-card h3 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
   .support-widget {
     bottom: 18px;
     right: 14px;
