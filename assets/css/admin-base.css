@@ -2139,10 +2139,9 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 
 
 .chart-labels {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  min-height: 54px;
   margin-top: 14px;
+  position: relative;
 }
 
 
@@ -2150,7 +2149,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
 .chart-labels span {
   color: var(--muted);
   font-size: 12px;
+  position: absolute;
   text-align: center;
+  top: 0;
+  transform: translateX(-50%);
+  width: 86px;
+}
+
+.chart-labels span.is-first {
+  text-align: left;
+  transform: translateX(0);
+}
+
+.chart-labels span.is-last {
+  text-align: right;
+  transform: translateX(-100%);
 }
 
 
