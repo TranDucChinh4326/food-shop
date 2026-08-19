@@ -619,7 +619,7 @@ function formatPermissionSummary(permissions = []) {
 }
 
 function formatAccountKind(account) {
-  return String(account?.role || "").toUpperCase() === "ADMIN" ? "Admin" : "Nh\u00e2n vi\u00ean";
+  return formatRole(String(account?.role || "").toUpperCase());
 }
 
 function getCompactPaginationItems(totalPages, currentPage) {
