@@ -12,6 +12,8 @@ const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
 const CHAT_SESSION_KEY = "foodhub_chat_session";
+const FOODS_CACHE_KEY = "foodhub_foods_cache_v1";
+const FOODS_CACHE_TTL = 2 * 60 * 1000;
 
 let foods = [];
 // State phía trình duyệt: lưu dữ liệu đã tải, giỏ hàng session và trạng thái thanh toán/voucher đang thao tác.
@@ -712,6 +714,57 @@ function updateCartCount() {
   cartCount.textContent = cart.reduce((sum, item) => sum + Number(item.quantity), 0);
 }
 
+function normalizeFoodData(rawFoods = []) {
+  return rawFoods.map(food => ({
+    id: food.id,
+    name: food.name,
+    category: food.category || getCategoryKey(food),
+    subcategory: food.subcategory || getSubCategoryKey(food),
+    categoryName: food.categoryName || food.category_name,
+    parentCategoryName: food.parentCategoryName || food.parent_category_name,
+    price: food.price,
+    stockQuantity: Number(food.stockQuantity ?? food.stock_quantity ?? food.quantity ?? 0),
+    soldCount: Number(food.soldCount ?? food.sold_count ?? 0),
+    rating: Number(food.rating || 0),
+    reviewCount: Number(food.reviewCount ?? food.review_count ?? 0),
+    desc: food.desc ?? food.description,
+    image: food.image || ""
+  }));
+}
+
+function readFoodsCache() {
+  try {
+    const cache = JSON.parse(localStorage.getItem(FOODS_CACHE_KEY) || "null");
+    if (!cache || !Array.isArray(cache.items)) return null;
+    return {
+      items: normalizeFoodData(cache.items),
+      age: Date.now() - Number(cache.savedAt || 0)
+    };
+  } catch (error) {
+    localStorage.removeItem(FOODS_CACHE_KEY);
+    return null;
+  }
+}
+
+function writeFoodsCache(items) {
+  try {
+    localStorage.setItem(FOODS_CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      items
+    }));
+  } catch (error) {
+    console.warn("Cannot cache foods:", error);
+  }
+}
+
+function renderFoodSurfaces() {
+  renderMenuCategoryOptions();
+  renderFoods();
+  renderHomeFoodSections();
+  renderFoodDetailPage();
+  renderCart();
+}
+
 async function loadFoods() {
   const foodList = document.getElementById("food-list");
   const bestSellerBox = document.getElementById("homeBestSellers");
@@ -721,37 +774,30 @@ async function loadFoods() {
 
   if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems) return;
 
-  if (foodList) foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+  const cachedFoods = readFoodsCache();
+  if (cachedFoods?.items.length) {
+    foods = cachedFoods.items;
+    renderFoodSurfaces();
+    loadFoodReviews();
+
+    if (cachedFoods.age < FOODS_CACHE_TTL) {
+      return;
+    }
+  } else if (foodList) {
+    foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+  }
 
   try {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error(`Foods API returned ${response.status}`);
 
-    foods = await response.json();
-    foods = foods.map(food => ({
-      id: food.id,
-      name: food.name,
-      category: getCategoryKey(food),
-      subcategory: getSubCategoryKey(food),
-      categoryName: food.category_name,
-      parentCategoryName: food.parent_category_name,
-      price: food.price,
-      stockQuantity: Number(food.stock_quantity ?? food.quantity ?? 0),
-      soldCount: Number(food.sold_count || 0),
-      rating: Number(food.rating || 0),
-      reviewCount: Number(food.review_count || 0),
-      desc: food.description,
-      image: food.image
-    }));
-
-    renderMenuCategoryOptions();
-    renderFoods();
-    renderHomeFoodSections();
-    renderFoodDetailPage();
-    renderCart();
-    loadFoodReviews();
+    foods = normalizeFoodData(await response.json());
+    writeFoodsCache(foods);
+    renderFoodSurfaces();
+    if (!cachedFoods?.items.length) loadFoodReviews();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
+    if (cachedFoods?.items.length) return;
     if (foodList) foodList.innerHTML = "<p>Không thể tải món ăn từ database.</p>";
     if (bestSellerBox) bestSellerBox.innerHTML = "<p>Không thể tải món bán chạy từ database.</p>";
     if (homeSectionBox) homeSectionBox.innerHTML = "<p>Không thể tải thực đơn từ database.</p>";
