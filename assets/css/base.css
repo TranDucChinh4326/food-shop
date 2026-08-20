@@ -273,6 +273,42 @@ header.header-compact .header-tools {
   color: #ff5722;
 }
 
+.top-icon.voucher-icon {
+  background: linear-gradient(135deg, #ff6a2a, #ff9b2f);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 12px 24px rgba(255, 87, 34, 0.22);
+  color: #fff;
+  overflow: visible;
+  position: relative;
+}
+
+.top-icon.voucher-icon::before,
+.top-icon.voucher-icon::after {
+  background: #fff7f1;
+  border-radius: 50%;
+  content: "";
+  height: 10px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+}
+
+.top-icon.voucher-icon::before {
+  left: -5px;
+}
+
+.top-icon.voucher-icon::after {
+  right: -5px;
+}
+
+.top-icon.voucher-icon span {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .header-search {
   align-items: center;
   background: #fff;
