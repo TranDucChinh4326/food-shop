@@ -2139,6 +2139,58 @@ body.qr-payment-open {
   border-radius: 8px;
 }
 
+.site-loading-overlay {
+  align-items: center;
+  background: rgba(32, 24, 20, 0.42);
+  backdrop-filter: blur(5px);
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.18s ease;
+  z-index: 20000;
+}
+
+.site-loading-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.site-loading-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #f2d8c9;
+  border-radius: 10px;
+  box-shadow: 0 22px 58px rgba(43, 24, 14, 0.24);
+  color: #201814;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  min-width: 210px;
+  padding: 24px 28px;
+}
+
+.site-loading-spinner {
+  animation: siteLoadingSpin 0.8s linear infinite;
+  border: 4px solid #ffe1d1;
+  border-top-color: #ff5722;
+  border-radius: 50%;
+  height: 44px;
+  width: 44px;
+}
+
+.site-loading-text {
+  font-weight: 800;
+}
+
+@keyframes siteLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 
 .empty-cart {

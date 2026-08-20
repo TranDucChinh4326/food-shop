@@ -29,6 +29,7 @@ let announcementArchivePage = 1;
 let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 let qrPaymentStatusTimer = null;
+let siteLoadingCount = 0;
 let appliedDiscount = null;
 let ownedVouchers = [];
 let availableVouchers = [];
@@ -90,6 +91,48 @@ function showSiteToast(message, type = "success") {
   toastTimer = setTimeout(() => {
     toast.className = `site-toast ${type}`;
   }, 2400);
+}
+
+function getSiteLoadingOverlay() {
+  let overlay = document.getElementById("siteLoadingOverlay");
+  if (overlay) return overlay;
+
+  overlay = document.createElement("div");
+  overlay.id = "siteLoadingOverlay";
+  overlay.className = "site-loading-overlay";
+  overlay.setAttribute("role", "status");
+  overlay.setAttribute("aria-live", "polite");
+  overlay.innerHTML = `
+    <div class="site-loading-card">
+      <span class="site-loading-spinner" aria-hidden="true"></span>
+      <span class="site-loading-text">Đang xử lý...</span>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function showSiteLoading(message = "Đang xử lý...") {
+  siteLoadingCount += 1;
+  const overlay = getSiteLoadingOverlay();
+  const text = overlay.querySelector(".site-loading-text");
+  if (text) text.textContent = message;
+  requestAnimationFrame(() => overlay.classList.add("show"));
+}
+
+function hideSiteLoading() {
+  siteLoadingCount = Math.max(0, siteLoadingCount - 1);
+  if (siteLoadingCount > 0) return;
+  document.getElementById("siteLoadingOverlay")?.classList.remove("show");
+}
+
+async function withSiteLoading(message, task) {
+  showSiteLoading(message);
+  try {
+    return await task();
+  } finally {
+    hideSiteLoading();
+  }
 }
 
 function escapeHtml(value) {
@@ -2124,6 +2167,7 @@ async function claimVoucher(discountId) {
     return;
   }
 
+  showSiteLoading("Đang nhận voucher...");
   try {
     const response = await fetch(`${ORDERS_API}/vouchers/claim`, {
       method: "POST",
@@ -2139,6 +2183,8 @@ async function claimVoucher(discountId) {
     await Promise.all([loadAvailableVouchers(), loadOwnedVouchers()]);
   } catch (error) {
     showSiteToast(error.message, "error");
+  } finally {
+    hideSiteLoading();
   }
 }
 
@@ -2163,6 +2209,7 @@ async function applyCheckoutDiscount() {
   const addressDetail = document.getElementById("customerAddress")?.value || "";
   const customerAddress = buildAddressString(cityName, "", wardName, addressDetail);
 
+  showSiteLoading("Đang kiểm tra voucher...");
   try {
     const response = await fetch(`${ORDERS_API}/discount/preview`, {
       method: "POST",
@@ -2184,6 +2231,8 @@ async function applyCheckoutDiscount() {
     appliedDiscount = null;
     if (message) message.textContent = error.message;
     renderCart();
+  } finally {
+    hideSiteLoading();
   }
 }
 
@@ -2638,6 +2687,7 @@ async function submitOrder(event) {
 
   submitButton.disabled = true;
   submitButton.textContent = "Đang gửi đơn...";
+  showSiteLoading("Đang gửi đơn hàng...");
 
   try {
     const response = await fetch(ORDERS_API, {
@@ -2700,6 +2750,7 @@ async function submitOrder(event) {
     showSiteToast("Không kết nối được server đặt hàng.", "error");
     console.error(error);
   } finally {
+    hideSiteLoading();
     submitButton.disabled = false;
     submitButton.textContent = "Xác nhận đặt hàng";
   }
@@ -2714,6 +2765,7 @@ async function trackOrder(event) {
   if (!input || !resultBox || !input.value) return;
 
   resultBox.innerHTML = "<p>Đang tra cứu đơn hàng...</p>";
+  showSiteLoading("Đang tra cứu đơn hàng...");
 
   try {
     const response = await fetch(`${ORDERS_API}/${input.value}`);
@@ -2756,6 +2808,8 @@ async function trackOrder(event) {
   } catch (error) {
     resultBox.innerHTML = "<p>Không kết nối được server.</p>";
     console.error(error);
+  } finally {
+    hideSiteLoading();
   }
 }
 
@@ -2781,6 +2835,7 @@ async function loadOrderHistory(event) {
   if (dateValue) params.set("date", dateValue);
 
   resultBox.innerHTML = "<p>Đang tải lịch sử đơn hàng...</p>";
+  showSiteLoading("Đang tải lịch sử đơn hàng...");
 
   try {
     const response = await fetch(`${ORDERS_API}?${params.toString()}`, {
@@ -2807,6 +2862,8 @@ async function loadOrderHistory(event) {
   } catch (error) {
     resultBox.innerHTML = "<p>Không kết nối được server.</p>";
     console.error(error);
+  } finally {
+    hideSiteLoading();
   }
 }
 
