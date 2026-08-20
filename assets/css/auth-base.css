@@ -87,7 +87,8 @@ body {
   text-transform: uppercase;
 }
 
-.auth-box h1 {
+.auth-box h1,
+.auth-slider-shell .auth-panel h1 {
   color: #181818;
   font-size: 36px;
   line-height: 1.08;
@@ -162,12 +163,14 @@ body {
   height: 1px;
 }
 
-.auth-box form {
+.auth-box form,
+.auth-slider-shell .auth-panel form {
   display: grid;
   gap: 14px;
 }
 
-.auth-box label {
+.auth-box label,
+.auth-slider-shell .auth-panel label {
   color: #3a302c;
   display: grid;
   font-size: 14px;
@@ -175,7 +178,8 @@ body {
   gap: 7px;
 }
 
-.auth-box input {
+.auth-box input,
+.auth-slider-shell .auth-panel input {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid #e3d2c8;
   border-radius: 8px;
@@ -186,7 +190,8 @@ body {
   width: 100%;
 }
 
-.auth-box input:focus {
+.auth-box input:focus,
+.auth-slider-shell .auth-panel input:focus {
   background: #fff;
   border-color: #ff5722;
   box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.14);
@@ -310,12 +315,13 @@ body {
 .auth-slider-shell {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 22px;
-  box-shadow: 0 30px 90px rgba(30, 82, 88, 0.28);
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgba(78, 35, 20, 0.2);
   display: grid;
   grid-template-columns: 1fr 1fr;
+  height: min(640px, calc(100vh - 56px));
   max-width: 1020px;
-  min-height: 620px;
+  min-height: 560px;
   overflow: hidden;
   position: relative;
   width: min(100%, 1020px);
@@ -330,9 +336,9 @@ body {
   align-content: center;
   background: #fff;
   display: grid;
-  min-height: 620px;
+  min-height: 0;
   overflow-y: auto;
-  padding: 54px 48px;
+  padding: 42px 48px;
   position: relative;
   transition: opacity 0.35s ease, transform 0.55s ease;
 }
@@ -374,8 +380,8 @@ body {
 .auth-slider-cover {
   align-items: center;
   background:
-    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.24), transparent 28%),
-    linear-gradient(135deg, #083643 0%, #11cdd4 100%);
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.22), transparent 28%),
+    linear-gradient(135deg, #b92d16 0%, #ff5722 58%, #ff8a1f 100%);
   color: #fff;
   display: grid;
   inset: 0 auto 0 0;
@@ -389,15 +395,15 @@ body {
 }
 
 .auth-slider-shell.login-active .auth-slider-cover {
-  border-radius: 0 42% 42% 0;
+  border-radius: 0 30% 30% 0;
   transform: translateX(0);
 }
 
 .auth-slider-shell.register-active .auth-slider-cover {
   background:
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.22), transparent 30%),
-    linear-gradient(135deg, #083643 0%, #0ea5a8 100%);
-  border-radius: 42% 0 0 42%;
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.24), transparent 30%),
+    linear-gradient(135deg, #8f2417 0%, #e64a19 58%, #ff7a18 100%);
+  border-radius: 30% 0 0 30%;
   transform: translateX(100%);
 }
 
