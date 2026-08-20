@@ -9,60 +9,7 @@
   <link rel="stylesheet" href="assets/css/food-detail.css?v=20260820-food-stock">
 </head>
 <body>
-  <header>
-    <div class="header-top">
-      <a class="logo" href="index.html">🍔 FoodHub</a>
-
-      <div class="header-tools">
-        <form class="header-search" action="menu.html" role="search">
-          <input type="search" name="search" placeholder="Bạn cần tìm gì?" aria-label="Tìm kiếm món ăn">
-          <button type="submit" aria-label="Tìm kiếm">⌕</button>
-        </form>
-        <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher" aria-label="Voucher"><span aria-hidden="true">V</span></a>
-        <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo">🔔</a>
-        <div id="user-area">
-          <a href="login.html" class="header-action primary">Đăng nhập</a>
-          <a href="register.html" class="header-action secondary">Đăng ký</a>
-        </div>
-        <a href="cart.html" class="cart-btn">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
-      </div>
-    </div>
-
-    <section class="site-announcements" aria-label="Thông báo FoodHub">
-      <div class="announcement-shell">
-        <div id="publicAnnouncements" class="public-announcements">
-          Đang tải thông báo...
-        </div>
-      </div>
-    </section>
-
-    <nav>
-      <a href="index.html">Trang chủ</a>
-      <div class="nav-dropdown" data-public-category-menu="food">
-        <a class="nav-dropdown-toggle" href="menu.html?category=food">Đồ ăn <span aria-hidden="true">▼</span></a>
-        <div class="nav-dropdown-panel">
-          <a href="menu.html?category=com">Cơm</a>
-          <a href="menu.html?category=pho">Phở</a>
-          <a href="menu.html?category=mi">Mì</a>
-          <a href="menu.html?category=bun">Bún</a>
-        </div>
-      </div>
-      <div class="nav-dropdown" data-public-category-menu="drink">
-        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Đồ uống <span aria-hidden="true">▼</span></a>
-        <div class="nav-dropdown-panel">
-          <a href="menu.html?category=tra">Trà</a>
-          <a href="menu.html?category=ca-phe">Cà phê</a>
-          <a href="menu.html?category=nuoc-ep-sinh-to">Nước ép và sinh tố</a>
-          <a href="menu.html?category=nuoc-dong-chai">Nước đóng chai</a>
-        </div>
-      </div>
-      <a href="cart.html">Giỏ hàng</a>
-      <a href="track.html">Lịch sử đơn</a>
-      <a href="feedback.html">Phản hồi</a>
-      <a href="contact.html">Liên hệ</a>
-      <a href="vouchers.html">Voucher</a>
-    </nav>
-  </header>
+  <div data-shared-header></div>
 
   <main id="foodDetailPage" class="food-detail-page">
     <section class="food-detail-page-empty">
@@ -72,7 +19,7 @@
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260820-shared-footer"></script>
-  <script src="assets/js/script.js?v=20260820-shared-footer"></script>
+  <script src="assets/js/shared-layout.js?v=20260820-shared-header-footer"></script>
+  <script src="assets/js/script.js?v=20260820-shared-header-footer"></script>
 </body>
 </html>
