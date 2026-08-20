@@ -363,6 +363,61 @@ body {
   grid-column: 1;
 }
 
+.auth-slider-shell .auth-register-panel {
+  padding-bottom: 30px;
+  padding-top: 30px;
+}
+
+.auth-slider-shell .auth-register-panel .auth-brand {
+  margin-bottom: 16px;
+}
+
+.auth-slider-shell .auth-register-panel .auth-kicker {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.auth-slider-shell .auth-register-panel h1 {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.auth-slider-shell .auth-register-panel .social-grid {
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.auth-slider-shell .auth-register-panel .social-btn {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.auth-slider-shell .auth-register-panel .auth-divider {
+  margin: 2px 0 12px;
+}
+
+.auth-slider-shell .auth-register-panel form {
+  gap: 10px;
+}
+
+.auth-slider-shell .auth-register-panel label {
+  gap: 5px;
+}
+
+.auth-slider-shell .auth-register-panel input {
+  font-size: 15px;
+  padding: 11px 13px;
+}
+
+.auth-slider-shell .auth-register-panel .primary-btn {
+  min-height: 44px;
+  padding: 10px 13px;
+}
+
+.auth-slider-shell .auth-register-panel .home-link {
+  margin-top: 10px;
+}
+
 .auth-slider-shell.login-active .auth-register-panel,
 .auth-slider-shell.register-active .auth-login-panel {
   display: none;
