@@ -1,83 +1,5 @@
 /* Page-specific styles for index.html. Shared styles live in base.css. */
 
-.home-hero {
-  align-items: end;
-  background:
-    linear-gradient(90deg, rgba(32, 24, 20, 0.82) 0%, rgba(32, 24, 20, 0.58) 45%, rgba(255, 87, 34, 0.18) 100%),
-    url("https://images.unsplash.com/photo-1504674900247-0877df9cc836") center/cover;
-  color: #fff;
-  display: grid;
-  min-height: clamp(460px, 68vh, 620px);
-  padding: 8% 8% 64px;
-}
-
-.home-hero-content {
-  display: grid;
-  gap: 18px;
-  max-width: 760px;
-}
-
-.home-hero .section-kicker {
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  color: #fff;
-  justify-self: start;
-  padding: 8px 12px;
-}
-
-.home-hero h1 {
-  font-size: clamp(42px, 6vw, 74px);
-  letter-spacing: 0;
-  line-height: 0.98;
-  margin: 0;
-  max-width: 720px;
-}
-
-.home-hero p {
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 18px;
-  line-height: 1.55;
-  margin: 0;
-  max-width: 610px;
-}
-
-.home-hero-actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.home-hero-actions .ghost-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.42);
-  color: #fff;
-}
-
-.home-hero-stats {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 10px;
-  max-width: 760px;
-}
-
-.home-hero-stats span {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.82);
-  display: grid;
-  gap: 4px;
-  padding: 14px;
-}
-
-.home-hero-stats strong {
-  color: #fff;
-  font-size: 20px;
-}
-
 .home-shop-section {
   padding: 54px 8%;
 }
@@ -333,23 +255,6 @@
 }
 
 @media (max-width: 760px) {
-  .home-hero {
-    min-height: 560px;
-    padding: 72px 18px 32px;
-  }
-
-  .home-hero h1 {
-    font-size: 42px;
-  }
-
-  .home-hero p {
-    font-size: 16px;
-  }
-
-  .home-hero-stats {
-    grid-template-columns: 1fr;
-  }
-
   .home-shop-section {
     padding: 28px 14px;
   }
