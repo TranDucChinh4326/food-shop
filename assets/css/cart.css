@@ -361,6 +361,15 @@
   width: 88px;
 }
 
+.cart-item-image-placeholder {
+  align-items: center;
+  border: 1px solid #ffd6c2;
+  color: #d9480f;
+  display: flex;
+  font-weight: 900;
+  justify-content: center;
+}
+
 .cart-item-info {
   min-width: 0;
 }

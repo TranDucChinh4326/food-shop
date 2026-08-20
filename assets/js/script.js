@@ -717,8 +717,9 @@ async function loadFoods() {
   const bestSellerBox = document.getElementById("homeBestSellers");
   const homeSectionBox = document.getElementById("homeFoodSections");
   const foodDetailPage = document.getElementById("foodDetailPage");
+  const cartItems = document.getElementById("cart-items");
 
-  if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage) return;
+  if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems) return;
 
   if (foodList) foodList.innerHTML = "<p>Đang tải món ăn...</p>";
 
@@ -747,6 +748,7 @@ async function loadFoods() {
     renderFoods();
     renderHomeFoodSections();
     renderFoodDetailPage();
+    renderCart();
     loadFoodReviews();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
@@ -2302,13 +2304,16 @@ function renderCart() {
     const itemTotal = Number(item.price) * Number(item.quantity);
     const food = foods.find(entry => String(entry.id) === String(item.id));
     const image = item.image || food?.image || "";
+    const imageMarkup = image
+      ? `<img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">`
+      : `<span class="cart-item-image cart-item-image-placeholder" aria-hidden="true">FH</span>`;
     total += itemTotal;
     totalQuantity += Number(item.quantity);
 
     return `
       <div class="cart-item" data-open-food-detail="${item.id}" data-detail-from="cart">
         <a class="cart-item-image-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="Xem chi tiết ${escapeHtml(item.name)}">
-          <img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">
+          ${imageMarkup}
         </a>
         <div class="cart-item-info">
           <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a></h4>
