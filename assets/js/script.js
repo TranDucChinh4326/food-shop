@@ -2074,7 +2074,7 @@ async function loadAvailableVouchers() {
 
 async function claimVoucher(discountId) {
   if (!isLoggedIn()) {
-    requireLogin("Vui long dang nhap de nhan voucher.", "announcements.html");
+    requireLogin("Vui l\u00f2ng \u0111\u0103ng nh\u1eadp \u0111\u1ec3 nh\u1eadn voucher.", "announcements.html");
     return;
   }
 
@@ -2158,18 +2158,18 @@ function validateCheckoutStep(step) {
     const addressDetail = document.getElementById("customerAddress")?.value.trim() || "";
 
     if (!name || !phone || !cityName || !wardName || !addressDetail) {
-      showSiteToast("Vui long nhap day du dia chi giao hang truoc khi tiep tuc.", "error");
+      showSiteToast("Vui l\u00f2ng nh\u1eadp \u0111\u1ea7y \u0111\u1ee7 \u0111\u1ecba ch\u1ec9 giao h\u00e0ng tr\u01b0\u1edbc khi ti\u1ebfp t\u1ee5c.", "error");
       return false;
     }
   }
 
   if (step === "cart" && cart.length === 0) {
-    showSiteToast("Gio hang dang trong. Vui long chon mon truoc.", "error");
+    showSiteToast("Gi\u1ecf h\u00e0ng \u0111ang tr\u1ed1ng. Vui l\u00f2ng ch\u1ecdn m\u00f3n tr\u01b0\u1edbc.", "error");
     return false;
   }
 
   if (step === "payment" && !selectedShippingMethodId && shippingMethods.length) {
-    showSiteToast("Vui long chon hinh thuc giao hang.", "error");
+    showSiteToast("Vui l\u00f2ng ch\u1ecdn h\u00ecnh th\u1ee9c giao h\u00e0ng.", "error");
     return false;
   }
 
@@ -2196,39 +2196,39 @@ function renderCheckoutReviewInfo() {
   const box = document.getElementById("checkoutReviewInfo");
   if (!box) return;
 
-  const name = document.getElementById("customerName")?.value.trim() || "Chua nhap";
-  const phone = document.getElementById("customerPhone")?.value.trim() || "Chua nhap";
+  const name = document.getElementById("customerName")?.value.trim() || "Ch\u01b0a nh\u1eadp";
+  const phone = document.getElementById("customerPhone")?.value.trim() || "Ch\u01b0a nh\u1eadp";
   const cityName = document.getElementById("customerCity")?.value || "";
   const wardName = document.getElementById("customerWard")?.value || "";
   const addressDetail = document.getElementById("customerAddress")?.value.trim() || "";
-  const note = document.getElementById("customerNote")?.value.trim() || "Khong co";
-  const address = buildAddressString(cityName, "", wardName, addressDetail) || "Chua nhap";
+  const note = document.getElementById("customerNote")?.value.trim() || "Kh\u00f4ng c\u00f3";
+  const address = buildAddressString(cityName, "", wardName, addressDetail) || "Ch\u01b0a nh\u1eadp";
   const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value || "cod";
   const shippingMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId));
   const voucherText = appliedDiscount?.code
     ? `${appliedDiscount.code} (-${formatMoney(appliedDiscount.discountAmount || 0)})`
-    : "Chua ap dung";
+    : "Ch\u01b0a \u00e1p d\u1ee5ng";
 
   box.innerHTML = `
     <div class="checkout-review-section">
-      <h3>Thong tin giao hang</h3>
+      <h3>Th\u00f4ng tin giao h\u00e0ng</h3>
       <p class="checkout-review-primary">${escapeHtml(name)} <span>${escapeHtml(phone)}</span></p>
       <p>${escapeHtml(address)}</p>
-      <p>Ghi chu: ${escapeHtml(note)}</p>
+      <p>Ghi ch\u00fa: ${escapeHtml(note)}</p>
     </div>
     <div class="checkout-review-section">
-      <h3>Gio hang</h3>
+      <h3>Gi\u1ecf h\u00e0ng</h3>
       <ul class="checkout-review-list">
         ${cart.length ? cart.map(item => `
           <li><span>${escapeHtml(item.name)} x ${Number(item.quantity || 0)}</span><strong>${formatMoney(Number(item.price) * Number(item.quantity))}</strong></li>
-        `).join("") : "<li><span>Gio hang dang trong</span><strong>0d</strong></li>"}
+        `).join("") : "<li><span>Gi\u1ecf h\u00e0ng \u0111ang tr\u1ed1ng</span><strong>0\u0111</strong></li>"}
       </ul>
     </div>
     <div class="checkout-review-section">
-      <h3>Thanh toan</h3>
+      <h3>Thanh to\u00e1n</h3>
       <dl class="checkout-review-meta">
-        <div><dt>Giao hang</dt><dd>${escapeHtml(shippingMethod?.name || "Chua chon")}</dd></div>
-        <div><dt>Thanh toan</dt><dd>${escapeHtml(getPaymentMethodLabel(paymentMethod))}</dd></div>
+        <div><dt>Giao h\u00e0ng</dt><dd>${escapeHtml(shippingMethod?.name || "Ch\u01b0a ch\u1ecdn")}</dd></div>
+        <div><dt>Thanh to\u00e1n</dt><dd>${escapeHtml(getPaymentMethodLabel(paymentMethod))}</dd></div>
         <div><dt>Voucher</dt><dd>${escapeHtml(voucherText)}</dd></div>
       </dl>
     </div>
@@ -2463,7 +2463,7 @@ async function checkQrPaymentStatus(orderId) {
     if (data.paymentStatus === "paid") {
       activeQrPayment = null;
       closeQrPaymentDialog({ cancel: false });
-      showSiteToast("Thanh toan QR thanh cong. Đơn hàng dang cho xac nhan.");
+      showSiteToast("Thanh to\u00e1n QR th\u00e0nh c\u00f4ng. \u0110\u01a1n h\u00e0ng \u0111ang ch\u1edd x\u00e1c nh\u1eadn.");
       setTimeout(() => {
         window.location.href = "track.html";
       }, 900);
