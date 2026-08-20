@@ -173,17 +173,29 @@
 
 .checkout-review-grid {
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
+  align-items: start;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.72fr);
 }
 
 .checkout-review-box {
-  background: #fffaf7;
+  background: #fff;
   border: 1px solid #f0dfd5;
   border-radius: 8px;
   display: grid;
-  gap: 12px;
-  padding: 18px;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.checkout-review-section {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+}
+
+.checkout-review-section + .checkout-review-section {
+  border-top: 1px solid #f0dfd5;
 }
 
 .checkout-review-box h3 {
@@ -198,6 +210,16 @@
   margin: 0;
 }
 
+.checkout-review-primary {
+  color: #201814 !important;
+  font-weight: 800;
+}
+
+.checkout-review-primary span {
+  color: #6f584d;
+  font-weight: 600;
+}
+
 .checkout-review-list {
   display: grid;
   gap: 8px;
@@ -207,9 +229,42 @@
 
 .checkout-review-list li {
   align-items: center;
+  background: #fff8f3;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
   display: flex;
   gap: 10px;
   justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.checkout-review-list strong {
+  color: #201814;
+  white-space: nowrap;
+}
+
+.checkout-review-meta {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.checkout-review-meta div {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.checkout-review-meta dt {
+  color: #7a6256;
+  font-weight: 600;
+}
+
+.checkout-review-meta dd {
+  color: #201814;
+  font-weight: 800;
+  margin: 0;
 }
 
 .order-form > .btn[type="submit"],
@@ -300,6 +355,12 @@
   padding: 18px;
 }
 
+.checkout-confirm-card .checkout-summary-box {
+  background: linear-gradient(180deg, #fffaf7 0%, #fff3eb 100%);
+  border-color: #f0d4c5;
+  box-shadow: 0 16px 34px rgba(78, 45, 25, 0.08);
+}
+
 .checkout-summary-box div {
   align-items: center;
   display: flex;
@@ -315,6 +376,14 @@
   color: #2a211d;
   font-size: 18px;
   padding-top: 10px;
+}
+
+.checkout-confirm-card .checkout-summary-total {
+  font-size: 20px;
+}
+
+.checkout-confirm-card .checkout-summary-total strong {
+  color: #ff5722;
 }
 
 .discount-box {

@@ -2210,13 +2210,13 @@ function renderCheckoutReviewInfo() {
     : "Chua ap dung";
 
   box.innerHTML = `
-    <div>
+    <div class="checkout-review-section">
       <h3>Thong tin giao hang</h3>
-      <p><strong>${escapeHtml(name)}</strong> - ${escapeHtml(phone)}</p>
+      <p class="checkout-review-primary">${escapeHtml(name)} <span>${escapeHtml(phone)}</span></p>
       <p>${escapeHtml(address)}</p>
       <p>Ghi chu: ${escapeHtml(note)}</p>
     </div>
-    <div>
+    <div class="checkout-review-section">
       <h3>Gio hang</h3>
       <ul class="checkout-review-list">
         ${cart.length ? cart.map(item => `
@@ -2224,11 +2224,13 @@ function renderCheckoutReviewInfo() {
         `).join("") : "<li><span>Gio hang dang trong</span><strong>0d</strong></li>"}
       </ul>
     </div>
-    <div>
+    <div class="checkout-review-section">
       <h3>Thanh toan</h3>
-      <p>Giao hang: ${escapeHtml(shippingMethod?.name || "Chua chon")}</p>
-      <p>Thanh toan: ${escapeHtml(getPaymentMethodLabel(paymentMethod))}</p>
-      <p>Voucher: ${escapeHtml(voucherText)}</p>
+      <dl class="checkout-review-meta">
+        <div><dt>Giao hang</dt><dd>${escapeHtml(shippingMethod?.name || "Chua chon")}</dd></div>
+        <div><dt>Thanh toan</dt><dd>${escapeHtml(getPaymentMethodLabel(paymentMethod))}</dd></div>
+        <div><dt>Voucher</dt><dd>${escapeHtml(voucherText)}</dd></div>
+      </dl>
     </div>
   `;
 }
