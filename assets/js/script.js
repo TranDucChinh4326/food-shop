@@ -1025,10 +1025,9 @@ function renderHomeFoodSections() {
       bestSellerBox.innerHTML = "<p>Chưa có món nào phát sinh lượt bán.</p>";
     } else {
       const sellerCards = bestSellers.map(renderBestSellerCard).join("");
-      const duplicatedCards = bestSellers.length > 1 ? sellerCards + sellerCards : sellerCards;
       bestSellerBox.innerHTML = `
-        <div class="best-seller-track ${bestSellers.length > 1 ? "is-animated" : ""}">
-          ${duplicatedCards}
+        <div class="best-seller-track">
+          ${sellerCards}
         </div>
       `;
     }

@@ -94,36 +94,36 @@ body::after {
 
 .best-seller-strip {
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
 .best-seller-track {
   display: flex;
-  gap: 18px;
-  width: max-content;
-}
-
-.best-seller-track.is-animated {
-  animation: bestSellerMarquee 22s linear infinite;
-}
-
-.best-seller-strip:hover .best-seller-track.is-animated {
-  animation-play-state: paused;
+  gap: 14px;
+  min-height: 290px;
+  width: 100%;
 }
 
 .best-seller-card {
   border-radius: 8px;
   box-shadow: 0 20px 48px rgba(58, 34, 19, 0.18);
   cursor: pointer;
-  flex: 0 0 min(420px, 76vw);
-  min-height: 240px;
+  flex: 1 1 0;
+  min-height: 290px;
   overflow: hidden;
   position: relative;
+  transition: flex 0.32s ease, box-shadow 0.24s ease, transform 0.24s ease;
 }
 
 .best-seller-card:hover {
-  transform: translateY(-2px);
+  box-shadow: 0 28px 60px rgba(58, 34, 19, 0.24);
+  flex: 2.35 1 0;
+  transform: translateY(-4px);
+}
+
+.best-seller-track:hover .best-seller-card:not(:hover) {
+  flex: 0.72 1 0;
 }
 
 .best-seller-card img {
@@ -153,6 +153,10 @@ body::after {
   z-index: 1;
 }
 
+.best-seller-track:hover .best-seller-card:not(:hover) .best-seller-overlay {
+  opacity: 0.74;
+}
+
 .best-seller-overlay span,
 .home-food-category {
   background: #ff7a1a;
@@ -173,6 +177,10 @@ body::after {
 .best-seller-overlay h3 {
   font-size: 25px;
   line-height: 1.12;
+}
+
+.best-seller-track:hover .best-seller-card:not(:hover) .best-seller-overlay h3 {
+  font-size: 20px;
 }
 
 .best-seller-overlay p {
@@ -324,6 +332,25 @@ body::after {
   .home-category-heading {
     align-items: center;
     gap: 12px;
+  }
+
+  .best-seller-strip {
+    margin-inline: -14px;
+    overflow-x: auto;
+    padding: 0 14px 8px;
+  }
+
+  .best-seller-track {
+    min-height: 230px;
+    width: max-content;
+  }
+
+  .best-seller-card,
+  .best-seller-card:hover,
+  .best-seller-track:hover .best-seller-card:not(:hover) {
+    flex: 0 0 76vw;
+    min-height: 230px;
+    transform: none;
   }
 
   .home-category-heading h3 {
