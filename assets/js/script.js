@@ -1893,7 +1893,8 @@ function addToCart(foodId) {
       id: food.id,
       name: food.name,
       price: food.price,
-      quantity: cappedQuantity
+      quantity: cappedQuantity,
+      image: food.image || ""
     });
   }
 
@@ -2299,12 +2300,17 @@ function renderCart() {
 
   cartItems.innerHTML = cart.map(item => {
     const itemTotal = Number(item.price) * Number(item.quantity);
+    const food = foods.find(entry => String(entry.id) === String(item.id));
+    const image = item.image || food?.image || "";
     total += itemTotal;
     totalQuantity += Number(item.quantity);
 
     return `
       <div class="cart-item" data-open-food-detail="${item.id}" data-detail-from="cart">
-        <div>
+        <a class="cart-item-image-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="Xem chi tiết ${escapeHtml(item.name)}">
+          <img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">
+        </a>
+        <div class="cart-item-info">
           <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a></h4>
           <p>${formatMoney(item.price)}</p>
         </div>
@@ -2315,8 +2321,8 @@ function renderCart() {
           <button class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
         </div>
 
-        <strong>${formatMoney(itemTotal)}</strong>
-        <button class="remove-btn" onclick="removeItem(${item.id})">Xóa</button>
+        <strong class="cart-item-total">${formatMoney(itemTotal)}</strong>
+        <button class="remove-btn cart-remove-btn" type="button" onclick="removeItem(${item.id})">Xóa</button>
       </div>
     `;
   }).join("");
