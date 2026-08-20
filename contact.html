@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Liên hệ - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260820-announcement-loop">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260820-header-search-voucher">
   <link rel="stylesheet" href="assets/css/contact.css?v=20260818-mobile-contact">
 </head>
 <body>
@@ -14,8 +14,11 @@
       <a class="logo" href="index.html">🍔 FoodHub</a>
 
       <div class="header-tools">
-        <a href="menu.html" class="top-icon" title="Tìm kiếm món ăn" aria-label="Tìm kiếm món ăn">⌕</a>
-        <a href="contact.html" class="top-icon" title="Hotline" aria-label="Hotline">☎</a>
+        <form class="header-search" action="menu.html" role="search">
+          <input type="search" name="search" placeholder="Bạn cần tìm gì?" aria-label="Tìm kiếm món ăn">
+          <button type="submit" aria-label="Tìm kiếm">⌕</button>
+        </form>
+        <a href="vouchers.html" class="top-icon" title="Voucher" aria-label="Voucher">🎟</a>
         <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo">🔔</a>
         <div id="user-area">
           <a href="login.html" class="header-action primary">Đăng nhập</a>
@@ -57,6 +60,7 @@
       <a href="track.html">Lịch sử đơn</a>
       <a href="feedback.html">Phản hồi</a>
       <a href="contact.html">Liên hệ</a>
+      <a href="vouchers.html">Voucher</a>
     </nav>
   </header>
 
@@ -121,6 +125,7 @@
           <a href="track.html">Lịch sử đơn</a>
           <a href="profile.html">Hồ sơ cá nhân</a>
           <a href="announcements.html">Thông báo</a>
+          <a href="vouchers.html">Voucher</a>
         </div>
         <div>
           <h3>Hỗ trợ</h3>
@@ -145,6 +150,6 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/script.js?v=20260820-announcement-loop"></script>
+  <script src="assets/js/script.js?v=20260820-header-search-voucher"></script>
 </body>
 </html>

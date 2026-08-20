@@ -1870,6 +1870,12 @@ function renderFoods() {
 
   if (!foodList || !searchInput) return;
 
+  const urlSearchValue = new URLSearchParams(window.location.search).get("search");
+  if (urlSearchValue && !searchInput.dataset.urlSearchApplied) {
+    searchInput.value = urlSearchValue;
+    searchInput.dataset.urlSearchApplied = "true";
+  }
+
   const searchValue = searchInput.value.toLowerCase();
   const categoryValue = getMenuCategoryValue();
   renderMenuCategoryOptions();
@@ -2141,7 +2147,7 @@ async function loadAvailableVouchers() {
 
 async function claimVoucher(discountId) {
   if (!isLoggedIn()) {
-    requireLogin("Vui l\u00f2ng \u0111\u0103ng nh\u1eadp \u0111\u1ec3 nh\u1eadn voucher.", "announcements.html");
+    requireLogin("Vui l\u00f2ng \u0111\u0103ng nh\u1eadp \u0111\u1ec3 nh\u1eadn voucher.", "vouchers.html");
     return;
   }
 

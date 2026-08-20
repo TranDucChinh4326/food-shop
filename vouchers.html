@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Trang thông báo công khai: hiển thị danh sách thông báo/voucher đang hiệu lực từ backend. -->
+<!-- Trang voucher công khai: hiển thị các phiếu giảm giá đang phát hành từ backend. -->
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thông báo - FoodHub</title>
+  <title>Voucher - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260820-header-search-voucher">
   <link rel="stylesheet" href="assets/css/announcements.css?v=20260818-mobile-announcements">
 </head>
@@ -66,30 +66,19 @@
 
   <main class="announcements-page">
     <section class="announcements-hero">
-      <span class="badge">Tin mới từ FoodHub</span>
-      <h1>Thông báo hệ thống</h1>
-      <p>Xem lại các thông báo đang áp dụng từ FoodHub.</p>
+      <span class="badge">Voucher FoodHub</span>
+      <h1>Kho voucher</h1>
+      <p>Nhận và lưu các phiếu giảm giá đang phát hành vào tài khoản của bạn.</p>
     </section>
-    <section class="announcement-archive-panel">
+
+    <section class="voucher-panel">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">Danh sách</span>
-          <h2>Tất cả thông báo</h2>
+          <span class="eyebrow">Voucher</span>
+          <h2>Phiếu giảm giá đang phát hành</h2>
         </div>
       </div>
-      <div class="announcement-filters">
-        <input type="search" id="announcementArchiveSearch" placeholder="Tìm kiếm thông báo">
-        <input type="date" id="announcementArchiveDate" aria-label="Loc theo ngày đăng">
-        <select id="announcementArchivePageSize" aria-label="So thông báo mới trang">
-          <option value="5" selected>5 dong</option>
-          <option value="10">10 dong</option>
-          <option value="20">20 dong</option>
-        </select>
-      </div>
-      <div id="announcementArchiveList" class="announcement-archive-list">
-        Đang tải thông báo...
-      </div>
-      <div id="announcementArchivePager" class="announcement-archive-pager"></div>
+      <div id="availableVouchersList" class="voucher-list">Đang tải voucher...</div>
     </section>
   </main>
 
