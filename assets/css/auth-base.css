@@ -321,7 +321,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   max-width: 1020px;
-  min-height: min(620px, calc(100vh - 48px));
+  min-height: 620px;
   overflow: hidden;
   position: relative;
   width: min(100%, 1020px);
@@ -333,12 +333,12 @@ body {
 }
 
 .auth-slider-shell .auth-panel {
-  align-content: center;
+  align-content: start;
   background: #fff;
   display: grid;
   min-height: 0;
   overflow: visible;
-  padding: 34px 48px;
+  padding: 48px;
   position: relative;
   transition: opacity 0.35s ease, transform 0.55s ease;
 }
@@ -365,6 +365,7 @@ body {
 
 .auth-slider-shell.login-active .auth-register-panel,
 .auth-slider-shell.register-active .auth-login-panel {
+  display: none;
   opacity: 0;
   pointer-events: none;
   transform: translateX(20px);
@@ -372,6 +373,7 @@ body {
 
 .auth-slider-shell.register-active .auth-register-panel,
 .auth-slider-shell.login-active .auth-login-panel {
+  display: grid;
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
@@ -479,11 +481,11 @@ body {
   }
 
   .auth-slider-shell {
-    min-height: calc(100vh - 32px);
+    min-height: 620px;
   }
 
   .auth-slider-shell .auth-panel {
-    padding: 24px 48px;
+    padding: 28px 48px;
   }
 
   .auth-brand {
