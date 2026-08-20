@@ -1590,7 +1590,7 @@ async function loadPublicAnnouncements() {
       return;
     }
 
-    const tickerItems = announcements.length > 1 ? [...announcements, announcements[0]] : announcements;
+    const tickerItems = [...announcements, ...announcements];
 
     box.innerHTML = `
       <div class="announcement-track">
@@ -1862,28 +1862,7 @@ function initAnnouncementArchiveFilters() {
 }
 
 function startAnnouncementTicker(box, itemCount) {
-  const track = box.querySelector(".announcement-track");
-
   clearInterval(announcementTimer);
-
-  if (!track || itemCount <= 1) return;
-
-  let index = 0;
-  const rowHeight = 28;
-
-  announcementTimer = setInterval(() => {
-    index += 1;
-    track.style.transition = "transform 0.45s ease";
-    track.style.transform = `translateY(-${index * rowHeight}px)`;
-
-    if (index === itemCount) {
-      setTimeout(() => {
-        track.style.transition = "none";
-        track.style.transform = "translateY(0)";
-        index = 0;
-      }, 480);
-    }
-  }, 2800);
 }
 
 function renderFoods() {
