@@ -310,9 +310,9 @@ header.header-compact .header-tools {
 
 .announcement-track {
   align-items: center;
-  animation: announcementMarquee 24s linear infinite;
+  animation: announcementMarquee 30s linear infinite;
   display: flex;
-  gap: 34px;
+  gap: 28px;
   min-width: max-content;
   will-change: transform;
 }
@@ -341,7 +341,7 @@ header.header-compact .header-tools {
   color: rgba(255, 255, 255, 0.42);
   content: "•";
   font-size: 13px;
-  margin-left: 34px;
+  margin-left: 28px;
 }
 
 
@@ -364,7 +364,7 @@ header.header-compact .header-tools {
   }
 
   to {
-    transform: translateX(-50%);
+    transform: translateX(-25%);
   }
 }
 

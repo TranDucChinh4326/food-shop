@@ -1590,7 +1590,7 @@ async function loadPublicAnnouncements() {
       return;
     }
 
-    const tickerItems = [...announcements, ...announcements];
+    const tickerItems = Array.from({ length: 4 }, () => announcements).flat();
 
     box.innerHTML = `
       <div class="announcement-track">
