@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260820-ui-polish">
-  <link rel="stylesheet" href="assets/css/cart.css?v=20260818-shipping-methods">
+  <link rel="stylesheet" href="assets/css/cart.css?v=20260820-checkout-steps">
 </head>
 <body>
   <header>
@@ -69,8 +69,15 @@
       <a href="menu.html" class="text-link">Tiếp tục chọn món</a>
     </div>
 
-    <form id="orderForm" class="order-form checkout-stack" onsubmit="submitOrder(event)">
-      <section class="checkout-card checkout-customer-card">
+    <form id="orderForm" class="order-form checkout-stack checkout-step-form" onsubmit="submitOrder(event)">
+      <nav class="checkout-stepper" aria-label="C&aacute;c b&#432;&#7899;c &#273;&#7863;t h&agrave;ng">
+        <button type="button" class="checkout-step-tab active" data-checkout-step-target="address"><span>1</span>&#272;&#7883;a ch&#7881; giao h&agrave;ng</button>
+        <button type="button" class="checkout-step-tab" data-checkout-step-target="cart"><span>2</span>Gi&#7887; h&agrave;ng</button>
+        <button type="button" class="checkout-step-tab" data-checkout-step-target="payment"><span>3</span>Giao h&agrave;ng, thanh to&aacute;n, voucher</button>
+        <button type="button" class="checkout-step-tab" data-checkout-step-target="confirm"><span>4</span>X&aacute;c nh&#7853;n &#273;&#417;n h&agrave;ng</button>
+      </nav>
+
+      <section class="checkout-card checkout-customer-card checkout-step-panel active" data-checkout-step="address">
         <div class="section-heading">
           <div>
             <h2>Thông tin giao hàng</h2>
@@ -122,9 +129,12 @@
             <textarea id="customerNote" placeholder="Ví dụ: giao giờ nghỉ trưa, ít cay..."></textarea>
           </label>
         </div>
+        <div class="checkout-step-actions">
+          <button type="button" class="btn" data-checkout-next="cart">Ti&#7871;p t&#7909;c &#273;&#7871;n gi&#7887; h&agrave;ng</button>
+        </div>
       </section>
 
-      <section class="checkout-card checkout-cart-card">
+      <section class="checkout-card checkout-cart-card checkout-step-panel" data-checkout-step="cart">
         <div class="section-heading">
           <div>
             <h2>Giỏ hàng của bạn</h2>
@@ -138,9 +148,13 @@
         <div class="cart-total">
           Tổng tiền: <span id="total-price">0đ</span>
         </div>
+        <div class="checkout-step-actions">
+          <button type="button" class="ghost-btn" data-checkout-prev="address">Quay l&#7841;i &#273;&#7883;a ch&#7881;</button>
+          <button type="button" class="btn" data-checkout-next="payment">Ti&#7871;p t&#7909;c thanh to&aacute;n</button>
+        </div>
       </section>
 
-      <section class="checkout-card checkout-payment-card">
+      <section class="checkout-card checkout-payment-card checkout-step-panel" data-checkout-step="payment">
         <div class="checkout-payment-layout">
           <div class="checkout-payment-section">
             <h3>Hình thức giao hàng</h3>
@@ -184,10 +198,31 @@
               <select id="ownedVoucherSelect" class="voucher-select" aria-label="Voucher da nhan"><option value="">Chon voucher da nhan</option></select>
               <p id="discountMessage" class="discount-message"></p>
             </div>
+            <div class="checkout-step-actions in-panel">
+              <button type="button" class="ghost-btn" data-checkout-prev="cart">Quay l&#7841;i gi&#7887; h&agrave;ng</button>
+              <button type="button" class="btn" data-checkout-next="confirm">Ki&#7875;m tra &#273;&#417;n h&agrave;ng</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="checkout-card checkout-confirm-card checkout-step-panel" data-checkout-step="confirm">
+        <div class="section-heading">
+          <div>
+            <h2>X&aacute;c nh&#7853;n &#273;&#417;n h&agrave;ng</h2>
+            <p>Ki&#7875;m tra l&#7841;i th&ocirc;ng tin giao h&agrave;ng, gi&#7887; h&agrave;ng, voucher v&agrave; t&#7893;ng thanh to&aacute;n tr&#432;&#7899;c khi &#273;&#7863;t h&agrave;ng.</p>
+          </div>
+        </div>
+        <div class="checkout-review-grid">
+          <div id="checkoutReviewInfo" class="checkout-review-box"></div>
+          <div>
             <div id="checkoutSummary" class="checkout-summary-box"></div>
             <p id="checkoutProfileWarning" class="checkout-warning" hidden></p>
-            <button type="submit" class="btn">Xác nhận đặt hàng</button>
           </div>
+        </div>
+        <div class="checkout-step-actions">
+          <button type="button" class="ghost-btn" data-checkout-prev="payment">Quay l&#7841;i thanh to&aacute;n</button>
+          <button type="submit" class="btn">Xác nhận đặt hàng</button>
         </div>
       </section>
     </form>
@@ -247,6 +282,6 @@
   </footer>
 
   <script src="config.js"></script>
-  <script src="assets/js/script.js?v=20260818-mobile-dropdown-click"></script>
+  <script src="assets/js/script.js?v=20260820-checkout-steps"></script>
 </body>
 </html>

@@ -1939,6 +1939,7 @@ function renderShippingMethodOptions() {
 
   if (!shippingMethods.length) {
     container.innerHTML = `<p class="empty-cart">Chưa có hình thức giao hàng khả dụng.</p>`;
+    renderCheckoutReviewInfo();
     return;
   }
 
@@ -2136,6 +2137,139 @@ async function applyCheckoutDiscount() {
     renderCart();
   }
 }
+
+function getCheckoutStepOrder() {
+  return ["address", "cart", "payment", "confirm"];
+}
+
+function getCheckoutStepIndex(step) {
+  return getCheckoutStepOrder().indexOf(step);
+}
+
+function validateCheckoutStep(step) {
+  if (step === "address") {
+    const name = document.getElementById("customerName")?.value.trim() || "";
+    const phone = document.getElementById("customerPhone")?.value.trim() || "";
+    const cityName = document.getElementById("customerCity")?.value || "";
+    const wardName = document.getElementById("customerWard")?.value || "";
+    const addressDetail = document.getElementById("customerAddress")?.value.trim() || "";
+
+    if (!name || !phone || !cityName || !wardName || !addressDetail) {
+      showSiteToast("Vui long nhap day du dia chi giao hang truoc khi tiep tuc.", "error");
+      return false;
+    }
+  }
+
+  if (step === "cart" && cart.length === 0) {
+    showSiteToast("Gio hang dang trong. Vui long chon mon truoc.", "error");
+    return false;
+  }
+
+  if (step === "payment" && !selectedShippingMethodId && shippingMethods.length) {
+    showSiteToast("Vui long chon hinh thuc giao hang.", "error");
+    return false;
+  }
+
+  return true;
+}
+
+function canMoveToCheckoutStep(targetStep) {
+  const order = getCheckoutStepOrder();
+  const targetIndex = getCheckoutStepIndex(targetStep);
+  const activeStep = document.querySelector(".checkout-step-panel.active")?.dataset.checkoutStep || "address";
+  const activeIndex = getCheckoutStepIndex(activeStep);
+
+  if (targetIndex < 0) return false;
+  if (targetIndex <= activeIndex) return true;
+
+  for (let index = 0; index < targetIndex; index += 1) {
+    if (!validateCheckoutStep(order[index])) return false;
+  }
+
+  return true;
+}
+
+function renderCheckoutReviewInfo() {
+  const box = document.getElementById("checkoutReviewInfo");
+  if (!box) return;
+
+  const name = document.getElementById("customerName")?.value.trim() || "Chua nhap";
+  const phone = document.getElementById("customerPhone")?.value.trim() || "Chua nhap";
+  const cityName = document.getElementById("customerCity")?.value || "";
+  const wardName = document.getElementById("customerWard")?.value || "";
+  const addressDetail = document.getElementById("customerAddress")?.value.trim() || "";
+  const note = document.getElementById("customerNote")?.value.trim() || "Khong co";
+  const address = buildAddressString(cityName, "", wardName, addressDetail) || "Chua nhap";
+  const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value || "cod";
+  const shippingMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId));
+  const voucherText = appliedDiscount?.code
+    ? `${appliedDiscount.code} (-${formatMoney(appliedDiscount.discountAmount || 0)})`
+    : "Chua ap dung";
+
+  box.innerHTML = `
+    <div>
+      <h3>Thong tin giao hang</h3>
+      <p><strong>${escapeHtml(name)}</strong> - ${escapeHtml(phone)}</p>
+      <p>${escapeHtml(address)}</p>
+      <p>Ghi chu: ${escapeHtml(note)}</p>
+    </div>
+    <div>
+      <h3>Gio hang</h3>
+      <ul class="checkout-review-list">
+        ${cart.length ? cart.map(item => `
+          <li><span>${escapeHtml(item.name)} x ${Number(item.quantity || 0)}</span><strong>${formatMoney(Number(item.price) * Number(item.quantity))}</strong></li>
+        `).join("") : "<li><span>Gio hang dang trong</span><strong>0d</strong></li>"}
+      </ul>
+    </div>
+    <div>
+      <h3>Thanh toan</h3>
+      <p>Giao hang: ${escapeHtml(shippingMethod?.name || "Chua chon")}</p>
+      <p>Thanh toan: ${escapeHtml(getPaymentMethodLabel(paymentMethod))}</p>
+      <p>Voucher: ${escapeHtml(voucherText)}</p>
+    </div>
+  `;
+}
+
+function setCheckoutStep(step) {
+  if (!canMoveToCheckoutStep(step)) return;
+
+  document.querySelectorAll("[data-checkout-step]").forEach(panel => {
+    panel.classList.toggle("active", panel.dataset.checkoutStep === step);
+  });
+  document.querySelectorAll("[data-checkout-step-target]").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.checkoutStepTarget === step);
+  });
+
+  renderCheckoutReviewInfo();
+  document.querySelector(".checkout-stepper")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function initCheckoutSteps() {
+  if (!document.getElementById("orderForm")) return;
+
+  document.querySelectorAll("[data-checkout-step-target]").forEach(button => {
+    button.addEventListener("click", () => setCheckoutStep(button.dataset.checkoutStepTarget));
+  });
+
+  document.querySelectorAll("[data-checkout-next]").forEach(button => {
+    button.addEventListener("click", () => setCheckoutStep(button.dataset.checkoutNext));
+  });
+
+  document.querySelectorAll("[data-checkout-prev]").forEach(button => {
+    button.addEventListener("click", () => setCheckoutStep(button.dataset.checkoutPrev));
+  });
+
+  ["customerName", "customerPhone", "customerCity", "customerWard", "customerAddress", "customerNote"].forEach(id => {
+    const element = document.getElementById(id);
+    element?.addEventListener("input", renderCheckoutReviewInfo);
+    element?.addEventListener("change", renderCheckoutReviewInfo);
+  });
+
+  document.querySelectorAll("input[name='paymentMethod']").forEach(input => {
+    input.addEventListener("change", renderCheckoutReviewInfo);
+  });
+}
+
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
   const totalPrice = document.getElementById("total-price");
@@ -2156,6 +2290,7 @@ function renderCart() {
         <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>0đ</strong></div>
       `;
     }
+    renderCheckoutReviewInfo();
     return;
   }
 
@@ -2202,6 +2337,7 @@ function renderCart() {
       <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(finalTotal)}</strong></div>
     `;
   }
+  renderCheckoutReviewInfo();
 }
 
 function changeQuantity(foodId, amount) {
@@ -3365,6 +3501,7 @@ if (protectCheckoutPage()) {
     document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
     renderCart();
   });
+  initCheckoutSteps();
   document.getElementById("availableVouchersList")?.addEventListener("click", event => {
     const button = event.target.closest("[data-claim-voucher]");
     if (button) claimVoucher(Number(button.dataset.claimVoucher));
