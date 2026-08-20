@@ -272,15 +272,19 @@ async function register(event) {
 
   const form = event.currentTarget;
   const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
-  const fullname = document.getElementById("fullname").value;
-  const username = document.getElementById("username").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const fullnameInput = form.querySelector("[name='fullname'], #fullname, #registerFullname");
+  const usernameInput = form.querySelector("[name='username'], #username, #registerUsername");
+  const emailInput = form.querySelector("[name='email'], #email, #registerEmail");
+  const passwordInput = form.querySelector("[name='password'], #password, #registerPassword");
+  const fullname = fullnameInput?.value || "";
+  const username = usernameInput?.value || "";
+  const email = emailInput?.value || "";
+  const password = passwordInput?.value || "";
   const passwordError = getRegisterPasswordError(password);
 
   if (passwordError) {
     showToast(passwordError, "error");
-    document.getElementById("password").focus();
+    passwordInput?.focus();
     return;
   }
 
@@ -327,8 +331,8 @@ function initSocialSetupForm() {
   if (!form) return;
 
   const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
-  const emailInput = document.getElementById("email");
-  const fullnameInput = document.getElementById("fullname");
+  const emailInput = form.querySelector("[name='email'], #email, #registerEmail");
+  const fullnameInput = form.querySelector("[name='fullname'], #fullname, #registerFullname");
 
   if (pendingSocial?.email && emailInput) {
     emailInput.value = pendingSocial.email;
@@ -343,6 +347,8 @@ function initSocialSetupForm() {
     form.querySelectorAll("input, button[type='submit']").forEach(element => {
       element.disabled = true;
     });
+    const shell = document.querySelector("[data-auth-shell]");
+    if (shell && shell.classList.contains("login-active")) return;
     showToast("Đăng ký thủ công đã tắt. Hãy chọn Google hoặc Facebook để xác thực trước.", "info");
   }
 }
@@ -351,8 +357,8 @@ async function login(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
-  const loginValue = document.getElementById("loginIdentifier")?.value || document.getElementById("email")?.value;
-  const password = document.getElementById("password").value;
+  const loginValue = form.querySelector("[name='loginIdentifier'], #loginIdentifier, #email")?.value || "";
+  const password = form.querySelector("[name='password'], #password, #loginPassword")?.value || "";
 
   setSubmitState(form, true, "Đang đăng nhập...");
 
@@ -536,6 +542,32 @@ function initAuthPasswordToggles() {
   });
 }
 
+function initAuthSlider() {
+  const shell = document.querySelector("[data-auth-shell]");
+  if (!shell) return;
+
+  const setView = view => {
+    const isRegister = view === "register";
+    shell.classList.toggle("register-active", isRegister);
+    shell.classList.toggle("login-active", !isRegister);
+
+    if (isRegister && !JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null")?.provider) {
+      showToast("Vui lòng xác thực bằng Google hoặc Facebook trước.", "info");
+    }
+
+    const target = isRegister ? "register.html" : "login.html";
+    const title = isRegister ? "\u0110\u0103ng k\u00fd - FoodHub" : "\u0110\u0103ng nh\u1eadp - FoodHub";
+    if (!window.location.pathname.endsWith(target)) {
+      window.history.replaceState(null, title, target);
+      document.title = title;
+    }
+  };
+
+  shell.querySelectorAll("[data-auth-view]").forEach(button => {
+    button.addEventListener("click", () => setView(button.dataset.authView));
+  });
+}
+
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
@@ -588,5 +620,6 @@ function initSupportWidget() {
 }
 
 initAuthPasswordToggles();
+initAuthSlider();
 initResetPasswordForm();
 initSocialSetupForm();

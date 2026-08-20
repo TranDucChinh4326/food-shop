@@ -296,6 +296,176 @@ body {
   text-align: center;
 }
 
+.auth-slider-page {
+  align-items: center;
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.auth-slider-page::before,
+.auth-slider-page::after {
+  display: none;
+}
+
+.auth-slider-shell {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(30, 82, 88, 0.28);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1020px;
+  min-height: 620px;
+  overflow: hidden;
+  position: relative;
+  width: min(100%, 1020px);
+  z-index: 1;
+}
+
+.auth-slider-forms {
+  display: contents;
+}
+
+.auth-slider-shell .auth-panel {
+  align-content: center;
+  background: #fff;
+  display: grid;
+  min-height: 620px;
+  overflow-y: auto;
+  padding: 54px 48px;
+  position: relative;
+  transition: opacity 0.35s ease, transform 0.55s ease;
+}
+
+.auth-slider-shell .auth-panel .auth-brand,
+.auth-slider-shell .auth-panel .auth-kicker,
+.auth-slider-shell .auth-panel h1,
+.auth-slider-shell .auth-panel .social-grid,
+.auth-slider-shell .auth-panel .auth-divider,
+.auth-slider-shell .auth-panel form,
+.auth-slider-shell .auth-panel .auth-switch,
+.auth-slider-shell .auth-panel .home-link {
+  max-width: 390px;
+  width: 100%;
+}
+
+.auth-slider-shell .auth-login-panel {
+  grid-column: 2;
+}
+
+.auth-slider-shell .auth-register-panel {
+  grid-column: 1;
+}
+
+.auth-slider-shell.login-active .auth-register-panel,
+.auth-slider-shell.register-active .auth-login-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(20px);
+}
+
+.auth-slider-shell.register-active .auth-register-panel,
+.auth-slider-shell.login-active .auth-login-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.auth-slider-cover {
+  align-items: center;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.24), transparent 28%),
+    linear-gradient(135deg, #083643 0%, #11cdd4 100%);
+  color: #fff;
+  display: grid;
+  inset: 0 auto 0 0;
+  justify-items: center;
+  overflow: hidden;
+  padding: 48px;
+  position: absolute;
+  transition: border-radius 0.65s ease, transform 0.65s cubic-bezier(0.77, 0, 0.18, 1), background 0.65s ease;
+  width: 50%;
+  z-index: 4;
+}
+
+.auth-slider-shell.login-active .auth-slider-cover {
+  border-radius: 0 42% 42% 0;
+  transform: translateX(0);
+}
+
+.auth-slider-shell.register-active .auth-slider-cover {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.22), transparent 30%),
+    linear-gradient(135deg, #083643 0%, #0ea5a8 100%);
+  border-radius: 42% 0 0 42%;
+  transform: translateX(100%);
+}
+
+.auth-cover-content {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  max-width: 320px;
+  position: absolute;
+  text-align: center;
+  transition: opacity 0.3s ease, transform 0.45s ease;
+}
+
+.auth-cover-content span {
+  font-size: 42px;
+}
+
+.auth-cover-content h2 {
+  font-size: 34px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.auth-cover-content p {
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+
+.auth-cover-content button,
+.auth-switch button {
+  background: transparent;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 0 32px;
+}
+
+.auth-cover-content button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.auth-slider-shell.login-active .auth-cover-login,
+.auth-slider-shell.register-active .auth-cover-register {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px);
+}
+
+.auth-slider-shell.login-active .auth-cover-register,
+.auth-slider-shell.register-active .auth-cover-login {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.mobile-only {
+  display: none;
+}
+
+.auth-slider-shell .home-link {
+  color: #6f5a4f;
+}
+
 .verify-message {
   color: #555;
   font-size: 16px;
@@ -540,3 +710,64 @@ body {
   }
 }
 /* Style dùng chung cho trang đăng nhập/đăng ký/xác minh: khung form auth, social login, toast và responsive. */
+@media (max-width: 860px) {
+  .auth-slider-page {
+    align-items: flex-start;
+    min-height: 100svh;
+    overflow: auto;
+    padding: 16px;
+  }
+
+  .auth-slider-shell {
+    display: block;
+    min-height: 0;
+  }
+
+  .auth-slider-cover {
+    display: none;
+  }
+
+  .auth-slider-shell .auth-panel {
+    min-height: 0;
+    padding: 28px 22px;
+  }
+
+  .auth-slider-shell .auth-login-panel,
+  .auth-slider-shell .auth-register-panel {
+    grid-column: auto;
+  }
+
+  .auth-slider-shell.login-active .auth-register-panel,
+  .auth-slider-shell.register-active .auth-login-panel {
+    display: none;
+  }
+
+  .auth-slider-shell.login-active .auth-login-panel,
+  .auth-slider-shell.register-active .auth-register-panel {
+    display: grid;
+    opacity: 1;
+    transform: none;
+  }
+
+  .auth-slider-shell .auth-panel .auth-brand,
+  .auth-slider-shell .auth-panel .auth-kicker,
+  .auth-slider-shell .auth-panel h1,
+  .auth-slider-shell .auth-panel .social-grid,
+  .auth-slider-shell .auth-panel .auth-divider,
+  .auth-slider-shell .auth-panel form,
+  .auth-slider-shell .auth-panel .auth-switch,
+  .auth-slider-shell .auth-panel .home-link {
+    max-width: none;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .auth-switch button {
+    border: 0;
+    color: #ff5722;
+    min-height: 0;
+    padding: 0;
+  }
+}
