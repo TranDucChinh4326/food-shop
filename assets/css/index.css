@@ -1,5 +1,36 @@
 /* Page-specific styles for index.html. Shared styles live in base.css. */
 
+body {
+  background: #fff8f3;
+  isolation: isolate;
+  position: relative;
+}
+
+body::before {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 243, 0.72), rgba(255, 236, 224, 0.78)),
+    url("https://images.unsplash.com/photo-1543353071-10c8ba85a904") center/cover fixed;
+  content: "";
+  filter: blur(10px);
+  inset: -18px;
+  opacity: 0.62;
+  pointer-events: none;
+  position: fixed;
+  transform: scale(1.02);
+  z-index: -2;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.8), transparent 34%),
+    radial-gradient(circle at 90% 18%, rgba(255, 122, 26, 0.16), transparent 32%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
 .home-shop-section {
   padding: 54px 8%;
 }
