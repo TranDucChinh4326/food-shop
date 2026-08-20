@@ -1,4 +1,18 @@
 /* Style nền tảng cho frontend khách hàng: reset, header/footer, card món, chatbox, responsive và component dùng chung. */
+
+:root {
+  --fh-orange: #ff5722;
+  --fh-orange-dark: #d9480f;
+  --fh-amber: #ff8a1f;
+  --fh-ink: #241812;
+  --fh-muted: #765f54;
+  --fh-line: #efd8cc;
+  --fh-paper: #fff;
+  --fh-soft: #fff8f3;
+  --fh-green: #0f8f61;
+  --fh-blue: #26384f;
+  --fh-shadow: 0 18px 44px rgba(78, 45, 25, 0.1);
+}
 * {
   margin: 0;
   padding: 0;
@@ -9,15 +23,20 @@
 
 
 body {
-  background: #fff7f1;
-  color: #222;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 138, 31, 0.1), transparent 32%),
+    radial-gradient(circle at 100% 16%, rgba(38, 56, 79, 0.08), transparent 28%),
+    #fff8f3;
+  color: var(--fh-ink);
 }
 
 
 
 header {
-  background: white;
-  box-shadow: 0 2px 12px rgba(40, 24, 14, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(239, 216, 204, 0.78);
+  box-shadow: 0 12px 34px rgba(40, 24, 14, 0.06);
   position: sticky;
   top: 0;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -84,7 +103,7 @@ header.header-compact .header-tools {
 .food-card button,
 .qty-btn,
 .remove-btn {
-  background: #ff5722;
+  background: linear-gradient(135deg, var(--fh-orange) 0%, var(--fh-amber) 100%);
   border: none;
   border-radius: 25px;
   color: #fff;
@@ -93,11 +112,14 @@ header.header-compact .header-tools {
   font-weight: 700;
   padding: 11px 22px;
   text-decoration: none;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, filter 0.18s ease;
 }
 
 .btn:hover,
 .food-card button:hover {
-  background: #e64a19;
+  filter: brightness(0.98);
+  box-shadow: 0 14px 28px rgba(255, 87, 34, 0.22);
+  transform: translateY(-1px);
 }
 
 .ghost-btn {
@@ -139,23 +161,30 @@ header.header-compact .header-tools {
   padding: 0 14px;
   text-decoration: none;
   white-space: nowrap;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.cart-btn:hover {
+  box-shadow: 0 12px 28px rgba(255, 87, 34, 0.16);
+  transform: translateY(-1px);
 }
 
 .food-card {
-  background: #fff;
-  border: 1px solid #f0e5dc;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--fh-line);
   border-radius: 8px;
-  box-shadow: 0 10px 26px rgba(78, 45, 25, 0.08);
+  box-shadow: var(--fh-shadow);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   padding: 0;
   text-align: left;
-  transition: 0.2s;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
 }
 
 .food-card:hover {
-  box-shadow: 0 16px 34px rgba(78, 45, 25, 0.13);
+  border-color: #ffc6ad;
+  box-shadow: 0 24px 48px rgba(78, 45, 25, 0.15);
   transform: translateY(-3px);
 }
 

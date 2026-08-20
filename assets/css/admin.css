@@ -14,8 +14,8 @@
 }
 
 .dashboard-heading h1 {
-  color: #171717;
-  font-size: 36px;
+  color: #17120f;
+  font-size: 38px;
   letter-spacing: 0;
   line-height: 1.08;
   margin: 0 0 10px;
@@ -30,10 +30,11 @@
 
 .dashboard-filter {
   align-items: center;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
   border: 1px solid #efd7cc;
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(78, 45, 25, 0.07);
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(78, 45, 25, 0.08);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -45,11 +46,18 @@
 .dashboard-filter select {
   background: #fff;
   border: 1px solid #ead6cc;
-  border-radius: 9px;
+  border-radius: 8px;
   color: var(--ink);
   min-height: 44px;
   min-width: 148px;
   padding: 0 13px;
+}
+
+.dashboard-filter input:focus,
+.dashboard-filter select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 79, 36, 0.1);
+  outline: none;
 }
 
 .dashboard-filter .primary-btn {
@@ -81,10 +89,11 @@
 
 .stats-card {
   align-items: flex-start;
-  background: #fff;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 243, 0.76));
   border: 1px solid #f0d7ca;
-  border-radius: 12px;
-  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.06);
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(78, 45, 25, 0.08);
   display: flex;
   gap: 16px;
   justify-content: space-between;
@@ -131,7 +140,7 @@
   align-items: center;
   background: #fff4ee;
   border: 1px solid #ffc7b3;
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--accent);
   display: inline-flex;
   flex: 0 0 40px;
@@ -159,10 +168,10 @@
 }
 
 .dashboard-card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.96);
   border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 18px 42px rgba(78, 45, 25, 0.08);
+  box-shadow: 0 20px 48px rgba(78, 45, 25, 0.08);
   overflow: hidden;
 }
 
@@ -171,7 +180,7 @@
   display: flex;
   gap: 14px;
   justify-content: space-between;
-  padding: 22px 26px 8px;
+  padding: 24px 26px 10px;
 }
 
 .dashboard-card-title h2 {
@@ -229,8 +238,8 @@
 
 .revenue-svg {
   background:
-    repeating-linear-gradient(to top, transparent 0 32px, rgba(240, 216, 204, 0.78) 33px),
-    linear-gradient(180deg, rgba(255, 243, 236, 0.9), rgba(255, 255, 255, 0));
+    repeating-linear-gradient(to top, transparent 0 32px, rgba(240, 216, 204, 0.62) 33px),
+    linear-gradient(180deg, rgba(255, 243, 236, 0.86), rgba(255, 255, 255, 0));
   border-radius: 8px;
   display: block;
   height: 150px;
