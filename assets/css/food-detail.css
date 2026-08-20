@@ -215,6 +215,15 @@ body.food-detail-open {
   color: #ff8a00;
 }
 
+.food-detail-stock {
+  display: flex;
+}
+
+.food-detail-stock .food-stock-badge {
+  font-size: 14px;
+  padding: 7px 12px;
+}
+
 .food-detail-price {
   background: linear-gradient(90deg, #fff4ed, rgba(255, 244, 237, 0));
   border-radius: 8px;

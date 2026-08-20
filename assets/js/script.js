@@ -857,6 +857,13 @@ function getFoodDetailUrl(foodId, options = {}) {
   return `food-detail.html?${params.toString()}`;
 }
 
+function renderStockBadge(stock, className = "food-stock-badge") {
+  const quantity = Number(stock || 0);
+  const stateClass = quantity > 0 ? "in-stock" : "out-stock";
+  const label = quantity > 0 ? `C\u00f2n ${quantity}` : "H\u1ebft h\u00e0ng";
+  return `<span class="${className} ${stateClass}">${label}</span>`;
+}
+
 function renderCompactFoodCard(food, options = {}) {
   const stock = Number(food.stockQuantity || 0);
   const sold = Number(food.soldCount || 0);
@@ -874,6 +881,7 @@ function renderCompactFoodCard(food, options = {}) {
           <span>${renderRatingLabel(food.rating, food.reviewCount)}</span>
           <span>Đã bán ${sold}</span>
         </div>
+        <div class="home-food-stock">${renderStockBadge(stock)}</div>
         <div class="home-food-bottom">
           <strong>${formatMoney(food.price)}</strong>
           <button type="button" class="home-add-btn" onclick="event.stopPropagation(); addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>+</button>
@@ -1322,6 +1330,7 @@ function showFoodDetail(foodId) {
             <span>${sold} lượt mua</span>
             <span>${reviewCount} đánh giá</span>
           </div>
+          <div class="food-detail-stock">${renderStockBadge(stock)}</div>
           <strong class="food-detail-price">${formatMoney(food.price)}</strong>
           <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
           <div class="food-detail-options">
@@ -1427,6 +1436,7 @@ function renderFoodDetailPage() {
               <span>${sold} lượt mua</span>
               <span>${reviewCount} đánh giá</span>
             </div>
+            <div class="food-detail-stock">${renderStockBadge(stock)}</div>
             <strong class="food-detail-price">${formatMoney(food.price)}</strong>
             <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
             <div class="food-detail-actions">

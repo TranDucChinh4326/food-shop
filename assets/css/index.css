@@ -207,6 +207,15 @@
   font-size: 13px;
 }
 
+.home-food-stock {
+  display: flex;
+}
+
+.home-food-stock .food-stock-badge {
+  font-size: 12px;
+  padding: 5px 9px;
+}
+
 .home-food-bottom strong {
   color: #d9480f;
   font-size: 18px;

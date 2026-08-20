@@ -1339,6 +1339,15 @@ h2 {
   color: #b42318;
 }
 
+.food-detail-stock {
+  display: flex;
+}
+
+.food-detail-stock .food-stock-badge {
+  font-size: 14px;
+  padding: 7px 12px;
+}
+
 
 
 .food-qty-row {
