@@ -155,14 +155,20 @@
 
 .checkout-payment-layout {
   display: grid;
-  gap: 22px;
-  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  gap: 24px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
   align-items: start;
 }
 
 .checkout-confirm-panel {
+  background: #fffaf7;
+  border: 1px solid #f0dfd5;
+  border-radius: 10px;
   display: grid;
-  gap: 14px;
+  gap: 16px;
+  padding: 16px;
+  position: sticky;
+  top: 168px;
 }
 
 .checkout-review-grid {
@@ -216,12 +222,12 @@
 
 .checkout-payment-section {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .checkout-payment-section h3 {
   color: #2a211d;
-  font-size: 18px;
+  font-size: 22px;
   margin: 0;
 }
 
@@ -230,15 +236,20 @@
   gap: 12px;
 }
 
+.shipping-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .payment-option {
   align-items: flex-start;
   border: 1px solid #f0dfd5;
   border-radius: 8px;
   cursor: pointer;
   display: grid;
-  gap: 12px;
-  grid-template-columns: auto minmax(0, 1fr);
-  padding: 16px 18px;
+  gap: 14px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  min-height: 92px;
+  padding: 18px;
 }
 
 .payment-option:has(input:checked) {
@@ -249,6 +260,7 @@
 .payment-option input {
   accent-color: #ff5722;
   height: 18px;
+  margin-top: 3px;
   width: 18px;
 }
 
@@ -261,6 +273,14 @@
   color: #77675f;
   font-weight: 500;
   margin-top: 3px;
+}
+
+.payment-options:not(.shipping-options) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.payment-options:not(.shipping-options) .payment-option {
+  min-height: 116px;
 }
 
 .shipping-option em {
@@ -298,17 +318,19 @@
 }
 
 .discount-box {
-  border: 1px solid #f0d8cb;
-  border-radius: 8px;
   display: grid;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
 }
 
 .discount-apply-row {
   display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 116px;
+}
+
+.discount-apply-row .ghost-btn {
+  border-radius: 999px;
+  min-height: 46px;
 }
 
 .discount-message {
@@ -459,6 +481,15 @@
   .checkout-customer-fields,
   .checkout-payment-layout,
   .checkout-review-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout-confirm-panel {
+    position: static;
+  }
+
+  .shipping-options,
+  .payment-options:not(.shipping-options) {
     grid-template-columns: minmax(0, 1fr);
   }
 
