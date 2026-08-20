@@ -34,11 +34,11 @@ body {
 
 header {
   background:
-    linear-gradient(90deg, rgba(255, 250, 246, 0.88), rgba(255, 241, 232, 0.82)),
-    rgba(255, 255, 255, 0.76);
+    linear-gradient(90deg, rgba(255, 250, 246, 0.94), rgba(255, 240, 230, 0.9)),
+    rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(18px);
-  border-bottom: 1px solid rgba(230, 198, 181, 0.8);
-  box-shadow: 0 14px 38px rgba(61, 32, 18, 0.08);
+  border-bottom: 1px solid rgba(230, 198, 181, 0.58);
+  box-shadow: 0 16px 42px rgba(61, 32, 18, 0.08);
   position: sticky;
   top: 0;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -275,21 +275,28 @@ header.header-compact .header-tools {
 
 
 .site-announcements {
-  background: #263241;
+  background: transparent;
   border-bottom: 0;
-  color: #fff;
+  color: #4a2a1a;
   font-size: 14px;
-  padding: 5px 8%;
+  padding: 0 8% 10px;
 }
 
 
 
 .announcement-shell {
   align-items: center;
+  background:
+    linear-gradient(90deg, rgba(255, 87, 34, 0.12), rgba(255, 184, 77, 0.16)),
+    rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 180, 145, 0.62);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(91, 46, 22, 0.08);
   display: flex;
   justify-content: center;
   margin: 0 auto;
   max-width: 1180px;
+  padding: 0 18px;
 }
 
 
@@ -312,10 +319,10 @@ header.header-compact .header-tools {
 
 .announcement-item {
   align-items: center;
-  color: #fff;
+  color: #62311c;
   display: flex;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 700;
   gap: 8px;
   height: 28px;
   min-width: 0;
@@ -584,28 +591,34 @@ header.header-compact .header-tools {
 nav {
   align-items: center;
   display: flex;
-  background: #cf1f1f;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12);
-  gap: 4px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 245, 239, 0.82));
+  border: 1px solid rgba(239, 201, 184, 0.72);
+  border-radius: 999px;
+  box-shadow: 0 16px 34px rgba(73, 38, 18, 0.1);
+  gap: 6px;
   justify-content: center;
-  padding: 0 8%;
+  margin: 0 auto 12px;
+  max-width: 1180px;
+  padding: 8px;
+  width: calc(100% - 16%);
 }
 
 
 
 nav a,
 .nav-dropdown-toggle {
-  border-radius: 0;
-  color: #fff;
+  border-radius: 999px;
+  color: #4a2a1a;
   display: inline-flex;
   font-size: 16px;
   line-height: 1;
-  min-height: 46px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 0 18px;
   align-items: center;
   text-decoration: none;
   font-weight: 700;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
   white-space: nowrap;
 }
 
@@ -614,8 +627,10 @@ nav a,
 nav a:hover,
 .nav-dropdown:hover .nav-dropdown-toggle,
 .nav-dropdown:focus-within .nav-dropdown-toggle {
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, #ff5722, #ff8a1f);
+  box-shadow: 0 10px 20px rgba(255, 87, 34, 0.18);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 
@@ -3867,6 +3882,8 @@ footer {
   nav {
     align-items: stretch;
     background: #fff;
+    border: 0;
+    border-radius: 0;
     box-shadow: 18px 0 40px rgba(35, 20, 12, 0.18);
     display: flex;
     flex-direction: column;
@@ -3874,6 +3891,7 @@ footer {
     height: 100vh;
     justify-content: flex-start;
     left: 0;
+    margin: 0;
     max-width: 310px;
     padding: 88px 18px 18px;
     position: fixed;
