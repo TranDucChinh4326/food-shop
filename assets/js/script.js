@@ -35,6 +35,8 @@ let ownedVouchers = [];
 let availableVouchers = [];
 let shippingMethods = [];
 let selectedShippingMethodId = null;
+let shippingQuote = null;
+let shippingQuoteTimer = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -2098,11 +2100,66 @@ function getCheckoutShippingFee(subtotal) {
   const selectedMethod = shippingMethods.find(method => String(method.id) === String(selectedShippingMethodId))
     || shippingMethods[0];
   if (selectedMethod) {
-    const cityName = document.getElementById("customerCity")?.value || "";
-    return Math.max(0, Number(selectedMethod.fee || 0)) + calculateShippingAreaSurcharge(cityName);
+    if (shippingQuote && String(shippingQuote.shippingMethodId) === String(selectedMethod.id)) {
+      return Math.max(0, Number(shippingQuote.fee || 0));
+    }
+
+    return Math.max(0, Number(selectedMethod.fee || 0));
   }
 
   return null;
+}
+
+function getCheckoutAddressValue() {
+  const cityName = document.getElementById("customerCity")?.value || "";
+  const wardName = document.getElementById("customerWard")?.value || "";
+  const addressDetail = document.getElementById("customerAddress")?.value || "";
+  return buildAddressString(cityName, "", wardName, addressDetail);
+}
+
+function hasCompleteCheckoutAddress() {
+  return Boolean(
+    document.getElementById("customerCity")?.value
+    && document.getElementById("customerWard")?.value
+    && document.getElementById("customerAddress")?.value.trim()
+  );
+}
+
+async function refreshShippingQuote() {
+  if (!selectedShippingMethodId || !hasCompleteCheckoutAddress()) {
+    shippingQuote = null;
+    renderShippingMethodOptions();
+    renderCart();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${ORDERS_API}/shipping/quote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shippingMethodId: selectedShippingMethodId,
+        customerAddress: getCheckoutAddressValue()
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.message || "Khong the tinh phi giao hang");
+
+    shippingQuote = data;
+  } catch (error) {
+    shippingQuote = null;
+    showSiteToast(error.message || "Khong the tinh phi giao hang", "error");
+  }
+
+  renderShippingMethodOptions();
+  renderCart();
+}
+
+function scheduleShippingQuoteRefresh() {
+  clearTimeout(shippingQuoteTimer);
+  shippingQuoteTimer = setTimeout(() => {
+    refreshShippingQuote();
+  }, 450);
 }
 
 function normalizeShippingArea(value) {
@@ -2144,7 +2201,11 @@ function renderShippingMethodOptions() {
       <span>
         <strong>${escapeHtml(method.name)}</strong>
         <small>${escapeHtml(method.description || method.estimatedTime || "")}</small>
-        <em>${method.estimatedTime ? `${escapeHtml(method.estimatedTime)} - ` : ""}${Number(method.fee || 0) > 0 ? formatMoney(method.fee) : "Miễn phí"}</em>
+        <em>${
+          shippingQuote && String(shippingQuote.shippingMethodId) === String(method.id)
+            ? `${shippingQuote.distanceKm ? `${Number(shippingQuote.distanceKm).toFixed(1)}km - ` : ""}${formatMoney(shippingQuote.fee || 0)}`
+            : `${method.estimatedTime ? `${escapeHtml(method.estimatedTime)} - ` : ""}${Number(method.fee || 0) > 0 ? `Từ ${formatMoney(method.fee)}` : "Chờ địa chỉ"}`
+        }</em>
       </span>
     </label>
   `).join("");
@@ -2162,6 +2223,7 @@ async function loadShippingMethods() {
     shippingMethods = Array.isArray(data) ? data : [];
     renderShippingMethodOptions();
     renderCart();
+    scheduleShippingQuoteRefresh();
   } catch (error) {
     shippingMethods = [];
     container.innerHTML = `<p class="empty-cart">${escapeHtml(error.message)}</p>`;
@@ -3728,9 +3790,18 @@ if (protectCheckoutPage()) {
   ["customerCity", "customerWard", "customerAddress", "savedAddressSelect"].forEach(id => {
     document.getElementById(id)?.addEventListener("change", () => {
       appliedDiscount = null;
+      shippingQuote = null;
       document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
       renderCart();
+      scheduleShippingQuoteRefresh();
     });
+  });
+  document.getElementById("customerAddress")?.addEventListener("input", () => {
+    appliedDiscount = null;
+    shippingQuote = null;
+    document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
+    renderCart();
+    scheduleShippingQuoteRefresh();
   });
   document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
   document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {
@@ -3744,8 +3815,10 @@ if (protectCheckoutPage()) {
 
     selectedShippingMethodId = input.value;
     appliedDiscount = null;
+    shippingQuote = null;
     document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
     renderCart();
+    scheduleShippingQuoteRefresh();
   });
   initCheckoutSteps();
   document.getElementById("availableVouchersList")?.addEventListener("click", event => {
