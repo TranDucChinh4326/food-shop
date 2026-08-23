@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Phản hồi khách hàng - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260823-ad-clean">
-  <link rel="stylesheet" href="assets/css/feedback.css?v=20260818-mobile-rating-compact">
+  <link rel="stylesheet" href="assets/css/feedback.css?v=20260823-feedback-refresh">
 </head>
 <body>
   <div data-shared-header></div>
@@ -16,10 +16,16 @@
       <span class="badge">Góp ý riêng tư</span>
       <h1>Đánh giá trải nghiệm FoodHub</h1>
       <p>Gửi phản hồi để quản trị viên kiểm tra và cải thiện dịch vụ. Nội dung này chỉ hiển thị cho bạn và bộ phận quản trị.</p>
+      <div class="feedback-flow" aria-label="Quy trinh xu ly phan hoi">
+        <span><strong>1</strong> Gui nhan xet</span>
+        <span><strong>2</strong> FoodHub kiem tra</span>
+        <span><strong>3</strong> Phan hoi lai cho ban</span>
+      </div>
     </section>
 
     <section class="feedback-layout">
       <form id="customerFeedbackForm" class="feedback-card">
+        <span class="feedback-card-kicker">Gui gop y</span>
         <div class="section-heading">
           <div>
             <h2>Biểu mẫu phản hồi</h2>
@@ -63,7 +69,8 @@
         <button type="submit" class="btn">Gửi phản hồi</button>
       </form>
 
-      <section class="feedback-card">
+      <section class="feedback-card feedback-history-panel">
+        <span class="feedback-card-kicker">Theo doi</span>
         <div class="section-heading">
           <div>
             <h2>Phản hồi của tôi</h2>
