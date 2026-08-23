@@ -1778,6 +1778,7 @@ function renderFloatingAdItem(slot, advertisement) {
     </span>
   `;
   slot.hidden = false;
+  return;
 }
 
 function setFloatingAdSlot(shell, side, advertisements) {
