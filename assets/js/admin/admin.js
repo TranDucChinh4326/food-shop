@@ -1666,7 +1666,7 @@ function renderFoodReviewsTable() {
                   Đơn #${Number(item.order_id)} - ${formatDateTime(item.created_at)}
                 </p>
               </div>
-              <span class="account-status ${isVisible ? "active" : "locked"}">${isVisible ? "Đang hiển thị" : "Đã ẩn"}</span>
+              <span class="account-status ${isVisible ? "active" : "locked"}">${isVisible ? "Đã duyệt" : "Chờ duyệt"}</span>
             </div>
             <div class="food-review-admin-body">
               ${item.food_image ? `<img class="ad-thumb" src="${escapeHtml(item.food_image)}" alt="${escapeHtml(item.food_name)}">` : ""}
@@ -1688,7 +1688,7 @@ function renderFoodReviewsTable() {
             </form>
             <div class="table-actions">
               <button type="button" class="ghost-btn" data-food-review-visibility="${item.id}" data-visible="${isVisible ? "0" : "1"}">
-                ${isVisible ? "Ẩn bình luận" : "Hiển thị lại"}
+                ${isVisible ? "Ẩn bình luận" : "Phê duyệt"}
               </button>
               <button type="button" class="ghost-btn danger-btn" data-delete-food-review="${item.id}">
                 Xóa bình luận
@@ -3623,7 +3623,7 @@ foodReviewsList?.addEventListener("click", async event => {
       method: "PATCH",
       body: JSON.stringify({ isVisible: visibilityButton.dataset.visible === "1" })
     });
-    showAdminToast("Đã cập nhật hiển thị bình luận.");
+    showAdminToast(visibilityButton.dataset.visible === "1" ? "Đã phê duyệt bình luận." : "Đã ẩn bình luận.");
     await loadFoodReviews();
   } catch (error) {
     showAdminToast(error.message, "error");

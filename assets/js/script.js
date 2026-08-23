@@ -1239,6 +1239,11 @@ function hasReviewedOrderItem(orderId, foodId) {
 function renderOrderReviewControl(order, item) {
   if (order.status !== "done") return "";
 
+  if (item.review_id) {
+    const isApproved = Number(item.review_is_visible) === 1;
+    return `<span class="order-review-done">${isApproved ? "Đã đánh giá" : "Chờ duyệt"}</span>`;
+  }
+
   if (hasReviewedOrderItem(order.id, item.food_id)) {
     return `<span class="order-review-done">Đã đánh giá</span>`;
   }
@@ -1307,7 +1312,7 @@ async function submitFoodReview(event, orderId, foodId) {
       throw new Error(data.message || "Không thể gửi đánh giá.");
     }
 
-    showSiteToast(data.message || "Đánh giá món ăn thành công.");
+    showSiteToast(data.message || "Đã gửi đánh giá. Bình luận sẽ hiển thị sau khi admin phê duyệt.");
     await loadFoodReviews();
     await loadOrderHistory();
   } catch (error) {
