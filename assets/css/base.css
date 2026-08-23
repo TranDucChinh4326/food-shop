@@ -2838,61 +2838,11 @@ footer {
   z-index: 1;
 }
 
-.footer-map-thumb {
-  background:
-    linear-gradient(rgba(58, 41, 31, 0.08), rgba(58, 41, 31, 0.1)),
-    url("https://tile.openstreetmap.org/15/26029/15445.png") center / cover;
+.footer-map iframe {
+  border: 0;
   display: block;
-  filter: saturate(0.92) contrast(0.96);
   height: 100%;
-  position: relative;
   width: 100%;
-}
-
-.footer-map-thumb::before,
-.footer-map-thumb::after {
-  background: rgba(255, 255, 255, 0.56);
-  content: "";
-  position: absolute;
-}
-
-.footer-map-thumb::before {
-  height: 1px;
-  left: 0;
-  top: 50%;
-  width: 100%;
-}
-
-.footer-map-thumb::after {
-  height: 100%;
-  left: 50%;
-  top: 0;
-  width: 1px;
-}
-
-.footer-map-pin {
-  background: #ff4d1f;
-  border: 3px solid #fff7ed;
-  border-radius: 50% 50% 50% 0;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
-  height: 28px;
-  left: 50%;
-  position: absolute;
-  top: 52%;
-  transform: translate(-50%, -100%) rotate(-45deg);
-  width: 28px;
-  z-index: 1;
-}
-
-.footer-map-pin::after {
-  background: #fff7ed;
-  border-radius: 50%;
-  content: "";
-  height: 8px;
-  left: 7px;
-  position: absolute;
-  top: 7px;
-  width: 8px;
 }
 
 .footer-map-info strong {

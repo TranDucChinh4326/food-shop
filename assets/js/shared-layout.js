@@ -95,11 +95,14 @@ function renderSharedFooter() {
         <div class="footer-map">
           <div class="footer-map-info">
             <strong>FoodHub Vinh Long</strong>
-            <a href="https://www.openstreetmap.org/?mlat=10.2537&mlon=105.9722#map=16/10.2537/105.9722" target="_blank" rel="noopener">Mo ban do lon</a>
+            <a href="https://www.google.com/maps/search/?api=1&query=10.2537,105.9722" target="_blank" rel="noopener">Mo ban do lon</a>
           </div>
-          <a class="footer-map-thumb" href="https://www.openstreetmap.org/?mlat=10.2537&mlon=105.9722#map=16/10.2537/105.9722" target="_blank" rel="noopener" aria-label="Mo ban do FoodHub">
-            <span class="footer-map-pin" aria-hidden="true"></span>
-          </a>
+          <iframe
+            title="Ban do FoodHub"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=10.2537,105.9722&z=16&output=embed">
+          </iframe>
         </div>
       </div>
       <div class="footer-links">
