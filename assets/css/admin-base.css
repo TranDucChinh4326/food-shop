@@ -1,3 +1,5 @@
+@import url("brand.css?v=20260821-brand-logo");
+
 /* Style nền tảng cho khu vực admin: layout sidebar, bảng dữ liệu, form, nút, toast và responsive quản trị. */
 * {
   box-sizing: border-box;
@@ -132,21 +134,18 @@ button:disabled {
   align-items: center;
   color: var(--accent);
   display: flex;
-  font-size: 26px;
-  gap: 10px;
-  font-weight: 700;
   min-width: 0;
   text-decoration: none;
 }
 
+.sidebar-brand .brand-mark {
+  border-radius: 12px;
+  height: 38px;
+  width: 38px;
+}
 
-
-.brand-mark {
-  align-items: center;
-  display: inline-flex;
-  flex: 0 0 34px;
-  font-size: 25px;
-  justify-content: center;
+.sidebar-brand .brand-copy strong {
+  font-size: 22px;
 }
 
 
@@ -569,6 +568,7 @@ body.sidebar-collapsed .sidebar-brand a {
 
 
 body.sidebar-collapsed .sidebar-label,
+body.sidebar-collapsed .brand-copy,
 body.sidebar-collapsed .nav-text,
 body.sidebar-collapsed .admin-nav-toggle::after {
   max-width: 0;
@@ -579,6 +579,7 @@ body.sidebar-collapsed .admin-nav-toggle::after {
 
 
 body.sidebar-collapsed .admin-sidebar:hover .sidebar-label,
+body.sidebar-collapsed .admin-sidebar:hover .brand-copy,
 body.sidebar-collapsed .admin-sidebar:hover .nav-text,
 body.sidebar-collapsed .admin-sidebar:hover .admin-nav-toggle::after {
   max-width: 190px;
@@ -651,9 +652,11 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .nav-icon[data-icon="utensils"
 
 
 
-body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
+body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label,
+body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   height: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 
@@ -2436,6 +2439,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   }
 
   body.sidebar-collapsed .sidebar-label,
+  body.sidebar-collapsed .brand-copy,
   body.sidebar-collapsed .nav-text,
   body.sidebar-collapsed .admin-nav-toggle::after {
     max-width: none;
@@ -2443,9 +2447,11 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
     pointer-events: auto;
   }
 
-  body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
+  body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label,
+  body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
     height: auto;
     margin-top: 6px;
+    overflow: visible;
   }
 
   .admin-nav {
@@ -2644,6 +2650,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
   }
 
   body.sidebar-collapsed .sidebar-label,
+  body.sidebar-collapsed .brand-copy,
   body.sidebar-collapsed .nav-text,
   body.sidebar-collapsed .admin-nav-toggle::after {
     max-width: none;
@@ -2651,12 +2658,14 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-labe
     pointer-events: auto;
   }
 
-  body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label {
-    display: block;
+  body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand > .sidebar-label,
+  body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
+    display: grid;
     height: auto;
     margin-top: 6px;
     max-width: none;
     opacity: 1;
+    overflow: visible;
   }
 
   body.sidebar-collapsed .admin-sidebar:not(:hover) .sidebar-brand a,

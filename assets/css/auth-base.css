@@ -1,3 +1,5 @@
+@import url("brand.css?v=20260821-brand-logo");
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -68,14 +70,11 @@ body {
 }
 
 .auth-brand {
-  color: #ff5722;
-  display: inline-flex;
-  font-size: 26px;
-  font-weight: 800;
-  gap: 10px;
-  line-height: 1;
   margin-bottom: 26px;
-  text-decoration: none;
+}
+
+.auth-brand .brand-copy strong {
+  font-size: 26px;
 }
 
 .auth-kicker {
@@ -474,8 +473,14 @@ body {
   transition: opacity 0.3s ease, transform 0.45s ease;
 }
 
-.auth-cover-content span {
-  font-size: 38px;
+.auth-cover-content .brand-mark {
+  border-radius: 16px;
+  height: 58px;
+  width: 58px;
+}
+
+.auth-cover-content .brand-mark span {
+  font-size: 18px;
 }
 
 .auth-cover-content h2 {
@@ -790,8 +795,11 @@ body {
   }
 
   .auth-brand {
-    font-size: 24px;
     margin-bottom: 22px;
+  }
+
+  .auth-brand .brand-copy strong {
+    font-size: 24px;
   }
 
   .auth-box h1 {

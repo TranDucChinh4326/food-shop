@@ -3,7 +3,15 @@ function renderSharedHeader() {
     slot.outerHTML = `
   <header>
     <div class="header-top">
-      <a class="logo" href="index.html">🍔 FoodHub</a>
+      <a class="logo brand-logo" href="index.html" aria-label="FoodHub">
+        <span class="brand-mark" aria-hidden="true">
+          <span>FH</span>
+        </span>
+        <span class="brand-copy">
+          <strong>FoodHub</strong>
+          <small>Fresh delivery</small>
+        </span>
+      </a>
 
       <div class="header-tools">
         <form class="header-search" action="menu.html" role="search">
@@ -64,7 +72,15 @@ function renderSharedFooter() {
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <a class="footer-logo" href="index.html">FoodHub</a>
+        <a class="footer-logo brand-logo" href="index.html" aria-label="FoodHub">
+          <span class="brand-mark" aria-hidden="true">
+            <span>FH</span>
+          </span>
+          <span class="brand-copy">
+            <strong>FoodHub</strong>
+            <small>Fresh delivery</small>
+          </span>
+        </a>
         <p>Nền tảng giao đồ ăn hiện đại, kết nối khách hàng với thực đơn tươi ngon, thanh toán linh hoạt và theo dõi đơn hàng minh bạch.</p>
         <div class="footer-contact-list">
           <span>Hotline: <a href="tel:0123456789">0123 456 789</a></span>

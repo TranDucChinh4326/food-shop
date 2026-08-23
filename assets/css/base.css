@@ -1,3 +1,5 @@
+@import url("brand.css?v=20260821-brand-logo");
+
 /* Style nền tảng cho frontend khách hàng: reset, header/footer, card món, chatbox, responsive và component dùng chung. */
 
 :root {
@@ -84,8 +86,17 @@ header.header-compact .header-top {
 
 
 
-header.header-compact .logo {
-  font-size: 27px;
+header.header-compact .brand-mark {
+  height: 38px;
+  width: 38px;
+}
+
+header.header-compact .brand-copy strong {
+  font-size: 25px;
+}
+
+header.header-compact .brand-copy small {
+  display: none;
 }
 
 
@@ -237,8 +248,13 @@ header.header-compact .header-tools {
     padding: 12px 5%;
   }
 
-  header.header-compact .logo {
-    font-size: 26px;
+  header.header-compact .brand-mark {
+    height: 40px;
+    width: 40px;
+  }
+
+  header.header-compact .brand-copy strong {
+    font-size: 25px;
   }
 
   header.header-compact .site-announcements,
@@ -685,8 +701,6 @@ header.header-compact .header-tools {
 
 
 .logo {
-  font-size: 26px;
-  font-weight: bold;
   color: #ff5722;
   flex: 0 0 auto;
   text-decoration: none;
@@ -2708,11 +2722,19 @@ footer {
 
 
 .footer-logo {
-  color: #fff7ed;
-  display: inline-flex;
-  font-size: 24px;
-  font-weight: 700;
   margin-bottom: 18px;
+}
+
+.footer-logo .brand-copy strong {
+  color: #fff7ed;
+}
+
+.footer-logo .brand-copy small {
+  color: rgba(255, 247, 237, 0.68);
+}
+
+.footer-logo .brand-mark {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 
@@ -3919,13 +3941,29 @@ footer {
   }
 
   .logo {
-    font-size: 23px;
     line-height: 1;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
     text-align: left;
-    text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .brand-logo {
+    gap: 8px;
+  }
+
+  .brand-mark {
+    border-radius: 12px;
+    height: 38px;
+    width: 38px;
+  }
+
+  .brand-copy strong {
+    font-size: 24px;
+  }
+
+  .brand-copy small {
+    display: none;
   }
 
   .header-tools {
