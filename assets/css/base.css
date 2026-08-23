@@ -375,44 +375,68 @@ header.header-compact .header-tools {
 
 
 .site-announcements {
-  background: #242f3d;
-  border-bottom: 0;
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255, 90, 35, 0.2), transparent 32%),
+    linear-gradient(90deg, #231914 0%, #2a3440 42%, #201914 100%);
+  border-bottom: 1px solid rgba(255, 247, 237, 0.08);
   color: #fff;
   font-size: 14px;
-  padding: 5px 8%;
+  padding: 7px 8%;
 }
 
 
 
 .announcement-shell {
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
+  background: rgba(255, 247, 237, 0.045);
+  border: 1px solid rgba(255, 247, 237, 0.08);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 247, 237, 0.06);
   display: flex;
   justify-content: center;
   margin: 0 auto;
   max-width: 1180px;
-  padding: 0;
+  overflow: hidden;
+  padding: 0 16px;
 }
 
 
 
 .public-announcements {
-  height: 28px;
+  height: 30px;
   overflow: hidden;
   position: relative;
   width: 100%;
+}
+
+.public-announcements::before,
+.public-announcements::after {
+  content: "";
+  height: 100%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 80px;
+  z-index: 2;
+}
+
+.public-announcements::before {
+  background: linear-gradient(90deg, rgba(37, 28, 23, 0.96), transparent);
+  left: 0;
+}
+
+.public-announcements::after {
+  background: linear-gradient(270deg, rgba(33, 25, 20, 0.96), transparent);
+  right: 0;
 }
 
 
 
 .announcement-track {
   align-items: center;
-  animation: announcementMarquee 30s linear infinite;
+  animation: announcementMarquee 34s linear infinite;
   display: flex;
-  gap: 28px;
+  gap: 18px;
   min-width: max-content;
   will-change: transform;
 }
@@ -456,6 +480,46 @@ header.header-compact .header-tools {
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.announcement-item {
+  color: #fff7ed;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 10px;
+  height: 30px;
+  letter-spacing: 0.01em;
+  padding: 0 4px;
+}
+
+.announcement-item::before {
+  background: linear-gradient(135deg, #ff6a2a, #ffb35a);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px rgba(255, 106, 42, 0.12);
+  content: "";
+  flex: 0 0 auto;
+  height: 7px;
+  width: 7px;
+}
+
+.announcement-item::after {
+  background: rgba(255, 247, 237, 0.28);
+  border-radius: 999px;
+  color: transparent;
+  content: "";
+  flex: 0 0 auto;
+  font-size: 0;
+  height: 4px;
+  margin-left: 18px;
+  width: 4px;
+}
+
+.announcement-item:hover {
+  color: #ffd3bd;
+}
+
+.announcement-title {
+  font-weight: 700;
 }
 
 @keyframes announcementMarquee {
