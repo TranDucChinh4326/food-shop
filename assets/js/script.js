@@ -1757,7 +1757,7 @@ function getFloatingAdvertisementsShell() {
 
 function renderFloatingAdItem(slot, advertisement) {
   const linkUrl = advertisement.link_url || advertisement.linkUrl || "";
-  const title = advertisement.title || "Uu dai FoodHub";
+  const title = advertisement.title || "Ưu đãi FoodHub";
 
   if (linkUrl) {
     slot.href = linkUrl;
@@ -1773,7 +1773,7 @@ function renderFloatingAdItem(slot, advertisement) {
   slot.innerHTML = `
     <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}">
     <span class="floating-ad-content">
-      <span class="floating-ad-badge">Uu dai</span>
+      <span class="floating-ad-badge">Ưu đãi</span>
       <strong>${escapeHtml(title)}</strong>
     </span>
   `;
@@ -2182,12 +2182,12 @@ async function refreshShippingQuote() {
       })
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.message || "Khong the tinh phi giao hang");
+    if (!response.ok) throw new Error(data.message || "Không thể tính phí giao hàng");
 
     shippingQuote = data;
   } catch (error) {
     shippingQuote = null;
-    showSiteToast(error.message || "Khong the tinh phi giao hang", "error");
+    showSiteToast(error.message || "Không thể tính phí giao hàng", "error");
   }
 
   renderShippingMethodOptions();
@@ -2438,7 +2438,7 @@ function renderOwnedVoucherSelect() {
   if (!select) return;
 
   const selected = String(appliedDiscount?.userDiscountId || select.value || "");
-  select.innerHTML = `<option value="">Chon voucher da nhan</option>` + ownedVouchers.map(item => `
+  select.innerHTML = `<option value="">Chọn voucher đã nhận</option>` + ownedVouchers.map(item => `
     <option value="${item.userDiscountId}" ${String(item.userDiscountId) === selected ? "selected" : ""}>
       ${escapeHtml(getVoucherLabel(item))} (${item.remaining} luot)
     </option>
@@ -2583,7 +2583,7 @@ async function applyCheckoutDiscount() {
     });
     const data = await response.json();
 
-    if (!response.ok) throw new Error(data.message || "Voucher khong hop le");
+    if (!response.ok) throw new Error(data.message || "Voucher không hợp lệ");
 
     appliedDiscount = data;
     if (message) message.textContent = `Đã áp dụng ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
