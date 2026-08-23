@@ -92,6 +92,18 @@ function renderSharedFooter() {
           <a href="mailto:foodhub@gmail.com" aria-label="Email FoodHub" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
           <a href="tel:0123456789" aria-label="Hotline FoodHub" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
         </div>
+        <div class="footer-map">
+          <div class="footer-map-info">
+            <strong>FoodHub Vinh Long</strong>
+            <a href="https://www.openstreetmap.org/?mlat=10.2537&mlon=105.9722#map=16/10.2537/105.9722" target="_blank" rel="noopener">Mo ban do lon</a>
+          </div>
+          <iframe
+            title="Ban do FoodHub"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=105.9622%2C10.2437%2C105.9822%2C10.2637&amp;layer=mapnik&amp;marker=10.2537%2C105.9722">
+          </iframe>
+        </div>
       </div>
       <div class="footer-links">
         <div>
