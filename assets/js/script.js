@@ -2244,13 +2244,12 @@ async function openDeliveryMapPicker() {
   const currentLocation = getCustomerLocationValue();
   const startLat = currentLocation?.lat || 10.2537;
   const startLng = currentLocation?.lng || 105.9722;
-  pendingDeliveryLocation = currentLocation ? { lat: currentLocation.lat, lng: currentLocation.lng } : null;
 
   if (!deliveryMap) {
-    deliveryMap = window.L.map(canvas).setView([startLat, startLng], currentLocation ? 16 : 13);
-    window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    deliveryMap = window.L.map(canvas, { zoomControl: true }).setView([startLat, startLng], currentLocation ? 16 : 13);
+    window.L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
       maxZoom: 19,
-      attribution: "&copy; OpenStreetMap"
+      attribution: "&copy; OpenStreetMap &copy; CARTO"
     }).addTo(deliveryMap);
     deliveryMap.on("click", event => {
       setPendingDeliveryLocation(event.latlng.lat, event.latlng.lng);
@@ -2259,8 +2258,13 @@ async function openDeliveryMapPicker() {
     deliveryMap.setView([startLat, startLng], currentLocation ? 16 : 13);
   }
 
-  if (currentLocation) setPendingDeliveryLocation(currentLocation.lat, currentLocation.lng);
-  setTimeout(() => deliveryMap.invalidateSize(), 80);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      deliveryMap.invalidateSize();
+      deliveryMap.setView([startLat, startLng], currentLocation ? 16 : 13);
+      setPendingDeliveryLocation(startLat, startLng);
+    });
+  });
 }
 
 function closeDeliveryMapPicker() {
