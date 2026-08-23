@@ -2110,13 +2110,24 @@ function renderAvailableVouchers() {
     return;
   }
 
-  box.innerHTML = availableVouchers.map(item => `
+  const claimableVouchers = availableVouchers.filter(item => {
+    const alreadyClaimed = Number(item.ownedQuantity ?? item.ownedRemaining ?? 0) > 0;
+    const unavailable = item.remainingGlobal !== null && Number(item.remainingGlobal || 0) <= 0;
+    return !alreadyClaimed && !unavailable;
+  });
+
+  if (!claimableVouchers.length) {
+    box.innerHTML = `<p>Hiện không có voucher nào có thể nhận thêm.</p>`;
+    return;
+  }
+
+  box.innerHTML = claimableVouchers.map(item => `
     <article class="voucher-card">
       <div>
         <span class="voucher-code">${escapeHtml(item.code)}</span>
         <h3>${escapeHtml(item.name || item.code)}</h3>
         <p>${escapeHtml(getVoucherLabel(item))}</p>
-        <small>${item.remainingGlobal === null ? "Không giới hạn số lượng" : `Còn ${item.remainingGlobal} voucher`} - Đang có ${Number(item.ownedRemaining || 0)} trong ví</small>
+        <small>${item.remainingGlobal === null ? "Không giới hạn số lượng" : `Còn ${item.remainingGlobal} voucher`}</small>
       </div>
       <button type="button" class="ghost-btn" data-claim-voucher="${item.id}">Nhận voucher</button>
     </article>
