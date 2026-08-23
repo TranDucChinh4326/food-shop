@@ -1757,6 +1757,7 @@ function getFloatingAdvertisementsShell() {
 
 function renderFloatingAdItem(slot, advertisement) {
   const linkUrl = advertisement.link_url || advertisement.linkUrl || "";
+  const title = advertisement.title || "Uu dai FoodHub";
 
   if (linkUrl) {
     slot.href = linkUrl;
@@ -1769,6 +1770,13 @@ function renderFloatingAdItem(slot, advertisement) {
   }
 
   slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo FoodHub")}">`;
+  slot.innerHTML = `
+    <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}">
+    <span class="floating-ad-content">
+      <span class="floating-ad-badge">Uu dai</span>
+      <strong>${escapeHtml(title)}</strong>
+    </span>
+  `;
   slot.hidden = false;
 }
 

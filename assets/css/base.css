@@ -633,32 +633,32 @@ header.header-compact .header-tools {
 
 
 .floating-ad {
-  background: #fff7f2;
-  border: 1px solid rgba(255, 79, 37, 0.24);
-  border-radius: 14px;
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  background: #2f2018;
+  border: 1px solid rgba(255, 247, 237, 0.28);
+  border-radius: 12px;
+  box-shadow: 0 18px 42px rgba(35, 21, 13, 0.24);
   display: block;
-  height: clamp(210px, 14vw, 270px);
+  height: clamp(240px, 18vw, 320px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 62%;
+  top: 58%;
   transform: translateY(-50%);
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: clamp(66px, 4.2vw, 84px);
+  width: clamp(88px, 6vw, 116px);
   z-index: 80;
 }
 
 
 
 .floating-ad-left {
-  left: 26px;
+  left: max(14px, calc((100vw - 1180px) / 2 - 138px));
 }
 
 
 
 .floating-ad-right {
-  right: 26px;
+  right: max(14px, calc((100vw - 1180px) / 2 - 138px));
 }
 
 
@@ -670,11 +670,52 @@ header.header-compact .header-tools {
   width: 100%;
 }
 
+.floating-ad::after {
+  background: linear-gradient(180deg, transparent 40%, rgba(30, 18, 12, 0.88) 100%);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.floating-ad-content {
+  bottom: 10px;
+  color: #fff7ed;
+  display: grid;
+  gap: 7px;
+  left: 10px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+}
+
+.floating-ad-badge {
+  align-self: start;
+  background: #ff5a23;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(255, 90, 35, 0.22);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  padding: 6px 8px;
+  text-transform: uppercase;
+}
+
+.floating-ad-content strong {
+  display: -webkit-box;
+  font-size: 13px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.38);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 
 
 .floating-ad:hover {
-  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.18);
-  transform: translateY(-50%) scale(1.025);
+  box-shadow: 0 24px 54px rgba(35, 21, 13, 0.32);
+  transform: translateY(-50%) scale(1.045);
 }
 
 
