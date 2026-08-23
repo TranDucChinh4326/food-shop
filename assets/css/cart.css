@@ -517,6 +517,10 @@
   background: #fff1eb;
 }
 
+.cart-recommendations {
+  margin-top: 16px;
+}
+
 @media (max-width: 900px) {
   .checkout-page {
     max-width: 100%;

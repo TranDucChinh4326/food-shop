@@ -345,6 +345,15 @@ body.food-detail-open {
   color: #fff;
 }
 
+.food-detail-card .suggestion-section {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
+
+.food-detail-card .suggestion-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 @media (max-width: 900px) {
   .food-detail-page {
     padding: 22px 5% 48px;
@@ -361,8 +370,13 @@ body.food-detail-open {
 
   .food-detail-gallery,
   .food-detail-info,
-  .food-detail-reviews {
+  .food-detail-reviews,
+  .food-detail-card .suggestion-section {
     min-width: 0;
+  }
+
+  .food-detail-card .suggestion-list {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .food-detail-info h1,

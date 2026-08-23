@@ -982,6 +982,104 @@ function renderCompactFoodCard(food, options = {}) {
   `;
 }
 
+function getFoodSearchText(food) {
+  return [
+    food?.category,
+    food?.subcategory,
+    food?.categoryName,
+    food?.parentCategoryName,
+    food?.name
+  ].join(" ").toLowerCase();
+}
+
+function isDrinkFood(food) {
+  const text = getFoodSearchText(food);
+  return ["nuoc", "nước", "drink", "do-uong", "đồ uống", "ca-phe", "cà phê", "tra-", "trà", "sinh-to", "sinh tố"].some(keyword => text.includes(keyword));
+}
+
+function isMealFood(food) {
+  return !isDrinkFood(food);
+}
+
+function scoreRecommendation(food) {
+  return Number(food.soldCount || 0) * 3
+    + Number(food.reviewCount || 0) * 2
+    + Number(food.rating || 0) * 10
+    + Math.min(Number(food.stockQuantity || 0), 20);
+}
+
+function getRecommendedFoods(options = {}) {
+  const currentFood = options.currentFood || null;
+  const cartFoodIds = new Set(cart.map(item => String(item.id)));
+  const excludedIds = new Set([
+    ...cartFoodIds,
+    ...(currentFood ? [String(currentFood.id)] : [])
+  ]);
+  const hasMealInCart = cart.some(item => {
+    const food = foods.find(entry => String(entry.id) === String(item.id));
+    return food ? isMealFood(food) : true;
+  });
+  const hasDrinkInCart = cart.some(item => {
+    const food = foods.find(entry => String(entry.id) === String(item.id));
+    return food ? isDrinkFood(food) : false;
+  });
+  const shouldSuggestDrinks = currentFood ? isMealFood(currentFood) : hasMealInCart || !hasDrinkInCart;
+  const preferred = foods
+    .filter(food => !excludedIds.has(String(food.id)))
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .filter(food => shouldSuggestDrinks ? isDrinkFood(food) : isMealFood(food))
+    .sort((first, second) => scoreRecommendation(second) - scoreRecommendation(first));
+  const fallback = foods
+    .filter(food => !excludedIds.has(String(food.id)))
+    .filter(food => Number(food.stockQuantity || 0) > 0)
+    .filter(food => !preferred.some(item => String(item.id) === String(food.id)))
+    .sort((first, second) => scoreRecommendation(second) - scoreRecommendation(first));
+
+  return [...preferred, ...fallback].slice(0, options.limit || 4);
+}
+
+function renderRecommendationCard(food, context = "cart") {
+  const stock = Number(food.stockQuantity || 0);
+  const image = food.image
+    ? `<img src="${escapeHtml(food.image)}" alt="${escapeHtml(food.name)}">`
+    : `<span aria-hidden="true">FH</span>`;
+  const detailUrl = getFoodDetailUrl(food.id, { from: context === "cart" ? "cart" : "home" });
+
+  return `
+    <article class="suggestion-card" data-open-food-detail="${food.id}" data-detail-from="${context === "cart" ? "cart" : "home"}">
+      <a class="suggestion-image" href="${detailUrl}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">${image}</a>
+      <div>
+        <small>${escapeHtml(getFoodDisplayCategory(food))}</small>
+        <h4><a href="${detailUrl}">${escapeHtml(food.name)}</a></h4>
+        <p>${renderRatingLabel(food.rating, food.reviewCount)} · Còn ${stock}</p>
+      </div>
+      <div class="suggestion-action">
+        <strong>${formatMoney(food.price)}</strong>
+        <button type="button" onclick="event.stopPropagation(); addToCart(${food.id})">Thêm</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderSuggestionSection(items, title, subtitle, context = "cart") {
+  if (!items.length) return "";
+
+  return `
+    <section class="suggestion-section">
+      <div class="suggestion-heading">
+        <div>
+          <span>${escapeHtml(title)}</span>
+          <h3>${escapeHtml(subtitle)}</h3>
+        </div>
+        <a href="menu.html">Xem thêm</a>
+      </div>
+      <div class="suggestion-list">
+        ${items.map(food => renderRecommendationCard(food, context)).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderBestSellerCard(food) {
   return `
     <article class="best-seller-card" data-open-food-detail="${food.id}">
@@ -1445,6 +1543,12 @@ function showFoodDetail(foodId) {
           </div>
         </div>
       </div>
+      ${renderSuggestionSection(
+        getRecommendedFoods({ currentFood: food, limit: 3 }),
+        isMealFood(food) ? "Gợi ý dùng kèm" : "Có thể bạn muốn thêm",
+        isMealFood(food) ? "Nước uống hợp với món này" : "Món ăn bán chạy để đi cùng",
+        "detail"
+      )}
       <section class="food-detail-reviews">
         <h3>Đánh giá & Nhận xét</h3>
         <div class="food-review-summary">
@@ -1545,6 +1649,12 @@ function renderFoodDetailPage() {
             </div>
           </div>
         </div>
+        ${renderSuggestionSection(
+          getRecommendedFoods({ currentFood: food, limit: 4 }),
+          isMealFood(food) ? "Gợi ý dùng kèm" : "Có thể bạn muốn thêm",
+          isMealFood(food) ? "Nước uống hợp với món này" : "Món ăn bán chạy để đi cùng",
+          "detail"
+        )}
         <section class="food-detail-reviews">
           <h3>Đánh giá & Nhận xét</h3>
           <div class="food-review-summary">
@@ -2372,6 +2482,7 @@ function initCheckoutSteps() {
 
 function renderCart() {
   const cartItems = document.getElementById("cart-items");
+  const cartRecommendations = document.getElementById("cartRecommendations");
   const totalPrice = document.getElementById("total-price");
   const checkoutSummary = document.getElementById("checkoutSummary");
 
@@ -2381,6 +2492,10 @@ function renderCart() {
 
   if (cart.length === 0) {
     cartItems.innerHTML = `<p class="empty-cart">Giỏ hàng đang trống.</p>`;
+    if (cartRecommendations) {
+      cartRecommendations.hidden = true;
+      cartRecommendations.innerHTML = "";
+    }
     totalPrice.textContent = "0đ";
     if (checkoutSummary) {
       checkoutSummary.innerHTML = `
@@ -2428,6 +2543,21 @@ function renderCart() {
       </div>
     `;
   }).join("");
+
+  if (cartRecommendations) {
+    const recommendedFoods = getRecommendedFoods({ limit: 4 });
+    const hasMealInCart = cart.some(item => {
+      const food = foods.find(entry => String(entry.id) === String(item.id));
+      return food ? isMealFood(food) : true;
+    });
+    cartRecommendations.hidden = recommendedFoods.length === 0;
+    cartRecommendations.innerHTML = renderSuggestionSection(
+      recommendedFoods,
+      "Gợi ý thêm",
+      hasMealInCart ? "Thêm nước uống cho trọn bữa" : "Món ăn hợp để dùng kèm",
+      "cart"
+    );
+  }
 
   if (checkoutSummary) {
     const shippingFee = getCheckoutShippingFee(total);
