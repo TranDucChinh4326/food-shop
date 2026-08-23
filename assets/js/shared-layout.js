@@ -97,12 +97,9 @@ function renderSharedFooter() {
             <strong>FoodHub Vinh Long</strong>
             <a href="https://www.openstreetmap.org/?mlat=10.2537&mlon=105.9722#map=16/10.2537/105.9722" target="_blank" rel="noopener">Mo ban do lon</a>
           </div>
-          <iframe
-            title="Ban do FoodHub"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=105.9622%2C10.2437%2C105.9822%2C10.2637&amp;layer=mapnik&amp;marker=10.2537%2C105.9722">
-          </iframe>
+          <a class="footer-map-thumb" href="https://www.openstreetmap.org/?mlat=10.2537&mlon=105.9722#map=16/10.2537/105.9722" target="_blank" rel="noopener" aria-label="Mo ban do FoodHub">
+            <span class="footer-map-pin" aria-hidden="true"></span>
+          </a>
         </div>
       </div>
       <div class="footer-links">
