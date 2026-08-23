@@ -1,60 +1,136 @@
 /* Page-specific styles for contact.html. Shared styles live in base.css. */
 
-.contact-hero {
+.contact-page {
   background:
-    linear-gradient(90deg, rgba(34, 28, 23, 0.82), rgba(34, 28, 23, 0.12)),
-    url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d") center/cover;
+    radial-gradient(circle at 10% 8%, rgba(255, 104, 49, 0.14), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(67, 42, 28, 0.1), transparent 30%),
+    linear-gradient(180deg, #fffaf6 0%, #fff2eb 100%);
+  display: grid;
+  gap: 22px;
+  padding: 30px clamp(16px, 7vw, 118px) 68px;
+}
+
+.contact-heading {
+  border-bottom: 1px solid #efd8cc;
+  display: grid;
+  gap: 8px;
+  padding-bottom: 18px;
+}
+
+.contact-kicker {
+  color: #ff5722;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.contact-heading h1 {
+  color: #261812;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.08;
+  margin: 0;
+}
+
+.contact-heading p {
+  color: #6d584e;
+  font-size: 17px;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 720px;
 }
 
 .contact-grid {
   display: grid;
-  gap: 22px;
+  gap: 18px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .contact-card {
-  background: #fff;
-  border: 1px solid #f0e5dc;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #efd8cc;
   border-radius: 8px;
-  box-shadow: 0 16px 42px rgba(78, 45, 25, 0.08);
-  padding: 26px;
+  box-shadow: 0 14px 34px rgba(78, 45, 25, 0.07);
+  display: grid;
+  gap: 10px;
+  padding: 24px;
   text-align: left;
 }
 
 .contact-icon {
   align-items: center;
-  background: #fff1eb;
+  background: linear-gradient(135deg, #ff5a23, #ff8a22);
   border-radius: 8px;
-  color: #ff5722;
+  box-shadow: 0 10px 22px rgba(255, 90, 35, 0.2);
+  color: #fff;
   display: inline-flex;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   height: 48px;
   justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 4px;
   width: 48px;
 }
 
 .contact-card h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
+  color: #261812;
+  font-size: 22px;
+  margin: 0;
 }
 
 .contact-card p {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  color: #3c2a22;
+  font-size: 19px;
+  font-weight: 800;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.contact-card small {
+  color: #6d584e;
+  line-height: 1.5;
+}
+
+.contact-support-panel {
+  align-items: center;
+  background: #3a291f;
+  border: 1px solid rgba(255, 247, 237, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(58, 41, 31, 0.16);
+  color: #fff7ed;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.contact-support-panel h2 {
+  font-size: 24px;
+  margin: 6px 0 8px;
+}
+
+.contact-support-panel p {
+  color: rgba(255, 247, 237, 0.78);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 720px;
+}
+
+.contact-support-panel .btn {
+  flex: 0 0 auto;
 }
 
 @media (max-width: 900px) {
+  .contact-page {
+    padding: 24px 16px 52px;
+  }
+
   .contact-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .contact-card {
     align-items: center;
-    display: grid;
-    gap: 12px 16px;
     grid-template-columns: 56px minmax(0, 1fr);
     padding: 20px;
   }
@@ -69,7 +145,11 @@
   .contact-card small {
     margin: 0;
     min-width: 0;
-    overflow-wrap: anywhere;
+  }
+
+  .contact-support-panel {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 
@@ -93,9 +173,3 @@
     font-size: 17px;
   }
 }
-
-.contact-card small {
-  color: #666;
-  line-height: 1.5;
-}
-/* Style cho trang liên hệ: thông tin cửa hàng, kênh hỗ trợ và bố cục nội dung liên hệ. */
