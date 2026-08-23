@@ -345,8 +345,9 @@ async function loadPublicCategories() {
 function renderMenuCategoryOptions() {
   const heading = document.getElementById("menuCategoryHeading");
   const description = document.getElementById("menuCategoryDescription");
+  const chipsBox = document.getElementById("menuCategoryChips");
 
-  if (!heading && !description) return;
+  if (!heading && !description && !chipsBox) return;
 
   const categoryValue = getMenuCategoryValue();
   const category = getPublicCategoryBySlug(categoryValue);
@@ -361,6 +362,32 @@ function renderMenuCategoryOptions() {
     description.textContent = categoryValue === "all"
       ? "Hiển thị tất cả món theo thứ tự danh mục."
       : `Đang hiển thị các món thuộc ${label}.`;
+  }
+
+  if (chipsBox) {
+    const rootCategories = getPublicRootCategories();
+    const childCategories = category?.parentId
+      ? getPublicChildCategories(category.parentId)
+      : category?.id
+        ? getPublicChildCategories(category.id)
+        : [];
+    const chipItems = [
+      { slug: "all", name: "Tất cả món" },
+      ...rootCategories.map(item => ({ slug: item.slug, name: item.name })),
+      ...childCategories.map(item => ({ slug: item.slug, name: item.name }))
+    ];
+    const seen = new Set();
+    chipsBox.innerHTML = chipItems
+      .filter(item => {
+        if (!item.slug || seen.has(item.slug)) return false;
+        seen.add(item.slug);
+        return true;
+      })
+      .map(item => `
+        <a class="${item.slug === categoryValue ? "active" : ""}" href="${getCategoryUrl(item.slug)}">
+          ${escapeHtml(item.name)}
+        </a>
+      `).join("");
   }
 }
 
