@@ -2143,7 +2143,7 @@ function setCustomerLocationValue(location) {
 
   latInput.value = String(location.lat);
   lngInput.value = String(location.lng);
-  if (status) status.textContent = `Đã chọn: ${Number(location.lat).toFixed(5)}, ${Number(location.lng).toFixed(5)}`;
+  if (status) status.textContent = location.label || `Đã chọn: ${Number(location.lat).toFixed(5)}, ${Number(location.lng).toFixed(5)}`;
 }
 
 function hasCompleteCheckoutAddress() {
@@ -2212,10 +2212,14 @@ function loadLeafletAssets() {
   return leafletLoadPromise;
 }
 
-function setPendingDeliveryLocation(lat, lng) {
-  pendingDeliveryLocation = { lat: Number(lat), lng: Number(lng) };
+function setPendingDeliveryLocation(lat, lng, label = "") {
+  pendingDeliveryLocation = { lat: Number(lat), lng: Number(lng), label: label || getCheckoutAddressValue() };
   const status = document.getElementById("deliveryMapStatus");
-  if (status) status.textContent = `Vị trí đã chọn: ${pendingDeliveryLocation.lat.toFixed(5)}, ${pendingDeliveryLocation.lng.toFixed(5)}`;
+  if (status) {
+    status.textContent = label
+      ? `Vị trí đã chọn: ${label}`
+      : `Vị trí đã chọn: ${pendingDeliveryLocation.lat.toFixed(5)}, ${pendingDeliveryLocation.lng.toFixed(5)}`;
+  }
 
   if (deliveryMapMarker) {
     deliveryMapMarker.setLatLng([pendingDeliveryLocation.lat, pendingDeliveryLocation.lng]);
@@ -2231,6 +2235,7 @@ function setPendingDeliveryLocation(lat, lng) {
 async function openDeliveryMapPicker() {
   const dialog = document.getElementById("deliveryMapDialog");
   const canvas = document.getElementById("deliveryMapCanvas");
+  const searchInput = document.getElementById("deliveryMapSearchInput");
   if (!dialog || !canvas) return;
 
   try {
@@ -2244,6 +2249,7 @@ async function openDeliveryMapPicker() {
   const currentLocation = getCustomerLocationValue();
   const startLat = currentLocation?.lat || 10.2537;
   const startLng = currentLocation?.lng || 105.9722;
+  if (searchInput && !searchInput.value.trim()) searchInput.value = getCheckoutAddressValue();
 
   if (!deliveryMap) {
     deliveryMap = window.L.map(canvas, { zoomControl: true }).setView([startLat, startLng], currentLocation ? 16 : 13);
@@ -2262,7 +2268,7 @@ async function openDeliveryMapPicker() {
     requestAnimationFrame(() => {
       deliveryMap.invalidateSize();
       deliveryMap.setView([startLat, startLng], currentLocation ? 16 : 13);
-      setPendingDeliveryLocation(startLat, startLng);
+      setPendingDeliveryLocation(startLat, startLng, currentLocation?.label || "");
     });
   });
 }
@@ -2281,13 +2287,48 @@ function useCurrentDeliveryLocation() {
   navigator.geolocation.getCurrentPosition(position => {
     const { latitude, longitude } = position.coords;
     if (deliveryMap) deliveryMap.setView([latitude, longitude], 17);
-    setPendingDeliveryLocation(latitude, longitude);
+    setPendingDeliveryLocation(latitude, longitude, "Vị trí hiện tại của bạn");
   }, () => {
     showSiteToast("Không thể lấy vị trí hiện tại. Bạn có thể bấm trực tiếp trên bản đồ.", "error");
   }, {
     enableHighAccuracy: true,
     timeout: 10000
   });
+}
+
+async function searchDeliveryMapLocation() {
+  const input = document.getElementById("deliveryMapSearchInput");
+  const status = document.getElementById("deliveryMapStatus");
+  const keyword = input?.value.trim() || getCheckoutAddressValue();
+  if (!keyword) {
+    showSiteToast("Vui lòng nhập địa chỉ cần tìm.", "error");
+    return;
+  }
+
+  if (status) status.textContent = "Đang tìm vị trí trên bản đồ...";
+
+  try {
+    const response = await fetch(`${ORDERS_API}/shipping/geocode`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerAddress: keyword
+      })
+    });
+    const match = await response.json().catch(() => ({}));
+    if (!response.ok || !match) throw new Error(match.message || "Không tìm thấy vị trí phù hợp. Bạn thử nhập rõ số nhà, đường, phường/xã.");
+
+    const lat = Number(match.lat);
+    const lng = Number(match.lng);
+    const label = match.label || keyword;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error("Kết quả bản đồ không hợp lệ.");
+
+    if (deliveryMap) deliveryMap.setView([lat, lng], 17);
+    setPendingDeliveryLocation(lat, lng, label);
+  } catch (error) {
+    if (status) status.textContent = "Chưa tìm được vị trí chính xác. Bạn có thể bấm trực tiếp trên bản đồ.";
+    showSiteToast(error.message || "Không thể tìm địa chỉ trên bản đồ.", "error");
+  }
 }
 
 function confirmDeliveryLocation() {
@@ -3952,6 +3993,13 @@ if (protectCheckoutPage()) {
     if (event.target.id === "deliveryMapDialog") closeDeliveryMapPicker();
   });
   document.getElementById("useCurrentLocationBtn")?.addEventListener("click", useCurrentDeliveryLocation);
+  document.getElementById("searchDeliveryMapBtn")?.addEventListener("click", searchDeliveryMapLocation);
+  document.getElementById("deliveryMapSearchInput")?.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchDeliveryMapLocation();
+    }
+  });
   document.getElementById("confirmDeliveryLocationBtn")?.addEventListener("click", confirmDeliveryLocation);
   document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
   document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {

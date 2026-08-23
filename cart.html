@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giỏ hàng - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260823-recommendations">
-  <link rel="stylesheet" href="assets/css/cart.css?v=20260823-map-picker">
+  <link rel="stylesheet" href="assets/css/cart.css?v=20260823-map-geocode">
 </head>
 <body>
   <div data-shared-header></div>
@@ -197,6 +197,10 @@
         </div>
         <button type="button" class="delivery-map-close" aria-label="Đóng">&times;</button>
       </div>
+      <div class="delivery-map-search">
+        <input type="text" id="deliveryMapSearchInput" placeholder="Tìm số nhà, tên đường, phường/xã">
+        <button type="button" class="ghost-btn" id="searchDeliveryMapBtn">Tìm vị trí</button>
+      </div>
       <div id="deliveryMapCanvas" class="delivery-map-canvas"></div>
       <div class="delivery-map-status" id="deliveryMapStatus">Kéo hoặc bấm trên bản đồ để chọn vị trí.</div>
       <div class="delivery-map-actions">
@@ -209,6 +213,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260820-brand-logo"></script>
-  <script src="assets/js/script.js?v=20260823-map-picker-fix"></script>
+  <script src="assets/js/script.js?v=20260823-map-geocode"></script>
 </body>
 </html>

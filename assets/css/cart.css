@@ -226,6 +226,22 @@
   margin: 0;
 }
 
+.delivery-map-search {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.delivery-map-search input {
+  background: #fff;
+  border: 1px solid #ead6cc;
+  border-radius: 8px;
+  color: #24140f;
+  font: inherit;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
 .delivery-map-close {
   background: #fff;
   border: 1px solid #ffd1bd;
@@ -693,9 +709,11 @@
   }
 
   .checkout-map-picker,
+  .delivery-map-search,
   .delivery-map-actions {
     align-items: stretch;
     flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .cart-item {
