@@ -148,9 +148,110 @@
 
 .checkout-customer-fields label:has(textarea),
 .checkout-customer-fields label:has(#customerAddress),
+.checkout-customer-fields .checkout-map-picker,
 .checkout-customer-fields #savedAddressSelectWrap,
 .checkout-customer-fields .address-input-grid {
   grid-column: 1 / -1;
+}
+
+.checkout-map-picker {
+  align-items: center;
+  background: #fffaf7;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 14px;
+}
+
+.checkout-map-picker strong,
+.checkout-map-picker span {
+  display: block;
+}
+
+.checkout-map-picker strong {
+  color: #24140f;
+  font-size: 15px;
+}
+
+.checkout-map-picker span {
+  color: #7b6256;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.delivery-map-dialog {
+  align-items: center;
+  background: rgba(31, 20, 14, 0.64);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 18px;
+  position: fixed;
+  z-index: 10000;
+}
+
+.delivery-map-dialog[hidden] {
+  display: none;
+}
+
+.delivery-map-card {
+  background: #fffaf7;
+  border: 1px solid #f0dfd5;
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(24, 14, 8, 0.28);
+  display: grid;
+  gap: 14px;
+  max-width: 920px;
+  padding: 18px;
+  width: min(100%, 920px);
+}
+
+.delivery-map-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.delivery-map-head h2 {
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+
+.delivery-map-head p,
+.delivery-map-status {
+  color: #765f54;
+  margin: 0;
+}
+
+.delivery-map-close {
+  background: #fff;
+  border: 1px solid #ffd1bd;
+  border-radius: 50%;
+  color: #d9480f;
+  cursor: pointer;
+  font-size: 26px;
+  height: 40px;
+  line-height: 1;
+  width: 40px;
+}
+
+.delivery-map-canvas {
+  background: #f7efe9;
+  border: 1px solid #ead6cc;
+  border-radius: 8px;
+  height: min(58vh, 470px);
+  overflow: hidden;
+  width: 100%;
+}
+
+.delivery-map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .checkout-payment-layout {
@@ -589,6 +690,12 @@
   .payment-option strong,
   .payment-option small {
     overflow-wrap: anywhere;
+  }
+
+  .checkout-map-picker,
+  .delivery-map-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .cart-item {

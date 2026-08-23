@@ -37,6 +37,10 @@ let shippingMethods = [];
 let selectedShippingMethodId = null;
 let shippingQuote = null;
 let shippingQuoteTimer = null;
+let deliveryMap = null;
+let deliveryMapMarker = null;
+let pendingDeliveryLocation = null;
+let leafletLoadPromise = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -2117,6 +2121,31 @@ function getCheckoutAddressValue() {
   return buildAddressString(cityName, "", wardName, addressDetail);
 }
 
+function getCustomerLocationValue() {
+  const lat = Number(document.getElementById("customerLat")?.value || "");
+  const lng = Number(document.getElementById("customerLng")?.value || "");
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return { lat, lng, label: getCheckoutAddressValue() };
+}
+
+function setCustomerLocationValue(location) {
+  const latInput = document.getElementById("customerLat");
+  const lngInput = document.getElementById("customerLng");
+  const status = document.getElementById("customerLocationStatus");
+  if (!latInput || !lngInput) return;
+
+  if (!location) {
+    latInput.value = "";
+    lngInput.value = "";
+    if (status) status.textContent = "Chưa chọn vị trí trên bản đồ";
+    return;
+  }
+
+  latInput.value = String(location.lat);
+  lngInput.value = String(location.lng);
+  if (status) status.textContent = `Đã chọn: ${Number(location.lat).toFixed(5)}, ${Number(location.lng).toFixed(5)}`;
+}
+
 function hasCompleteCheckoutAddress() {
   return Boolean(
     document.getElementById("customerCity")?.value
@@ -2139,7 +2168,8 @@ async function refreshShippingQuote() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         shippingMethodId: selectedShippingMethodId,
-        customerAddress: getCheckoutAddressValue()
+        customerAddress: getCheckoutAddressValue(),
+        customerLocation: getCustomerLocationValue()
       })
     });
     const data = await response.json().catch(() => ({}));
@@ -2160,6 +2190,112 @@ function scheduleShippingQuoteRefresh() {
   shippingQuoteTimer = setTimeout(() => {
     refreshShippingQuote();
   }, 450);
+}
+
+function loadLeafletAssets() {
+  if (window.L) return Promise.resolve();
+  if (leafletLoadPromise) return leafletLoadPromise;
+
+  leafletLoadPromise = new Promise((resolve, reject) => {
+    const style = document.createElement("link");
+    style.rel = "stylesheet";
+    style.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    document.head.appendChild(style);
+
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("Không thể tải bản đồ. Vui lòng kiểm tra kết nối mạng."));
+    document.head.appendChild(script);
+  });
+
+  return leafletLoadPromise;
+}
+
+function setPendingDeliveryLocation(lat, lng) {
+  pendingDeliveryLocation = { lat: Number(lat), lng: Number(lng) };
+  const status = document.getElementById("deliveryMapStatus");
+  if (status) status.textContent = `Vị trí đã chọn: ${pendingDeliveryLocation.lat.toFixed(5)}, ${pendingDeliveryLocation.lng.toFixed(5)}`;
+
+  if (deliveryMapMarker) {
+    deliveryMapMarker.setLatLng([pendingDeliveryLocation.lat, pendingDeliveryLocation.lng]);
+  } else if (deliveryMap && window.L) {
+    deliveryMapMarker = window.L.marker([pendingDeliveryLocation.lat, pendingDeliveryLocation.lng], { draggable: true }).addTo(deliveryMap);
+    deliveryMapMarker.on("dragend", () => {
+      const point = deliveryMapMarker.getLatLng();
+      setPendingDeliveryLocation(point.lat, point.lng);
+    });
+  }
+}
+
+async function openDeliveryMapPicker() {
+  const dialog = document.getElementById("deliveryMapDialog");
+  const canvas = document.getElementById("deliveryMapCanvas");
+  if (!dialog || !canvas) return;
+
+  try {
+    await loadLeafletAssets();
+  } catch (error) {
+    showSiteToast(error.message, "error");
+    return;
+  }
+
+  dialog.hidden = false;
+  const currentLocation = getCustomerLocationValue();
+  const startLat = currentLocation?.lat || 10.2537;
+  const startLng = currentLocation?.lng || 105.9722;
+  pendingDeliveryLocation = currentLocation ? { lat: currentLocation.lat, lng: currentLocation.lng } : null;
+
+  if (!deliveryMap) {
+    deliveryMap = window.L.map(canvas).setView([startLat, startLng], currentLocation ? 16 : 13);
+    window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(deliveryMap);
+    deliveryMap.on("click", event => {
+      setPendingDeliveryLocation(event.latlng.lat, event.latlng.lng);
+    });
+  } else {
+    deliveryMap.setView([startLat, startLng], currentLocation ? 16 : 13);
+  }
+
+  if (currentLocation) setPendingDeliveryLocation(currentLocation.lat, currentLocation.lng);
+  setTimeout(() => deliveryMap.invalidateSize(), 80);
+}
+
+function closeDeliveryMapPicker() {
+  const dialog = document.getElementById("deliveryMapDialog");
+  if (dialog) dialog.hidden = true;
+}
+
+function useCurrentDeliveryLocation() {
+  if (!navigator.geolocation) {
+    showSiteToast("Trình duyệt không hỗ trợ lấy vị trí hiện tại.", "error");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(position => {
+    const { latitude, longitude } = position.coords;
+    if (deliveryMap) deliveryMap.setView([latitude, longitude], 17);
+    setPendingDeliveryLocation(latitude, longitude);
+  }, () => {
+    showSiteToast("Không thể lấy vị trí hiện tại. Bạn có thể bấm trực tiếp trên bản đồ.", "error");
+  }, {
+    enableHighAccuracy: true,
+    timeout: 10000
+  });
+}
+
+function confirmDeliveryLocation() {
+  if (!pendingDeliveryLocation) {
+    showSiteToast("Vui lòng chọn một điểm trên bản đồ.", "error");
+    return;
+  }
+
+  setCustomerLocationValue(pendingDeliveryLocation);
+  closeDeliveryMapPicker();
+  shippingQuote = null;
+  scheduleShippingQuoteRefresh();
 }
 
 function normalizeShippingArea(value) {
@@ -2389,7 +2525,7 @@ async function applyCheckoutDiscount() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${getAuthToken()}`
       },
-      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee, shippingMethodId: selectedShippingMethodId, customerAddress })
+      body: JSON.stringify({ discountCode: userDiscountId ? "" : code, userDiscountId: userDiscountId || null, itemsSubtotal, shippingFee, shippingMethodId: selectedShippingMethodId, customerAddress, customerLocation: getCustomerLocationValue() })
     });
     const data = await response.json();
 
@@ -2892,6 +3028,7 @@ async function submitOrder(event) {
         customerName: name,
         customerPhone: phone,
         customerAddress: address,
+        customerLocation: getCustomerLocationValue(),
         customerNote: note,
         paymentMethod,
         shippingMethodId: selectedShippingMethodId,
@@ -3791,6 +3928,7 @@ if (protectCheckoutPage()) {
     document.getElementById(id)?.addEventListener("change", () => {
       appliedDiscount = null;
       shippingQuote = null;
+      setCustomerLocationValue(null);
       document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
       renderCart();
       scheduleShippingQuoteRefresh();
@@ -3799,10 +3937,18 @@ if (protectCheckoutPage()) {
   document.getElementById("customerAddress")?.addEventListener("input", () => {
     appliedDiscount = null;
     shippingQuote = null;
+    setCustomerLocationValue(null);
     document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
     renderCart();
     scheduleShippingQuoteRefresh();
   });
+  document.getElementById("openDeliveryMapBtn")?.addEventListener("click", openDeliveryMapPicker);
+  document.querySelector(".delivery-map-close")?.addEventListener("click", closeDeliveryMapPicker);
+  document.getElementById("deliveryMapDialog")?.addEventListener("click", event => {
+    if (event.target.id === "deliveryMapDialog") closeDeliveryMapPicker();
+  });
+  document.getElementById("useCurrentLocationBtn")?.addEventListener("click", useCurrentDeliveryLocation);
+  document.getElementById("confirmDeliveryLocationBtn")?.addEventListener("click", confirmDeliveryLocation);
   document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
   document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {
     const input = document.getElementById("discountCodeInput");
