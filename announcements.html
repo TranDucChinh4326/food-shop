@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thông báo - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260824-ticker-fade-clean">
-  <link rel="stylesheet" href="assets/css/announcements.css?v=20260824-heading-scale">
+  <link rel="stylesheet" href="assets/css/announcements.css?v=20260824-filter-controls">
 </head>
 <body>
   <div data-shared-header></div>
@@ -24,11 +24,24 @@
       <div class="announcement-filters">
         <input type="search" id="announcementArchiveSearch" placeholder="Tìm kiếm thông báo">
         <input type="date" id="announcementArchiveDate" aria-label="Lọc theo ngày đăng">
+        <select id="announcementArchiveStatus" aria-label="Lọc theo trạng thái">
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Đang hoạt động</option>
+          <option value="scheduled">Sắp hiển thị</option>
+          <option value="expired">Hết hạn</option>
+          <option value="hidden">Đã ẩn</option>
+        </select>
+        <select id="announcementArchiveSort" aria-label="Sắp xếp thông báo">
+          <option value="newest" selected>Mới nhất</option>
+          <option value="oldest">Cũ nhất</option>
+          <option value="expireSoon">Sắp hết hạn</option>
+        </select>
         <select id="announcementArchivePageSize" aria-label="Số thông báo mỗi trang">
           <option value="5" selected>5 dòng</option>
           <option value="10">10 dòng</option>
           <option value="20">20 dòng</option>
         </select>
+        <button type="button" id="announcementArchiveReset" class="announcement-filter-reset">Xóa lọc</button>
       </div>
 
       <div id="announcementArchiveList" class="announcement-archive-list">
@@ -42,6 +55,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260823-vietnamese-fix"></script>
-  <script src="assets/js/script.js?v=20260823-vietnamese-fix"></script>
+  <script src="assets/js/script.js?v=20260824-announcement-filters"></script>
 </body>
 </html>

@@ -1889,13 +1889,28 @@ function getDateInputValue(value) {
 function getFilteredAnnouncementArchive() {
   const search = document.getElementById("announcementArchiveSearch")?.value.trim().toLowerCase() || "";
   const date = document.getElementById("announcementArchiveDate")?.value || "";
+  const status = document.getElementById("announcementArchiveStatus")?.value || "";
+  const sort = document.getElementById("announcementArchiveSort")?.value || "newest";
 
   return announcementArchive.filter(item => {
     const haystack = `${item.title || ""} ${item.content || ""}`.toLowerCase();
     const matchesSearch = !search || haystack.includes(search);
     const matchesDate = !date || getDateInputValue(item.published_at) === date;
+    const matchesStatus = !status || item.status === status;
 
-    return matchesSearch && matchesDate;
+    return matchesSearch && matchesDate && matchesStatus;
+  }).sort((a, b) => {
+    if (sort === "oldest") {
+      return new Date(a.published_at || 0) - new Date(b.published_at || 0);
+    }
+
+    if (sort === "expireSoon") {
+      const aDate = a.expires_at ? new Date(a.expires_at).getTime() : Number.POSITIVE_INFINITY;
+      const bDate = b.expires_at ? new Date(b.expires_at).getTime() : Number.POSITIVE_INFINITY;
+      return aDate - bDate;
+    }
+
+    return new Date(b.published_at || 0) - new Date(a.published_at || 0);
   });
 }
 
@@ -1980,12 +1995,15 @@ async function loadAnnouncementArchive() {
 function initAnnouncementArchiveFilters() {
   const search = document.getElementById("announcementArchiveSearch");
   const date = document.getElementById("announcementArchiveDate");
+  const status = document.getElementById("announcementArchiveStatus");
+  const sort = document.getElementById("announcementArchiveSort");
   const pageSize = document.getElementById("announcementArchivePageSize");
+  const reset = document.getElementById("announcementArchiveReset");
   const pager = document.getElementById("announcementArchivePager");
 
-  if (!search && !date && !pageSize && !pager) return;
+  if (!search && !date && !status && !sort && !pageSize && !pager) return;
 
-  [search, date, pageSize].forEach(control => {
+  [search, date, status, sort, pageSize].forEach(control => {
     control?.addEventListener("input", () => {
       announcementArchivePage = 1;
       renderAnnouncementArchive();
@@ -1995,6 +2013,17 @@ function initAnnouncementArchiveFilters() {
       announcementArchivePage = 1;
       renderAnnouncementArchive();
     });
+  });
+
+  reset?.addEventListener("click", () => {
+    if (search) search.value = "";
+    if (date) date.value = "";
+    if (status) status.value = "";
+    if (sort) sort.value = "newest";
+    if (pageSize) pageSize.value = "5";
+
+    announcementArchivePage = 1;
+    renderAnnouncementArchive();
   });
 
   pager?.addEventListener("click", event => {

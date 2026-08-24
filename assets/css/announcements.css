@@ -42,13 +42,14 @@
   border-radius: 8px;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(260px, 1fr) 190px 150px;
+  grid-template-columns: minmax(240px, 1.4fr) repeat(4, minmax(138px, 0.7fr)) auto;
   margin: 0 0 22px;
   padding: 12px;
 }
 
 .announcement-filters input,
-.announcement-filters select {
+.announcement-filters select,
+.announcement-filter-reset {
   background: #fff;
   border: 1px solid #ead6cc;
   border-radius: 8px;
@@ -60,10 +61,24 @@
 }
 
 .announcement-filters input:focus,
-.announcement-filters select:focus {
+.announcement-filters select:focus,
+.announcement-filter-reset:focus {
   border-color: #ff6a2a;
   box-shadow: 0 0 0 4px rgba(255, 106, 42, 0.12);
   outline: none;
+}
+
+.announcement-filter-reset {
+  color: #ff5722;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0 18px;
+  white-space: nowrap;
+}
+
+.announcement-filter-reset:hover {
+  background: #fff4ed;
+  border-color: #ff9d7a;
 }
 
 .announcement-archive-list {
@@ -184,7 +199,7 @@
   }
 
   .announcement-filters {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .archive-announcement {
@@ -208,7 +223,12 @@
   }
 
   .announcement-filters input,
-  .announcement-filters select {
+  .announcement-filters select,
+  .announcement-filter-reset {
     min-width: 0;
+  }
+
+  .announcement-filters {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
