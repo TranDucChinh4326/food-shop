@@ -87,6 +87,11 @@ const foodReviewSearch = document.getElementById("foodReviewSearch");
 const foodReviewRatingFilter = document.getElementById("foodReviewRatingFilter");
 const foodReviewVisibilityFilter = document.getElementById("foodReviewVisibilityFilter");
 const foodReviewPageSize = document.getElementById("foodReviewPageSize");
+const auditLogsList = document.getElementById("auditLogsList");
+const auditLogSearch = document.getElementById("auditLogSearch");
+const auditLogModuleFilter = document.getElementById("auditLogModuleFilter");
+const auditLogActionFilter = document.getElementById("auditLogActionFilter");
+const auditLogLimit = document.getElementById("auditLogLimit");
 let navButtons = [...document.querySelectorAll("[data-admin-target]")];
 let navToggles = [...document.querySelectorAll("[data-admin-toggle]")];
 const adminSections = [...document.querySelectorAll("[data-admin-section]")];
@@ -103,7 +108,8 @@ const SECTION_PERMISSIONS = {
   discounts: ["discounts.manage"],
   shipping: ["shipping.manage"],
   feedback: ["feedback.manage"],
-  "food-reviews": ["feedback.manage"]
+  "food-reviews": ["feedback.manage"],
+  "audit-logs": ["stats.view", "roles.manage", "staff.manage"]
 };
 const statusLabels = {
   pending: "Ch\u1edd x\u00e1c nh\u1eadn",
@@ -111,6 +117,11 @@ const statusLabels = {
   delivering: "\u0110ang giao",
   done: "Ho\u00e0n t\u1ea5t",
   cancelled: "\u0110\u00e3 h\u1ee7y"
+};
+const auditActionLabels = {
+  create: "T\u1ea1o m\u1edbi",
+  update: "C\u1eadp nh\u1eadt",
+  delete: "X\u00f3a"
 };
 
 let toastTimer;
@@ -159,6 +170,8 @@ let foodReviewSearchTimer;
 let cachedFoodReviews = [];
 let foodReviewsPage = 1;
 let foodReviewsPerPage = 5;
+let auditLogSearchTimer;
+let cachedAuditLogs = [];
 let currentAdmin = {
   ...user,
   permissions: Array.isArray(user?.permissions) ? user.permissions : []
@@ -207,7 +220,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews"];
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -1790,6 +1803,92 @@ function renderFoodReviewsTable() {
   `;
 }
 
+function formatAuditAction(action) {
+  return auditActionLabels[action] || action || "-";
+}
+
+function formatAuditDetails(details) {
+  if (!details) return "-";
+
+  const payload = typeof details === "string"
+    ? (() => {
+      try {
+        return JSON.parse(details);
+      } catch (_) {
+        return {};
+      }
+    })()
+    : details;
+
+  const entries = Object.entries(payload || {})
+    .filter(([key]) => key !== "statusCode")
+    .slice(0, 3);
+
+  if (!entries.length) return "-";
+
+  return entries
+    .map(([key, value]) => `${escapeHtml(key)}: ${escapeHtml(String(value ?? ""))}`)
+    .join("<br>");
+}
+
+function syncAuditLogModuleFilter() {
+  if (!auditLogModuleFilter) return;
+
+  const current = auditLogModuleFilter.value || "all";
+  const modules = [...new Set(cachedAuditLogs.map(item => item.module).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi"));
+  auditLogModuleFilter.innerHTML = `
+    <option value="all">T\u1ea5t c\u1ea3 module</option>
+    ${modules.map(moduleName => `<option value="${escapeHtml(moduleName)}">${escapeHtml(moduleName)}</option>`).join("")}
+  `;
+  auditLogModuleFilter.value = modules.includes(current) ? current : "all";
+}
+
+async function loadAuditLogs() {
+  if (!auditLogsList) return;
+
+  auditLogsList.textContent = "\u0110ang t\u1ea3i nh\u1eadt k\u00fd...";
+
+  try {
+    const params = new URLSearchParams();
+    if (auditLogSearch?.value.trim()) params.set("search", auditLogSearch.value.trim());
+    if (auditLogModuleFilter?.value && auditLogModuleFilter.value !== "all") params.set("module", auditLogModuleFilter.value);
+    if (auditLogActionFilter?.value && auditLogActionFilter.value !== "all") params.set("action", auditLogActionFilter.value);
+    if (auditLogLimit?.value) params.set("limit", auditLogLimit.value);
+
+    const data = await requestJson(`${ADMIN_API}/audit-logs?${params.toString()}`);
+    cachedAuditLogs = data.logs || [];
+    syncAuditLogModuleFilter();
+    renderAuditLogsTable();
+  } catch (error) {
+    auditLogsList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+function renderAuditLogsTable() {
+  if (!auditLogsList) return;
+
+  if (!cachedAuditLogs.length) {
+    auditLogsList.innerHTML = `<p class="empty-note">Ch\u01b0a c\u00f3 nh\u1eadt k\u00fd thao t\u00e1c.</p>`;
+    return;
+  }
+
+  auditLogsList.innerHTML = renderSimpleTable(
+    ["Th\u1eddi gian", "Nh\u00e2n vi\u00ean", "Thao t\u00e1c", "Module", "\u0110\u1ed1i t\u01b0\u1ee3ng", "Chi ti\u1ebft"],
+    cachedAuditLogs.map(item => `
+      <tr>
+        <td><strong>${formatDateTime(item.created_at)}</strong><small>${escapeHtml(item.ip_address || "")}</small></td>
+        <td><strong>${escapeHtml(item.actor_name || "Kh\u00f4ng r\u00f5")}</strong><small>${escapeHtml(item.actor_role || "")}</small></td>
+        <td><span class="account-status ${item.action === "delete" ? "locked" : "active"}">${formatAuditAction(item.action)}</span></td>
+        <td>${escapeHtml(item.module || "-")}</td>
+        <td><strong>${escapeHtml(item.target_type || "-")}</strong><small>${escapeHtml(item.target_id || "")}</small></td>
+        <td><small>${formatAuditDetails(item.details)}</small><small>${escapeHtml(item.method || "")} ${escapeHtml(item.path || "")}</small></td>
+      </tr>
+    `),
+    "Ch\u01b0a c\u00f3 nh\u1eadt k\u00fd thao t\u00e1c."
+  );
+}
+
 async function loadStats() {
   // Tải số liệu dashboard từ GET /api/admin/stats.
   // Filter ngày/trend lấy từ UI, backend trả doanh thu, đơn hàng, top món, danh mục và phản hồi.
@@ -3015,9 +3114,17 @@ document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDi
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
 document.getElementById("applyStatsFilterBtn")?.addEventListener("click", loadStats);
+document.getElementById("refreshAuditLogsBtn")?.addEventListener("click", loadAuditLogs);
 statsTrendMode?.addEventListener("change", () => {
   syncStatsDateInputs();
   loadStats();
+});
+auditLogModuleFilter?.addEventListener("change", loadAuditLogs);
+auditLogActionFilter?.addEventListener("change", loadAuditLogs);
+auditLogLimit?.addEventListener("change", loadAuditLogs);
+auditLogSearch?.addEventListener("input", () => {
+  clearTimeout(auditLogSearchTimer);
+  auditLogSearchTimer = setTimeout(loadAuditLogs, 300);
 });
 orderStatusFilter?.addEventListener("change", () => {
   ordersPage = 1;
@@ -3887,6 +3994,7 @@ async function initAdminPage() {
   if (canAccessSection("advertisements")) loadAdvertisements();
   if (canAccessSection("feedback")) loadFeedback();
   if (canAccessSection("food-reviews")) loadFoodReviews();
+  if (canAccessSection("audit-logs")) loadAuditLogs();
   syncStatsDateInputs();
   if (hasAdminPermission("stats.view") || hasAdminPermission("orders.manage")) loadStats();
 }
