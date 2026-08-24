@@ -150,6 +150,56 @@ function startAdminPresenceHeartbeat() {
   window.setInterval(pingPresence, 60000);
 }
 
+function startAdminRealtime() {
+  const token = sessionStorage.getItem("foodhub_token");
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const socketBase = apiBase.replace(/\/api\/?$/, "");
+  if (!token || window.__foodHubAdminRealtimeStarted) return;
+
+  const loadSocketClient = () => new Promise((resolve, reject) => {
+    if (window.io) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `${socketBase}/socket.io/socket.io.js`;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  loadSocketClient().then(() => {
+    if (!window.io || window.__foodHubAdminRealtimeStarted) return;
+    window.__foodHubAdminRealtimeStarted = true;
+
+    const socket = window.io(socketBase, {
+      auth: { token },
+      transports: ["websocket", "polling"]
+    });
+
+    const refreshOrders = () => {
+      if (typeof window.loadOrders === "function") window.loadOrders();
+      if (typeof window.loadStats === "function") window.loadStats();
+    };
+
+    socket.on("order:created", payload => {
+      refreshOrders();
+      if (typeof window.showAdminToast === "function") {
+        window.showAdminToast(`Có đơn hàng mới #${payload?.order?.id || ""}`, "info");
+      }
+    });
+
+    socket.on("order:updated", payload => {
+      refreshOrders();
+      if (typeof window.showAdminToast === "function") {
+        window.showAdminToast(`Đơn hàng #${payload?.order?.id || ""} vừa cập nhật`, "info");
+      }
+    });
+  }).catch(() => {});
+}
+
 function startAdminIdleSessionGuard() {
   const tokenKey = "foodhub_token";
   const userKey = "foodhub_user";
@@ -339,3 +389,4 @@ function startAdminIdleSessionGuard() {
 initAdminSidebar();
 startAdminIdleSessionGuard();
 startAdminPresenceHeartbeat();
+startAdminRealtime();

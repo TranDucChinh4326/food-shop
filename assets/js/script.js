@@ -3591,6 +3591,8 @@ function resetOrderHistoryFilter() {
   loadOrderHistory();
 }
 
+window.loadOrderHistory = loadOrderHistory;
+
 function getOrderStatusLabel(status) {
   const labels = {
     pending: "Chờ xác nhận",

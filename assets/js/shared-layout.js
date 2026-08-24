@@ -217,6 +217,55 @@ function startFoodHubPresenceHeartbeat() {
   window.setInterval(pingPresence, 60000);
 }
 
+function startFoodHubRealtime() {
+  const token = sessionStorage.getItem("foodhub_token");
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const socketBase = apiBase.replace(/\/api\/?$/, "");
+  if (!token || window.__foodHubRealtimeStarted) return;
+
+  const loadSocketClient = () => new Promise((resolve, reject) => {
+    if (window.io) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `${socketBase}/socket.io/socket.io.js`;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  loadSocketClient().then(() => {
+    if (!window.io || window.__foodHubRealtimeStarted) return;
+    window.__foodHubRealtimeStarted = true;
+
+    const socket = window.io(socketBase, {
+      auth: { token },
+      transports: ["websocket", "polling"]
+    });
+
+    socket.on("order:created", payload => {
+      if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
+        window.loadOrderHistory();
+      }
+      if (typeof window.showSiteToast === "function") {
+        window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} đã được ghi nhận.`, "info");
+      }
+    });
+
+    socket.on("order:updated", payload => {
+      if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
+        window.loadOrderHistory();
+      }
+      if (typeof window.showSiteToast === "function") {
+        window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} vừa được cập nhật.`, "info");
+      }
+    });
+  }).catch(() => {});
+}
+
 function startFoodHubNotificationBadges() {
   const token = sessionStorage.getItem("foodhub_token");
   const userRaw = sessionStorage.getItem("foodhub_user");
@@ -554,5 +603,6 @@ renderSharedHeader();
 renderSharedFooter();
 syncSharedNavActive();
 startFoodHubNotificationBadges();
+startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();

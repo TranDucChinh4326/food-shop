@@ -4006,6 +4006,10 @@ async function initAdminPage() {
   if (hasAdminPermission("stats.view") || hasAdminPermission("orders.manage")) loadStats();
 }
 
+window.showAdminToast = showAdminToast;
+window.loadOrders = loadOrders;
+window.loadStats = loadStats;
+
 initAdminPage().catch(error => {
   showAdminToast(error.message, "error");
 });
