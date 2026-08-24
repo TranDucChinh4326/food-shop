@@ -200,6 +200,20 @@ function startAdminRealtime() {
   }).catch(() => {});
 }
 
+function startAdminOrderAutoRefresh() {
+  if (window.__foodHubAdminOrderAutoRefreshStarted) return;
+
+  window.__foodHubAdminOrderAutoRefreshStarted = true;
+  const refresh = () => {
+    if (document.hidden) return;
+    if (typeof window.loadOrders === "function") window.loadOrders();
+    if (typeof window.loadStats === "function") window.loadStats();
+  };
+
+  window.setInterval(refresh, 12000);
+  window.addEventListener("focus", refresh);
+}
+
 function startAdminIdleSessionGuard() {
   const tokenKey = "foodhub_token";
   const userKey = "foodhub_user";
@@ -390,3 +404,4 @@ initAdminSidebar();
 startAdminIdleSessionGuard();
 startAdminPresenceHeartbeat();
 startAdminRealtime();
+startAdminOrderAutoRefresh();
