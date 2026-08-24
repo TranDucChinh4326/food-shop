@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260824-shipping-layout">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260824-food-visibility">
   <link rel="stylesheet" href="assets/css/admin.css?v=20260823-overview-refresh">
 </head>
 <body>
@@ -255,6 +255,11 @@
           <input type="search" id="foodSearch" placeholder="Tìm kiếm">
           <select id="foodCategoryFilter">
             <option value="all">Tất cả</option>
+          </select>
+          <select id="foodStatusFilter" aria-label="Lọc trạng thái món ăn">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="active">Đang bán</option>
+            <option value="hidden">Đã ẩn</option>
           </select>
           <select id="foodPageSize" aria-label="Số dòng món ăn mỗi trang">
             <option value="5">5</option>
@@ -693,6 +698,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260824-shipping-layout"></script>
+  <script src="assets/js/admin/admin.js?v=20260824-food-visibility"></script>
 </body>
 </html>

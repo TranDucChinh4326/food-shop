@@ -35,6 +35,7 @@ const staffForm = document.getElementById("staffForm");
 const staffPermissions = document.getElementById("staffPermissions");
 const foodSearch = document.getElementById("foodSearch");
 const foodCategoryFilter = document.getElementById("foodCategoryFilter");
+const foodStatusFilter = document.getElementById("foodStatusFilter");
 const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const foodCreateLink = document.getElementById("foodCreateLink");
@@ -493,6 +494,16 @@ function lockIcon(isActive = true) {
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <rect x="5" y="11" width="14" height="10" rx="2"></rect>
       ${isActive ? '<path d="M8 11V7a4 4 0 0 1 8 0v4"></path>' : '<path d="M8 11V7a4 4 0 0 1 7.2-2.4"></path><path d="M3 3l18 18"></path>'}
+    </svg>
+  `;
+}
+
+function visibilityIcon(isVisible = true) {
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+      ${isVisible ? "" : '<path d="M3 3l18 18"></path>'}
     </svg>
   `;
 }
@@ -2738,6 +2749,7 @@ function renderFoodCategoryFilterOptions() {
 function getFilteredFoods() {
   const search = String(foodSearch?.value || "").trim().toLowerCase();
   const filterValue = foodCategoryFilter?.value || activeFoodSubcategory || "all";
+  const status = foodStatusFilter?.value || "all";
   activeFoodSubcategory = filterValue;
 
   return cachedFoods.filter(food => {
@@ -2759,8 +2771,11 @@ function getFilteredFoods() {
       || String(getFoodCategoryLabel(food)).toLowerCase().includes(search)
       || String(food.price || "").includes(search)
       || String(food.stock_quantity ?? food.stockQuantity ?? 0).includes(search);
+    const matchesStatus = status === "all"
+      || (status === "active" && Number(food.is_active))
+      || (status === "hidden" && !Number(food.is_active));
 
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesSearch && matchesStatus;
   });
 }
 
@@ -2811,6 +2826,7 @@ function renderFoodsTable() {
             <th>Tên món</th>
             <th>Giá</th>
             <th>Số lượng còn</th>
+            <th>Trạng thái</th>
             <th>Chức năng</th>
           </tr>
         </thead>
@@ -2823,14 +2839,16 @@ function renderFoodsTable() {
               </td>
               <td>
                 <strong>${escapeHtml(food.name)}</strong>
-                <small>${escapeHtml(getFoodCategoryLabel(food))} - ${food.is_active ? "Đang bán" : "Đã ẩn"}</small>
+                <small>${escapeHtml(getFoodCategoryLabel(food))}</small>
               </td>
               <td>${formatMoney(food.price)}</td>
               <td>${Number(food.stock_quantity ?? food.stockQuantity ?? 0).toLocaleString("vi-VN")}</td>
+              <td><span class="account-status ${Number(food.is_active) ? "active" : "locked"}">${Number(food.is_active) ? "Đang bán" : "Đã ẩn"}</span></td>
               <td>
                 <div class="table-actions">
                   <a class="icon-btn edit" href="admin-food.html?id=${food.id}&foodCategory=${encodeURIComponent(getFoodRootSlug(food))}" title="Sửa" aria-label="Sửa món">${editIcon()}</a>
-                  <button type="button" class="icon-btn delete" title="Ẩn mon" aria-label="Ẩn mon" data-hide-food="${food.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn" title="${Number(food.is_active) ? "Ẩn món" : "Hiện món"}" aria-label="${Number(food.is_active) ? "Ẩn món" : "Hiện món"}" data-toggle-food="${food.id}" data-active="${Number(food.is_active) ? "0" : "1"}">${visibilityIcon(Number(food.is_active))}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa vĩnh viễn" aria-label="Xóa vĩnh viễn món" data-delete-food="${food.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -2849,8 +2867,26 @@ function renderFoodsTable() {
   `;
 }
 
-async function hideFood(foodId) {
-  if (!confirm("Ẩn mon này khoi thực đơn?")) {
+async function toggleFoodVisibility(foodId, isActive) {
+  const active = Number(isActive) ? 1 : 0;
+  if (!confirm(active ? "Hiện món này trên thực đơn?" : "Ẩn món này khỏi thực đơn?")) {
+    return;
+  }
+
+  try {
+    await requestJson(`${ADMIN_API}/foods/${foodId}/visibility`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive: active })
+    });
+    await loadFoods();
+    showAdminToast(active ? "Đã hiện món trên thực đơn." : "Đã ẩn món khỏi thực đơn.");
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function deleteFood(foodId) {
+  if (!confirm("Xóa vĩnh viễn món này? Thao tác này không thể hoàn tác.")) {
     return;
   }
 
@@ -2859,7 +2895,7 @@ async function hideFood(foodId) {
       method: "DELETE"
     });
     await loadFoods();
-    showAdminToast("Đã ẩn mon khoi thực đơn.");
+    showAdminToast("Đã xóa món.");
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -3117,6 +3153,10 @@ foodCategoryFilter?.addEventListener("change", () => {
   renderFoodsTable();
   showAdminSection("foods");
 });
+foodStatusFilter?.addEventListener("change", () => {
+  foodsPage = 1;
+  renderFoodsTable();
+});
 foodPageSize?.addEventListener("change", () => {
   foodsPerPage = Number(foodPageSize.value || 5);
   foodsPage = 1;
@@ -3295,7 +3335,8 @@ ordersList.addEventListener("click", event => {
 
 foodsList?.addEventListener("click", event => {
   const pageButton = event.target.closest("[data-foods-page]");
-  const hideButton = event.target.closest("[data-hide-food]");
+  const toggleButton = event.target.closest("[data-toggle-food]");
+  const deleteButton = event.target.closest("[data-delete-food]");
 
   if (pageButton) {
     const pageAction = pageButton.dataset.foodsPage;
@@ -3315,9 +3356,13 @@ foodsList?.addEventListener("click", event => {
     return;
   }
 
-  if (hideButton) {
-    const hideId = hideButton.dataset.hideFood;
-    hideFood(hideId);
+  if (toggleButton) {
+    toggleFoodVisibility(toggleButton.dataset.toggleFood, toggleButton.dataset.active);
+    return;
+  }
+
+  if (deleteButton) {
+    deleteFood(deleteButton.dataset.deleteFood);
   }
 });
 

@@ -1942,6 +1942,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   width: 140px;
 }
 
+.foods-admin-table td:nth-child(6),
+.foods-admin-table th:nth-child(6) {
+  width: 130px;
+}
+
+.foods-admin-table td:last-child,
+.foods-admin-table th:last-child {
+  width: 150px;
+}
+
 .admin-food-thumb {
   aspect-ratio: 1;
   border: 1px solid var(--line);
