@@ -684,4 +684,64 @@
     grid-column: 2;
   }
 }
+
+/* Mobile dashboard hardening */
+@media (max-width: 700px) {
+  .dashboard-heading {
+    border-radius: 8px;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .dashboard-heading h1 {
+    font-size: clamp(28px, 10vw, 34px);
+  }
+
+  .dashboard-filter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-filter .primary-btn,
+  .dashboard-filter .ghost-btn,
+  .dashboard-filter #statsTrendMode {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats-card {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    min-width: 0;
+  }
+
+  .stats-card strong {
+    font-size: clamp(24px, 9vw, 32px);
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-card-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .dashboard-card-title span {
+    text-align: left;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats-card em {
+    justify-self: start;
+    order: -1;
+  }
+}
 /* Style riêng cho dashboard admin: thống kê, danh sách đơn, bảng quản lý và các khối nội dung tổng quan. */

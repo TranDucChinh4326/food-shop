@@ -5395,3 +5395,167 @@ footer {
     justify-items: start;
   }
 }
+
+/* Mobile site hardening */
+@media (max-width: 700px) {
+  .page-title,
+  .menu-page,
+  .checkout-page,
+  .track-page,
+  .contact-page,
+  .profile-page,
+  .categories,
+  .menu,
+  .cart-section,
+  .order-section,
+  .track-section,
+  .about,
+  .contact {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .page-title h1,
+  .menu-hero h1,
+  .track-hero h1,
+  .contact-hero h1,
+  .profile-hero h1 {
+    font-size: clamp(28px, 10vw, 34px);
+    line-height: 1.12;
+  }
+
+  .page-title p,
+  .menu-hero p,
+  .track-hero p,
+  .contact-hero p,
+  .profile-hero p {
+    font-size: 15px;
+  }
+
+  .menu-hero,
+  .track-hero,
+  .contact-hero,
+  .profile-hero {
+    min-height: 180px;
+    padding: 22px;
+  }
+
+  .filter-box {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .filter-box input,
+  .filter-box select {
+    width: 100%;
+  }
+
+  .food-list {
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .food-card {
+    min-width: 0;
+  }
+
+  .food-card h3,
+  .food-card p,
+  .food-price-row,
+  .food-qty-row {
+    overflow-wrap: anywhere;
+  }
+
+  .food-price-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .review-filter-bar,
+  .home-review-filters {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .review-filter-bar label,
+  .home-review-filters label,
+  .review-filter-bar select,
+  .home-review-filters select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .food-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .header-top {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .brand-copy strong {
+    font-size: 22px;
+  }
+
+  .top-icon,
+  .account-toggle {
+    height: 38px;
+    width: 38px;
+  }
+}
+
+@media (max-width: 760px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .site-header,
+  .header-inner,
+  .header-top,
+  .nav-menu,
+  .main-nav,
+  main,
+  footer {
+    min-width: 0;
+  }
+
+  .header-inner {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .header-top {
+    gap: 10px;
+  }
+
+  .search-shell,
+  .header-search,
+  .site-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ticker-bar,
+  .announcement-ticker {
+    max-width: 100%;
+  }
+
+  .footer-content,
+  .footer-grid,
+  .shared-footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer-map,
+  .footer-map iframe,
+  .footer-map-card {
+    max-width: 100%;
+  }
+}

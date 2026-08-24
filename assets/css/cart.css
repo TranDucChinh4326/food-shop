@@ -771,6 +771,62 @@
   }
 }
 
+@media (max-width: 640px) {
+  .delivery-map-dialog {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .delivery-map-card {
+    max-height: calc(100svh - 20px);
+    overflow: auto;
+    padding: 14px;
+  }
+
+  .delivery-map-head {
+    gap: 10px;
+  }
+
+  .delivery-map-head h2 {
+    font-size: 21px;
+  }
+
+  .delivery-map-canvas {
+    height: min(54svh, 380px);
+  }
+
+  .checkout-stepper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout-step-tab {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 430px) {
+  .cart-item {
+    gap: 12px;
+    grid-template-columns: 64px minmax(0, 1fr);
+    padding: 12px;
+  }
+
+  .cart-item-image {
+    height: 64px;
+    width: 64px;
+  }
+
+  .cart-item .qty-box {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .delivery-map-actions .btn,
+  .delivery-map-actions .ghost-btn {
+    width: 100%;
+  }
+}
+
 .cart-total {
   background: #fff1eb;
   border-radius: 8px;

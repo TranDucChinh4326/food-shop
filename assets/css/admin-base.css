@@ -3062,3 +3062,72 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   cursor: wait;
   opacity: 0.65;
 }
+
+/* Mobile admin hardening */
+@media (max-width: 700px) {
+  .admin-page-bar,
+  .admin-topbar,
+  .admin-page-actions,
+  .table-toolbar.multi-filter {
+    min-width: 0;
+  }
+
+  .admin-page-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .admin-page-home,
+  .sidebar-toggle {
+    flex: 0 0 auto;
+  }
+
+  .admin-user-menu {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .admin-user-menu summary {
+    max-width: min(100%, 220px);
+  }
+
+  .table-toolbar.multi-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .table-toolbar.multi-filter input,
+  .table-toolbar.multi-filter select,
+  .table-toolbar.multi-filter button {
+    width: 100%;
+  }
+
+  .admin-toast-card,
+  .admin-pin-card {
+    max-width: calc(100vw - 28px);
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-main {
+    padding-inline: 8px;
+  }
+
+  .admin-sidebar {
+    padding-inline: 12px;
+  }
+
+  .admin-nav {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel,
+  .admin-table-page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .admin-pin-card {
+    padding: 22px 18px;
+  }
+}

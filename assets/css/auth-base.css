@@ -886,3 +886,34 @@ body {
     padding: 0;
   }
 }
+
+@media (max-width: 520px) {
+  .auth-slider-shell {
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .auth-slider-shell .auth-panel {
+    padding: 24px 18px;
+  }
+
+  .auth-slider-shell .auth-panel h1 {
+    font-size: clamp(28px, 10vw, 34px);
+  }
+
+  .auth-slider-shell .auth-panel input,
+  .auth-slider-shell .auth-panel .primary-btn,
+  .auth-slider-shell .auth-panel .social-btn {
+    min-height: 46px;
+  }
+
+  .auth-slider-shell .auth-panel form {
+    gap: 12px;
+  }
+
+  .auth-row,
+  .auth-form-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
