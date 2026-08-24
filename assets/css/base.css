@@ -5601,6 +5601,10 @@ footer {
   animation: cartCountPop 0.52s ease;
 }
 
+.cart-source-hop {
+  animation: cartSourceHop 0.5s ease;
+}
+
 .cart-fly-image {
   border: 2px solid rgba(255, 255, 255, 0.92);
   border-radius: 12px;
@@ -5609,8 +5613,22 @@ footer {
   opacity: 0.96;
   pointer-events: none;
   position: fixed;
-  transition: transform 0.68s cubic-bezier(0.18, 0.78, 0.24, 1), opacity 0.68s ease;
+  transition: transform 1.25s cubic-bezier(0.2, 0.82, 0.22, 1), opacity 1.25s ease;
   z-index: 2600;
+}
+
+@keyframes cartSourceHop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  38% {
+    transform: translateY(-10px) scale(1.035);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes cartCountPop {
@@ -5629,6 +5647,10 @@ footer {
 
 @media (prefers-reduced-motion: reduce) {
   .cart-count-pop {
+    animation: none;
+  }
+
+  .cart-source-hop {
     animation: none;
   }
 

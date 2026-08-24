@@ -933,6 +933,11 @@ function animateCartAddButton(source) {
     ?.querySelector(".food-detail-image, img");
   if (!cartButton || !sourceImage) return;
 
+  sourceImage.classList.remove("cart-source-hop");
+  void sourceImage.offsetWidth;
+  sourceImage.classList.add("cart-source-hop");
+  setTimeout(() => sourceImage.classList.remove("cart-source-hop"), 520);
+
   const start = sourceImage.getBoundingClientRect();
   const end = cartButton.getBoundingClientRect();
   const flyingImage = document.createElement("img");
@@ -945,12 +950,14 @@ function animateCartAddButton(source) {
   flyingImage.style.height = `${Math.min(start.height, 72)}px`;
   document.body.appendChild(flyingImage);
 
-  requestAnimationFrame(() => {
-    flyingImage.style.transform = `translate(${end.left + end.width / 2 - start.left}px, ${end.top + end.height / 2 - start.top}px) scale(0.18) rotate(10deg)`;
-    flyingImage.style.opacity = "0";
-  });
+  setTimeout(() => {
+    requestAnimationFrame(() => {
+      flyingImage.style.transform = `translate(${end.left + end.width / 2 - start.left}px, ${end.top + end.height / 2 - start.top}px) scale(0.18) rotate(10deg)`;
+      flyingImage.style.opacity = "0";
+    });
+  }, 180);
 
-  setTimeout(() => flyingImage.remove(), 720);
+  setTimeout(() => flyingImage.remove(), 1550);
 }
 
 async function loadFoods() {
