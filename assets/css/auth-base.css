@@ -627,6 +627,84 @@ body {
   background: #1d4ed8;
 }
 
+.auth-loading-overlay {
+  align-items: center;
+  backdrop-filter: blur(10px);
+  background: rgba(32, 18, 12, 0.52);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  padding: 22px;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.22s ease;
+  z-index: 2000;
+}
+
+.auth-loading-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.auth-loading-card {
+  align-items: center;
+  background: linear-gradient(180deg, #fff, #fff8f4);
+  border: 1px solid rgba(255, 204, 181, 0.74);
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgba(28, 13, 7, 0.28);
+  color: #24140f;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  max-width: 320px;
+  padding: 28px 30px;
+  text-align: center;
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.22s ease;
+  width: min(100%, 320px);
+}
+
+.auth-loading-overlay.show .auth-loading-card {
+  transform: translateY(0) scale(1);
+}
+
+.auth-loading-spinner {
+  animation: authLoadingSpin 0.82s linear infinite;
+  border: 4px solid #ffe0d1;
+  border-top-color: #ff5722;
+  border-radius: 50%;
+  height: 46px;
+  width: 46px;
+}
+
+.auth-loading-card strong {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.auth-loading-card small {
+  color: #7a6256;
+  line-height: 1.45;
+}
+
+@keyframes authLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-loading-overlay,
+  .auth-loading-card {
+    transition: none;
+  }
+
+  .auth-loading-spinner {
+    animation-duration: 1.6s;
+  }
+}
+
 .support-widget {
   bottom: 22px;
   position: fixed;

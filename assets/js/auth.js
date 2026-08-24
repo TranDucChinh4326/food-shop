@@ -30,6 +30,37 @@ function showToast(message, type = "info") {
   }, 3200);
 }
 
+function getAuthLoadingOverlay() {
+  let overlay = document.getElementById("authLoadingOverlay");
+  if (overlay) return overlay;
+
+  overlay = document.createElement("div");
+  overlay.id = "authLoadingOverlay";
+  overlay.className = "auth-loading-overlay";
+  overlay.setAttribute("role", "status");
+  overlay.setAttribute("aria-live", "polite");
+  overlay.innerHTML = `
+    <div class="auth-loading-card">
+      <span class="auth-loading-spinner" aria-hidden="true"></span>
+      <strong>Đang xử lý</strong>
+      <small>FoodHub đang kiểm tra thông tin đăng nhập...</small>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function showAuthLoading(message = "FoodHub đang kiểm tra thông tin đăng nhập...") {
+  const overlay = getAuthLoadingOverlay();
+  const text = overlay.querySelector("small");
+  if (text) text.textContent = message;
+  requestAnimationFrame(() => overlay.classList.add("show"));
+}
+
+function hideAuthLoading() {
+  document.getElementById("authLoadingOverlay")?.classList.remove("show");
+}
+
 function showComingSoon(provider) {
   showToast(`${provider} chưa được cấu hình App ID/Client ID.`, "info");
 }
@@ -86,6 +117,7 @@ function finishLogin(data) {
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
   sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
   sessionStorage.setItem("foodhub_show_chat_bubble", "1");
+  showAuthLoading("Đăng nhập thành công. Đang chuyển vào FoodHub...");
   showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
 
   setTimeout(() => {
@@ -361,6 +393,7 @@ async function login(event) {
   const loginValue = form.querySelector("[name='loginIdentifier'], #loginIdentifier, #email")?.value || "";
   const password = form.querySelector("[name='password'], #password, #loginPassword")?.value || "";
 
+  showAuthLoading("Đang kiểm tra thông tin đăng nhập...");
   setSubmitState(form, true, "Đang đăng nhập...");
 
   try {
@@ -374,17 +407,20 @@ async function login(event) {
     const data = await response.json();
 
     if (response.status === 403) {
+      hideAuthLoading();
       handleVerificationStep(data, "Email chưa xác thực.");
       return;
     }
 
     if (!response.ok) {
+      hideAuthLoading();
       showToast(data.message || "Không thể đăng nhập.", "error");
       return;
     }
 
     finishLogin(data);
   } catch (error) {
+    hideAuthLoading();
     showToast("Không kết nối được server.", "error");
     console.error(error);
   } finally {
@@ -422,6 +458,7 @@ async function forgotPassword(event) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      hideAuthLoading();
       showToast(data.message || "Không thể gửi yêu cầu đặt lại mật khẩu.", "error");
       return;
     }
@@ -432,6 +469,7 @@ async function forgotPassword(event) {
       window.location.href = "reset-password.html";
     }, 900);
   } catch (error) {
+    hideAuthLoading();
     showToast(error.name === "AbortError" ? "Gửi OTP quá lâu, vui lòng kiểm tra cấu hình mail hoặc thử lại." : "Không kết nối được server.", "error");
     console.error(error);
   } finally {
