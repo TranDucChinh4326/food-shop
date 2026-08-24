@@ -2628,7 +2628,8 @@ function renderCategoriesTable() {
               <td>
                 <div class="table-actions">
                   <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa danh mục" data-edit-category="${category.id}">${editIcon()}</button>
-                  <button type="button" class="icon-btn delete" title="An" aria-label="Ẩn danh mục" data-delete-category="${category.id}">${trashIcon()}</button>
+                  <button type="button" class="icon-btn" title="${Number(category.isActive) ? "Ẩn danh mục" : "Hiện danh mục"}" aria-label="${Number(category.isActive) ? "Ẩn danh mục" : "Hiện danh mục"}" data-toggle-category="${category.id}" data-active="${Number(category.isActive) ? "0" : "1"}">${visibilityIcon(Number(category.isActive))}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa vĩnh viễn" aria-label="Xóa vĩnh viễn danh mục" data-delete-category="${category.id}">${trashIcon()}</button>
                 </div>
               </td>
             </tr>
@@ -3094,6 +3095,7 @@ categorySearch?.addEventListener("input", () => {
 categoriesList?.addEventListener("click", async event => {
   const pageButton = event.target.closest("[data-categories-page]");
   const editButton = event.target.closest("[data-edit-category]");
+  const toggleButton = event.target.closest("[data-toggle-category]");
   const deleteButton = event.target.closest("[data-delete-category]");
 
   try {
@@ -3120,13 +3122,27 @@ categoriesList?.addEventListener("click", async event => {
       return;
     }
 
+    if (toggleButton) {
+      const isActive = toggleButton.dataset.active === "1";
+      if (!confirm(isActive ? "Hiện danh mục này?" : "Ẩn danh mục này? Nếu là danh mục cha, các mục con cũng sẽ bị ẩn.")) return;
+
+      await requestJson(`${ADMIN_API}/categories/${toggleButton.dataset.toggleCategory}/visibility`, {
+        method: "PATCH",
+        body: JSON.stringify({ isActive })
+      });
+      showAdminToast(isActive ? "Đã hiện danh mục." : "Đã ẩn danh mục.");
+      await loadCategories();
+      await loadFoods();
+      return;
+    }
+
     if (deleteButton) {
-      if (!confirm("Ẩn danh mục này? Nếu là danh mục cha, các mục con cũng sẽ bị ẩn.")) return;
+      if (!confirm("Xóa vĩnh viễn danh mục này? Thao tác này không thể hoàn tác.")) return;
 
       await requestJson(`${ADMIN_API}/categories/${deleteButton.dataset.deleteCategory}`, {
         method: "DELETE"
       });
-      showAdminToast("Đã ẩn danh mục.");
+      showAdminToast("Đã xóa danh mục.");
       await loadCategories();
       await loadFoods();
     }
