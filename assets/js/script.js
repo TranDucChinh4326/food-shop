@@ -2514,8 +2514,8 @@ async function openDeliveryMapPicker() {
 
   dialog.hidden = false;
   const currentLocation = getCustomerLocationValue();
-  const startLat = currentLocation?.lat || 10.2537;
-  const startLng = currentLocation?.lng || 105.9722;
+  const startLat = currentLocation?.lat || 10.100528;
+  const startLng = currentLocation?.lng || 105.686583;
   if (searchInput && !searchInput.value.trim()) searchInput.value = getCheckoutAddressValue();
 
   if (!deliveryMap) {

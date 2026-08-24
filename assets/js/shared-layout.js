@@ -126,14 +126,14 @@ function renderSharedFooter() {
       </div>
       <div class="footer-map">
         <div class="footer-map-info">
-          <strong>FoodHub Vinh Long</strong>
-          <a href="https://www.google.com/maps/search/?api=1&query=10.2537,105.9722" target="_blank" rel="noopener">Mở bản đồ lớn</a>
+          <strong>FoodHub Store</strong>
+          <a href="https://www.google.com/maps/search/?api=1&query=10.100528,105.686583" target="_blank" rel="noopener">Mở bản đồ lớn</a>
         </div>
         <iframe
           title="Bản đồ FoodHub"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
-          src="https://www.google.com/maps?q=10.2537,105.9722&z=16&output=embed">
+          src="https://www.google.com/maps?q=10.100528,105.686583&z=16&output=embed">
         </iframe>
       </div>
       <div class="footer-bottom">
