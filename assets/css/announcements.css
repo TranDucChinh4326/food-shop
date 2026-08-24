@@ -25,14 +25,14 @@
 
 .announcement-archive-panel .section-heading h2 {
   color: #24140e;
-  font-size: clamp(32px, 4vw, 52px);
-  line-height: 1.05;
+  font-size: clamp(28px, 2.5vw, 34px);
+  line-height: 1.15;
   margin-top: 12px;
 }
 
 .announcement-archive-panel .section-heading p {
   color: #74584d;
-  font-size: 17px;
+  font-size: 16px;
   max-width: 680px;
 }
 

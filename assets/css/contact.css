@@ -27,14 +27,14 @@
 
 .contact-heading h1 {
   color: #261812;
-  font-size: clamp(30px, 4vw, 44px);
-  line-height: 1.08;
+  font-size: clamp(28px, 2.5vw, 34px);
+  line-height: 1.15;
   margin: 0;
 }
 
 .contact-heading p {
   color: #6d584e;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.55;
   margin: 0;
   max-width: 720px;

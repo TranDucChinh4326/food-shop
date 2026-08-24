@@ -28,9 +28,9 @@
 
 .menu-toolbar h2 {
   color: #261812;
-  font-size: clamp(28px, 3.4vw, 42px);
+  font-size: clamp(28px, 2.5vw, 34px);
   letter-spacing: 0;
-  line-height: 1.08;
+  line-height: 1.15;
   margin: 0 0 8px;
 }
 
