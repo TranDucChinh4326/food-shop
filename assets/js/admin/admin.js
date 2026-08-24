@@ -1846,14 +1846,14 @@ function renderStats(data) {
   const totalOrders = Number(summary.total_orders || 0);
   const doneOrders = Number(summary.done_orders || 0);
   const customerCount = Number(summary.customers || 0);
-  const activeUsers = Number(summary.active_users || 0);
+  const onlineUsers = Number(summary.online_users || 0);
   const totalUsers = Number(summary.total_users || 0);
   const successRate = totalOrders ? (doneOrders / totalOrders) * 100 : 0;
   const statIcons = {
     revenue: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M8 7h6.5a3.5 3.5 0 0 1 0 7H8M8 14h8" /></svg>',
     orders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10l2 4v12H5V8l2-4Z" /><path d="M5 8h14M9 12h6M9 16h4" /></svg>',
     customers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="M20 20a3 3 0 0 0-3-3M4 20a3 3 0 0 1 3-3" /></svg>',
-    activeUsers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="m17 11 2 2 4-5" /></svg>',
+    onlineUsers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="M18 8.5h.01" /><path d="M17 12a5 5 0 0 0 0-7" /></svg>',
     success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7" /></svg>'
   };
   const statCards = [
@@ -1876,10 +1876,10 @@ function renderStats(data) {
       icon: statIcons.customers
     },
     {
-      label: "T\u00e0i kho\u1ea3n ho\u1ea1t \u0111\u1ed9ng",
-      value: activeUsers.toLocaleString("vi-VN"),
-      hint: `${totalUsers.toLocaleString("vi-VN")} t\u00e0i kho\u1ea3n to\u00e0n h\u1ec7 th\u1ed1ng`,
-      icon: statIcons.activeUsers
+      label: "T\u00e0i kho\u1ea3n online",
+      value: onlineUsers.toLocaleString("vi-VN"),
+      hint: `Ho\u1ea1t \u0111\u1ed9ng trong 5 ph\u00fat g\u1ea7n nh\u1ea5t / ${totalUsers.toLocaleString("vi-VN")} t\u00e0i kho\u1ea3n`,
+      icon: statIcons.onlineUsers
     },
     {
       label: "T\u1ef7 l\u1ec7 th\u00e0nh c\u00f4ng",

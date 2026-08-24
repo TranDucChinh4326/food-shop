@@ -129,4 +129,25 @@ function initAdminSidebar() {
   }
 }
 
+function startAdminPresenceHeartbeat() {
+  const token = sessionStorage.getItem("foodhub_token");
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  if (!token || window.__foodHubPresenceHeartbeatStarted) return;
+
+  window.__foodHubPresenceHeartbeatStarted = true;
+  const pingPresence = () => {
+    fetch(`${apiBase}/auth/ping`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      keepalive: true
+    }).catch(() => {});
+  };
+
+  pingPresence();
+  window.setInterval(pingPresence, 60000);
+}
+
 initAdminSidebar();
+startAdminPresenceHeartbeat();
