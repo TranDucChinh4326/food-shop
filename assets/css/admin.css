@@ -84,7 +84,7 @@
 .stats-grid {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .stats-card {
@@ -95,11 +95,11 @@
   border-radius: 8px;
   box-shadow: 0 18px 44px rgba(78, 45, 25, 0.08);
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
-  min-height: 116px;
+  min-height: 122px;
   overflow: hidden;
-  padding: 20px 22px;
+  padding: 20px 18px;
   position: relative;
 }
 
@@ -114,7 +114,7 @@
 .stats-card span {
   color: #5f6b7a;
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -130,7 +130,7 @@
 .stats-card small {
   color: #047857;
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.35;
   margin-top: 9px;
@@ -143,11 +143,11 @@
   border-radius: 8px;
   color: var(--accent);
   display: inline-flex;
-  flex: 0 0 40px;
+  flex: 0 0 42px;
   font-size: 18px;
   font-style: normal;
   font-weight: 800;
-  height: 40px;
+  height: 42px;
   justify-content: center;
 }
 
@@ -606,6 +606,12 @@
   border-radius: 8px;
 }
 
+@media (max-width: 1280px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1120px) {
   .dashboard-heading {
     grid-template-columns: minmax(0, 1fr);
@@ -632,6 +638,10 @@
 
   .stats-card em {
     display: inline-flex;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
