@@ -287,26 +287,68 @@ body::after {
 
 .home-add-btn {
   align-items: center;
-  background: #ff5722;
-  border: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 44%),
+    linear-gradient(135deg, #ff4f1f 0%, #ff8a1d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 50%;
-  box-shadow: 0 10px 22px rgba(255, 87, 34, 0.24);
+  box-shadow:
+    0 12px 24px rgba(255, 87, 34, 0.28),
+    inset 0 -2px 0 rgba(139, 45, 9, 0.18);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
-  font-size: 22px;
+  flex: 0 0 auto;
+  font-size: 0;
   font-weight: 800;
-  height: 42px;
+  height: 44px;
   justify-content: center;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0;
-  width: 42px;
+  position: relative;
+  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+  width: 44px;
+}
+
+.home-add-btn::before {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 50%;
+  content: "+";
+  display: inline-flex;
+  font-size: 25px;
+  font-weight: 900;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  padding-bottom: 2px;
+  width: 30px;
+}
+
+.home-add-btn:hover:not(:disabled) {
+  box-shadow:
+    0 16px 30px rgba(255, 87, 34, 0.34),
+    inset 0 -2px 0 rgba(139, 45, 9, 0.2);
+  filter: saturate(1.08);
+  transform: translateY(-2px);
+}
+
+.home-add-btn:active:not(:disabled) {
+  box-shadow: 0 8px 18px rgba(255, 87, 34, 0.24);
+  transform: translateY(0) scale(0.96);
 }
 
 .home-add-btn:disabled {
   background: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.6);
   box-shadow: none;
   cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.home-add-btn:disabled::before {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .home-reveal {
@@ -524,20 +566,20 @@ body::after {
     font-size: 16px;
   }
 
-  .home-food-bottom .btn {
+  .home-food-bottom .home-add-btn {
     align-self: flex-start;
     border-radius: 50%;
     font-size: 0;
-    height: 38px;
-    min-height: 38px;
+    height: 40px;
+    min-height: 40px;
     padding: 0;
-    width: 38px;
+    width: 40px;
   }
 
-  .home-food-bottom .btn::before {
-    content: "+";
-    font-size: 24px;
-    line-height: 1;
+  .home-food-bottom .home-add-btn::before {
+    font-size: 23px;
+    height: 28px;
+    width: 28px;
   }
 }
 
