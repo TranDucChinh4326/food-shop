@@ -186,6 +186,41 @@ function startAdminIdleSessionGuard() {
     sessionStorage.setItem(activityKey, String(Date.now()));
   };
 
+  const initPinBoxes = container => {
+    const hiddenInput = container.querySelector("[data-admin-pin-input]");
+    const boxes = Array.from(container.querySelectorAll("[data-admin-pin-box]"));
+    if (!hiddenInput || !boxes.length || container.dataset.pinReady === "1") return;
+
+    container.dataset.pinReady = "1";
+    const syncHidden = () => {
+      hiddenInput.value = boxes.map(input => input.value).join("");
+    };
+
+    boxes.forEach((input, index) => {
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "").slice(-1);
+        syncHidden();
+        if (input.value && boxes[index + 1]) boxes[index + 1].focus();
+      });
+
+      input.addEventListener("keydown", event => {
+        if (event.key === "Backspace" && !input.value && boxes[index - 1]) {
+          boxes[index - 1].focus();
+        }
+      });
+
+      input.addEventListener("paste", event => {
+        event.preventDefault();
+        const digits = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, boxes.length);
+        digits.split("").forEach((digit, digitIndex) => {
+          boxes[digitIndex].value = digit;
+        });
+        syncHidden();
+        boxes[Math.min(digits.length, boxes.length) - 1]?.focus();
+      });
+    });
+  };
+
   const ensurePinOverlay = () => {
     let overlay = document.querySelector("[data-admin-pin-lock]");
     if (overlay) return overlay;
@@ -200,12 +235,16 @@ function startAdminIdleSessionGuard() {
         </span>
         <h2>Nhập mã PIN quản trị</h2>
         <p>Màn hình đã khóa do không thao tác trong 5 phút.</p>
-        <input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="32" placeholder="Mã PIN" data-admin-pin-input required>
+        <div class="admin-pin-box-row" data-admin-pin-boxes>
+          ${Array.from({ length: 6 }, (_, index) => `<input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Số PIN ${index + 1}" data-admin-pin-box>`).join("")}
+        </div>
+        <input type="hidden" data-admin-pin-input required>
         <small data-admin-pin-error></small>
         <button type="submit">Mở khóa</button>
       </form>
     `;
     document.body.appendChild(overlay);
+    initPinBoxes(overlay);
 
     overlay.querySelector("[data-admin-pin-form]").addEventListener("submit", async event => {
       event.preventDefault();
@@ -214,7 +253,11 @@ function startAdminIdleSessionGuard() {
       const button = overlay.querySelector("button");
       const pin = input.value.trim();
 
-      if (!pin) return;
+      if (!/^\d{6}$/.test(pin)) {
+        error.textContent = "Vui lòng nhập đủ 6 số PIN.";
+        overlay.querySelector("[data-admin-pin-box]")?.focus();
+        return;
+      }
 
       button.disabled = true;
       error.textContent = "";
@@ -239,7 +282,10 @@ function startAdminIdleSessionGuard() {
           }
           error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
           input.value = "";
-          input.focus();
+          overlay.querySelectorAll("[data-admin-pin-box]").forEach(box => {
+            box.value = "";
+          });
+          overlay.querySelector("[data-admin-pin-box]")?.focus();
           return;
         }
 
@@ -265,14 +311,14 @@ function startAdminIdleSessionGuard() {
     sessionStorage.setItem(lockKey, "1");
     const overlay = ensurePinOverlay();
     overlay.classList.add("is-visible");
-    setTimeout(() => overlay.querySelector("[data-admin-pin-input]")?.focus(), 50);
+    setTimeout(() => overlay.querySelector("[data-admin-pin-box]")?.focus(), 50);
   };
 
   const unlockIfNeededOnLoad = () => {
     if (!isLocked) return;
     const overlay = ensurePinOverlay();
     overlay.classList.add("is-visible");
-    setTimeout(() => overlay.querySelector("[data-admin-pin-input]")?.focus(), 50);
+    setTimeout(() => overlay.querySelector("[data-admin-pin-box]")?.focus(), 50);
   };
 
   if (now - lastActivity > idleLimitMs) lockScreen();

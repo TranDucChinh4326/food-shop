@@ -3023,19 +3023,26 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   margin: 0 0 20px;
 }
 
-.admin-pin-card input {
+.admin-pin-box-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, 44px);
+  justify-content: center;
+}
+
+.admin-pin-box-row input {
   border: 1px solid #efc9b6;
   border-radius: 8px;
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: 6px;
+  height: 50px;
   outline: none;
-  padding: 14px 16px;
+  padding: 0;
   text-align: center;
-  width: 100%;
+  width: 44px;
 }
 
-.admin-pin-card input:focus {
+.admin-pin-box-row input:focus {
   border-color: #ff6a2a;
   box-shadow: 0 0 0 4px rgba(255, 106, 42, 0.14);
 }
@@ -3067,6 +3074,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 /* Mobile admin hardening */
 @media (max-width: 700px) {
+  .admin-pin-box-row {
+    gap: 6px;
+    grid-template-columns: repeat(6, 36px);
+  }
+
+  .admin-pin-box-row input {
+    height: 44px;
+    width: 36px;
+  }
+
   .admin-page-bar,
   .admin-topbar,
   .admin-page-actions,
