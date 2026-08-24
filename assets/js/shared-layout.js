@@ -147,11 +147,45 @@ function renderSharedFooter() {
 
 function syncSharedNavActive() {
   const currentPage = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const params = new URLSearchParams(location.search);
+  const currentCategory = String(params.get("category") || "").toLowerCase();
+  const foodCategories = new Set(["food", "com", "pho", "mi", "bun"]);
+  const drinkCategories = new Set(["drink", "tra", "ca-phe", "nuoc-ep-sinh-to", "nuoc-dong-chai"]);
+
   document.querySelectorAll("header nav a, header .header-tools a").forEach(link => {
-    const href = (link.getAttribute("href") || "").split("?")[0].toLowerCase();
-    const isActive = href && href === currentPage;
+    const rawHref = link.getAttribute("href") || "";
+    const [hrefPage, hrefQuery = ""] = rawHref.split("?");
+    const href = hrefPage.toLowerCase();
+    const hrefParams = new URLSearchParams(hrefQuery);
+    const hrefCategory = String(hrefParams.get("category") || "").toLowerCase();
+    let isActive = href && href === currentPage;
+
+    if (currentPage === "menu.html" && href === "menu.html") {
+      if (hrefCategory) {
+        isActive = hrefCategory === currentCategory
+          || (hrefCategory === "food" && foodCategories.has(currentCategory))
+          || (hrefCategory === "drink" && drinkCategories.has(currentCategory));
+      } else {
+        isActive = !currentCategory;
+      }
+    }
+
+    if (currentPage === "food-detail.html" && href === "menu.html") {
+      isActive = true;
+    }
+
     link.classList.toggle("is-active", isActive);
-    if (isActive) link.setAttribute("aria-current", "page");
+    if (isActive) {
+      link.setAttribute("aria-current", "page");
+      link.closest(".nav-dropdown")?.classList.add("is-active");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+
+  document.querySelectorAll(".nav-dropdown").forEach(dropdown => {
+    const hasActiveChild = Boolean(dropdown.querySelector("a.is-active"));
+    dropdown.classList.toggle("is-active", hasActiveChild);
   });
 }
 
