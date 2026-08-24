@@ -18,8 +18,8 @@ function renderSharedHeader() {
           <input type="search" name="search" placeholder="Bạn cần tìm gì?" aria-label="Tìm kiếm món ăn">
           <button type="submit" aria-label="Tìm kiếm">⌕</button>
         </form>
-        <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher" aria-label="Voucher"><span aria-hidden="true">V</span></a>
-        <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo">🔔</a>
+        <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher" aria-label="Voucher" data-voucher-link><span aria-hidden="true">V</span><strong class="top-icon-badge" data-voucher-unread hidden>0</strong></a>
+        <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo" data-announcement-link>🔔<strong class="top-icon-badge" data-announcement-unread hidden>0</strong></a>
         <div id="user-area">
           <a href="login.html" class="header-action primary">Đăng nhập</a>
           <a href="register.html" class="header-action secondary">Đăng ký</a>
@@ -163,6 +163,126 @@ function startFoodHubPresenceHeartbeat() {
 
   pingPresence();
   window.setInterval(pingPresence, 60000);
+}
+
+function startFoodHubNotificationBadges() {
+  const token = sessionStorage.getItem("foodhub_token");
+  const userRaw = sessionStorage.getItem("foodhub_user");
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const isAnnouncementPage = location.pathname.endsWith("/announcements.html") || location.pathname.endsWith("announcements.html");
+  const isVoucherPage = location.pathname.endsWith("/vouchers.html") || location.pathname.endsWith("vouchers.html");
+  let userId = "guest";
+
+  try {
+    const user = JSON.parse(userRaw || "null");
+    userId = user?.id ? String(user.id) : "guest";
+  } catch (_) {
+    userId = "guest";
+  }
+
+  const readKey = `foodhub_read_announcements_${userId}`;
+  const seenVoucherKey = `foodhub_seen_vouchers_${userId}`;
+
+  const readIds = key => {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch (_) {
+      return [];
+    }
+  };
+
+  const writeIds = (key, ids) => {
+    localStorage.setItem(key, JSON.stringify(Array.from(new Set(ids.map(String)))));
+  };
+
+  const setBadge = (selector, count) => {
+    const badge = document.querySelector(selector);
+    if (!badge) return;
+
+    const safeCount = Math.max(0, Number(count || 0));
+    badge.hidden = safeCount <= 0;
+    badge.textContent = safeCount > 99 ? "99+" : String(safeCount);
+  };
+
+  const notifyOnce = (key, message, type = "info") => {
+    const marker = `${key}_${new Date().toISOString().slice(0, 10)}`;
+    if (sessionStorage.getItem(marker) === "1") return;
+    sessionStorage.setItem(marker, "1");
+
+    setTimeout(() => {
+      if (typeof window.showSiteToast === "function") {
+        window.showSiteToast(message, type);
+      }
+    }, 450);
+  };
+
+  const loadAnnouncementBadge = async () => {
+    if (!token) {
+      setBadge("[data-announcement-unread]", 0);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBase}/announcements?limit=20`);
+      const announcements = await response.json();
+      if (!response.ok || !Array.isArray(announcements)) return;
+
+      const ids = announcements.map(item => String(item.id)).filter(Boolean);
+      if (isAnnouncementPage) {
+        writeIds(readKey, ids);
+        setBadge("[data-announcement-unread]", 0);
+        return;
+      }
+
+      const read = new Set(readIds(readKey));
+      const unreadCount = ids.filter(id => !read.has(id)).length;
+      setBadge("[data-announcement-unread]", unreadCount);
+      if (token && unreadCount > 0) {
+        notifyOnce("foodhub_new_announcements", `Bạn có ${unreadCount} thông báo mới.`);
+      }
+    } catch (_) {}
+  };
+
+  const loadVoucherBadge = async () => {
+    if (!token) {
+      setBadge("[data-voucher-unread]", 0);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBase}/orders/vouchers/available`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const vouchers = await response.json();
+      if (!response.ok || !Array.isArray(vouchers)) return;
+
+      const claimableIds = vouchers
+        .filter(item => {
+          const alreadyClaimed = Number(item.ownedQuantity ?? item.ownedRemaining ?? 0) > 0;
+          const unavailable = item.remainingGlobal !== null && Number(item.remainingGlobal || 0) <= 0;
+          return !alreadyClaimed && !unavailable;
+        })
+        .map(item => String(item.id))
+        .filter(Boolean);
+
+      if (isVoucherPage) {
+        writeIds(seenVoucherKey, claimableIds);
+        setBadge("[data-voucher-unread]", 0);
+        return;
+      }
+
+      const seen = new Set(readIds(seenVoucherKey));
+      const unreadCount = claimableIds.filter(id => !seen.has(id)).length;
+      setBadge("[data-voucher-unread]", unreadCount);
+      if (unreadCount > 0) {
+        notifyOnce("foodhub_new_vouchers", `Bạn có ${unreadCount} voucher mới có thể nhận.`);
+      }
+    } catch (_) {}
+  };
+
+  loadAnnouncementBadge();
+  loadVoucherBadge();
 }
 
 function startFoodHubIdleSessionGuard() {
@@ -328,5 +448,6 @@ function startFoodHubIdleSessionGuard() {
 
 renderSharedHeader();
 renderSharedFooter();
+startFoodHubNotificationBadges();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
