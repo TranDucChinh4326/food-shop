@@ -165,6 +165,58 @@ function startFoodHubPresenceHeartbeat() {
   window.setInterval(pingPresence, 60000);
 }
 
+function startFoodHubIdleSessionGuard() {
+  const tokenKey = "foodhub_token";
+  const userKey = "foodhub_user";
+  const cartKey = "foodhub_cart";
+  const activityKey = "foodhub_last_activity_at";
+  const idleLimitMs = Number(window.FOODHUB_CONFIG?.SESSION_IDLE_LIMIT_MS || 60 * 60 * 1000);
+  const token = sessionStorage.getItem(tokenKey);
+
+  if (!token || window.__foodHubIdleSessionStarted) return;
+
+  window.__foodHubIdleSessionStarted = true;
+  const now = Date.now();
+  const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
+
+  const clearSession = () => {
+    sessionStorage.removeItem(tokenKey);
+    sessionStorage.removeItem(userKey);
+    sessionStorage.removeItem(cartKey);
+    sessionStorage.removeItem(activityKey);
+  };
+
+  const redirectToLogin = () => {
+    if (location.pathname.endsWith("/login.html") || location.pathname.endsWith("/register.html")) return;
+    sessionStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "index.html"}${location.search || ""}`);
+    window.location.href = "login.html?reason=session-timeout";
+  };
+
+  if (now - lastActivity > idleLimitMs) {
+    clearSession();
+    redirectToLogin();
+    return;
+  }
+
+  const markActivity = () => {
+    sessionStorage.setItem(activityKey, String(Date.now()));
+  };
+  ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(eventName => {
+    window.addEventListener(eventName, markActivity, { passive: true });
+  });
+  markActivity();
+
+  window.setInterval(() => {
+    const currentToken = sessionStorage.getItem(tokenKey);
+    const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
+    if (currentToken && Date.now() - latestActivity > idleLimitMs) {
+      clearSession();
+      redirectToLogin();
+    }
+  }, 60000);
+}
+
 renderSharedHeader();
 renderSharedFooter();
+startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();

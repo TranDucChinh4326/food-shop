@@ -84,6 +84,7 @@ function finishLogin(data) {
 
   sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+  sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
   sessionStorage.setItem("foodhub_show_chat_bubble", "1");
   showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
 
