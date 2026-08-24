@@ -2466,33 +2466,85 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 .admin-toast {
-  background: #15803d;
-  border-radius: 8px;
-  bottom: 24px;
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
-  color: white;
-  font-weight: 800;
-  left: 50%;
+  align-items: flex-end;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.18));
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  left: 0;
   opacity: 0;
-  padding: 14px 16px;
+  padding: 24px;
   pointer-events: none;
   position: fixed;
-  transform: translate(-50%, 14px);
-  transition: 0.22s;
-  z-index: 50;
+  right: 0;
+  top: 0;
+  transition: opacity 0.18s ease;
+  z-index: 220;
 }
 
 
 
 .admin-toast.show {
   opacity: 1;
-  transform: translate(-50%, 0);
 }
 
 
 
-.admin-toast.error {
-  background: #b91c1c;
+.admin-toast-card {
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(22, 101, 52, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.22);
+  color: #1f2937;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 16px;
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.22s ease;
+  width: 420px;
+}
+
+.admin-toast.show .admin-toast-card {
+  transform: translateY(0) scale(1);
+}
+
+.admin-toast-icon {
+  align-items: center;
+  background: #16a34a;
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 20px;
+  font-weight: 900;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.admin-toast-card strong {
+  color: #111827;
+  display: block;
+  font-size: 16px;
+  line-height: 1.25;
+  margin: 0 0 5px;
+}
+
+.admin-toast-card p {
+  color: #5b6472;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.admin-toast.error .admin-toast-card {
+  border-color: rgba(185, 28, 28, 0.18);
+}
+
+.admin-toast.error .admin-toast-icon {
+  background: #dc2626;
 }
 
 

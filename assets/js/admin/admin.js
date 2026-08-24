@@ -536,7 +536,16 @@ function showAdminToast(message, type = "success") {
   if (!toast) return;
 
   clearTimeout(toastTimer);
-  toast.textContent = message;
+  const isError = type === "error";
+  toast.innerHTML = `
+    <div class="admin-toast-card">
+      <span class="admin-toast-icon" aria-hidden="true">${isError ? "!" : "✓"}</span>
+      <div>
+        <strong>${isError ? "Không thể xử lý" : "Cập nhật thành công"}</strong>
+        <p>${escapeHtml(message)}</p>
+      </div>
+    </div>
+  `;
   toast.className = `admin-toast ${type} show`;
 
   toastTimer = setTimeout(() => {
