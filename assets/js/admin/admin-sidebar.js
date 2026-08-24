@@ -156,6 +156,10 @@ function startAdminRealtime() {
   const socketBase = apiBase.replace(/\/api\/?$/, "");
   if (!token || window.__foodHubAdminRealtimeStarted) return;
 
+  const isSectionActive = section => (
+    document.querySelector(`[data-admin-section="${section}"]`)?.classList.contains("active")
+  );
+
   const loadSocketClient = () => new Promise((resolve, reject) => {
     if (window.io) {
       resolve();
@@ -180,8 +184,8 @@ function startAdminRealtime() {
     });
 
     const refreshOrders = () => {
-      if (typeof window.loadOrders === "function") window.loadOrders();
-      if (typeof window.loadStats === "function") window.loadStats();
+      if (isSectionActive("orders") && typeof window.loadOrders === "function") window.loadOrders();
+      if (isSectionActive("overview") && typeof window.loadStats === "function") window.loadStats();
     };
 
     socket.on("order:created", payload => {
@@ -204,10 +208,12 @@ function startAdminOrderAutoRefresh() {
   if (window.__foodHubAdminOrderAutoRefreshStarted) return;
 
   window.__foodHubAdminOrderAutoRefreshStarted = true;
+  const isOrdersSectionActive = () => (
+    document.querySelector('[data-admin-section="orders"]')?.classList.contains("active")
+  );
   const refresh = () => {
-    if (document.hidden) return;
+    if (document.hidden || !isOrdersSectionActive()) return;
     if (typeof window.loadOrders === "function") window.loadOrders();
-    if (typeof window.loadStats === "function") window.loadStats();
   };
 
   window.setInterval(refresh, 12000);
