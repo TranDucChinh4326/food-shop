@@ -1531,6 +1531,44 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   margin: 0;
 }
 
+.shipping-methods-table {
+  table-layout: fixed;
+}
+
+.shipping-methods-table th:first-child,
+.shipping-methods-table td:first-child {
+  min-width: 180px;
+  width: 26%;
+}
+
+.shipping-methods-table th:nth-child(2),
+.shipping-methods-table td:nth-child(2),
+.shipping-methods-table th:nth-child(4),
+.shipping-methods-table td:nth-child(4) {
+  width: 120px;
+}
+
+.shipping-methods-table th:nth-child(3),
+.shipping-methods-table td:nth-child(3),
+.shipping-methods-table th:nth-child(5),
+.shipping-methods-table td:nth-child(5) {
+  width: 170px;
+}
+
+.shipping-methods-table th:last-child,
+.shipping-methods-table td:last-child {
+  text-align: center;
+  width: 130px;
+}
+
+.shipping-methods-table td:first-child strong {
+  white-space: normal;
+}
+
+.shipping-methods-table .table-actions {
+  justify-content: center;
+}
+
 
 
 .category-form-view {

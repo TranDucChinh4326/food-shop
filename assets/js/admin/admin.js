@@ -1239,10 +1239,10 @@ function renderShippingMethodsTable() {
 
   shippingMethodsList.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table">
+      <table class="admin-table shipping-methods-table">
         <thead>
           <tr>
-            <th>Tên hình thức</th>
+            <th>Hình thức</th>
             <th>Phí</th>
             <th>Thời gian</th>
             <th>Thứ tự</th>
@@ -1255,7 +1255,6 @@ function renderShippingMethodsTable() {
             <tr>
               <td>
                 <strong>${escapeHtml(method.name)}</strong>
-                <small>${escapeHtml(method.description || "")}</small>
               </td>
               <td>${Number(method.fee || 0) > 0 ? formatMoney(method.fee) : "Miễn phí"}</td>
               <td>${escapeHtml(method.estimated_time || "")}</td>
