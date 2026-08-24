@@ -41,6 +41,7 @@ let deliveryMap = null;
 let deliveryMapMarker = null;
 let pendingDeliveryLocation = null;
 let leafletLoadPromise = null;
+let homeRevealObserver = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -134,6 +135,10 @@ function hideSiteLoading() {
 
 async function withSiteLoading(message, task) {
   showSiteLoading(message);
+  if (!cachedFoods?.items.length && !foodList && (bestSellerBox || homeSectionBox)) {
+    renderHomeFoodSkeletons();
+  }
+
   try {
     return await task();
   } finally {
@@ -841,6 +846,83 @@ function renderFoodSurfaces() {
   renderCart();
 }
 
+function renderHomeFoodSkeletons() {
+  const bestSellerBox = document.getElementById("homeBestSellers");
+  const homeSectionBox = document.getElementById("homeFoodSections");
+
+  if (bestSellerBox) {
+    bestSellerBox.innerHTML = `
+      <div class="best-seller-track home-skeleton-track" aria-hidden="true">
+        ${Array.from({ length: 5 }, () => `<span class="home-skeleton best-seller-skeleton"></span>`).join("")}
+      </div>
+    `;
+  }
+
+  if (homeSectionBox) {
+    homeSectionBox.innerHTML = `
+      <section class="home-category-block home-skeleton-section" aria-hidden="true">
+        <div class="home-category-heading">
+          <span class="home-skeleton home-skeleton-title"></span>
+        </div>
+        <div class="home-food-grid">
+          ${Array.from({ length: 8 }, () => `
+            <article class="home-food-card home-food-skeleton-card">
+              <span class="home-skeleton home-skeleton-image"></span>
+              <span class="home-skeleton home-skeleton-line wide"></span>
+              <span class="home-skeleton home-skeleton-line"></span>
+              <span class="home-skeleton home-skeleton-line short"></span>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    `;
+  }
+}
+
+function initHomeMotionEffects() {
+  const targets = document.querySelectorAll(".home-shop-section, .home-category-block, .best-seller-card, .home-food-card, .home-review-card");
+  if (!targets.length) return;
+
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach(target => target.classList.add("is-visible"));
+    return;
+  }
+
+  if (!homeRevealObserver) {
+    homeRevealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        homeRevealObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  }
+
+  targets.forEach(target => {
+    if (target.classList.contains("is-visible")) return;
+    target.classList.add("home-reveal");
+    homeRevealObserver.observe(target);
+  });
+}
+
+function animateCartAddButton(source) {
+  const button = source?.closest?.("button");
+  if (!button) return;
+
+  button.classList.remove("cart-add-pop");
+  void button.offsetWidth;
+  button.classList.add("cart-add-pop");
+  setTimeout(() => button.classList.remove("cart-add-pop"), 420);
+
+  const cartBadge = document.getElementById("cart-count");
+  if (!cartBadge) return;
+
+  cartBadge.classList.remove("cart-count-pop");
+  void cartBadge.offsetWidth;
+  cartBadge.classList.add("cart-count-pop");
+  setTimeout(() => cartBadge.classList.remove("cart-count-pop"), 520);
+}
+
 async function loadFoods() {
   const foodList = document.getElementById("food-list");
   const bestSellerBox = document.getElementById("homeBestSellers");
@@ -1008,7 +1090,7 @@ function renderCompactFoodCard(food, options = {}) {
         <div class="home-food-stock">${renderStockBadge(stock)}</div>
         <div class="home-food-bottom">
           <strong>${formatMoney(food.price)}</strong>
-          <button type="button" class="home-add-btn" onclick="event.stopPropagation(); addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>+</button>
+          <button type="button" class="home-add-btn" onclick="event.stopPropagation(); addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>+</button>
         </div>
       </div>
     </article>
@@ -1088,7 +1170,7 @@ function renderRecommendationCard(food, context = "cart") {
       </div>
       <div class="suggestion-action">
         <strong>${formatMoney(food.price)}</strong>
-        <button type="button" onclick="event.stopPropagation(); addToCart(${food.id})">Thêm</button>
+        <button type="button" onclick="event.stopPropagation(); addToCart(${food.id}, event)">Thêm</button>
       </div>
     </article>
   `;
@@ -1185,6 +1267,8 @@ function renderHomeFoodSections() {
       </section>
     `).join("");
   }
+
+  initHomeMotionEffects();
 }
 
 const REVIEW_PAGE_SIZE = 3;
@@ -1362,6 +1446,7 @@ function renderHomeReviews() {
   const filterBox = document.getElementById("homeReviewFilters");
   if (!reviewBox && !filterBox) return;
   renderReviewPanel("home", filterBox, reviewBox, foodReviews, { showFood: true });
+  initHomeMotionEffects();
 }
 function hasReviewedOrderItem(orderId, foodId) {
   return foodReviews.some(review => String(review.orderId) === String(orderId) && String(review.foodId) === String(foodId));
@@ -1572,7 +1657,7 @@ function showFoodDetail(foodId) {
               <input type="hidden" value="1" data-food-qty="${food.id}">
               <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
             </div>
-            <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
+            <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
           </div>
         </div>
       </div>
@@ -1678,7 +1763,7 @@ function renderFoodDetailPage() {
                 <input type="hidden" value="1" data-food-qty="${food.id}">
                 <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
               </div>
-              <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
+              <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
             </div>
           </div>
         </div>
@@ -2102,13 +2187,13 @@ function renderFoods() {
           <label for="food-qty-${food.id}">Số lượng</label>
           ${quantityInput}
         </div>
-        <button type="button" onclick="addToCart(${food.id})" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
+        <button type="button" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
       </div>
     `;
   }).join("");
 }
 
-function addToCart(foodId) {
+function addToCart(foodId, event) {
   if (!isLoggedIn()) {
     requireLogin("Vui lòng đăng nhập để thêm món vào giỏ hàng.", "menu.html");
     return;
@@ -2162,6 +2247,7 @@ function addToCart(foodId) {
   saveCart();
   renderCart();
   updateCartCount();
+  animateCartAddButton(event?.currentTarget);
   showSiteToast(`Đã thêm ${food.name} x ${cappedQuantity} vào giỏ hàng`);
 }
 

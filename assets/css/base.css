@@ -5559,3 +5559,27 @@ footer {
     max-width: 100%;
   }
 }
+
+.cart-count-pop {
+  animation: cartCountPop 0.52s ease;
+}
+
+@keyframes cartCountPop {
+  0% {
+    transform: scale(1);
+  }
+
+  38% {
+    transform: scale(1.22);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-count-pop {
+    animation: none;
+  }
+}

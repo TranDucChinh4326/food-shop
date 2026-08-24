@@ -309,6 +309,127 @@ body::after {
   cursor: not-allowed;
 }
 
+.home-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.46s ease, transform 0.46s ease;
+}
+
+.home-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-food-card.home-reveal,
+.best-seller-card.home-reveal,
+.home-review-card.home-reveal {
+  transition:
+    opacity 0.46s ease,
+    transform 0.46s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    flex 0.32s ease;
+}
+
+.home-food-card:hover img,
+.best-seller-card:hover img {
+  transform: scale(1.035);
+}
+
+.home-food-card img,
+.best-seller-card img {
+  transition: transform 0.32s ease, filter 0.32s ease;
+}
+
+.cart-add-pop {
+  animation: cartAddPop 0.42s ease;
+}
+
+.home-skeleton {
+  animation: homeSkeletonPulse 1.15s ease-in-out infinite;
+  background: linear-gradient(90deg, #fff1e8 0%, #fffaf6 42%, #ffe1d1 72%, #fff1e8 100%);
+  background-size: 220% 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.home-skeleton-track {
+  pointer-events: none;
+}
+
+.best-seller-skeleton {
+  flex: 1 1 0;
+  min-height: 290px;
+}
+
+.home-food-skeleton-card {
+  cursor: default;
+  gap: 12px;
+  padding: 14px;
+}
+
+.home-skeleton-image {
+  aspect-ratio: 1 / 0.78;
+  width: 100%;
+}
+
+.home-skeleton-title {
+  height: 30px;
+  width: min(220px, 70%);
+}
+
+.home-skeleton-line {
+  height: 14px;
+  width: 72%;
+}
+
+.home-skeleton-line.wide {
+  height: 20px;
+  width: 88%;
+}
+
+.home-skeleton-line.short {
+  width: 46%;
+}
+
+@keyframes homeSkeletonPulse {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@keyframes cartAddPop {
+  0% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.16);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-reveal,
+  .home-reveal.is-visible,
+  .home-food-card img,
+  .best-seller-card img,
+  .cart-add-pop,
+  .home-skeleton {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 @media (max-width: 760px) {
   .home-shop-section {
     padding: 28px 14px;
