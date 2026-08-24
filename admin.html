@@ -549,6 +549,19 @@
         </div>
 
         <div id="shippingListView" class="category-list-view">
+          <div class="shipping-toolbar table-toolbar multi-filter">
+            <input type="search" id="shippingSearch" placeholder="Tìm hình thức, mô tả hoặc thời gian">
+            <select id="shippingStatusFilter" aria-label="Lọc trạng thái phí vận chuyển">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="active">Hoạt động</option>
+              <option value="hidden">Đã ẩn</option>
+            </select>
+            <select id="shippingPageSize" aria-label="Số dòng phí vận chuyển mỗi trang">
+              <option value="5" selected>5 dòng</option>
+              <option value="10">10 dòng</option>
+              <option value="20">20 dòng</option>
+            </select>
+          </div>
           <div id="shippingMethodsList" class="accounts-list table-state">Đang tải phí vận chuyển...</div>
         </div>
 
@@ -680,6 +693,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260818-shipping-methods"></script>
-  <script src="assets/js/admin/admin.js?v=20260823-review-approval"></script>
+  <script src="assets/js/admin/admin.js?v=20260824-shipping-filters"></script>
 </body>
 </html>

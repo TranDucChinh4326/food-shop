@@ -53,6 +53,9 @@ const shippingMethodForm = document.getElementById("shippingMethodForm");
 const shippingMethodsList = document.getElementById("shippingMethodsList");
 const shippingListView = document.getElementById("shippingListView");
 const shippingFormView = document.getElementById("shippingFormView");
+const shippingSearch = document.getElementById("shippingSearch");
+const shippingStatusFilter = document.getElementById("shippingStatusFilter");
+const shippingPageSize = document.getElementById("shippingPageSize");
 const advertisementsList = document.getElementById("advertisementsList");
 const advertisementForm = document.getElementById("advertisementForm");
 const advertisementLayout = document.querySelector(".advertisement-admin-layout");
@@ -137,7 +140,10 @@ let discountSearchTimer;
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
+let shippingSearchTimer;
 let cachedShippingMethods = [];
+let shippingPage = 1;
+let shippingPerPage = 5;
 let advertisementSearchTimer;
 let cachedAdvertisements = [];
 let advertisementsPage = 1;
@@ -1190,11 +1196,44 @@ async function loadShippingMethodsAdmin() {
   }
 }
 
+function getFilteredShippingMethods() {
+  const search = String(shippingSearch?.value || "").trim().toLowerCase();
+  const status = shippingStatusFilter?.value || "all";
+
+  return cachedShippingMethods.filter(method => {
+    const matchesStatus = status === "all"
+      || (status === "active" && Number(method.is_active))
+      || (status === "hidden" && !Number(method.is_active));
+    const searchText = [
+      method.name,
+      method.description,
+      method.estimated_time,
+      method.fee,
+      method.sort_order
+    ].join(" ").toLowerCase();
+
+    return matchesStatus && (!search || searchText.includes(search));
+  });
+}
+
 function renderShippingMethodsTable() {
   if (!shippingMethodsList) return;
 
-  if (!cachedShippingMethods.length) {
-    shippingMethodsList.textContent = "Chưa có hình thức giao hàng.";
+  shippingPerPage = Number(shippingPageSize?.value || shippingPerPage || 5);
+  if (![5, 10, 20].includes(shippingPerPage)) shippingPerPage = 5;
+
+  const filteredMethods = getFilteredShippingMethods();
+  const total = filteredMethods.length;
+  const totalPages = Math.max(1, Math.ceil(total / shippingPerPage));
+  shippingPage = Math.min(Math.max(shippingPage, 1), totalPages);
+
+  const startIndex = (shippingPage - 1) * shippingPerPage;
+  const pageItems = filteredMethods.slice(startIndex, startIndex + shippingPerPage);
+  const from = total === 0 ? 0 : startIndex + 1;
+  const to = startIndex + pageItems.length;
+
+  if (!total) {
+    shippingMethodsList.textContent = "Chưa có hình thức giao hàng phù hợp.";
     return;
   }
 
@@ -1212,7 +1251,7 @@ function renderShippingMethodsTable() {
           </tr>
         </thead>
         <tbody>
-          ${cachedShippingMethods.map(method => `
+          ${pageItems.map(method => `
             <tr>
               <td>
                 <strong>${escapeHtml(method.name)}</strong>
@@ -1232,6 +1271,14 @@ function renderShippingMethodsTable() {
           `).join("")}
         </tbody>
       </table>
+    </div>
+    <div class="table-footer">
+      Đang hiển thị từ ${from} đến ${to} của ${total} kết quả
+      <div class="pager">
+        <button type="button" data-shipping-page="prev" ${shippingPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${getCompactPaginationItems(totalPages, shippingPage).map(page => renderAdminPaginationButton(page, shippingPage, "shipping")).join("")}
+        <button type="button" data-shipping-page="next" ${shippingPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
     </div>
   `;
 }
@@ -3120,6 +3167,20 @@ discountSearch?.addEventListener("input", () => {
   discountsPage = 1;
   discountSearchTimer = setTimeout(loadDiscounts, 300);
 });
+shippingStatusFilter?.addEventListener("change", () => {
+  shippingPage = 1;
+  renderShippingMethodsTable();
+});
+shippingPageSize?.addEventListener("change", () => {
+  shippingPerPage = Number(shippingPageSize.value || 5);
+  shippingPage = 1;
+  renderShippingMethodsTable();
+});
+shippingSearch?.addEventListener("input", () => {
+  clearTimeout(shippingSearchTimer);
+  shippingPage = 1;
+  shippingSearchTimer = setTimeout(renderShippingMethodsTable, 250);
+});
 advertisementPositionFilter?.addEventListener("change", () => {
   advertisementsPage = 1;
   loadAdvertisements();
@@ -3442,10 +3503,28 @@ discountsList?.addEventListener("click", async event => {
 });
 
 shippingMethodsList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-shipping-page]");
   const editButton = event.target.closest("[data-edit-shipping-method]");
   const deleteButton = event.target.closest("[data-delete-shipping-method]");
 
   try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.shippingPage;
+      const totalPages = Math.max(1, Math.ceil(getFilteredShippingMethods().length / shippingPerPage));
+
+      if (pageAction === "prev") {
+        shippingPage -= 1;
+      } else if (pageAction === "next") {
+        shippingPage += 1;
+      } else {
+        shippingPage = Number(pageAction);
+      }
+
+      shippingPage = Math.min(Math.max(shippingPage, 1), totalPages);
+      renderShippingMethodsTable();
+      return;
+    }
+
     if (editButton) {
       const method = cachedShippingMethods.find(item => String(item.id) === String(editButton.dataset.editShippingMethod));
       if (method) fillShippingMethodForm(method);
