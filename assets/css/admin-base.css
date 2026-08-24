@@ -2466,11 +2466,12 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 .admin-toast {
-  align-items: flex-end;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.18));
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.26);
   bottom: 0;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   left: 0;
   opacity: 0;
   padding: 24px;
@@ -2491,20 +2492,21 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 .admin-toast-card {
-  align-items: flex-start;
-  background: rgba(255, 255, 255, 0.96);
+  align-items: center;
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(22, 101, 52, 0.16);
   border-radius: 8px;
-  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
   color: #1f2937;
   display: grid;
-  gap: 12px;
-  grid-template-columns: 42px minmax(0, 1fr);
-  max-width: min(420px, calc(100vw - 32px));
-  padding: 16px;
-  transform: translateY(16px) scale(0.98);
-  transition: transform 0.22s ease;
-  width: 420px;
+  gap: 16px;
+  justify-items: center;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 24px;
+  text-align: center;
+  transform: translateY(12px) scale(0.94);
+  transition: transform 0.24s ease;
+  width: 360px;
 }
 
 .admin-toast.show .admin-toast-card {
@@ -2513,15 +2515,35 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 .admin-toast-icon {
   align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  height: 72px;
+  justify-content: center;
+  position: relative;
+  width: 72px;
+}
+
+.admin-toast-spinner {
+  animation: adminToastSpin 0.85s linear infinite;
+  border: 4px solid #bbf7d0;
+  border-top-color: #16a34a;
+  border-radius: 999px;
+  inset: 0;
+  position: absolute;
+}
+
+.admin-toast-symbol {
+  align-items: center;
   background: #16a34a;
   border-radius: 999px;
   color: #fff;
   display: inline-flex;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
-  height: 42px;
+  height: 44px;
   justify-content: center;
-  width: 42px;
+  position: relative;
+  width: 44px;
 }
 
 .admin-toast-card strong {
@@ -2544,7 +2566,22 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 }
 
 .admin-toast.error .admin-toast-icon {
+  background: transparent;
+}
+
+.admin-toast.error .admin-toast-spinner {
+  border-color: #fecaca;
+  border-top-color: #dc2626;
+}
+
+.admin-toast.error .admin-toast-symbol {
   background: #dc2626;
+}
+
+@keyframes adminToastSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 

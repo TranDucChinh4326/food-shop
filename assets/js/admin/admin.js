@@ -539,7 +539,10 @@ function showAdminToast(message, type = "success") {
   const isError = type === "error";
   toast.innerHTML = `
     <div class="admin-toast-card">
-      <span class="admin-toast-icon" aria-hidden="true">${isError ? "!" : "✓"}</span>
+      <span class="admin-toast-icon" aria-hidden="true">
+        <span class="admin-toast-spinner"></span>
+        <span class="admin-toast-symbol">${isError ? "!" : "✓"}</span>
+      </span>
       <div>
         <strong>${isError ? "Không thể xử lý" : "Cập nhật thành công"}</strong>
         <p>${escapeHtml(message)}</p>
