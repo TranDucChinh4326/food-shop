@@ -9,7 +9,6 @@ const GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
 const FACEBOOK_APP_ID = window.FOODHUB_CONFIG?.FACEBOOK_APP_ID || "";
 const FACEBOOK_SDK_VERSION = "v25.0";
 
-let toastTimer;
 let googleTokenClient;
 let facebookSdkPromise;
 
@@ -17,17 +16,38 @@ localStorage.removeItem(AUTH_TOKEN_KEY);
 localStorage.removeItem(AUTH_USER_KEY);
 
 function showToast(message, type = "info") {
-  const toast = document.getElementById("toast");
+  let stack = document.getElementById("authToastStack");
 
-  if (!toast) return;
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "authToastStack";
+    stack.className = "toast-stack auth-toast-stack";
+    document.body.appendChild(stack);
+  }
 
-  clearTimeout(toastTimer);
-  toast.className = `toast ${type} show`;
-  toast.textContent = message;
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span>${escapeHtml(message)}</span>
+    <i aria-hidden="true"></i>
+  `;
+  stack.appendChild(toast);
 
-  toastTimer = setTimeout(() => {
-    toast.className = `toast ${type}`;
-  }, 3200);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.add("hide");
+    setTimeout(() => toast.remove(), 280);
+  }, 3600);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function getAuthLoadingOverlay() {

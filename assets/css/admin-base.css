@@ -2465,28 +2465,33 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 
-.admin-toast {
-  align-items: center;
-  backdrop-filter: blur(8px);
-  background: rgba(15, 23, 42, 0.26);
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  opacity: 0;
-  padding: 24px;
+.admin-toast-stack {
+  display: grid;
+  gap: 10px;
+  max-width: min(380px, calc(100vw - 24px));
   pointer-events: none;
   position: fixed;
-  right: 0;
-  top: 0;
-  transition: opacity 0.18s ease;
-  z-index: 220;
+  right: 18px;
+  top: 18px;
+  width: min(380px, calc(100vw - 24px));
+  z-index: 2400;
 }
 
-
+.admin-toast {
+  opacity: 0;
+  pointer-events: auto;
+  transform: translateX(112%);
+  transition: opacity 0.24s ease, transform 0.28s ease;
+}
 
 .admin-toast.show {
   opacity: 1;
+  transform: translateX(0);
+}
+
+.admin-toast.hide {
+  opacity: 0;
+  transform: translateX(112%);
 }
 
 
@@ -2496,40 +2501,27 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(22, 101, 52, 0.16);
   border-radius: 8px;
-  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.18);
   color: #1f2937;
   display: grid;
-  gap: 16px;
-  justify-items: center;
-  max-width: min(360px, calc(100vw - 32px));
-  padding: 24px;
-  text-align: center;
-  transform: translateY(12px) scale(0.94);
-  transition: transform 0.24s ease;
-  width: 360px;
-}
-
-.admin-toast.show .admin-toast-card {
-  transform: translateY(0) scale(1);
+  gap: 12px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  max-width: 100%;
+  overflow: hidden;
+  padding: 14px 16px 18px;
+  position: relative;
+  text-align: left;
+  width: 100%;
 }
 
 .admin-toast-icon {
   align-items: center;
   border-radius: 999px;
   display: inline-flex;
-  height: 72px;
+  height: 42px;
   justify-content: center;
   position: relative;
-  width: 72px;
-}
-
-.admin-toast-spinner {
-  animation: adminToastSpin 0.85s linear infinite;
-  border: 4px solid #bbf7d0;
-  border-top-color: #16a34a;
-  border-radius: 999px;
-  inset: 0;
-  position: absolute;
+  width: 42px;
 }
 
 .admin-toast-symbol {
@@ -2538,12 +2530,12 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   border-radius: 999px;
   color: #fff;
   display: inline-flex;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 900;
-  height: 44px;
+  height: 36px;
   justify-content: center;
   position: relative;
-  width: 44px;
+  width: 36px;
 }
 
 .admin-toast-card strong {
@@ -2569,18 +2561,28 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   background: transparent;
 }
 
-.admin-toast.error .admin-toast-spinner {
-  border-color: #fecaca;
-  border-top-color: #dc2626;
-}
-
 .admin-toast.error .admin-toast-symbol {
   background: #dc2626;
 }
 
-@keyframes adminToastSpin {
+.admin-toast-card i {
+  animation: toastLife 3.6s linear forwards;
+  background: #16a34a;
+  bottom: 0;
+  height: 4px;
+  left: 0;
+  position: absolute;
+  transform-origin: left center;
+  width: 100%;
+}
+
+.admin-toast.error .admin-toast-card i {
+  background: #dc2626;
+}
+
+@keyframes toastLife {
   to {
-    transform: rotate(360deg);
+    transform: scaleX(0);
   }
 }
 

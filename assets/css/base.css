@@ -3119,35 +3119,72 @@ footer {
 
 
 
-.site-toast {
-  background: #222;
-  border-radius: 8px;
-  bottom: 24px;
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
-  color: #fff;
-  font-weight: 700;
-  left: 50%;
-  max-width: min(420px, calc(100vw - 32px));
-  opacity: 0;
-  padding: 14px 16px;
+.toast-stack {
+  display: grid;
+  gap: 10px;
+  max-width: min(360px, calc(100vw - 24px));
   pointer-events: none;
   position: fixed;
-  transform: translate(-50%, 14px);
-  transition: 0.22s;
-  z-index: 200;
+  right: 18px;
+  top: 18px;
+  width: min(360px, calc(100vw - 24px));
+  z-index: 2200;
 }
 
-
+.site-toast {
+  background: #232b33;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(36, 18, 9, 0.22);
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.45;
+  opacity: 0;
+  overflow: hidden;
+  padding: 14px 16px 17px;
+  pointer-events: auto;
+  position: relative;
+  transform: translateX(112%);
+  transition: opacity 0.24s ease, transform 0.28s ease;
+}
 
 .site-toast.show {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: translateX(0);
 }
 
-
+.site-toast.hide {
+  opacity: 0;
+  transform: translateX(112%);
+}
 
 .site-toast.success {
   background: #15803d;
+}
+
+.site-toast.error {
+  background: #b91c1c;
+}
+
+.site-toast.info {
+  background: #1d4ed8;
+}
+
+.site-toast i {
+  animation: toastLife 3.6s linear forwards;
+  background: rgba(255, 255, 255, 0.82);
+  bottom: 0;
+  height: 4px;
+  left: 0;
+  position: absolute;
+  transform-origin: left center;
+  width: 100%;
+}
+
+@keyframes toastLife {
+  to {
+    transform: scaleX(0);
+  }
 }
 
 

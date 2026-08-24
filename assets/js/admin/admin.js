@@ -124,7 +124,6 @@ const auditActionLabels = {
   delete: "X\u00f3a"
 };
 
-let toastTimer;
 let adminPermissions = [];
 let orderSearchTimer;
 let cachedOrders = [];
@@ -544,29 +543,37 @@ function escapeHtml(value) {
 }
 
 function showAdminToast(message, type = "success") {
-  const toast = document.getElementById("adminToast");
+  let stack = document.getElementById("adminToastStack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "adminToastStack";
+    stack.className = "toast-stack admin-toast-stack";
+    document.body.appendChild(stack);
+  }
 
-  if (!toast) return;
-
-  clearTimeout(toastTimer);
   const isError = type === "error";
+  const toast = document.createElement("div");
+  toast.className = `admin-toast ${type}`;
   toast.innerHTML = `
     <div class="admin-toast-card">
       <span class="admin-toast-icon" aria-hidden="true">
-        <span class="admin-toast-spinner"></span>
         <span class="admin-toast-symbol">${isError ? "!" : "✓"}</span>
       </span>
       <div>
         <strong>${isError ? "Không thể xử lý" : "Cập nhật thành công"}</strong>
         <p>${escapeHtml(message)}</p>
       </div>
+      <i aria-hidden="true"></i>
     </div>
   `;
-  toast.className = `admin-toast ${type} show`;
+  stack.appendChild(toast);
 
-  toastTimer = setTimeout(() => {
-    toast.className = `admin-toast ${type}`;
-  }, 2600);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.add("hide");
+    setTimeout(() => toast.remove(), 280);
+  }, 3600);
 }
 
 function authHeaders() {

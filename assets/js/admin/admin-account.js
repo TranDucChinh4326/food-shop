@@ -29,7 +29,6 @@ const accountBackLink = document.getElementById("accountBackLink");
 const accountCancelLink = document.getElementById("accountCancelLink");
 const accountLoginLabel = document.getElementById("accountLoginLabel");
 
-let toastTimer;
 let adminPermissions = [];
 let currentAccountPermissions = [];
 let currentAdmin = {
@@ -46,18 +45,47 @@ function hasAdminPermission(permission) {
   return Array.isArray(currentAdmin?.permissions) && currentAdmin.permissions.includes(permission);
 }
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function showAdminToast(message, type = "success") {
-  const toast = document.getElementById("adminToast");
+  let stack = document.getElementById("adminToastStack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "adminToastStack";
+    stack.className = "toast-stack admin-toast-stack";
+    document.body.appendChild(stack);
+  }
 
-  if (!toast) return;
+  const isError = type === "error";
+  const toast = document.createElement("div");
+  toast.className = `admin-toast ${type}`;
+  toast.innerHTML = `
+    <div class="admin-toast-card">
+      <span class="admin-toast-icon" aria-hidden="true">
+        <span class="admin-toast-symbol">${isError ? "!" : "✓"}</span>
+      </span>
+      <div>
+        <strong>${isError ? "Không thể xử lý" : "Cập nhật thành công"}</strong>
+        <p>${escapeHtml(message)}</p>
+      </div>
+      <i aria-hidden="true"></i>
+    </div>
+  `;
+  stack.appendChild(toast);
 
-  clearTimeout(toastTimer);
-  toast.textContent = message;
-  toast.className = `admin-toast ${type} show`;
+  requestAnimationFrame(() => toast.classList.add("show"));
 
-  toastTimer = setTimeout(() => {
-    toast.className = `admin-toast ${type}`;
-  }, 2600);
+  setTimeout(() => {
+    toast.classList.add("hide");
+    setTimeout(() => toast.remove(), 280);
+  }, 3600);
 }
 
 function authHeaders() {

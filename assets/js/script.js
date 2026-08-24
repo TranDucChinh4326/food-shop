@@ -21,7 +21,6 @@ let foods = [];
 let foodReviews = [];
 let publicCategories = [];
 let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
-let toastTimer;
 let announcementTimer;
 let floatingAdTimers = [];
 let announcementArchive = [];
@@ -82,22 +81,29 @@ localStorage.removeItem(AUTH_USER_KEY);
 localStorage.removeItem(CART_KEY);
 
 function showSiteToast(message, type = "success") {
-  let toast = document.getElementById("site-toast");
+  let stack = document.getElementById("siteToastStack");
 
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "site-toast";
-    toast.className = "site-toast";
-    document.body.appendChild(toast);
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "siteToastStack";
+    stack.className = "toast-stack site-toast-stack";
+    document.body.appendChild(stack);
   }
 
-  clearTimeout(toastTimer);
-  toast.textContent = message;
-  toast.className = `site-toast ${type} show`;
+  const toast = document.createElement("div");
+  toast.className = `site-toast ${type}`;
+  toast.innerHTML = `
+    <span>${escapeHtml(message)}</span>
+    <i aria-hidden="true"></i>
+  `;
+  stack.appendChild(toast);
 
-  toastTimer = setTimeout(() => {
-    toast.className = `site-toast ${type}`;
-  }, 2400);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.add("hide");
+    setTimeout(() => toast.remove(), 280);
+  }, 3600);
 }
 
 function getSiteLoadingOverlay() {
