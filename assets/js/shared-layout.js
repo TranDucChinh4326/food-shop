@@ -146,7 +146,15 @@ function renderSharedFooter() {
 }
 
 function syncSharedNavActive() {
-  const currentPage = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const normalizePage = value => {
+    const page = String(value || "index")
+      .split("/")
+      .pop()
+      .toLowerCase()
+      .replace(/\.html$/, "");
+    return page || "index";
+  };
+  const currentPage = normalizePage(location.pathname);
   const params = new URLSearchParams(location.search);
   const currentCategory = String(params.get("category") || "").toLowerCase();
   const foodCategories = new Set(["food", "com", "pho", "mi", "bun"]);
@@ -155,12 +163,12 @@ function syncSharedNavActive() {
   document.querySelectorAll("header nav a, header .header-tools a").forEach(link => {
     const rawHref = link.getAttribute("href") || "";
     const [hrefPage, hrefQuery = ""] = rawHref.split("?");
-    const href = hrefPage.toLowerCase();
+    const href = normalizePage(hrefPage);
     const hrefParams = new URLSearchParams(hrefQuery);
     const hrefCategory = String(hrefParams.get("category") || "").toLowerCase();
     let isActive = href && href === currentPage;
 
-    if (currentPage === "menu.html" && href === "menu.html") {
+    if (currentPage === "menu" && href === "menu") {
       if (hrefCategory) {
         isActive = hrefCategory === currentCategory
           || (hrefCategory === "food" && foodCategories.has(currentCategory))
@@ -170,7 +178,7 @@ function syncSharedNavActive() {
       }
     }
 
-    if (currentPage === "food-detail.html" && href === "menu.html") {
+    if (currentPage === "food-detail" && href === "menu") {
       isActive = true;
     }
 
