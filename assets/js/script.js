@@ -92,7 +92,13 @@ function showSiteToast(message, type = "success") {
 
   const toast = document.createElement("div");
   toast.className = `site-toast ${type}`;
+  const icons = {
+    success: "✓",
+    error: "!",
+    info: "i"
+  };
   toast.innerHTML = `
+    <strong class="site-toast-icon" aria-hidden="true">${icons[type] || icons.info}</strong>
     <span>${escapeHtml(message)}</span>
     <i aria-hidden="true"></i>
   `;
@@ -885,6 +891,20 @@ function renderHomeFoodSkeletons() {
   }
 }
 
+function renderMenuFoodSkeletons() {
+  const foodList = document.getElementById("food-list");
+  if (!foodList) return;
+
+  foodList.innerHTML = Array.from({ length: 8 }, () => `
+    <article class="food-card food-skeleton-card" aria-hidden="true">
+      <span class="home-skeleton food-skeleton-image"></span>
+      <span class="home-skeleton food-skeleton-line wide"></span>
+      <span class="home-skeleton food-skeleton-line"></span>
+      <span class="home-skeleton food-skeleton-line short"></span>
+    </article>
+  `).join("");
+}
+
 function initHomeMotionEffects() {
   const targets = document.querySelectorAll(".home-shop-section, .home-category-block, .best-seller-card, .home-food-card, .home-review-card");
   if (!targets.length) return;
@@ -978,8 +998,9 @@ async function loadFoods() {
     if (cachedFoods.age < FOODS_CACHE_TTL) {
       return;
     }
-  } else if (foodList) {
-    foodList.innerHTML = "<p>Đang tải món ăn...</p>";
+  } else {
+    renderHomeFoodSkeletons();
+    renderMenuFoodSkeletons();
   }
 
   try {

@@ -145,6 +145,16 @@ function renderSharedFooter() {
   });
 }
 
+function syncSharedNavActive() {
+  const currentPage = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  document.querySelectorAll("header nav a, header .header-tools a").forEach(link => {
+    const href = (link.getAttribute("href") || "").split("?")[0].toLowerCase();
+    const isActive = href && href === currentPage;
+    link.classList.toggle("is-active", isActive);
+    if (isActive) link.setAttribute("aria-current", "page");
+  });
+}
+
 function startFoodHubPresenceHeartbeat() {
   const token = sessionStorage.getItem("foodhub_token");
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
@@ -201,8 +211,14 @@ function startFoodHubNotificationBadges() {
     if (!badge) return;
 
     const safeCount = Math.max(0, Number(count || 0));
+    const previousCount = Number(badge.textContent || 0);
     badge.hidden = safeCount <= 0;
     badge.textContent = safeCount > 99 ? "99+" : String(safeCount);
+    if (safeCount > 0 && safeCount !== previousCount) {
+      badge.classList.remove("is-popping");
+      void badge.offsetWidth;
+      badge.classList.add("is-popping");
+    }
   };
 
   const notifyOnce = (key, message, type = "info") => {
@@ -448,6 +464,7 @@ function startFoodHubIdleSessionGuard() {
 
 renderSharedHeader();
 renderSharedFooter();
+syncSharedNavActive();
 startFoodHubNotificationBadges();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
