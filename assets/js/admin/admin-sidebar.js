@@ -155,8 +155,12 @@ function startAdminIdleSessionGuard() {
   const userKey = "foodhub_user";
   const cartKey = "foodhub_cart";
   const activityKey = "foodhub_last_activity_at";
-  const idleLimitMs = Number(window.FOODHUB_CONFIG?.SESSION_IDLE_LIMIT_MS || 60 * 60 * 1000);
+  const lockKey = "foodhub_admin_pin_locked";
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const idleLimitMs = Number(window.FOODHUB_CONFIG?.ADMIN_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
   const token = sessionStorage.getItem(tokenKey);
+  let failedAttempts = 0;
+  let isLocked = sessionStorage.getItem(lockKey) === "1";
 
   if (!token || window.__foodHubIdleSessionStarted) return;
 
@@ -169,6 +173,7 @@ function startAdminIdleSessionGuard() {
     sessionStorage.removeItem(userKey);
     sessionStorage.removeItem(cartKey);
     sessionStorage.removeItem(activityKey);
+    sessionStorage.removeItem(lockKey);
   };
 
   const redirectToLogin = () => {
@@ -176,28 +181,113 @@ function startAdminIdleSessionGuard() {
     window.location.href = "login.html?reason=session-timeout";
   };
 
-  if (now - lastActivity > idleLimitMs) {
-    clearSession();
-    redirectToLogin();
-    return;
-  }
-
   const markActivity = () => {
+    if (isLocked) return;
     sessionStorage.setItem(activityKey, String(Date.now()));
   };
+
+  const ensurePinOverlay = () => {
+    let overlay = document.querySelector("[data-admin-pin-lock]");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.className = "admin-pin-lock";
+    overlay.dataset.adminPinLock = "true";
+    overlay.innerHTML = `
+      <form class="admin-pin-card" data-admin-pin-form>
+        <span class="admin-pin-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+        </span>
+        <h2>Nhập mã PIN quản trị</h2>
+        <p>Màn hình đã khóa do không thao tác trong 5 phút.</p>
+        <input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="32" placeholder="Mã PIN" data-admin-pin-input required>
+        <small data-admin-pin-error></small>
+        <button type="submit">Mở khóa</button>
+      </form>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("[data-admin-pin-form]").addEventListener("submit", async event => {
+      event.preventDefault();
+      const input = overlay.querySelector("[data-admin-pin-input]");
+      const error = overlay.querySelector("[data-admin-pin-error]");
+      const button = overlay.querySelector("button");
+      const pin = input.value.trim();
+
+      if (!pin) return;
+
+      button.disabled = true;
+      error.textContent = "";
+
+      try {
+        const response = await fetch(`${apiBase}/auth/admin-pin/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem(tokenKey) || ""}`
+          },
+          body: JSON.stringify({ pin })
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          failedAttempts += 1;
+          if (failedAttempts >= 3) {
+            clearSession();
+            redirectToLogin();
+            return;
+          }
+          error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
+          input.value = "";
+          input.focus();
+          return;
+        }
+
+        failedAttempts = 0;
+        isLocked = false;
+        sessionStorage.removeItem(lockKey);
+        sessionStorage.setItem(activityKey, String(Date.now()));
+        overlay.classList.remove("is-visible");
+      } catch (_) {
+        error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    return overlay;
+  };
+
+  const lockScreen = () => {
+    if (isLocked) return;
+    isLocked = true;
+    failedAttempts = 0;
+    sessionStorage.setItem(lockKey, "1");
+    const overlay = ensurePinOverlay();
+    overlay.classList.add("is-visible");
+    setTimeout(() => overlay.querySelector("[data-admin-pin-input]")?.focus(), 50);
+  };
+
+  const unlockIfNeededOnLoad = () => {
+    if (!isLocked) return;
+    const overlay = ensurePinOverlay();
+    overlay.classList.add("is-visible");
+    setTimeout(() => overlay.querySelector("[data-admin-pin-input]")?.focus(), 50);
+  };
+
+  if (now - lastActivity > idleLimitMs) lockScreen();
+
   ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(eventName => {
     window.addEventListener(eventName, markActivity, { passive: true });
   });
-  markActivity();
+  if (!isLocked) markActivity();
+  unlockIfNeededOnLoad();
 
   window.setInterval(() => {
     const currentToken = sessionStorage.getItem(tokenKey);
     const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
-    if (currentToken && Date.now() - latestActivity > idleLimitMs) {
-      clearSession();
-      redirectToLogin();
-    }
-  }, 60000);
+    if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) lockScreen();
+  }, 15000);
 }
 
 initAdminSidebar();

@@ -2960,3 +2960,105 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
     flex: 0 0 auto;
   }
 }
+
+.admin-pin-lock {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(35, 19, 13, 0.58);
+  display: none;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 9999;
+}
+
+.admin-pin-lock.is-visible {
+  display: flex;
+}
+
+.admin-pin-card {
+  background: linear-gradient(180deg, #fff, #fff8f4);
+  border: 1px solid rgba(255, 172, 132, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  max-width: 420px;
+  padding: 30px;
+  text-align: center;
+  width: min(100%, 420px);
+}
+
+.admin-pin-icon {
+  align-items: center;
+  background: linear-gradient(135deg, #ff5a23, #ff9229);
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  margin-bottom: 16px;
+  width: 58px;
+}
+
+.admin-pin-icon svg {
+  fill: none;
+  height: 28px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 28px;
+}
+
+.admin-pin-card h2 {
+  color: #23130d;
+  font-size: 26px;
+  margin: 0 0 8px;
+}
+
+.admin-pin-card p {
+  color: #7f6659;
+  margin: 0 0 20px;
+}
+
+.admin-pin-card input {
+  border: 1px solid #efc9b6;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  outline: none;
+  padding: 14px 16px;
+  text-align: center;
+  width: 100%;
+}
+
+.admin-pin-card input:focus {
+  border-color: #ff6a2a;
+  box-shadow: 0 0 0 4px rgba(255, 106, 42, 0.14);
+}
+
+.admin-pin-card small {
+  color: #dc2626;
+  display: block;
+  min-height: 22px;
+  padding-top: 8px;
+}
+
+.admin-pin-card button {
+  background: linear-gradient(135deg, #ff5a23, #ff8725);
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 800;
+  margin-top: 8px;
+  padding: 14px 22px;
+  width: 100%;
+}
+
+.admin-pin-card button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
