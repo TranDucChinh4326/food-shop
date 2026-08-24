@@ -1603,7 +1603,7 @@ async function submitFoodReview(event, orderId, foodId) {
 
     showSiteToast(data.message || "Đã gửi đánh giá. Bình luận sẽ hiển thị sau khi admin phê duyệt.");
     await loadFoodReviews();
-    await loadOrderHistory();
+    await loadOrderHistory({ silent: true });
   } catch (error) {
     showSiteToast(error.message || "Không thể gửi đánh giá.", "error");
   } finally {
@@ -3823,7 +3823,7 @@ function logout() {
 function initTrackPage() {
   const resultBox = document.getElementById("track-result");
 
-  if (resultBox) loadOrderHistory();
+  if (resultBox) loadOrderHistory({ silent: true });
 }
 
 function protectCheckoutPage() {
