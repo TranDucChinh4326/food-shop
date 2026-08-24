@@ -48,7 +48,7 @@ function renderSharedHeader() {
         </div>
       </div>
       <div class="nav-dropdown" data-public-category-menu="drink">
-        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Đồ uống <span aria-hidden="true">▾</span></a>
+        <a class="nav-dropdown-toggle" href="menu.html?category=drink">Nước uống <span aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel">
           <a href="menu.html?category=tra">Trà</a>
           <a href="menu.html?category=ca-phe">Cà phê</a>
@@ -99,7 +99,7 @@ function renderSharedFooter() {
           <a href="index.html">Trang chủ</a>
           <a href="menu.html">Thực đơn</a>
           <a href="menu.html?category=food">Đồ ăn</a>
-          <a href="menu.html?category=drink">Đồ uống</a>
+          <a href="menu.html?category=drink">Nước uống</a>
         </div>
         <div>
           <h3>Khách hàng</h3>
