@@ -927,6 +927,30 @@ function animateCartAddButton(source) {
   void cartBadge.offsetWidth;
   cartBadge.classList.add("cart-count-pop");
   setTimeout(() => cartBadge.classList.remove("cart-count-pop"), 520);
+
+  const cartButton = document.querySelector(".cart-btn");
+  const sourceImage = button.closest(".food-detail-card, .home-food-card, .food-card, .suggestion-card, .cart-item")
+    ?.querySelector(".food-detail-image, img");
+  if (!cartButton || !sourceImage) return;
+
+  const start = sourceImage.getBoundingClientRect();
+  const end = cartButton.getBoundingClientRect();
+  const flyingImage = document.createElement("img");
+  flyingImage.className = "cart-fly-image";
+  flyingImage.src = sourceImage.currentSrc || sourceImage.src;
+  flyingImage.alt = "";
+  flyingImage.style.left = `${start.left}px`;
+  flyingImage.style.top = `${start.top}px`;
+  flyingImage.style.width = `${Math.min(start.width, 92)}px`;
+  flyingImage.style.height = `${Math.min(start.height, 72)}px`;
+  document.body.appendChild(flyingImage);
+
+  requestAnimationFrame(() => {
+    flyingImage.style.transform = `translate(${end.left + end.width / 2 - start.left}px, ${end.top + end.height / 2 - start.top}px) scale(0.18) rotate(10deg)`;
+    flyingImage.style.opacity = "0";
+  });
+
+  setTimeout(() => flyingImage.remove(), 720);
 }
 
 async function loadFoods() {
@@ -1616,6 +1640,62 @@ function renderFoodDetailBreadcrumb(food) {
   `;
 }
 
+function getFoodDetailDescriptionLines(food) {
+  const category = getFoodDisplayCategory(food).toLowerCase();
+  const description = String(food.desc || "").trim();
+  const baseDescription = description || `${food.name} được FoodHub chọn để phục vụ nhanh, dễ ăn và hợp khẩu vị hằng ngày.`;
+  const isDrink = isDrinkFood(food);
+
+  return [
+    baseDescription,
+    isDrink
+      ? "Hương vị được cân bằng để uống riêng vẫn ngon, dùng kèm món chính cũng không bị gắt."
+      : "Khẩu phần được cân chỉnh vừa đủ no, hợp cho bữa trưa, bữa tối hoặc gọi thêm khi đi nhóm.",
+    `Món thuộc nhóm ${category}, được ưu tiên giữ màu sắc và kết cấu hấp dẫn khi giao đến tay bạn.`,
+    "FoodHub khuyến khích dùng ngay sau khi nhận để cảm nhận rõ hương vị, độ nóng/lạnh và phần topping.",
+    isDrink
+      ? "Có thể kết hợp cùng món mặn, món chiên hoặc cơm/phở để bữa ăn đỡ ngấy hơn."
+      : "Có thể gọi kèm nước uống hoặc món phụ để bữa ăn trọn vị hơn."
+  ];
+}
+
+function renderFoodDetailDescription(food) {
+  return `
+    <section class="food-detail-description">
+      <h3>Mô tả sản phẩm</h3>
+      ${getFoodDetailDescriptionLines(food).map(line => `<p>${escapeHtml(line)}</p>`).join("")}
+    </section>
+  `;
+}
+
+function getFoodDetailPerspectives(food) {
+  const isDrink = isDrinkFood(food);
+  return isDrink
+    ? [
+      { title: "Vị chính", text: "Dễ uống, hậu vị gọn và hợp khi dùng trong ngày." },
+      { title: "Dùng kèm", text: "Hợp với món mặn, món chiên hoặc các phần ăn nhiều tinh bột." },
+      { title: "Cảm giác", text: "Làm mới khẩu vị, giúp bữa ăn nhẹ hơn và cân bằng hơn." }
+    ]
+    : [
+      { title: "Hương vị", text: "Đậm đà vừa phải, dễ ăn và hợp nhiều khẩu vị." },
+      { title: "Kết cấu", text: "Ưu tiên độ mềm, độ nóng và cảm giác ngon khi giao tới." },
+      { title: "Dùng kèm", text: "Ngon hơn khi gọi thêm nước uống hoặc món phụ phù hợp." }
+    ];
+}
+
+function renderFoodDetailPerspectives(food) {
+  return `
+    <div class="food-detail-perspectives" aria-label="Góc nhìn sản phẩm">
+      ${getFoodDetailPerspectives(food).map(item => `
+        <article>
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${escapeHtml(item.text)}</span>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
 function showFoodDetail(foodId) {
   const food = foods.find(item => String(item.id) === String(foodId));
   if (!food) return;
@@ -1637,6 +1717,7 @@ function showFoodDetail(foodId) {
       <div class="food-detail-main">
         <div class="food-detail-gallery">
           <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+          ${renderFoodDetailPerspectives(food)}
         </div>
         <div class="food-detail-info">
           <span class="food-detail-category">${escapeHtml(category)}</span>
@@ -1649,7 +1730,7 @@ function showFoodDetail(foodId) {
           </div>
           <div class="food-detail-stock">${renderStockBadge(stock)}</div>
           <strong class="food-detail-price">${formatMoney(food.price)}</strong>
-          <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+          ${renderFoodDetailDescription(food)}
           <div class="food-detail-options">
             <h3>Tùy chọn thêm</h3>
             <label><input type="checkbox" disabled> Thêm phô mai <span>+15.000đ</span></label>
@@ -1749,6 +1830,7 @@ function renderFoodDetailPage() {
         <div class="food-detail-main">
           <div class="food-detail-gallery">
             <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+            ${renderFoodDetailPerspectives(food)}
           </div>
           <div class="food-detail-info">
             <span class="food-detail-category">${escapeHtml(category)}</span>
@@ -1761,7 +1843,7 @@ function renderFoodDetailPage() {
             </div>
             <div class="food-detail-stock">${renderStockBadge(stock)}</div>
             <strong class="food-detail-price">${formatMoney(food.price)}</strong>
-            <p>${escapeHtml(food.desc || "FoodHub đang cập nhật mô tả chi tiết cho món ăn này.")}</p>
+            ${renderFoodDetailDescription(food)}
             <div class="food-detail-actions">
               <div class="food-detail-qty">
                 <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>

@@ -138,7 +138,42 @@ body.food-detail-open {
   box-shadow: 0 16px 34px rgba(80, 42, 24, 0.12);
   display: block;
   object-fit: cover;
+  transition: filter 0.24s ease, transform 0.28s ease;
   width: 100%;
+}
+
+.food-detail-gallery:hover .food-detail-image {
+  filter: saturate(1.06) contrast(1.03);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.food-detail-perspectives {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.food-detail-perspectives article {
+  background: linear-gradient(180deg, #fffaf7, #fff4ed);
+  border: 1px solid #f0d8cb;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(87, 45, 24, 0.06);
+  display: grid;
+  gap: 6px;
+  min-height: 96px;
+  padding: 12px;
+}
+
+.food-detail-perspectives strong {
+  color: #24140f;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.food-detail-perspectives span {
+  color: #765f54;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .food-detail-thumbs {
@@ -233,11 +268,43 @@ body.food-detail-open {
   padding: 12px 14px;
 }
 
-.food-detail-info p {
+.food-detail-info p,
+.food-detail-description p {
   color: #5f4a3f;
   font-size: 16px;
   line-height: 1.75;
   margin: 0;
+}
+
+.food-detail-description {
+  background: #fffaf7;
+  border: 1px solid #f1ded3;
+  border-radius: 10px;
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+}
+
+.food-detail-description h3 {
+  color: #24140f;
+  font-size: 17px;
+  margin: 0 0 2px;
+}
+
+.food-detail-description p {
+  align-items: flex-start;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 8px minmax(0, 1fr);
+}
+
+.food-detail-description p::before {
+  background: #ff7a1a;
+  border-radius: 999px;
+  content: "";
+  height: 8px;
+  margin-top: 10px;
+  width: 8px;
 }
 
 .food-detail-options {
@@ -388,6 +455,10 @@ body.food-detail-open {
   .food-review-summary {
     grid-template-columns: 1fr;
   }
+
+  .food-detail-perspectives {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 560px) {
@@ -407,6 +478,14 @@ body.food-detail-open {
   .food-detail-image {
     aspect-ratio: 4 / 3;
     max-height: 260px;
+  }
+
+  .food-detail-perspectives article {
+    min-height: 0;
+  }
+
+  .food-detail-description {
+    padding: 14px;
   }
 
   .food-detail-info {
