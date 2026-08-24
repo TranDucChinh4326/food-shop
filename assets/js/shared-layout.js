@@ -371,6 +371,41 @@ function startFoodHubIdleSessionGuard() {
 
   const shouldUsePinLock = () => Boolean(getSessionUser()?.hasPin);
 
+  const initPinBoxes = container => {
+    const hiddenInput = container.querySelector("[data-pin-hidden]");
+    const boxes = Array.from(container.querySelectorAll("[data-pin-box]"));
+    if (!hiddenInput || !boxes.length || container.dataset.pinReady === "1") return;
+
+    container.dataset.pinReady = "1";
+    const syncHidden = () => {
+      hiddenInput.value = boxes.map(input => input.value).join("");
+    };
+
+    boxes.forEach((input, index) => {
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "").slice(-1);
+        syncHidden();
+        if (input.value && boxes[index + 1]) boxes[index + 1].focus();
+      });
+
+      input.addEventListener("keydown", event => {
+        if (event.key === "Backspace" && !input.value && boxes[index - 1]) {
+          boxes[index - 1].focus();
+        }
+      });
+
+      input.addEventListener("paste", event => {
+        event.preventDefault();
+        const digits = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, boxes.length);
+        digits.split("").forEach((digit, digitIndex) => {
+          boxes[digitIndex].value = digit;
+        });
+        syncHidden();
+        boxes[Math.min(digits.length, boxes.length) - 1]?.focus();
+      });
+    });
+  };
+
   const clearSession = () => {
     sessionStorage.removeItem(tokenKey);
     sessionStorage.removeItem(userKey);
@@ -399,12 +434,16 @@ function startFoodHubIdleSessionGuard() {
         </span>
         <h2>Nhập mã PIN</h2>
         <p>Tài khoản đã tạm khóa vì không thao tác trong 5 phút.</p>
-        <input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Mã PIN" data-user-pin-input required>
+        <div class="pin-box-row" data-pin-boxes>
+          ${Array.from({ length: 6 }, (_, index) => `<input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Số PIN ${index + 1}" data-pin-box>`).join("")}
+        </div>
+        <input type="hidden" data-user-pin-input data-pin-hidden required>
         <small data-user-pin-error></small>
         <button type="submit">Mở khóa</button>
       </form>
     `;
     document.body.appendChild(overlay);
+    initPinBoxes(overlay);
 
     overlay.querySelector("[data-user-pin-form]").addEventListener("submit", async event => {
       event.preventDefault();
@@ -413,7 +452,11 @@ function startFoodHubIdleSessionGuard() {
       const button = overlay.querySelector("button");
       const pin = input.value.trim();
 
-      if (!pin) return;
+      if (!/^\d{6}$/.test(pin)) {
+        error.textContent = "Vui lòng nhập đủ 6 số PIN.";
+        overlay.querySelector("[data-pin-box]")?.focus();
+        return;
+      }
 
       button.disabled = true;
       error.textContent = "";
@@ -438,7 +481,10 @@ function startFoodHubIdleSessionGuard() {
           }
           error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
           input.value = "";
-          input.focus();
+          overlay.querySelectorAll("[data-pin-box]").forEach(box => {
+            box.value = "";
+          });
+          overlay.querySelector("[data-pin-box]")?.focus();
           return;
         }
 
@@ -468,7 +514,7 @@ function startFoodHubIdleSessionGuard() {
     sessionStorage.setItem(userPinLockKey, "1");
     const overlay = ensurePinOverlay();
     overlay.classList.add("is-visible");
-    setTimeout(() => overlay.querySelector("[data-user-pin-input]")?.focus(), 50);
+    setTimeout(() => overlay.querySelector("[data-pin-box]")?.focus(), 50);
   };
 
   if (now - lastActivity > idleLimitMs) {
@@ -479,7 +525,7 @@ function startFoodHubIdleSessionGuard() {
   if (isLocked && shouldUsePinLock()) {
     const overlay = ensurePinOverlay();
     overlay.classList.add("is-visible");
-    setTimeout(() => overlay.querySelector("[data-user-pin-input]")?.focus(), 50);
+    setTimeout(() => overlay.querySelector("[data-pin-box]")?.focus(), 50);
   } else if (isLocked) {
     clearSession();
     redirectToLogin();

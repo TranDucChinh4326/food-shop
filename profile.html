@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824-nav-active-yellow">
-  <link rel="stylesheet" href="assets/css/profile.css?v=20260824-user-pin">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260824-pin-boxes">
+  <link rel="stylesheet" href="assets/css/profile.css?v=20260824-pin-boxes">
 </head>
 <body>
   <div data-shared-header></div>
@@ -213,17 +213,20 @@
 
         <label id="currentPinLabel">
           Mã PIN hiện tại
-          <input type="password" id="currentPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}">
+          <span class="pin-box-row" data-profile-pin-group="currentPin" aria-label="Mã PIN hiện tại"></span>
+          <input type="hidden" id="currentPin">
         </label>
 
         <label>
           Mã PIN mới
-          <input type="password" id="newPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}" required>
+          <span class="pin-box-row" data-profile-pin-group="newPin" aria-label="Mã PIN mới"></span>
+          <input type="hidden" id="newPin" required>
         </label>
 
         <label>
           Nhập lại mã PIN mới
-          <input type="password" id="confirmPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}" required>
+          <span class="pin-box-row" data-profile-pin-group="confirmPin" aria-label="Nhập lại mã PIN mới"></span>
+          <input type="hidden" id="confirmPin" required>
         </label>
 
         <button type="submit" class="btn">Lưu mã PIN</button>
@@ -233,8 +236,8 @@
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260824-store-location"></script>
+  <script src="assets/js/shared-layout.js?v=20260824-pin-boxes"></script>
   <script src="assets/js/script.js?v=20260824-store-location"></script>
-  <script src="assets/js/profile.js?v=20260824-user-pin"></script>
+  <script src="assets/js/profile.js?v=20260824-pin-boxes"></script>
 </body>
 </html>

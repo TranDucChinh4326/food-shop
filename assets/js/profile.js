@@ -383,6 +383,57 @@ function renderPinMode(user) {
   }
 }
 
+function initProfilePinBoxes() {
+  document.querySelectorAll("[data-profile-pin-group]").forEach(group => {
+    const inputId = group.dataset.profilePinGroup;
+    const hiddenInput = document.getElementById(inputId);
+    if (!hiddenInput || group.dataset.pinReady === "1") return;
+
+    group.dataset.pinReady = "1";
+    group.innerHTML = Array.from({ length: 6 }, (_, index) => `
+      <input type="password" inputmode="numeric" autocomplete="off" maxlength="1" aria-label="Số PIN ${index + 1}" data-profile-pin-box>
+    `).join("");
+
+    const boxes = Array.from(group.querySelectorAll("[data-profile-pin-box]"));
+    const syncHidden = () => {
+      hiddenInput.value = boxes.map(input => input.value).join("");
+    };
+
+    boxes.forEach((box, index) => {
+      box.addEventListener("input", () => {
+        box.value = box.value.replace(/\D/g, "").slice(-1);
+        syncHidden();
+        if (box.value && boxes[index + 1]) boxes[index + 1].focus();
+      });
+
+      box.addEventListener("keydown", event => {
+        if (event.key === "Backspace" && !box.value && boxes[index - 1]) {
+          boxes[index - 1].focus();
+        }
+      });
+
+      box.addEventListener("paste", event => {
+        event.preventDefault();
+        const digits = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, boxes.length);
+        digits.split("").forEach((digit, digitIndex) => {
+          boxes[digitIndex].value = digit;
+        });
+        syncHidden();
+        boxes[Math.min(digits.length, boxes.length) - 1]?.focus();
+      });
+    });
+  });
+}
+
+function clearProfilePinBoxes(form) {
+  form?.querySelectorAll("[data-profile-pin-box]").forEach(input => {
+    input.value = "";
+  });
+  form?.querySelectorAll("#currentPin, #newPin, #confirmPin").forEach(input => {
+    input.value = "";
+  });
+}
+
 function getProfileVoucherLabel(entry) {
   const discount = entry.discount || entry;
   const applyText = discount.applyTo === "shipping" ? "Phí giao hàng" : "Đơn hàng";
@@ -912,8 +963,8 @@ async function changePin(event) {
   const newPin = document.getElementById("newPin")?.value || "";
   const confirmPin = document.getElementById("confirmPin")?.value || "";
 
-  if (!/^\d{4,6}$/.test(newPin)) {
-    showSiteToast("Mã PIN phải gồm 4-6 chữ số.", "error");
+  if (!/^\d{6}$/.test(newPin)) {
+    showSiteToast("Mã PIN phải gồm đúng 6 chữ số.", "error");
     return;
   }
 
@@ -928,9 +979,7 @@ async function changePin(event) {
       body: JSON.stringify({ currentPin, newPin, confirmPin })
     });
 
-    form?.querySelectorAll("input").forEach(input => {
-      input.value = "";
-    });
+    clearProfilePinBoxes(form);
 
     if (data.user) {
       sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
@@ -965,6 +1014,7 @@ document.getElementById("savedAddressList")?.addEventListener("click", event => 
 document.querySelectorAll("[data-profile-tab]").forEach(button => {
   button.addEventListener("click", () => setProfileTab(button.dataset.profileTab));
 });
+initProfilePinBoxes();
 drawPasswordCaptchaPlaceholder("Bấm Xin mã");
 updatePasswordCaptchaButton();
 loadProfile();

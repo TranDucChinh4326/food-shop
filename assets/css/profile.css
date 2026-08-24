@@ -443,6 +443,14 @@ button.account-photo-badge {
   color: #147a3f;
 }
 
+.profile-page .pin-card .pin-box-row {
+  justify-content: start;
+}
+
+.profile-page .pin-card .pin-box-row input {
+  min-height: 46px;
+}
+
 .profile-voucher-list {
   display: grid;
   gap: 12px;
