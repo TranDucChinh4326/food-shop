@@ -1850,11 +1850,11 @@ function renderStats(data) {
   const totalUsers = Number(summary.total_users || 0);
   const successRate = totalOrders ? (doneOrders / totalOrders) * 100 : 0;
   const statIcons = {
-    revenue: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M8 7h6.5a3.5 3.5 0 0 1 0 7H8M8 14h8" /></svg>',
-    orders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10l2 4v12H5V8l2-4Z" /><path d="M5 8h14M9 12h6M9 16h4" /></svg>',
-    customers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="M20 20a3 3 0 0 0-3-3M4 20a3 3 0 0 1 3-3" /></svg>',
-    onlineUsers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="4" /><path d="M18 8.5h.01" /><path d="M17 12a5 5 0 0 0 0-7" /></svg>',
-    success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7" /></svg>'
+    revenue: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" /><path d="M4 9h16" /><path d="M8 14h5" /></svg>',
+    orders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10l2 3v13H5V7l2-3Z" /><path d="M9 12h6" /><path d="M9 16h4" /></svg>',
+    customers: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 19a4 4 0 0 0-8 0" /><circle cx="12" cy="8" r="3.5" /><path d="M19 18a3 3 0 0 0-2.4-2.9" /></svg>',
+    onlineUsers: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M8.8 12.2 11 14.4l4.6-5" /></svg>',
+    success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14.5 8 18l12-12" /><path d="M4 6h8" /></svg>'
   };
   const statCards = [
     {
