@@ -1902,6 +1902,32 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   width: 170px;
 }
 
+.account-status {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 30px;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.account-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.account-status.locked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.account-status.warning {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
 
 
 .discounts-table td:nth-child(2) {

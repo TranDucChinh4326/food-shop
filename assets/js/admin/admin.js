@@ -40,6 +40,7 @@ const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const foodCreateLink = document.getElementById("foodCreateLink");
 const userSearch = document.getElementById("userSearch");
+const userStatusFilter = document.getElementById("userStatusFilter");
 const userPageSize = document.getElementById("userPageSize");
 const accountCreateLink = document.getElementById("accountCreateLink");
 const announcementSearch = document.getElementById("announcementSearch");
@@ -772,15 +773,26 @@ async function loadUsers() {
   }
 }
 
+function getFilteredUsers() {
+  const status = userStatusFilter?.value || "all";
+
+  return cachedUsers.filter(account =>
+    status === "all"
+      || (status === "active" && account.isActive)
+      || (status === "locked" && !account.isActive)
+  );
+}
+
 function renderUsersTable() {
   if (!usersList) return;
 
-  const totalUsers = cachedUsers.length;
+  const filteredUsers = getFilteredUsers();
+  const totalUsers = filteredUsers.length;
   const totalPages = Math.max(1, Math.ceil(totalUsers / usersPerPage));
   usersPage = Math.min(Math.max(usersPage, 1), totalPages);
 
   const startIndex = (usersPage - 1) * usersPerPage;
-  const pageUsers = cachedUsers.slice(startIndex, startIndex + usersPerPage);
+  const pageUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
   const from = totalUsers === 0 ? 0 : startIndex + 1;
   const to = startIndex + pageUsers.length;
 
@@ -3173,6 +3185,10 @@ userPageSize?.addEventListener("change", () => {
   usersPage = 1;
   renderUsersTable();
 });
+userStatusFilter?.addEventListener("change", () => {
+  usersPage = 1;
+  renderUsersTable();
+});
 userSearch?.addEventListener("input", () => {
   clearTimeout(userSearchTimer);
   usersPage = 1;
@@ -3376,7 +3392,7 @@ usersList?.addEventListener("click", async event => {
   try {
     if (pageButton) {
       const pageAction = pageButton.dataset.usersPage;
-      const totalPages = Math.max(1, Math.ceil(cachedUsers.length / usersPerPage));
+      const totalPages = Math.max(1, Math.ceil(getFilteredUsers().length / usersPerPage));
 
       if (pageAction === "prev") {
         usersPage -= 1;
