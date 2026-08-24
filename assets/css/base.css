@@ -284,22 +284,22 @@ header.header-compact .header-tools {
 
 .top-icon-badge {
   align-items: center;
-  background: #ff4b22;
-  border: 2px solid #fff7f1;
+  background: linear-gradient(135deg, #ff6a2a, #ff3d1f);
+  border: 2px solid #fffaf6;
   border-radius: 999px;
-  box-shadow: 0 6px 14px rgba(255, 75, 34, 0.32);
+  box-shadow: 0 5px 12px rgba(255, 75, 34, 0.28);
   color: #fff;
   display: inline-flex;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
-  height: 20px;
+  height: 18px;
   justify-content: center;
   line-height: 1;
-  min-width: 20px;
-  padding: 0 5px;
+  min-width: 18px;
+  padding: 0 4px;
   position: absolute;
-  right: -5px;
-  top: -6px;
+  right: -2px;
+  top: -3px;
   z-index: 3;
 }
 
