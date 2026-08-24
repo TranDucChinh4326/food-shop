@@ -41,6 +41,7 @@ let deliveryMapMarker = null;
 let pendingDeliveryLocation = null;
 let leafletLoadPromise = null;
 let homeRevealObserver = null;
+let orderHistoryLoadPromise = null;
 
 const LEGACY_ADDRESS_LOOKUP = {
   "Hà Nội": {
@@ -143,6 +144,20 @@ function hideSiteLoading() {
   siteLoadingCount = Math.max(0, siteLoadingCount - 1);
   if (siteLoadingCount > 0) return;
   document.getElementById("siteLoadingOverlay")?.classList.remove("show");
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }
 
 async function withSiteLoading(message, task) {
@@ -1036,7 +1051,7 @@ async function loadFoodReviews() {
   if (!homeReviewBox && !homeReviewFilters && !foodDetailPage && !orderHistoryBox) return;
 
   try {
-    const response = await fetch(`${FOOD_REVIEWS_API}?limit=40`);
+    const response = await fetchWithTimeout(`${FOOD_REVIEWS_API}?limit=40`);
     if (!response.ok) throw new Error(`Reviews API returned ${response.status}`);
 
     foodReviews = await response.json();
@@ -3454,8 +3469,12 @@ async function trackOrder(event) {
   }
 }
 
-async function loadOrderHistory(event) {
-  if (event) event.preventDefault();
+async function loadOrderHistory(eventOrOptions) {
+  if (eventOrOptions?.preventDefault) eventOrOptions.preventDefault();
+  if (orderHistoryLoadPromise) return orderHistoryLoadPromise;
+
+  const options = eventOrOptions && !eventOrOptions.preventDefault ? eventOrOptions : {};
+  const silent = Boolean(options.silent);
 
   const resultBox = document.getElementById("track-result");
   const searchInput = document.getElementById("orderSearch");
@@ -3475,37 +3494,48 @@ async function loadOrderHistory(event) {
   if (searchValue) params.set("q", searchValue);
   if (dateValue) params.set("date", dateValue);
 
-  resultBox.innerHTML = "<p>Đang tải lịch sử đơn hàng...</p>";
-  showSiteLoading("Đang tải lịch sử đơn hàng...");
-
-  try {
-    const response = await fetch(`${ORDERS_API}?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${getAuthToken()}`
-      }
-    });
-    const data = await response.json();
-
-    if (response.status === 401) {
-      sessionStorage.removeItem(AUTH_TOKEN_KEY);
-      sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "track.html");
-      return;
-    }
-
-    if (!response.ok) {
-      resultBox.innerHTML = `<p>${data.message || "Không thể tải lịch sử đơn hàng."}</p>`;
-      return;
-    }
-
-    await loadFoodReviews();
-    renderOrderHistory(data);
-  } catch (error) {
-    resultBox.innerHTML = "<p>Không kết nối được server.</p>";
-    console.error(error);
-  } finally {
-    hideSiteLoading();
+  if (!silent) {
+    resultBox.innerHTML = "<p>Đang tải lịch sử đơn hàng...</p>";
+    showSiteLoading("Đang tải lịch sử đơn hàng...");
   }
+
+  orderHistoryLoadPromise = (async () => {
+    try {
+      const response = await fetchWithTimeout(`${ORDERS_API}?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`
+        }
+      });
+      const data = await response.json();
+
+      if (response.status === 401) {
+        sessionStorage.removeItem(AUTH_TOKEN_KEY);
+        sessionStorage.removeItem(AUTH_USER_KEY);
+        requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "track.html");
+        return;
+      }
+
+      if (!response.ok) {
+        if (!silent) resultBox.innerHTML = `<p>${data.message || "Không thể tải lịch sử đơn hàng."}</p>`;
+        return;
+      }
+
+      await loadFoodReviews();
+      renderOrderHistory(data);
+    } catch (error) {
+      if (!silent) {
+        resultBox.innerHTML = error.name === "AbortError"
+          ? "<p>Server phản hồi chậm. Vui lòng thử lại sau vài giây.</p>"
+          : "<p>Không kết nối được server.</p>";
+      }
+      console.error(error);
+    } finally {
+      if (!silent) hideSiteLoading();
+      orderHistoryLoadPromise = null;
+    }
+  })();
+
+  return orderHistoryLoadPromise;
 }
 
 function renderOrderHistory(orders) {

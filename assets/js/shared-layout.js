@@ -248,7 +248,7 @@ function startFoodHubRealtime() {
 
     socket.on("order:created", payload => {
       if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
-        window.loadOrderHistory();
+        window.loadOrderHistory({ silent: true });
       }
       if (typeof window.showSiteToast === "function") {
         window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} đã được ghi nhận.`, "info");
@@ -257,7 +257,7 @@ function startFoodHubRealtime() {
 
     socket.on("order:updated", payload => {
       if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
-        window.loadOrderHistory();
+        window.loadOrderHistory({ silent: true });
       }
       if (typeof window.showSiteToast === "function") {
         window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} vừa được cập nhật.`, "info");
