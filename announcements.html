@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- Trang thông báo công khai: hiển thị danh sách thông báo/voucher đang hiệu lực từ backend. -->
+<!-- Trang thông báo công khai: hiển thị danh sách thông báo đang hiệu lực từ backend. -->
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thông báo - FoodHub</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260824-ticker-fade-clean">
-  <link rel="stylesheet" href="assets/css/announcements.css?v=20260818-mobile-announcements">
+  <link rel="stylesheet" href="assets/css/announcements.css?v=20260824-announcements-refresh">
 </head>
 <body>
   <div data-shared-header></div>
@@ -15,25 +15,29 @@
     <section class="announcement-archive-panel">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">Danh sách</span>
-          <h2>Tất cả thông báo</h2>
+          <span class="eyebrow">Thông báo</span>
+          <h2>Cập nhật mới từ FoodHub</h2>
+          <p>Theo dõi ưu đãi, lịch cập nhật thực đơn và những thông tin quan trọng khi đặt món.</p>
         </div>
       </div>
+
       <div class="announcement-filters">
         <input type="search" id="announcementArchiveSearch" placeholder="Tìm kiếm thông báo">
-        <input type="date" id="announcementArchiveDate" aria-label="Loc theo ngày đăng">
-        <select id="announcementArchivePageSize" aria-label="So thông báo mới trang">
-          <option value="5" selected>5 dong</option>
-          <option value="10">10 dong</option>
-          <option value="20">20 dong</option>
+        <input type="date" id="announcementArchiveDate" aria-label="Lọc theo ngày đăng">
+        <select id="announcementArchivePageSize" aria-label="Số thông báo mỗi trang">
+          <option value="5" selected>5 dòng</option>
+          <option value="10">10 dòng</option>
+          <option value="20">20 dòng</option>
         </select>
       </div>
+
       <div id="announcementArchiveList" class="announcement-archive-list">
         Đang tải thông báo...
       </div>
       <div id="announcementArchivePager" class="announcement-archive-pager"></div>
     </section>
   </main>
+
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
