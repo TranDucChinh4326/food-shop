@@ -170,8 +170,12 @@ function startFoodHubIdleSessionGuard() {
   const userKey = "foodhub_user";
   const cartKey = "foodhub_cart";
   const activityKey = "foodhub_last_activity_at";
-  const idleLimitMs = Number(window.FOODHUB_CONFIG?.SESSION_IDLE_LIMIT_MS || 60 * 60 * 1000);
+  const userPinLockKey = "foodhub_user_pin_locked";
+  const idleLimitMs = Number(window.FOODHUB_CONFIG?.USER_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
   const token = sessionStorage.getItem(tokenKey);
+  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  let failedAttempts = 0;
+  let isLocked = sessionStorage.getItem(userPinLockKey) === "1";
 
   if (!token || window.__foodHubIdleSessionStarted) return;
 
@@ -179,11 +183,22 @@ function startFoodHubIdleSessionGuard() {
   const now = Date.now();
   const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
 
+  const getSessionUser = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem(userKey) || "null");
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const shouldUsePinLock = () => Boolean(getSessionUser()?.hasPin);
+
   const clearSession = () => {
     sessionStorage.removeItem(tokenKey);
     sessionStorage.removeItem(userKey);
     sessionStorage.removeItem(cartKey);
     sessionStorage.removeItem(activityKey);
+    sessionStorage.removeItem(userPinLockKey);
   };
 
   const redirectToLogin = () => {
@@ -192,13 +207,109 @@ function startFoodHubIdleSessionGuard() {
     window.location.href = "login.html?reason=session-timeout";
   };
 
+  const ensurePinOverlay = () => {
+    let overlay = document.querySelector("[data-user-pin-lock]");
+    if (overlay) return overlay;
+
+    overlay = document.createElement("div");
+    overlay.className = "user-pin-lock";
+    overlay.dataset.userPinLock = "true";
+    overlay.innerHTML = `
+      <form class="user-pin-card" data-user-pin-form>
+        <span class="user-pin-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+        </span>
+        <h2>Nhập mã PIN</h2>
+        <p>Tài khoản đã tạm khóa vì không thao tác trong 5 phút.</p>
+        <input type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Mã PIN" data-user-pin-input required>
+        <small data-user-pin-error></small>
+        <button type="submit">Mở khóa</button>
+      </form>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector("[data-user-pin-form]").addEventListener("submit", async event => {
+      event.preventDefault();
+      const input = overlay.querySelector("[data-user-pin-input]");
+      const error = overlay.querySelector("[data-user-pin-error]");
+      const button = overlay.querySelector("button");
+      const pin = input.value.trim();
+
+      if (!pin) return;
+
+      button.disabled = true;
+      error.textContent = "";
+
+      try {
+        const response = await fetch(`${apiBase}/auth/pin/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem(tokenKey) || ""}`
+          },
+          body: JSON.stringify({ pin })
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          failedAttempts += 1;
+          if (failedAttempts >= 3) {
+            clearSession();
+            redirectToLogin();
+            return;
+          }
+          error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
+          input.value = "";
+          input.focus();
+          return;
+        }
+
+        failedAttempts = 0;
+        isLocked = false;
+        sessionStorage.removeItem(userPinLockKey);
+        sessionStorage.setItem(activityKey, String(Date.now()));
+        overlay.classList.remove("is-visible");
+      } catch (_) {
+        error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    return overlay;
+  };
+
+  const lockScreen = () => {
+    if (!shouldUsePinLock()) {
+      clearSession();
+      redirectToLogin();
+      return;
+    }
+
+    isLocked = true;
+    sessionStorage.setItem(userPinLockKey, "1");
+    const overlay = ensurePinOverlay();
+    overlay.classList.add("is-visible");
+    setTimeout(() => overlay.querySelector("[data-user-pin-input]")?.focus(), 50);
+  };
+
   if (now - lastActivity > idleLimitMs) {
+    lockScreen();
+    return;
+  }
+
+  if (isLocked && shouldUsePinLock()) {
+    const overlay = ensurePinOverlay();
+    overlay.classList.add("is-visible");
+    setTimeout(() => overlay.querySelector("[data-user-pin-input]")?.focus(), 50);
+  } else if (isLocked) {
     clearSession();
     redirectToLogin();
     return;
   }
 
   const markActivity = () => {
+    if (isLocked) return;
     sessionStorage.setItem(activityKey, String(Date.now()));
   };
   ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(eventName => {
@@ -209,9 +320,8 @@ function startFoodHubIdleSessionGuard() {
   window.setInterval(() => {
     const currentToken = sessionStorage.getItem(tokenKey);
     const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
-    if (currentToken && Date.now() - latestActivity > idleLimitMs) {
-      clearSession();
-      redirectToLogin();
+    if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) {
+      lockScreen();
     }
   }, 60000);
 }

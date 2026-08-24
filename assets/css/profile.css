@@ -410,6 +410,39 @@ button.account-photo-badge {
   grid-column: 1 / -1;
 }
 
+.profile-page .pin-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile-page .pin-card .section-heading,
+.profile-page .pin-card .btn {
+  grid-column: 1 / -1;
+}
+
+.profile-page .pin-card .section-heading {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.pin-status {
+  background: #fff0e6;
+  border: 1px solid #f1c7b3;
+  border-radius: 999px;
+  color: #9a4300;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 12px;
+}
+
+.pin-status.enabled {
+  background: #e5f8ed;
+  border-color: #bde7cc;
+  color: #147a3f;
+}
+
 .profile-voucher-list {
   display: grid;
   gap: 12px;
@@ -495,8 +528,14 @@ button.account-photo-badge {
   }
 
   .profile-page #profileForm,
-  .profile-page .password-card {
+  .profile-page .password-card,
+  .profile-page .pin-card {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-page .pin-card .section-heading {
+    align-items: flex-start;
+    display: grid;
   }
 }
 

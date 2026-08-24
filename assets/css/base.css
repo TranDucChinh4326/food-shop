@@ -2483,6 +2483,116 @@ body.qr-payment-open {
   }
 }
 
+.user-pin-lock {
+  align-items: center;
+  background: rgba(31, 22, 17, 0.5);
+  backdrop-filter: blur(7px);
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.18s ease;
+  z-index: 30000;
+}
+
+.user-pin-lock.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.user-pin-card {
+  background: #fffaf6;
+  border: 1px solid #f1c7b3;
+  border-radius: 10px;
+  box-shadow: 0 26px 70px rgba(43, 24, 14, 0.28);
+  color: #211813;
+  display: grid;
+  gap: 13px;
+  justify-items: center;
+  max-width: min(380px, calc(100vw - 32px));
+  padding: 28px;
+  text-align: center;
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+
+.user-pin-lock.is-visible .user-pin-card {
+  transform: translateY(0) scale(1);
+}
+
+.user-pin-icon {
+  align-items: center;
+  background: linear-gradient(135deg, #ff4d25, #ff8a22);
+  border-radius: 18px;
+  color: #fff;
+  display: inline-flex;
+  height: 58px;
+  justify-content: center;
+  width: 58px;
+}
+
+.user-pin-icon svg {
+  fill: none;
+  height: 28px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 28px;
+}
+
+.user-pin-card h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.user-pin-card p {
+  color: #725b4f;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.user-pin-card input {
+  border: 1px solid #e4c5b4;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  min-height: 48px;
+  padding: 0 14px;
+  text-align: center;
+  width: 100%;
+}
+
+.user-pin-card input:focus {
+  border-color: #ff6a2a;
+  box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.14);
+  outline: none;
+}
+
+.user-pin-card small {
+  color: #d93025;
+  min-height: 18px;
+}
+
+.user-pin-card button {
+  background: #ff5722;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 46px;
+  padding: 0 24px;
+}
+
+.user-pin-card button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 
 
 .empty-cart {

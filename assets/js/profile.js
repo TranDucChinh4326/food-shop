@@ -363,6 +363,26 @@ function renderAccountSummary(user) {
   }
 }
 
+function renderPinMode(user) {
+  const status = document.getElementById("pinStatus");
+  const currentPin = document.getElementById("currentPin");
+  const currentLabel = document.getElementById("currentPinLabel");
+  const hasPin = Boolean(user?.hasPin);
+
+  if (status) {
+    status.className = `pin-status ${hasPin ? "enabled" : ""}`;
+    status.textContent = hasPin ? "Đã bật PIN" : "Chưa tạo PIN";
+  }
+
+  if (currentPin) {
+    currentPin.required = hasPin;
+  }
+
+  if (currentLabel) {
+    currentLabel.hidden = !hasPin;
+  }
+}
+
 function getProfileVoucherLabel(entry) {
   const discount = entry.discount || entry;
   const applyText = discount.applyTo === "shipping" ? "Phí giao hàng" : "Đơn hàng";
@@ -715,6 +735,7 @@ async function loadProfile() {
     document.getElementById("profilePhone").value = data.user.phone || "";
     renderEmailVerifyStatus(data.user);
     renderPasswordMode(data.user);
+    renderPinMode(data.user);
     renderAccountSummary(data.user);
     if (data.user.requiresAccountSetup || new URLSearchParams(window.location.search).get("setup") === "1") {
       showSiteToast("Vui lòng tạo username và mật khẩu để hoàn tất tài khoản.", "info");
@@ -883,9 +904,52 @@ function togglePasswordVisibility(event) {
   button.textContent = shouldShow ? "\u1ea8n" : "Hi\u1ec7n";
 }
 
+async function changePin(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const currentPin = document.getElementById("currentPin")?.value || "";
+  const newPin = document.getElementById("newPin")?.value || "";
+  const confirmPin = document.getElementById("confirmPin")?.value || "";
+
+  if (!/^\d{4,6}$/.test(newPin)) {
+    showSiteToast("Mã PIN phải gồm 4-6 chữ số.", "error");
+    return;
+  }
+
+  if (newPin !== confirmPin) {
+    showSiteToast("Mã PIN nhập lại không khớp.", "error");
+    return;
+  }
+
+  try {
+    const data = await requestProfileJson(`${PROFILE_AUTH_API}/pin`, {
+      method: "PUT",
+      body: JSON.stringify({ currentPin, newPin, confirmPin })
+    });
+
+    form?.querySelectorAll("input").forEach(input => {
+      input.value = "";
+    });
+
+    if (data.user) {
+      sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+      renderPinMode(data.user);
+      renderUser();
+    }
+
+    sessionStorage.removeItem("foodhub_user_pin_locked");
+    sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
+    showSiteToast(data.message || "Đã cập nhật mã PIN.");
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  }
+}
+
 document.getElementById("profileForm").addEventListener("submit", saveProfile);
 document.getElementById("passwordForm").addEventListener("submit", changePassword);
 document.getElementById("passwordForm").addEventListener("click", togglePasswordVisibility);
+document.getElementById("pinForm")?.addEventListener("submit", changePin);
 document.getElementById("socialAccounts")?.addEventListener("click", handleSocialProviderAction);
 initAvatarUpload();
 document.getElementById("addressBookForm")?.addEventListener("submit", saveAddressBook);

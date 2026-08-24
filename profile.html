@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824-cart-fly-slow">
-  <link rel="stylesheet" href="assets/css/profile.css?v=20260823-profile-refresh">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260824-user-pin">
+  <link rel="stylesheet" href="assets/css/profile.css?v=20260824-user-pin">
 </head>
 <body>
   <div data-shared-header></div>
@@ -34,6 +34,10 @@
       <button type="button" class="account-nav-item" data-profile-tab="password">
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><path d="M5 11h14v10H5z"/><path d="M12 15v2"/></svg></span>
         <span>Đổi mật khẩu</span>
+      </button>
+      <button type="button" class="account-nav-item" data-profile-tab="pin">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M10 15h4"/></svg></span>
+        <span>Mã PIN</span>
       </button>
     </aside>
 
@@ -197,13 +201,40 @@
 
         <button type="submit" class="btn">Đổi mật khẩu</button>
       </form>
+
+      <form id="pinForm" class="profile-card pin-card" data-profile-panel="pin" autocomplete="off" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>Mã PIN bảo vệ phiên</h2>
+            <p>Sau 5 phút không thao tác, FoodHub sẽ làm mờ màn hình và yêu cầu mã PIN để mở khóa tài khoản.</p>
+          </div>
+          <span id="pinStatus" class="pin-status">Chưa tạo PIN</span>
+        </div>
+
+        <label id="currentPinLabel">
+          Mã PIN hiện tại
+          <input type="password" id="currentPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}">
+        </label>
+
+        <label>
+          Mã PIN mới
+          <input type="password" id="newPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}" required>
+        </label>
+
+        <label>
+          Nhập lại mã PIN mới
+          <input type="password" id="confirmPin" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]{4,6}" required>
+        </label>
+
+        <button type="submit" class="btn">Lưu mã PIN</button>
+      </form>
     </section>
   </main>
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260824-idle-session"></script>
+  <script src="assets/js/shared-layout.js?v=20260824-user-pin"></script>
   <script src="assets/js/script.js?v=20260824-cart-fly-slow"></script>
-  <script src="assets/js/profile.js?v=20260803-default-avatar"></script>
+  <script src="assets/js/profile.js?v=20260824-user-pin"></script>
 </body>
 </html>
