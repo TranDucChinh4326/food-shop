@@ -88,19 +88,19 @@
 }
 
 .stats-card {
-  align-items: flex-start;
+  align-content: start;
   background:
-    radial-gradient(circle at 100% 0, rgba(255, 112, 48, 0.11), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(255, 112, 48, 0.08), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 248, 0.95));
   border: 1px solid rgba(238, 211, 196, 0.9);
   border-radius: 8px;
   box-shadow: 0 16px 38px rgba(78, 45, 25, 0.07);
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-  min-height: 122px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  min-height: 132px;
   overflow: hidden;
-  padding: 20px 18px;
+  padding: 20px 20px 18px;
   position: relative;
 }
 
@@ -117,7 +117,7 @@
 .stats-card span {
   color: #7a5a4c;
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.25;
@@ -127,11 +127,12 @@
 .stats-card strong {
   color: #23130d;
   display: block;
-  font-size: 32px;
+  font-size: clamp(26px, 1.9vw, 34px);
   font-variant-numeric: tabular-nums;
   font-weight: 900;
+  grid-column: 1 / -1;
   line-height: 1.1;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .stats-card small {
@@ -139,8 +140,9 @@
   display: block;
   font-size: 12px;
   font-weight: 700;
+  grid-column: 1 / -1;
   line-height: 1.35;
-  margin-top: 10px;
+  margin-top: 4px;
 }
 
 .stats-card em {
@@ -151,24 +153,25 @@
   border-radius: 50%;
   color: #ff5a23;
   display: inline-flex;
-  flex: 0 0 46px;
   font-size: 18px;
   font-style: normal;
   font-weight: 800;
-  height: 46px;
+  height: 38px;
   justify-content: center;
-  margin-top: -2px;
-  box-shadow: 0 12px 22px rgba(255, 92, 35, 0.13);
+  justify-self: end;
+  margin-top: -4px;
+  width: 38px;
+  box-shadow: 0 10px 18px rgba(255, 92, 35, 0.12);
 }
 
 .stats-card em svg {
   fill: none;
-  height: 21px;
+  height: 18px;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
-  width: 21px;
+  width: 18px;
 }
 
 .dashboard-grid {
