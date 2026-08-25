@@ -857,12 +857,18 @@ async function saveProfile(event) {
    Avatar Crop / Zoom / Pan / Rotate & Lightbox Preview
    ============================================================ */
 let cropState = {
-  src: null, zoom: 1, rotation: 0,
-  offsetX: 0, offsetY: 0,
+  src: null,
+  zoom: 1,
+  rotation: 0,
+  offsetX: 0,
+  offsetY: 0,
   isDragging: false,
-  startX: 0, startY: 0,
-  lastOffsetX: 0, lastOffsetY: 0,
-  naturalW: 0, naturalH: 0
+  startX: 0,
+  startY: 0,
+  lastOffsetX: 0,
+  lastOffsetY: 0,
+  naturalW: 300,
+  naturalH: 300
 };
 
 function openAvatarCropModal(file) {
@@ -879,14 +885,22 @@ function openAvatarCropModal(file) {
   cropState.offsetY = 0;
 
   img.onload = () => {
-    cropState.naturalW = img.naturalWidth;
-    cropState.naturalH = img.naturalHeight;
-    applyCropTransform();
+    cropState.naturalW = img.naturalWidth || 300;
+    cropState.naturalH = img.naturalHeight || 300;
+    requestAnimationFrame(applyCropTransform);
   };
   img.src = url;
+
   const slider = document.getElementById("avatarZoomRange");
   if (slider) slider.value = 1;
-  modal.showModal();
+
+  if (typeof modal.showModal === "function") {
+    modal.showModal();
+  } else {
+    modal.setAttribute("open", "");
+  }
+
+  requestAnimationFrame(applyCropTransform);
 }
 
 function applyCropTransform() {
@@ -894,18 +908,24 @@ function applyCropTransform() {
   const wrap = document.getElementById("avatarCropCanvasWrap");
   if (!img || !wrap) return;
 
-  const wrapW = wrap.offsetWidth;
-  const wrapH = wrap.offsetHeight;
-  const rad  = (cropState.rotation * Math.PI) / 180;
-  const cosA = Math.abs(Math.cos(rad));
-  const sinA = Math.abs(Math.sin(rad));
+  const wrapW = wrap.offsetWidth || 260;
+  const wrapH = wrap.offsetHeight || 260;
+  const rad   = (cropState.rotation * Math.PI) / 180;
+  const cosA  = Math.abs(Math.cos(rad));
+  const sinA  = Math.abs(Math.sin(rad));
 
-  const fittedW = (wrapW * cosA + wrapH * sinA);
-  const fittedH = (wrapH * cosA + wrapW * sinA);
-  const baseScale = Math.max(fittedW / cropState.naturalW, fittedH / cropState.naturalH);
+  const naturalW = cropState.naturalW || 300;
+  const naturalH = cropState.naturalH || 300;
+
+  // Ensure image at least covers the 200px crop mask circle
+  const minMaskSize = 200;
+  const fittedW = Math.max(minMaskSize, wrapW * cosA + wrapH * sinA);
+  const fittedH = Math.max(minMaskSize, wrapH * cosA + wrapW * sinA);
+
+  const baseScale = Math.max(fittedW / naturalW, fittedH / naturalH);
   const finalScale = baseScale * cropState.zoom;
-  const displayW = cropState.naturalW * finalScale;
-  const displayH = cropState.naturalH * finalScale;
+  const displayW = naturalW * finalScale;
+  const displayH = naturalH * finalScale;
 
   img.style.width  = `${displayW}px`;
   img.style.height = `${displayH}px`;
@@ -931,12 +951,12 @@ function initCropModalEvents() {
     applyCropTransform();
   });
   zoomIn?.addEventListener("click", () => {
-    cropState.zoom = Math.min(3, parseFloat((cropState.zoom + 0.12).toFixed(2)));
+    cropState.zoom = Math.min(3, parseFloat((cropState.zoom + 0.15).toFixed(2)));
     if (slider) slider.value = cropState.zoom;
     applyCropTransform();
   });
   zoomOut?.addEventListener("click", () => {
-    cropState.zoom = Math.max(1, parseFloat((cropState.zoom - 0.12).toFixed(2)));
+    cropState.zoom = Math.max(1, parseFloat((cropState.zoom - 0.15).toFixed(2)));
     if (slider) slider.value = cropState.zoom;
     applyCropTransform();
   });
@@ -949,16 +969,19 @@ function initCropModalEvents() {
   });
 
   resetBtn?.addEventListener("click", () => {
-    cropState.zoom = 1; cropState.rotation = 0;
-    cropState.offsetX = 0; cropState.offsetY = 0;
+    cropState.zoom = 1;
+    cropState.rotation = 0;
+    cropState.offsetX = 0;
+    cropState.offsetY = 0;
     if (slider) slider.value = 1;
     applyCropTransform();
   });
 
-  // Pan — mouse
+  // Pan with mouse
   wrap.addEventListener("mousedown", e => {
     cropState.isDragging = true;
-    cropState.startX = e.clientX; cropState.startY = e.clientY;
+    cropState.startX = e.clientX;
+    cropState.startY = e.clientY;
     cropState.lastOffsetX = cropState.offsetX;
     cropState.lastOffsetY = cropState.offsetY;
     e.preventDefault();
@@ -971,11 +994,12 @@ function initCropModalEvents() {
   });
   window.addEventListener("mouseup", () => { cropState.isDragging = false; });
 
-  // Pan — touch
+  // Pan with touch
   wrap.addEventListener("touchstart", e => {
     const t = e.touches[0];
     cropState.isDragging = true;
-    cropState.startX = t.clientX; cropState.startY = t.clientY;
+    cropState.startX = t.clientX;
+    cropState.startY = t.clientY;
     cropState.lastOffsetX = cropState.offsetX;
     cropState.lastOffsetY = cropState.offsetY;
   }, { passive: true });
@@ -988,15 +1012,20 @@ function initCropModalEvents() {
   }, { passive: true });
   wrap.addEventListener("touchend", () => { cropState.isDragging = false; });
 
-  // Close buttons
+  const closeModal = () => {
+    if (typeof modal.close === "function") modal.close();
+    else modal.removeAttribute("open");
+    if (cropState.src?.startsWith("blob:")) URL.revokeObjectURL(cropState.src);
+  };
+
   modal.querySelectorAll("[data-close-avatar-crop]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      modal.close();
-      if (cropState.src?.startsWith("blob:")) URL.revokeObjectURL(cropState.src);
-    });
+    btn.addEventListener("click", closeModal);
   });
 
-  // Crop & save
+  modal.addEventListener("click", e => {
+    if (e.target === modal) closeModal();
+  });
+
   saveBtn?.addEventListener("click", () => cropAvatarAndApply(modal, wrap));
 }
 
@@ -1009,16 +1038,19 @@ function cropAvatarAndApply(modal, wrap) {
   const img = document.getElementById("avatarCropImage");
   if (!img) return;
 
-  const wrapW = wrap.offsetWidth;
-  const wrapH = wrap.offsetHeight;
+  const wrapW = wrap.offsetWidth || 260;
+  const wrapH = wrap.offsetHeight || 260;
   const imgStyle = getComputedStyle(img);
-  const displayW = parseFloat(imgStyle.width);
-  const displayH = parseFloat(imgStyle.height);
-  const imgLeft  = parseFloat(imgStyle.left);
-  const imgTop   = parseFloat(imgStyle.top);
+  const displayW = parseFloat(imgStyle.width) || wrapW;
+  const displayH = parseFloat(imgStyle.height) || wrapH;
+  const imgLeft  = parseFloat(imgStyle.left) || 0;
+  const imgTop   = parseFloat(imgStyle.top) || 0;
   const maskR = CROP_SIZE / 2;
 
-  // Offset of image center relative to wrap center
+  // Mask in wrap is 200px wide, target canvas is 300px wide
+  const scaleRatio = CROP_SIZE / 200;
+
+  // Image center relative to wrap center
   const cx = (imgLeft + displayW / 2) - wrapW / 2;
   const cy = (imgTop  + displayH / 2) - wrapH / 2;
 
@@ -1026,26 +1058,47 @@ function cropAvatarAndApply(modal, wrap) {
   ctx.beginPath();
   ctx.arc(maskR, maskR, maskR, 0, 2 * Math.PI);
   ctx.clip();
-  ctx.translate(maskR - cx * (CROP_SIZE / wrapW), maskR - cy * (CROP_SIZE / wrapH));
+  ctx.translate(maskR + cx * scaleRatio, maskR + cy * scaleRatio);
   ctx.rotate((cropState.rotation * Math.PI) / 180);
-  ctx.drawImage(img, -displayW * (CROP_SIZE / wrapW) / 2, -displayH * (CROP_SIZE / wrapH) / 2,
-    displayW * (CROP_SIZE / wrapW), displayH * (CROP_SIZE / wrapH));
+  ctx.drawImage(
+    img,
+    -displayW * scaleRatio / 2,
+    -displayH * scaleRatio / 2,
+    displayW * scaleRatio,
+    displayH * scaleRatio
+  );
   ctx.restore();
 
-  canvas.toBlob(blob => {
-    if (!blob) { showSiteToast("Không thể cắt ảnh.", "error"); return; }
+  const finalizeCrop = (blobOrDataUrl, isBlob = true) => {
     if (selectedAvatarData?.startsWith("blob:")) URL.revokeObjectURL(selectedAvatarData);
-    selectedAvatarFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
-    selectedAvatarData = URL.createObjectURL(blob);
+    if (isBlob) {
+      selectedAvatarFile = new File([blobOrDataUrl], "avatar.jpg", { type: "image/jpeg" });
+      selectedAvatarData = URL.createObjectURL(blobOrDataUrl);
+    } else {
+      selectedAvatarData = blobOrDataUrl;
+    }
     renderAccountSummary({
       fullname: document.getElementById("profileFullname")?.value,
       email: document.getElementById("profileEmail")?.value,
       avatar: selectedAvatarData
     });
-    modal.close();
+    if (typeof modal.close === "function") modal.close();
+    else modal.removeAttribute("open");
     if (cropState.src?.startsWith("blob:")) URL.revokeObjectURL(cropState.src);
     showSiteToast("Ảnh đại diện đã được cắt. Bấm Lưu thay đổi để cập nhật.");
-  }, "image/jpeg", 0.92);
+  };
+
+  try {
+    canvas.toBlob(blob => {
+      if (blob) {
+        finalizeCrop(blob, true);
+      } else {
+        finalizeCrop(canvas.toDataURL("image/jpeg", 0.92), false);
+      }
+    }, "image/jpeg", 0.92);
+  } catch (e) {
+    finalizeCrop(canvas.toDataURL("image/jpeg", 0.92), false);
+  }
 }
 
 function initAvatarLightbox() {
@@ -1057,25 +1110,48 @@ function initAvatarLightbox() {
 
   if (!avatarEl || !previewModal) return;
 
-  const openPreview = () => {
-    const existing = avatarEl.querySelector("img");
-    const src = existing?.src || selectedAvatarData;
-    if (!src) return;
-    if (previewImg) previewImg.src = src;
-    previewModal.showModal();
+  const openPreview = (e) => {
+    if (e && e.target && e.target.closest("#avatarUploadButton")) return;
+
+    const existingImg = avatarEl.querySelector("img");
+    const src = selectedAvatarData || existingImg?.src || (typeof getDefaultAvatarDataUrl === "function" ? getDefaultAvatarDataUrl() : "");
+
+    if (src) {
+      if (previewImg) previewImg.src = src;
+      if (typeof previewModal.showModal === "function") {
+        previewModal.showModal();
+      } else {
+        previewModal.setAttribute("open", "");
+      }
+    } else {
+      // If no photo yet, trigger file picker directly
+      input?.click();
+    }
   };
 
   avatarEl.addEventListener("click", openPreview);
   avatarEl.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPreview(); }
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openPreview(e);
+    }
   });
 
+  const closePreview = () => {
+    if (typeof previewModal.close === "function") previewModal.close();
+    else previewModal.removeAttribute("open");
+  };
+
   previewModal.querySelectorAll("[data-close-avatar-preview]").forEach(btn => {
-    btn.addEventListener("click", () => previewModal.close());
+    btn.addEventListener("click", closePreview);
+  });
+
+  previewModal.addEventListener("click", e => {
+    if (e.target === previewModal) closePreview();
   });
 
   changeBtn?.addEventListener("click", () => {
-    previewModal.close();
+    closePreview();
     input?.click();
   });
 }
@@ -1085,13 +1161,16 @@ function initAvatarUpload() {
   const input  = document.getElementById("avatarUploadInput");
   if (!button || !input) return;
 
-  button.addEventListener("click", () => input.click());
+  button.addEventListener("click", (e) => {
+    e.stopPropagation();
+    input.click();
+  });
 
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      showSiteToast("Vui lòng chọn tệp hình ảnh.", "error");
+      showSiteToast("Vui lòng chọn tệp hình ảnh (JPG, PNG, WebP...).", "error");
       input.value = "";
       return;
     }
@@ -1102,6 +1181,7 @@ function initAvatarUpload() {
   initCropModalEvents();
   initAvatarLightbox();
 }
+
 
 
 async function changePassword(event) {
