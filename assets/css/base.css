@@ -447,7 +447,8 @@ header.header-compact .header-tools {
   padding: 0 16px;
 }
 
-.header-search button {
+.header-search-inner button,
+.header-search button[type="submit"] {
   align-items: center;
   background: transparent;
   border: 0;
@@ -462,7 +463,8 @@ header.header-compact .header-tools {
   width: 56px;
 }
 
-.header-search button:hover {
+.header-search-inner button:hover,
+.header-search button[type="submit"]:hover {
   color: #ff5722;
   transform: scale(1.04);
 }
@@ -611,23 +613,29 @@ header.header-compact .header-tools {
   background: #fff1eb;
   border: 1px solid #ffd8c7;
   border-radius: 8px;
-  color: var(--fh-orange);
+  color: #ff5722 !important;
   cursor: pointer;
   display: inline-flex;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   height: 28px;
   justify-content: center;
   line-height: 1;
   padding: 0 10px;
   transition: all 0.16s ease;
+  width: auto;
 }
 
 .search-item-add-btn:hover {
-  background: var(--fh-orange);
-  border-color: var(--fh-orange);
-  color: #fff;
-  transform: scale(1.05);
+  background: #ff5722 !important;
+  border-color: #ff5722 !important;
+  color: #ffffff !important;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.35);
+}
+
+.search-item-add-btn:active {
+  transform: scale(0.95);
 }
 
 .search-highlight {
@@ -4799,7 +4807,8 @@ footer {
     min-height: 44px;
   }
 
-  .header-search button {
+  .header-search-inner button,
+  .header-search button[type="submit"] {
     height: 44px;
     width: 50px;
   }
