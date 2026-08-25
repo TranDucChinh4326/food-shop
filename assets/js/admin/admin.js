@@ -1964,45 +1964,55 @@ function renderStats(data) {
   };
   const statCards = [
     {
-      label: "T\u1ed5ng doanh thu",
+      key: "revenue",
+      className: "stats-card stats-card-revenue",
+      label: "Tổng doanh thu",
       value: formatMoney(summary.revenue || 0),
-      hint: `${Number(summary.done_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n ho\u00e0n t\u1ea5t`,
+      hint: `${Number(summary.done_orders || 0).toLocaleString("vi-VN")} đơn hoàn tất`,
       icon: statIcons.revenue
     },
     {
-      label: "T\u1ed5ng \u0111\u01a1n h\u00e0ng",
+      key: "orders",
+      className: "stats-card stats-card-orders",
+      label: "Tổng đơn hàng",
       value: Number(summary.total_orders || 0).toLocaleString("vi-VN"),
-      hint: `${Number(summary.pending_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n ch\u1edd x\u1eed l\u00fd`,
+      hint: `${Number(summary.pending_orders || 0).toLocaleString("vi-VN")} đơn chờ xử lý`,
       icon: statIcons.orders
     },
     {
-      label: "Kh\u00e1ch h\u00e0ng",
+      key: "customers",
+      className: "stats-card stats-card-customers",
+      label: "Khách hàng",
       value: customerCount.toLocaleString("vi-VN"),
-      hint: `${customerCount.toLocaleString("vi-VN")} t\u00e0i kho\u1ea3n kh\u00e1ch h\u00e0ng`,
+      hint: `${customerCount.toLocaleString("vi-VN")} tài khoản khách hàng`,
       icon: statIcons.customers
     },
     {
-      label: "T\u00e0i kho\u1ea3n online",
+      key: "onlineUsers",
+      className: "stats-card stats-card-online",
+      label: "Tài khoản online",
       value: onlineUsers.toLocaleString("vi-VN"),
-      hint: `Ho\u1ea1t \u0111\u1ed9ng trong 5 ph\u00fat g\u1ea7n nh\u1ea5t / ${totalUsers.toLocaleString("vi-VN")} t\u00e0i kho\u1ea3n`,
+      hint: `Hoạt động 5 phút qua / ${totalUsers.toLocaleString("vi-VN")} tài khoản`,
       icon: statIcons.onlineUsers
     },
     {
-      label: "T\u1ef7 l\u1ec7 th\u00e0nh c\u00f4ng",
+      key: "success",
+      className: "stats-card stats-card-success",
+      label: "Tỷ lệ thành công",
       value: `${successRate.toFixed(1)}%`,
-      hint: `${Number(summary.cancelled_orders || 0).toLocaleString("vi-VN")} \u0111\u01a1n \u0111\u00e3 h\u1ee7y`,
+      hint: `${Number(summary.cancelled_orders || 0).toLocaleString("vi-VN")} đơn đã hủy`,
       icon: statIcons.success
     }
   ];
 
   statsSummary.innerHTML = statCards.map(card => `
-    <article class="stats-card">
-      <div>
-        <span>${card.label}</span>
-        <strong>${card.value}</strong>
-        <small>${card.hint}</small>
+    <article class="${card.className}">
+      <div class="stats-card-main">
+        <span class="stats-card-label">${card.label}</span>
+        <strong class="stats-card-value">${card.value}</strong>
+        <small class="stats-card-hint">${card.hint}</small>
       </div>
-      <em aria-hidden="true">${card.icon}</em>
+      <em class="stats-card-icon" aria-hidden="true">${card.icon}</em>
     </article>
   `).join("");
 
@@ -2161,16 +2171,19 @@ function renderTopFoodsList(rows) {
 
   return `
     <div class="top-food-list">
-      ${rows.map((item, index) => `
-        <article>
-          <span>${index + 1}</span>
-          <div>
-            <strong>${escapeHtml(item.food_name)}</strong>
-            <small>${Number(item.quantity || 0).toLocaleString("vi-VN")} lượt bán</small>
-          </div>
-          <b>${formatMoney(item.revenue || 0)}</b>
-        </article>
-      `).join("")}
+      ${rows.map((item, index) => {
+        const rankClass = index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "rank-other";
+        return `
+          <article class="top-food-item ${rankClass}">
+            <span class="top-food-rank">${index + 1}</span>
+            <div class="top-food-info">
+              <strong>${escapeHtml(item.food_name)}</strong>
+              <small>${Number(item.quantity || 0).toLocaleString("vi-VN")} lượt bán</small>
+            </div>
+            <b class="top-food-revenue">${formatMoney(item.revenue || 0)}</b>
+          </article>
+        `;
+      }).join("")}
     </div>
   `;
 }
@@ -2180,20 +2193,32 @@ function renderCategorySummary(rows) {
 
   const total = rows.reduce((sum, item) => sum + Number(item.quantity || 0), 0) || 1;
   let current = 0;
-  const colors = ["#ff7a1a", "#ffc8ad", "#3d271c", "#ffefe7"];
-  const segments = rows.slice(0, 4).map((item, index) => {
+  const colors = ["#ff5722", "#ff8a1f", "#3b82f6", "#10b981", "#8b5cf6"];
+  const segments = rows.slice(0, 5).map((item, index) => {
     const percent = Math.max(0, (Number(item.quantity || 0) / total) * 100);
     const start = current;
     current += percent;
-    return `${colors[index]} ${start}% ${current}%`;
+    return `${colors[index % colors.length]} ${start}% ${current}%`;
   }).join(", ");
 
   return `
-    <div class="category-ring" style="background: conic-gradient(${segments});" aria-hidden="true"></div>
+    <div class="category-ring" style="background: conic-gradient(${segments});" aria-hidden="true">
+      <div class="category-ring-center">
+        <strong>${Number(total).toLocaleString("vi-VN")}</strong>
+        <small>Phần món</small>
+      </div>
+    </div>
     <div class="category-list">
-      ${rows.slice(0, 4).map((item, index) => `
-        <p><i style="--i:${index};"></i>${escapeHtml(item.category_name || "Chưa phân loại")}<strong>${Number(item.quantity || 0).toLocaleString("vi-VN")}</strong></p>
-      `).join("")}
+      ${rows.slice(0, 5).map((item, index) => {
+        const percent = Math.round((Number(item.quantity || 0) / total) * 100);
+        return `
+          <div class="category-list-item">
+            <span class="category-chip" style="background: ${colors[index % colors.length]};"></span>
+            <span class="category-name">${escapeHtml(item.category_name || "Chưa phân loại")}</span>
+            <strong class="category-qty">${Number(item.quantity || 0).toLocaleString("vi-VN")} <small>(${percent}%)</small></strong>
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 }
@@ -2207,9 +2232,9 @@ function renderCustomerStats(rows) {
         <thead>
           <tr>
             <th>Khách hàng</th>
-            <th>Đơn</th>
+            <th>Tổng đơn</th>
             <th>Hoàn tất</th>
-            <th>Doanh thu</th>
+            <th>Tổng chi tiêu</th>
             <th>Đơn gần nhất</th>
           </tr>
         </thead>
@@ -2217,13 +2242,18 @@ function renderCustomerStats(rows) {
           ${rows.map(item => `
             <tr>
               <td>
-                <strong>${escapeHtml(item.customer_name)}</strong>
-                <small>${escapeHtml(item.email || "")}</small>
+                <div class="customer-cell">
+                  <span class="customer-avatar">${escapeHtml((item.customer_name || "KH").slice(0, 2).toUpperCase())}</span>
+                  <div>
+                    <strong>${escapeHtml(item.customer_name)}</strong>
+                    <small>${escapeHtml(item.email || "")}</small>
+                  </div>
+                </div>
               </td>
-              <td>${Number(item.total_orders || 0).toLocaleString("vi-VN")}</td>
-              <td>${Number(item.done_orders || 0).toLocaleString("vi-VN")}</td>
-              <td>${formatMoney(item.revenue || 0)}</td>
-              <td>${item.last_order_at ? formatDateTime(item.last_order_at) : "Chưa có"}</td>
+              <td><span class="badge badge-subtle">${Number(item.total_orders || 0).toLocaleString("vi-VN")}</span></td>
+              <td><span class="badge badge-success">${Number(item.done_orders || 0).toLocaleString("vi-VN")}</span></td>
+              <td><strong class="text-accent">${formatMoney(item.revenue || 0)}</strong></td>
+              <td><small>${item.last_order_at ? formatDateTime(item.last_order_at) : "Chưa có"}</small></td>
             </tr>
           `).join("")}
         </tbody>
@@ -2238,10 +2268,21 @@ function renderSatisfaction(feedback) {
 
   if (!total) return `<p class="empty-note">Chưa có phản hồi đánh giá.</p>`;
 
+  const starsCount = Math.round(average);
+  const starsHtml = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+  const sentiment = average >= 4.5 ? "Xuất sắc" : average >= 4.0 ? "Rất tốt" : average >= 3.0 ? "Hài lòng" : "Cần cải thiện";
+  const sentimentClass = average >= 4.0 ? "sentiment-good" : "sentiment-normal";
+
   return `
-    <strong>${average.toFixed(1)}</strong>
-    <span>/ 5.0</span>
-    <small>${total.toLocaleString("vi-VN")} phản hồi</small>
+    <div class="satisfaction-display">
+      <div class="satisfaction-num-wrap">
+        <strong class="satisfaction-num">${average.toFixed(1)}</strong>
+        <span class="satisfaction-max">/ 5.0</span>
+      </div>
+      <div class="satisfaction-stars">${starsHtml}</div>
+      <span class="satisfaction-pill ${sentimentClass}">${sentiment}</span>
+      <small class="satisfaction-count">${total.toLocaleString("vi-VN")} lượt đánh giá từ khách</small>
+    </div>
   `;
 }
 function getFilteredOrders() {
