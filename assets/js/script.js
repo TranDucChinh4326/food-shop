@@ -716,7 +716,7 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
 
   const parsedAddress = parseAddressString(selectedAddress);
   const cityNames = Object.keys(ADDRESS_LOOKUP);
-  setSelectOptions(citySelect, cityNames, "Chọn thanh pho");
+  setSelectOptions(citySelect, cityNames, "Chọn thành phố");
 
   if (cityNames.includes(parsedAddress.city)) {
     citySelect.value = parsedAddress.city;
@@ -726,12 +726,12 @@ function refreshAddressSelectorOptions(config, selectedAddress = "") {
   const selectedDistrict = districtNames.includes(parsedAddress.district) ? parsedAddress.district : districtNames[0] || "";
 
   if (districtSelect) {
-    setSelectOptions(districtSelect, districtNames, "Chọn quan huyen");
+    setSelectOptions(districtSelect, districtNames, "Chọn quận huyện");
     districtSelect.value = selectedDistrict;
   }
 
   const wardNames = ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [];
-  setSelectOptions(wardSelect, wardNames, "Chọn phuong xa");
+  setSelectOptions(wardSelect, wardNames, "Chọn phường xã");
   if (wardNames.includes(parsedAddress.ward)) {
     wardSelect.value = parsedAddress.ward;
   }
@@ -862,15 +862,15 @@ async function initAddressSelectors() {
       const districts = Object.keys(ADDRESS_LOOKUP[citySelect.value] || {});
       const selectedDistrict = districts[0] || "";
       if (districtSelect) {
-        setSelectOptions(districtSelect, districts, "Chọn quan huyen");
+        setSelectOptions(districtSelect, districts, "Chọn quận huyện");
         districtSelect.value = selectedDistrict;
       }
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chọn phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[selectedDistrict] || [], "Chọn phường xã");
       if (detailInput) detailInput.value = "";
     });
 
     districtSelect?.addEventListener("change", () => {
-      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chọn phuong xa");
+      setSelectOptions(wardSelect, ADDRESS_LOOKUP[citySelect.value]?.[districtSelect.value] || [], "Chọn phường xã");
     });
   });
 }
@@ -3491,7 +3491,7 @@ function showQrPaymentDialog(order) {
   dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
   dialog.querySelector("[data-qr-cancel]")?.addEventListener("click", () => {
     closeQrPaymentDialog({ cancel: true });
-    showSiteToast("Đã hủy giao dich QR.");
+    showSiteToast("Đã hủy giao dịch QR.");
   });
   dialog.querySelector("a.btn")?.addEventListener("click", () => {
     activeQrPayment = null;
@@ -3755,7 +3755,7 @@ function renderOrderHistory(orders) {
       <div class="empty-history">
         <h3>Chưa có đơn hàng phù hợp</h3>
         <p>Bạn có thể quay lại thực đơn để đặt món hoặc thử bộ lọc khác.</p>
-        <a href="menu.html" class="btn">Dat mon ngay</a>
+        <a href="menu.html" class="btn">Đặt món ngay</a>
       </div>
     `;
     return;

@@ -78,8 +78,10 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui lòng đăng nhập bằng tài khoản quản trị.");
-    window.location.href = "login.html";
+    showAdminToast("Vui lòng đăng nhập bằng tài khoản quản trị.", "error");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 500);
   }
 }
 

@@ -99,8 +99,10 @@ function requireAdminSession() {
   const role = String(user?.role || "").toUpperCase();
 
   if (!token || role === "USER") {
-    alert("Vui lòng đăng nhập bằng tài khoản quản trị.");
-    window.location.href = "login.html";
+    showAdminToast("Vui lòng đăng nhập bằng tài khoản quản trị.", "error");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 500);
   }
 }
 
@@ -240,8 +242,10 @@ function ensureAccountManageAccess() {
 
   if (allowed) return true;
 
-  alert("Bạn không có quyền quản lý loại tài khoản này.");
-  window.location.href = "admin.html";
+  showAdminToast("Bạn không có quyền quản lý loại tài khoản này.", "error");
+  setTimeout(() => {
+    window.location.href = "admin.html";
+  }, 500);
   return false;
 }
 

@@ -153,8 +153,6 @@ feedbackForm?.addEventListener("submit", async event => {
   } catch (error) {
     if (typeof showSiteToast === "function") {
       showSiteToast(error.message, "error");
-    } else {
-      alert(error.message);
     }
   } finally {
     submitButton.disabled = false;
