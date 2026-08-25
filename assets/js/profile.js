@@ -339,6 +339,31 @@ const PRESET_AVATARS = [
   { id: "ramen-bowl", name: "Bé Mì Ramen", url: "assets/images/avatars/ramen-bowl.svg" }
 ];
 
+function openAvatarChoiceModal() {
+  const modal = document.getElementById("avatarChoiceModal");
+  if (!modal) return;
+
+  const currentAvatar = selectedAvatarData || JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "{}").avatar || "";
+  renderPresetAvatars(currentAvatar);
+
+  if (typeof modal.showModal === "function") {
+    modal.showModal();
+  } else {
+    modal.setAttribute("open", "");
+  }
+}
+
+function closeAvatarChoiceModal() {
+  const modal = document.getElementById("avatarChoiceModal");
+  if (!modal) return;
+
+  if (typeof modal.close === "function") {
+    modal.close();
+  } else {
+    modal.removeAttribute("open");
+  }
+}
+
 function renderPresetAvatars(currentAvatarUrl) {
   const container = document.getElementById("presetAvatarsList");
   if (!container) return;
@@ -384,7 +409,8 @@ async function selectPresetAvatar(avatarUrl) {
 
     renderAccountSummary(updatedUser);
     renderPresetAvatars(avatarUrl);
-    showSiteToast("Đã chọn ảnh đại diện hệ thống! ✨", "success");
+    closeAvatarChoiceModal();
+    showSiteToast("Đã cập nhật ảnh đại diện thành công! ✨", "success");
   } catch (error) {
     console.error("Lỗi chọn avatar có sẵn:", error);
     showSiteToast(error.message || "Không thể cập nhật ảnh đại diện.", "error");
@@ -424,8 +450,6 @@ function renderAccountSummary(user) {
       avatar.textContent = initials;
     }
   }
-
-  renderPresetAvatars(avatarSource);
 }
 
 function renderPinMode(user) {
@@ -1217,31 +1241,53 @@ function initAvatarLightbox() {
 
   changeBtn?.addEventListener("click", () => {
     closePreview();
-    input?.click();
+    openAvatarChoiceModal();
   });
 }
 
 function initAvatarUpload() {
   const button = document.getElementById("avatarUploadButton");
   const input  = document.getElementById("avatarUploadInput");
-  if (!button || !input) return;
+  const choiceModal = document.getElementById("avatarChoiceModal");
+  const triggerBtn  = document.getElementById("triggerUploadInputBtn");
 
-  button.addEventListener("click", (e) => {
-    e.stopPropagation();
-    input.click();
-  });
+  if (button) {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openAvatarChoiceModal();
+    });
+  }
 
-  input.addEventListener("change", () => {
-    const file = input.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      showSiteToast("Vui lòng chọn tệp hình ảnh (JPG, PNG, WebP...).", "error");
+  if (triggerBtn) {
+    triggerBtn.addEventListener("click", () => {
+      closeAvatarChoiceModal();
+      input?.click();
+    });
+  }
+
+  if (choiceModal) {
+    choiceModal.querySelectorAll("[data-close-avatar-choice]").forEach(btn => {
+      btn.addEventListener("click", closeAvatarChoiceModal);
+    });
+
+    choiceModal.addEventListener("click", (e) => {
+      if (e.target === choiceModal) closeAvatarChoiceModal();
+    });
+  }
+
+  if (input) {
+    input.addEventListener("change", () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        showSiteToast("Vui lòng chọn tệp hình ảnh (JPG, PNG, WebP...).", "error");
+        input.value = "";
+        return;
+      }
+      openAvatarCropModal(file);
       input.value = "";
-      return;
-    }
-    openAvatarCropModal(file);
-    input.value = "";
-  });
+    });
+  }
 
   initCropModalEvents();
   initAvatarLightbox();

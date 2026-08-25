@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260825-preset-avatars-v1">
-  <link rel="stylesheet" href="assets/css/profile.css?v=20260825-preset-avatars-v1">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260825-preset-modal-v3">
+  <link rel="stylesheet" href="assets/css/profile.css?v=20260825-preset-modal-v3">
 </head>
 <body>
   <div data-shared-header></div>
@@ -44,19 +44,13 @@
     <section class="account-summary-card">
       <div class="account-photo-wrap">
         <div id="profileAvatar" class="account-photo" role="button" tabindex="0" title="Nhấp để xem ảnh phóng to" aria-label="Xem ảnh đại diện">FH</div>
-        <button type="button" id="avatarUploadButton" class="account-photo-badge" title="Tải lên và căn chỉnh ảnh đại diện">📷</button>
+        <button type="button" id="avatarUploadButton" class="account-photo-badge" title="Thay đổi ảnh đại diện">📷</button>
         <input type="file" id="avatarUploadInput" accept="image/*" hidden>
       </div>
       <div>
         <h1 id="profileDisplayName">FoodHub User</h1>
         <p id="profileDisplayEmail">user@email.com</p>
       </div>
-
-      <div class="preset-avatars-panel">
-        <span class="preset-avatars-label">🎨 Hoặc chọn ảnh đại diện có sẵn:</span>
-        <div class="preset-avatars-list" id="presetAvatarsList" aria-label="Danh sách avatar có sẵn"></div>
-      </div>
-
       <div class="summary-social-links">
         <div id="socialAccounts" class="social-account-list compact"></div>
       </div>
@@ -240,6 +234,38 @@
     </section>
   </main>
 
+  <!-- Modal Chọn hoặc Thay đổi Avatar -->
+  <dialog id="avatarChoiceModal" class="profile-modal avatar-choice-modal" aria-labelledby="avatarChoiceTitle">
+    <div class="profile-modal-content choice-content">
+      <div class="profile-modal-header">
+        <h2 id="avatarChoiceTitle">Đổi ảnh đại diện</h2>
+        <button type="button" class="profile-modal-close" data-close-avatar-choice aria-label="Đóng">✕</button>
+      </div>
+      <div class="avatar-choice-body">
+        <div class="avatar-choice-section">
+          <h3 class="avatar-choice-heading">🎨 Chọn nhanh avatar hệ thống</h3>
+          <p class="avatar-choice-sub">Bộ sưu tập avatar vui nhộn, bấm vào để chọn ngay:</p>
+          <div class="preset-avatars-grid" id="presetAvatarsList" aria-label="Danh sách avatar có sẵn"></div>
+        </div>
+
+        <div class="avatar-choice-divider">
+          <span>HOẶC</span>
+        </div>
+
+        <div class="avatar-choice-section upload-device-section">
+          <h3 class="avatar-choice-heading">📁 Tải ảnh từ thiết bị của bạn</h3>
+          <p class="avatar-choice-sub">Hỗ trợ JPG, PNG, WebP (cho phép xoay, kéo và thu phóng):</p>
+          <button type="button" id="triggerUploadInputBtn" class="btn primary-btn upload-device-btn">
+            <span>📷 Chọn tệp ảnh từ thiết bị</span>
+          </button>
+        </div>
+      </div>
+      <div class="profile-modal-footer">
+        <button type="button" class="ghost-btn" data-close-avatar-choice>Đóng</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Modal Cắt & Thu phóng Avatar -->
   <dialog id="avatarCropModal" class="profile-modal avatar-crop-modal" aria-labelledby="avatarCropTitle">
     <div class="profile-modal-content">
@@ -296,6 +322,6 @@
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260824-track-timeout"></script>
   <script src="assets/js/script.js?v=20260824-track-silent-load"></script>
-  <script src="assets/js/profile.js?v=20260825-preset-avatars-v1"></script>
+  <script src="assets/js/profile.js?v=20260825-preset-modal-v3"></script>
 </body>
 </html>

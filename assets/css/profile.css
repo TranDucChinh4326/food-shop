@@ -1204,74 +1204,85 @@ button.account-photo-badge {
 }
 
 /* ============================================================
-   Preset System Avatars Selection
+   Avatar Choice Modal & System Presets
    ============================================================ */
-.preset-avatars-panel {
+.avatar-choice-modal .choice-content {
+  max-width: 520px;
+  width: 92%;
+}
+
+.avatar-choice-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  grid-column: 1 / -1;
-  margin-top: 6px;
-  padding-top: 14px;
-  border-top: 1px dashed #edd5c8;
-  width: 100%;
+  gap: 20px;
+  padding: 16px 20px 24px;
 }
 
-.preset-avatars-label {
+.avatar-choice-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.avatar-choice-heading {
+  color: #241812;
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.avatar-choice-sub {
   color: #765f54;
   font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  margin: 0;
 }
 
-.preset-avatars-list {
-  display: flex;
-  flex-wrap: wrap;
+.preset-avatars-grid {
+  display: grid;
   gap: 12px;
-  align-items: center;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .preset-avatar-btn {
   align-items: center;
   background: #ffffff;
   border: 2px solid #ecd5c8;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 6px 8px;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  gap: 8px;
+  padding: 12px 8px;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .preset-avatar-btn:hover {
   background: #fff8f3;
   border-color: #ff8a1f;
-  box-shadow: 0 6px 18px rgba(255, 87, 34, 0.15);
+  box-shadow: 0 8px 20px rgba(255, 87, 34, 0.15);
   transform: translateY(-2px);
 }
 
 .preset-avatar-btn.active {
   background: #fff4ec;
   border-color: #ff5722;
-  box-shadow: 0 0 0 2.5px rgba(255, 87, 34, 0.25), 0 6px 16px rgba(255, 87, 34, 0.18);
-  transform: scale(1.04);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.25), 0 8px 22px rgba(255, 87, 34, 0.2);
+  transform: scale(1.03);
 }
 
 .preset-avatar-btn img {
   border-radius: 50%;
-  height: 48px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  height: 56px;
   object-fit: cover;
-  width: 48px;
+  width: 56px;
 }
 
 .preset-avatar-name {
   color: #241812;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  max-width: 68px;
+  max-width: 100%;
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
@@ -1281,5 +1292,43 @@ button.account-photo-badge {
 .preset-avatar-btn.active .preset-avatar-name {
   color: #ff5722;
   font-weight: 800;
+}
+
+.avatar-choice-divider {
+  align-items: center;
+  color: #a89488;
+  display: flex;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin: 4px 0;
+  text-align: center;
+}
+
+.avatar-choice-divider::before,
+.avatar-choice-divider::after {
+  background: #ecd5c8;
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+.avatar-choice-divider span {
+  padding: 0 12px;
+}
+
+.upload-device-section {
+  align-items: stretch;
+}
+
+.upload-device-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  width: 100%;
+  font-weight: 700;
+  font-size: 14px;
 }
 
