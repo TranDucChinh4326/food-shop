@@ -3804,7 +3804,7 @@ footer {
   background: linear-gradient(135deg, #ff7a28 0%, #ff4b1f 60%, #ea2a0e 100%);
   border: 3.5px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
-  box-shadow: 0 16px 36px rgba(255, 75, 31, 0.4), 0 6px 16px rgba(45, 18, 10, 0.18);
+  box-shadow: 0 14px 32px rgba(255, 75, 31, 0.38), 0 6px 16px rgba(45, 18, 10, 0.18);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
@@ -3815,47 +3815,20 @@ footer {
   min-height: 64px;
   padding: 0;
   position: relative;
-  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
   width: 64px;
 }
 
-.support-toggle::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 106, 40, 0.45) 0%, rgba(255, 69, 0, 0) 72%);
-  animation: botPulseGlow 2.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-  pointer-events: none;
-  z-index: -1;
-}
-
-@keyframes botPulseGlow {
-  0% {
-    transform: scale(0.92);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.35);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(1.55);
-    opacity: 0;
-  }
-}
-
 .support-toggle:hover {
-  box-shadow: 0 22px 48px rgba(255, 75, 31, 0.5), 0 10px 24px rgba(45, 18, 10, 0.22);
-  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 20px 42px rgba(255, 75, 31, 0.48), 0 8px 20px rgba(45, 18, 10, 0.22);
+  transform: translateY(-4px) scale(1.06);
 }
 
 .support-toggle:active {
   transform: translateY(0) scale(0.94);
 }
 
-.support-toggle span.support-toggle-icon,
-.support-toggle span {
+.support-toggle .support-toggle-icon {
   align-items: center;
   background: transparent;
   border-radius: 50%;
@@ -3869,51 +3842,31 @@ footer {
 }
 
 .bot-online-badge {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 15px;
-  height: 15px;
   background: #10b981;
   border: 2.5px solid #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
-  z-index: 2;
-}
-
-.bot-online-badge::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: rgba(16, 185, 129, 0.55);
-  animation: onlineBadgePulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  height: 14px;
   pointer-events: none;
-}
-
-@keyframes onlineBadgePulse {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 14px;
+  z-index: 3;
 }
 
 .support-robot-icon {
   display: block;
-  height: 52px;
+  height: 50px;
   overflow: visible;
-  width: 52px;
+  width: 50px;
 }
 
 .support-toggle .support-robot-icon.with-wordmark,
 .support-toggle .support-robot-icon {
-  height: 50px;
-  width: 50px;
-  filter: drop-shadow(0 3px 6px rgba(168, 35, 3, 0.35));
+  height: 48px;
+  width: 48px;
+  filter: drop-shadow(0 2px 5px rgba(168, 35, 3, 0.3));
 }
 
 .chat-avatar .support-robot-icon {
@@ -3938,6 +3891,15 @@ footer {
 .support-toggle:hover .bot-chef-hat {
   transform-origin: 50px 18px;
   animation: chefHatWiggle 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes chefHatWiggle {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
 }
 
 @keyframes chefHatWiggle {
