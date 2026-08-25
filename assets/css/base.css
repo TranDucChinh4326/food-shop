@@ -3851,9 +3851,12 @@ footer {
   align-items: center;
   background: transparent;
   border-radius: 50%;
-  display: inline-flex;
+  display: flex;
   height: 100%;
   justify-content: center;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
   width: 100%;
 }
 
@@ -3900,8 +3903,8 @@ footer {
 
 .support-toggle .support-robot-icon.with-wordmark,
 .support-toggle .support-robot-icon {
-  height: 48px;
-  width: 48px;
+  height: 50px;
+  width: 50px;
   filter: drop-shadow(0 3px 6px rgba(168, 35, 3, 0.35));
 }
 
@@ -3911,7 +3914,7 @@ footer {
 }
 
 .bot-eyes {
-  transform-origin: 50px 56px;
+  transform-origin: 50px 48.5px;
   animation: botEyeBlink 4s ease-in-out infinite;
 }
 
@@ -3925,7 +3928,7 @@ footer {
 }
 
 .support-toggle:hover .bot-chef-hat {
-  transform-origin: 50px 25px;
+  transform-origin: 50px 18px;
   animation: chefHatWiggle 0.45s ease-in-out infinite alternate;
 }
 

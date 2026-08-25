@@ -633,11 +633,11 @@ function initSupportWidget() {
   const robotIcon = `
     <svg class="support-robot-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
-        <linearGradient id="fhAuthBotHatGrad" x1="30" y1="10" x2="70" y2="35" gradientUnits="userSpaceOnUse">
+        <linearGradient id="fhAuthBotHatGrad" x1="30" y1="5" x2="70" y2="28" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#ffebe1"/>
         </linearGradient>
-        <linearGradient id="fhAuthBotFaceShell" x1="20" y1="30" x2="80" y2="90" gradientUnits="userSpaceOnUse">
+        <linearGradient id="fhAuthBotFaceShell" x1="20" y1="22" x2="80" y2="82" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stop-color="#ffffff"/>
           <stop offset="100%" stop-color="#fff2ea"/>
         </linearGradient>
@@ -645,7 +645,7 @@ function initSupportWidget() {
           <stop offset="0%" stop-color="#ff7f3e"/>
           <stop offset="100%" stop-color="#ea3607"/>
         </linearGradient>
-        <linearGradient id="fhAuthBotScreenGrad" x1="25" y1="40" x2="75" y2="80" gradientUnits="userSpaceOnUse">
+        <linearGradient id="fhAuthBotScreenGrad" x1="25" y1="32" x2="75" y2="72" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stop-color="#241a17"/>
           <stop offset="100%" stop-color="#140d0b"/>
         </linearGradient>
@@ -656,41 +656,41 @@ function initSupportWidget() {
       </defs>
 
       <!-- Headphone Band -->
-      <path class="bot-headphone-band" d="M22 52 C22 28, 78 28, 78 52" stroke="url(#fhAuthBotEarGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      <path class="bot-headphone-band" d="M22 45 C22 21, 78 21, 78 45" stroke="url(#fhAuthBotEarGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
 
       <!-- Chef Hat -->
       <g class="bot-chef-hat">
-        <path d="M38 25 C34 16, 44 11, 50 14 C56 11, 66 16, 62 25 Z" fill="url(#fhAuthBotHatGrad)" stroke="#f6ded2" stroke-width="1.5"/>
-        <path d="M36 24.5 Q50 26.5 64 24.5 L63 29.5 Q50 31.5 37 29.5 Z" fill="url(#fhAuthBotEarGrad)"/>
-        <circle cx="50" cy="27.5" r="1.5" fill="#ffffff"/>
+        <path d="M38 18 C34 9, 44 4, 50 7 C56 4, 66 9, 62 18 Z" fill="url(#fhAuthBotHatGrad)" stroke="#f6ded2" stroke-width="1.5"/>
+        <path d="M36 17.5 Q50 19.5 64 17.5 L63 22.5 Q50 24.5 37 22.5 Z" fill="url(#fhAuthBotEarGrad)"/>
+        <circle cx="50" cy="20.5" r="1.5" fill="#ffffff"/>
       </g>
 
       <!-- Headphone Ears -->
-      <rect class="bot-ear bot-ear-left" x="13" y="47" width="9" height="22" rx="4.5" fill="url(#fhAuthBotEarGrad)"/>
-      <rect class="bot-ear bot-ear-right" x="78" y="47" width="9" height="22" rx="4.5" fill="url(#fhAuthBotEarGrad)"/>
+      <rect class="bot-ear bot-ear-left" x="13" y="40" width="9" height="22" rx="4.5" fill="url(#fhAuthBotEarGrad)"/>
+      <rect class="bot-ear bot-ear-right" x="78" y="40" width="9" height="22" rx="4.5" fill="url(#fhAuthBotEarGrad)"/>
 
-      <!-- Robot Head Outer Shell -->
-      <rect class="bot-head-shell" x="19" y="34" width="62" height="49" rx="22" fill="url(#fhAuthBotFaceShell)" stroke="#fcd9c8" stroke-width="2"/>
+      <!-- Robot Head Outer Shell (Visual Center at Y=50) -->
+      <rect class="bot-head-shell" x="19" y="27" width="62" height="49" rx="22" fill="url(#fhAuthBotFaceShell)" stroke="#fcd9c8" stroke-width="2"/>
 
       <!-- Dark Glossy Screen -->
-      <rect class="bot-face-screen" x="26" y="42" width="48" height="33" rx="14" fill="url(#fhAuthBotScreenGrad)"/>
+      <rect class="bot-face-screen" x="26" y="35" width="48" height="33" rx="14" fill="url(#fhAuthBotScreenGrad)"/>
 
       <!-- Glowing Smiling Eyes -->
       <g class="bot-eyes">
-        <ellipse class="bot-eye bot-eye-left" cx="39" cy="55.5" rx="5" ry="6" fill="url(#fhAuthBotEyeCyan)"/>
-        <ellipse class="bot-eye bot-eye-right" cx="61" cy="55.5" rx="5" ry="6" fill="url(#fhAuthBotEyeCyan)"/>
-        <circle cx="41" cy="53" r="1.8" fill="#ffffff"/>
-        <circle cx="37.5" cy="57.5" r="0.9" fill="#ffffff"/>
-        <circle cx="63" cy="53" r="1.8" fill="#ffffff"/>
-        <circle cx="59.5" cy="57.5" r="0.9" fill="#ffffff"/>
+        <ellipse class="bot-eye bot-eye-left" cx="39" cy="48.5" rx="5" ry="6" fill="url(#fhAuthBotEyeCyan)"/>
+        <ellipse class="bot-eye bot-eye-right" cx="61" cy="48.5" rx="5" ry="6" fill="url(#fhAuthBotEyeCyan)"/>
+        <circle cx="41" cy="46" r="1.8" fill="#ffffff"/>
+        <circle cx="37.5" cy="50.5" r="0.9" fill="#ffffff"/>
+        <circle cx="63" cy="46" r="1.8" fill="#ffffff"/>
+        <circle cx="59.5" cy="50.5" r="0.9" fill="#ffffff"/>
       </g>
 
       <!-- Smile -->
-      <path class="bot-mouth" d="M43.5 64.5 Q50 71 56.5 64.5" stroke="#ff9f43" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <path class="bot-mouth" d="M43.5 57.5 Q50 64 56.5 57.5" stroke="#ff9f43" stroke-width="2.6" stroke-linecap="round" fill="none"/>
 
       <!-- Rosy Cheeks -->
-      <ellipse class="bot-blush" cx="32" cy="62.5" rx="3.2" ry="2" fill="#ff6b6b" opacity="0.5"/>
-      <ellipse class="bot-blush" cx="68" cy="62.5" rx="3.2" ry="2" fill="#ff6b6b" opacity="0.5"/>
+      <ellipse class="bot-blush" cx="32" cy="55.5" rx="3.2" ry="2" fill="#ff6b6b" opacity="0.5"/>
+      <ellipse class="bot-blush" cx="68" cy="55.5" rx="3.2" ry="2" fill="#ff6b6b" opacity="0.5"/>
     </svg>
   `;
 
