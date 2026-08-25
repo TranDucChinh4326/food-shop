@@ -4094,13 +4094,13 @@ function protectCheckoutPage() {
 function initSupportWidget() {
   if (document.getElementById("support-widget")) return;
 
-  const robotIcon = getFoodHubRobotIcon(true);
+  const robotIcon = getFoodHubRobotIcon(false);
 
   const widget = document.createElement("div");
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kenh hỗ trợ FoodHub">
+    <div class="support-panel" aria-label="Kênh hỗ trợ FoodHub">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -4122,8 +4122,9 @@ function initSupportWidget() {
       <strong>FoodHub đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mo hỗ trợ" aria-expanded="false">
-      <span aria-hidden="true">${robotIcon}</span>
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý FoodHub">
+      <span class="support-toggle-icon" aria-hidden="true">${robotIcon}</span>
+      <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>
   `;
 
