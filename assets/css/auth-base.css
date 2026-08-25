@@ -313,30 +313,18 @@ body {
 }
 
 .auth-slider-shell {
-  animation: authShellAppear 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: 0 28px 80px rgba(78, 35, 20, 0.2);
   display: grid;
   grid-template-columns: 1fr 1fr;
   max-width: 1020px;
-  min-height: 640px;
+  min-height: 620px;
   overflow: hidden;
   position: relative;
   width: min(100%, 1020px);
   z-index: 1;
-}
-
-@keyframes authShellAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.96) translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
 }
 
 .auth-slider-forms {
@@ -351,7 +339,7 @@ body {
   overflow: visible;
   padding: 48px;
   position: relative;
-  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: opacity 0.35s ease, transform 0.55s ease, visibility 0.35s ease;
 }
 
 .auth-slider-shell .auth-panel .auth-brand,
@@ -372,6 +360,9 @@ body {
 
 .auth-slider-shell .auth-register-panel {
   grid-column: 1;
+}
+
+.auth-slider-shell .auth-register-panel {
   padding-bottom: 30px;
   padding-top: 30px;
 }
@@ -426,38 +417,27 @@ body {
   margin-top: 10px;
 }
 
-/* Hiệu ứng trượt và mờ dần mượt mà khi chuyển Đăng nhập / Đăng ký */
-.auth-slider-shell.login-active .auth-register-panel {
-  opacity: 0.12;
+.auth-slider-shell.login-active .auth-register-panel,
+.auth-slider-shell.register-active .auth-login-panel {
+  opacity: 0;
   pointer-events: none;
-  transform: translateX(-35px) scale(0.96);
+  transform: translateX(24px);
+  visibility: hidden;
 }
 
+.auth-slider-shell.register-active .auth-register-panel,
 .auth-slider-shell.login-active .auth-login-panel {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(0) scale(1);
+  transform: translateX(0);
+  visibility: visible;
 }
 
-.auth-slider-shell.register-active .auth-login-panel {
-  opacity: 0.12;
-  pointer-events: none;
-  transform: translateX(35px) scale(0.96);
-}
-
-.auth-slider-shell.register-active .auth-register-panel {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0) scale(1);
-}
-
-/* Lớp phủ trượt Slider Cover */
 .auth-slider-cover {
   align-items: center;
   background:
-    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.28), transparent 28%),
-    linear-gradient(135deg, #b92d16 0%, #ff5722 55%, #ff8a1f 100%);
-  box-shadow: 0 0 45px rgba(45, 18, 10, 0.24);
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.22), transparent 28%),
+    linear-gradient(135deg, #b92d16 0%, #ff5722 58%, #ff8a1f 100%);
   color: #fff;
   display: grid;
   inset: 0 auto 0 0;
@@ -465,25 +445,21 @@ body {
   overflow: hidden;
   padding: 48px;
   position: absolute;
-  transition:
-    transform 0.68s cubic-bezier(0.77, 0, 0.175, 1),
-    border-radius 0.68s cubic-bezier(0.77, 0, 0.175, 1),
-    background 0.68s ease,
-    box-shadow 0.68s ease;
+  transition: border-radius 0.65s ease, transform 0.65s cubic-bezier(0.77, 0, 0.18, 1), background 0.65s ease;
   width: 50%;
-  z-index: 5;
+  z-index: 4;
 }
 
 .auth-slider-shell.login-active .auth-slider-cover {
-  border-radius: 0 40px 40px 0;
+  border-radius: 0 30% 30% 0;
   transform: translateX(0);
 }
 
 .auth-slider-shell.register-active .auth-slider-cover {
   background:
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.28), transparent 30%),
-    linear-gradient(135deg, #8f2417 0%, #e64a19 55%, #ff7a18 100%);
-  border-radius: 40px 0 0 40px;
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.24), transparent 30%),
+    linear-gradient(135deg, #8f2417 0%, #e64a19 58%, #ff7a18 100%);
+  border-radius: 30% 0 0 30%;
   transform: translateX(100%);
 }
 
@@ -494,9 +470,7 @@ body {
   max-width: 320px;
   position: absolute;
   text-align: center;
-  transition:
-    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: opacity 0.3s ease, transform 0.45s ease;
 }
 
 .auth-cover-content .brand-mark {
@@ -516,7 +490,7 @@ body {
 }
 
 .auth-cover-content p {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.82);
   line-height: 1.55;
   margin: 0 0 10px;
 }
@@ -532,36 +506,24 @@ body {
   font-weight: 800;
   min-height: 44px;
   padding: 0 32px;
-  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .auth-cover-content button:hover {
-  background: rgba(255, 255, 255, 0.18);
-  transform: scale(1.04);
+  background: rgba(255, 255, 255, 0.14);
 }
 
-.auth-slider-shell.login-active .auth-cover-login {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-40px) scale(0.92);
-}
-
-.auth-slider-shell.login-active .auth-cover-register {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0) scale(1);
-}
-
+.auth-slider-shell.login-active .auth-cover-login,
 .auth-slider-shell.register-active .auth-cover-register {
   opacity: 0;
   pointer-events: none;
-  transform: translateX(40px) scale(0.92);
+  transform: translateY(16px);
 }
 
+.auth-slider-shell.login-active .auth-cover-register,
 .auth-slider-shell.register-active .auth-cover-login {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(0) scale(1);
+  transform: translateY(0);
 }
 
 .mobile-only {
@@ -1006,49 +968,35 @@ body {
   }
 
   .auth-slider-shell {
-    border-radius: 14px;
     display: block;
     min-height: 0;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
   }
 
   .auth-slider-cover {
     display: none;
   }
 
-  .auth-slider-forms {
-    display: flex;
-    transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
-    width: 200%;
-  }
-
-  .auth-slider-shell.login-active .auth-slider-forms {
-    transform: translateX(0%);
-  }
-
-  .auth-slider-shell.register-active .auth-slider-forms {
-    transform: translateX(-50%);
-  }
-
   .auth-slider-shell .auth-panel {
-    flex: 0 0 50%;
     min-height: 0;
-    opacity: 1 !important;
     padding: 28px 22px;
-    transform: none !important;
-    width: 50%;
   }
 
-  .auth-slider-shell .auth-login-panel {
-    grid-column: auto;
-    order: 1;
-  }
-
+  .auth-slider-shell .auth-login-panel,
   .auth-slider-shell .auth-register-panel {
     grid-column: auto;
-    order: 2;
+  }
+
+  .auth-slider-shell.login-active .auth-register-panel,
+  .auth-slider-shell.register-active .auth-login-panel {
+    display: none;
+  }
+
+  .auth-slider-shell.login-active .auth-login-panel,
+  .auth-slider-shell.register-active .auth-register-panel {
+    display: grid;
+    opacity: 1;
+    transform: none;
+    visibility: visible;
   }
 
   .auth-slider-shell .auth-panel .auth-brand,
