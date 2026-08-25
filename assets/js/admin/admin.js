@@ -106,7 +106,8 @@ const SECTION_PERMISSIONS = {
   categories: ["foods.manage"],
   foods: ["foods.manage"],
   accounts: ["users.manage", "staff.manage"],
-  news: ["announcements.manage", "ads.manage"],
+  announcements: ["announcements.manage"],
+  advertisements: ["ads.manage"],
   discounts: ["discounts.manage"],
   shipping: ["shipping.manage"],
   feedback: ["feedback.manage"],
@@ -221,7 +222,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "news", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -250,16 +251,17 @@ function setAdminNavGroupOpen(toggleName, isOpen) {
 }
 
 function showAdminSection(sectionId) {
-  if (sectionId === "announcements" || sectionId === "advertisements") sectionId = "news";
   const exists = adminSections.some(section => section.dataset.adminSection === sectionId);
   const target = exists && canAccessSection(sectionId) ? sectionId : getFirstAllowedSection();
   const activeToggle = target === "foods"
     ? "foods-menu"
     : target === "accounts"
       ? "accounts-menu"
-      : target === "feedback" || target === "food-reviews"
-        ? "customer-care-menu"
-        : "";
+      : target === "announcements" || target === "advertisements"
+        ? "news-menu"
+        : target === "feedback" || target === "food-reviews"
+          ? "customer-care-menu"
+          : "";
 
   navButtons.forEach(button => {
     const isFoodNav = button.dataset.adminTarget === "foods";
@@ -312,9 +314,11 @@ function applyAdminPermissionUi() {
       ? hasAdminPermission("foods.manage")
       : name === "accounts-menu"
         ? hasAdminPermission("users.manage") || hasAdminPermission("staff.manage")
-        : name === "customer-care-menu"
-          ? canAccessSection("feedback") || canAccessSection("food-reviews")
-          : true;
+        : name === "news-menu"
+          ? canAccessSection("announcements") || canAccessSection("advertisements")
+          : name === "customer-care-menu"
+            ? canAccessSection("feedback") || canAccessSection("food-reviews")
+            : true;
     if (group) group.hidden = !allowed;
   });
 
@@ -322,8 +326,6 @@ function applyAdminPermissionUi() {
     section.hidden = !canAccessSection(section.dataset.adminSection);
   });
 
-  document.querySelector('[data-news-panel="announcements"]')?.toggleAttribute("hidden", !hasAdminPermission("announcements.manage"));
-  document.querySelector('[data-news-panel="advertisements"]')?.toggleAttribute("hidden", !hasAdminPermission("ads.manage"));
 }
 
 function getAccountTypeTitle() {

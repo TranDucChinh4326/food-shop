@@ -183,7 +183,7 @@ async function saveAnnouncement(event) {
       body: JSON.stringify(payload)
     });
 
-    sessionStorage.setItem("foodhub_admin_section", "news");
+    sessionStorage.setItem("foodhub_admin_section", "announcements");
     showAdminToast(isEditMode ? "Đã cập nhật thông báo." : "Đã tạo thông báo.");
     setTimeout(() => {
       window.location.href = "admin.html";
