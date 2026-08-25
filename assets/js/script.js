@@ -3808,6 +3808,258 @@ function initCompactHeader() {
   window.addEventListener("resize", updateHeaderState);
 }
 
+function removeVietnameseTones(str) {
+  if (!str) return "";
+  return String(str)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
+
+function highlightSearchMatch(text, query) {
+  if (!text || !query) return escapeHtml(text || "");
+  const normalizedText = removeVietnameseTones(text);
+  const normalizedQuery = removeVietnameseTones(query);
+  const matchIndex = normalizedText.indexOf(normalizedQuery);
+
+  if (matchIndex === -1) {
+    return escapeHtml(text);
+  }
+
+  const before = text.slice(0, matchIndex);
+  const match = text.slice(matchIndex, matchIndex + query.length);
+  const after = text.slice(matchIndex + query.length);
+
+  return `${escapeHtml(before)}<mark class="search-highlight">${escapeHtml(match)}</mark>${escapeHtml(after)}`;
+}
+
+let headerSearchDebounceTimer = null;
+let activeSearchFocusedIndex = -1;
+
+async function ensureFoodsLoadedForSearch() {
+  if (foods && foods.length) return foods;
+  const cached = readFoodsCache();
+  if (cached?.items?.length) {
+    foods = cached.items;
+    return foods;
+  }
+  try {
+    const response = await fetch(API_URL);
+    if (response.ok) {
+      foods = normalizeFoodData(await response.json());
+      writeFoodsCache(foods);
+    }
+  } catch (err) {
+    console.warn("Could not preload foods for live search:", err);
+  }
+  return foods || [];
+}
+
+function renderHeaderLiveSearchDropdown(query, matchingFoods = [], totalMatches = 0) {
+  const dropdown = document.getElementById("headerSearchDropdown");
+  const input = document.getElementById("headerSearchInput");
+  if (!dropdown || !input) return;
+
+  const trimmed = query.trim();
+  if (!trimmed) {
+    dropdown.hidden = true;
+    dropdown.innerHTML = "";
+    input.setAttribute("aria-expanded", "false");
+    activeSearchFocusedIndex = -1;
+    return;
+  }
+
+  activeSearchFocusedIndex = -1;
+
+  if (matchingFoods.length === 0) {
+    dropdown.innerHTML = `
+      <div class="search-dropdown-empty">
+        <span class="search-empty-icon" aria-hidden="true">🔍</span>
+        <p class="search-empty-text">Không tìm thấy món ăn nào khớp với "<mark class="search-highlight">${escapeHtml(trimmed)}</mark>"</p>
+        <p class="search-empty-sub">Gợi ý tìm kiếm: Cơm, Phở, Trà, Bún, Nước ép...</p>
+      </div>
+    `;
+    dropdown.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    return;
+  }
+
+  const itemsHtml = matchingFoods.map((food, index) => {
+    const stock = Number(food.stockQuantity || 0);
+    const { rating, reviewCount } = getFoodRatingStats(food);
+    const category = getFoodDisplayCategory(food);
+    const highlightedName = highlightSearchMatch(food.name, trimmed);
+    const image = food.image || "assets/images/default-food.png";
+
+    return `
+      <li role="option" id="searchItem-${food.id}" aria-selected="false">
+        <a class="search-dropdown-item" href="${getFoodDetailUrl(food.id, { from: "search" })}" data-food-id="${food.id}" data-search-index="${index}">
+          <img class="search-item-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%23ffd8c7\\'><rect width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'18\\' fill=\\'%23ff5722\\'>FH</text></svg>'">
+          <div class="search-item-info">
+            <span class="search-item-name">${highlightedName}</span>
+            <div class="search-item-meta">
+              <span class="search-item-category">${escapeHtml(category)}</span>
+              ${rating > 0 ? `<span class="search-item-rating">★ ${rating.toFixed(1)}${reviewCount ? ` (${reviewCount})` : ""}</span>` : ""}
+              ${stock <= 0 ? `<span class="stock-badge out-of-stock" style="padding:1px 6px;font-size:11px;">Hết món</span>` : ""}
+            </div>
+          </div>
+          <div class="search-item-price-wrap">
+            <strong class="search-item-price">${formatMoney(food.price)}</strong>
+            <button type="button" class="search-item-add-btn" title="Thêm vào giỏ hàng" onclick="event.preventDefault(); event.stopPropagation(); addToCart(${food.id}, event);" ${stock <= 0 ? "disabled" : ""}>+</button>
+          </div>
+        </a>
+      </li>
+    `;
+  }).join("");
+
+  dropdown.innerHTML = `
+    <div class="search-dropdown-header">
+      <span>Gợi ý món ăn (${totalMatches})</span>
+    </div>
+    <ul class="search-dropdown-list" role="listbox">
+      ${itemsHtml}
+    </ul>
+    <div class="search-dropdown-footer">
+      <a class="search-dropdown-view-all" href="menu.html?search=${encodeURIComponent(trimmed)}">
+        Xem tất cả kết quả cho "<strong>${escapeHtml(trimmed)}</strong>" &rarr;
+      </a>
+    </div>
+  `;
+
+  dropdown.hidden = false;
+  input.setAttribute("aria-expanded", "true");
+}
+
+function initHeaderLiveSearch() {
+  const searchForm = document.querySelector("[data-header-search-form]") || document.querySelector("form.header-search");
+  const searchInput = document.getElementById("headerSearchInput") || searchForm?.querySelector("input[type='search'], input[name='search']");
+  const searchDropdown = document.getElementById("headerSearchDropdown");
+
+  if (!searchForm || !searchInput || !searchDropdown) return;
+
+  const performSearch = async () => {
+    const query = searchInput.value;
+    const cleanQuery = query.trim();
+    if (!cleanQuery) {
+      searchDropdown.hidden = true;
+      searchDropdown.innerHTML = "";
+      searchInput.setAttribute("aria-expanded", "false");
+      return;
+    }
+
+    if (!foods || !foods.length) {
+      searchDropdown.innerHTML = `
+        <div class="search-dropdown-loading">
+          <span class="search-loading-spinner" aria-hidden="true"></span>
+          <span>Đang tìm kiếm...</span>
+        </div>
+      `;
+      searchDropdown.hidden = false;
+      await ensureFoodsLoadedForSearch();
+    }
+
+    const normalizedQuery = removeVietnameseTones(cleanQuery);
+    const matched = foods.filter(food => {
+      const nameNorm = removeVietnameseTones(food.name || "");
+      const catNorm = removeVietnameseTones(getFoodDisplayCategory(food) || "");
+      const descNorm = removeVietnameseTones(food.description || "");
+      return nameNorm.includes(normalizedQuery) || catNorm.includes(normalizedQuery) || descNorm.includes(normalizedQuery);
+    });
+
+    matched.sort((a, b) => {
+      const aName = removeVietnameseTones(a.name || "");
+      const bName = removeVietnameseTones(b.name || "");
+      const aStarts = aName.startsWith(normalizedQuery);
+      const bStarts = bName.startsWith(normalizedQuery);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return (b.soldCount || 0) - (a.soldCount || 0);
+    });
+
+    const topMatches = matched.slice(0, 5);
+    renderHeaderLiveSearchDropdown(cleanQuery, topMatches, matched.length);
+  };
+
+  searchInput.addEventListener("focus", () => {
+    ensureFoodsLoadedForSearch();
+    searchForm.classList.add("is-focused");
+    if (searchInput.value.trim().length > 0) {
+      performSearch();
+    }
+  });
+
+  searchInput.addEventListener("blur", () => {
+    searchForm.classList.remove("is-focused");
+  });
+
+  searchInput.addEventListener("input", () => {
+    clearTimeout(headerSearchDebounceTimer);
+    headerSearchDebounceTimer = setTimeout(performSearch, 150);
+  });
+
+  searchInput.addEventListener("keydown", event => {
+    if (searchDropdown.hidden) return;
+
+    const items = searchDropdown.querySelectorAll(".search-dropdown-item");
+    if (!items.length) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      activeSearchFocusedIndex = (activeSearchFocusedIndex + 1) % items.length;
+      updateDropdownFocus(items, activeSearchFocusedIndex);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      activeSearchFocusedIndex = (activeSearchFocusedIndex - 1 + items.length) % items.length;
+      updateDropdownFocus(items, activeSearchFocusedIndex);
+    } else if (event.key === "Enter") {
+      if (activeSearchFocusedIndex >= 0 && items[activeSearchFocusedIndex]) {
+        event.preventDefault();
+        items[activeSearchFocusedIndex].click();
+      }
+    } else if (event.key === "Escape") {
+      searchDropdown.hidden = true;
+      searchInput.setAttribute("aria-expanded", "false");
+      activeSearchFocusedIndex = -1;
+    }
+  });
+
+  function updateDropdownFocus(items, focusIndex) {
+    items.forEach((item, idx) => {
+      const isFocused = idx === focusIndex;
+      item.classList.toggle("is-focused", isFocused);
+      item.closest("li")?.setAttribute("aria-selected", String(isFocused));
+      if (isFocused) {
+        item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        searchInput.setAttribute("aria-activedescendant", item.closest("li")?.id || "");
+      }
+    });
+  }
+
+  document.addEventListener("click", event => {
+    if (!searchForm.contains(event.target)) {
+      searchDropdown.hidden = true;
+      searchInput.setAttribute("aria-expanded", "false");
+      activeSearchFocusedIndex = -1;
+    }
+  });
+
+  searchDropdown.addEventListener("click", event => {
+    const item = event.target.closest(".search-dropdown-item");
+    if (!item || event.target.closest("button")) return;
+
+    const foodId = item.dataset.foodId;
+    if (foodId && typeof showFoodDetail === "function" && document.getElementById("homeFoodSections")) {
+      event.preventDefault();
+      searchDropdown.hidden = true;
+      searchInput.setAttribute("aria-expanded", "false");
+      showFoodDetail(foodId);
+    }
+  });
+}
+
 function logout() {
   sessionStorage.removeItem(AUTH_TOKEN_KEY);
   sessionStorage.removeItem(AUTH_USER_KEY);
@@ -4332,6 +4584,7 @@ if (protectCheckoutPage()) {
   initAccountMenu();
   initMobileMenu();
   initCompactHeader();
+  initHeaderLiveSearch();
   initTrackPage();
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();

@@ -14,9 +14,12 @@ function renderSharedHeader() {
       </a>
 
       <div class="header-tools">
-        <form class="header-search" action="menu.html" role="search">
-          <input type="search" name="search" placeholder="Bạn cần tìm gì?" aria-label="Tìm kiếm món ăn">
-          <button type="submit" aria-label="Tìm kiếm">⌕</button>
+        <form class="header-search" action="menu.html" role="search" data-header-search-form>
+          <div class="header-search-inner">
+            <input type="search" name="search" id="headerSearchInput" placeholder="Bạn cần tìm gì?" aria-label="Tìm kiếm món ăn" autocomplete="off" aria-expanded="false" aria-autocomplete="list" aria-controls="headerSearchDropdown">
+            <button type="submit" aria-label="Tìm kiếm">⌕</button>
+          </div>
+          <div id="headerSearchDropdown" class="header-search-dropdown" hidden role="listbox" aria-label="Gợi ý món ăn"></div>
         </form>
         <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher" aria-label="Voucher" data-voucher-link><span aria-hidden="true">V</span><strong class="top-icon-badge" data-voucher-unread hidden>0</strong></a>
         <a href="announcements.html" class="top-icon" title="Thông báo" aria-label="Thông báo" data-announcement-link>🔔<strong class="top-icon-badge" data-announcement-unread hidden>0</strong></a>
