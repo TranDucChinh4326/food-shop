@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thực đơn - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260825-effects-suite-v1">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260824-heading-scale">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260825-heart-fix-v4">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260825-heart-fix-v4">
 </head>
 <body>
   <div data-shared-header></div>
@@ -15,23 +15,23 @@
     <section class="menu-panel">
       <div class="menu-toolbar">
         <div>
-          <h2 id="menuCategoryHeading">Tất cả món</h2>
-          <p id="menuCategoryDescription">Danh sách món được cập nhật từ hệ thống FoodHub.</p>
+          <h2>Thực đơn FoodHub</h2>
+          <p>Khám phá trọn bộ các món ăn tươi ngon chuẩn vị, giao nhanh tận nơi trong 30 phút.</p>
         </div>
-
         <div class="filter-box">
-          <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="renderFoods()">
+          <input type="search" id="searchInput" placeholder="Tìm kiếm món ăn..." oninput="renderFoods()" aria-label="Tìm kiếm món ăn">
         </div>
       </div>
-      <div id="menuCategoryChips" class="menu-category-chips" aria-label="Lọc danh mục"></div>
 
-      <div id="food-list" class="food-list"></div>
+      <nav class="menu-category-chips" id="menuCategoryChips" aria-label="Bộ lọc danh mục thực đơn"></nav>
+
+      <div class="food-list" id="food-list" aria-live="polite"></div>
     </section>
   </main>
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260824-track-timeout"></script>
-  <script src="assets/js/script.js?v=20260824-track-silent-load"></script>
+  <script src="assets/js/shared-layout.js?v=20260825-heart-fix-v4"></script>
+  <script src="assets/js/script.js?v=20260825-heart-fix-v4"></script>
 </body>
 </html>

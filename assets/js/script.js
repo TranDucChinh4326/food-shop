@@ -2485,11 +2485,13 @@ function renderFoods() {
 
     return `
       <div class="food-card" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
-        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
-          <div class="food-card-img-wrap">
+        <div class="food-card-img-wrap">
+          <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
             <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
-            ${renderFavButton(food.id)}
-          </div>
+          </a>
+          ${renderFavButton(food.id)}
+        </div>
+        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}">
           <h3>${escapeHtml(food.name)}</h3>
           <p>${escapeHtml(food.desc || "")}</p>
         </a>
@@ -2501,7 +2503,7 @@ function renderFoods() {
           <label for="food-qty-${food.id}">Số lượng</label>
           ${quantityInput}
         </div>
-        <button type="button" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
+        <button type="button" class="food-card-add-btn" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
       </div>
     `;
   }).join("");
