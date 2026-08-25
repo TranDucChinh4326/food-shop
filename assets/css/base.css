@@ -6479,3 +6479,253 @@ footer {
   }
 }
 
+/* ============================================================
+   3. Enhanced Parabolic Fly to Cart & Header Cart Bounce
+   ============================================================ */
+.cart-fly-image {
+  border: 2.5px solid #ff5722 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 10px 30px rgba(255, 87, 34, 0.45), 0 0 12px rgba(255, 138, 31, 0.35) !important;
+  object-fit: cover !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  position: fixed !important;
+  transition: transform 0.85s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.85s cubic-bezier(0.5, 0, 0.8, 0.2) !important;
+  will-change: transform, opacity !important;
+  z-index: 99999 !important;
+}
+
+.cart-btn-bounce {
+  animation: cartBtnBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+@keyframes cartBtnBounce {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.26) rotate(-6deg); }
+  65% { transform: scale(0.92) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ============================================================
+   4. Heart Burst Favorite Animation & Button
+   ============================================================ */
+.fav-heart-btn {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  color: #765f54;
+  cursor: pointer;
+  display: inline-flex;
+  height: 36px;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  width: 36px;
+  z-index: 10;
+}
+
+.fav-heart-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(255, 56, 92, 0.25);
+  color: #ff385c;
+  transform: scale(1.12);
+}
+
+.fav-heart-btn svg {
+  fill: transparent;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: fill 0.25s ease, stroke 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 18px;
+}
+
+.fav-heart-btn.active {
+  color: #ff385c;
+}
+
+.fav-heart-btn.active svg {
+  fill: #ff385c;
+  stroke: #ff385c;
+}
+
+.fav-heart-btn.heart-burst svg {
+  animation: heartSpringBurst 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
+}
+
+@keyframes heartSpringBurst {
+  0% { transform: scale(1); }
+  25% { transform: scale(0.6); }
+  50% { transform: scale(1.4); }
+  75% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================================
+   5. Skeleton Loading Shimmer
+   ============================================================ */
+.skeleton-food-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  width: 100%;
+}
+
+.food-skeleton-card {
+  background: #ffffff;
+  border: 1px solid #efd8cc;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(78, 45, 25, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 14px;
+  position: relative;
+}
+
+.skeleton-shimmer {
+  animation: skeletonWave 1.6s ease-in-out infinite;
+  background: linear-gradient(90deg, #f2ebe6 0%, #ffffff 50%, #f2ebe6 100%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+}
+
+.food-skeleton-img {
+  border-radius: 12px;
+  height: 150px;
+  width: 100%;
+}
+
+.food-skeleton-title {
+  height: 18px;
+  width: 75%;
+}
+
+.food-skeleton-desc {
+  height: 14px;
+  width: 90%;
+}
+
+.food-skeleton-price {
+  height: 22px;
+  width: 40%;
+}
+
+.food-skeleton-btn {
+  border-radius: 8px;
+  height: 38px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+@keyframes skeletonWave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+   6. Confetti Celebration Canvas Layer
+   ============================================================ */
+.confetti-canvas-layer {
+  height: 100vh;
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  width: 100vw;
+  z-index: 999999;
+}
+
+/* ============================================================
+   7. Card Image Zoom & Reflection Shimmer
+   ============================================================ */
+.food-card-img-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.food-card-img-wrap img,
+.food-card img,
+.home-food-card img {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.food-card:hover img,
+.home-food-card:hover img {
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   8. Interactive Toast Notification with Countdown Bar
+   ============================================================ */
+.site-toast {
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, box-shadow 0.2s ease;
+}
+
+.site-toast:hover {
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.site-toast-progress {
+  bottom: 0;
+  height: 3px;
+  left: 0;
+  position: absolute;
+  transform-origin: left;
+  width: 100%;
+}
+
+.site-toast.success .site-toast-progress {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.site-toast.error .site-toast-progress {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.site-toast.info .site-toast-progress {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.site-toast.show .site-toast-progress {
+  animation: toastTimerShrink 3.6s linear forwards;
+}
+
+.site-toast:hover .site-toast-progress {
+  animation-play-state: paused;
+}
+
+@keyframes toastTimerShrink {
+  0% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+
+/* ============================================================
+   9. Form Error Shake Animation
+   ============================================================ */
+.input-error-shake {
+  animation: inputShake 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.2) !important;
+}
+
+@keyframes inputShake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+

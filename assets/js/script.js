@@ -93,6 +93,7 @@ function showSiteToast(message, type = "success") {
 
   const toast = document.createElement("div");
   toast.className = `site-toast ${type}`;
+  toast.title = "Bấm để đóng";
   const icons = {
     success: "✓",
     error: "!",
@@ -101,16 +102,182 @@ function showSiteToast(message, type = "success") {
   toast.innerHTML = `
     <strong class="site-toast-icon" aria-hidden="true">${icons[type] || icons.info}</strong>
     <span>${escapeHtml(message)}</span>
-    <i aria-hidden="true"></i>
+    <span class="site-toast-progress" aria-hidden="true"></span>
   `;
-  stack.appendChild(toast);
 
-  requestAnimationFrame(() => toast.classList.add("show"));
+  let dismissTimer = null;
+  const startTimer = (ms = 3600) => {
+    clearTimeout(dismissTimer);
+    dismissTimer = setTimeout(() => {
+      toast.classList.add("hide");
+      setTimeout(() => toast.remove(), 280);
+    }, ms);
+  };
 
-  setTimeout(() => {
+  toast.addEventListener("mouseenter", () => clearTimeout(dismissTimer));
+  toast.addEventListener("mouseleave", () => startTimer(1500));
+  toast.addEventListener("click", () => {
+    clearTimeout(dismissTimer);
     toast.classList.add("hide");
-    setTimeout(() => toast.remove(), 280);
-  }, 3600);
+    setTimeout(() => toast.remove(), 200);
+  });
+
+  stack.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+  startTimer(3600);
+}
+
+function shakeInputElement(input) {
+  const el = typeof input === "string" ? document.getElementById(input) || document.querySelector(input) : input;
+  if (!el) return;
+  el.classList.remove("input-error-shake");
+  void el.offsetWidth;
+  el.classList.add("input-error-shake");
+  setTimeout(() => el.classList.remove("input-error-shake"), 450);
+  el.focus();
+}
+
+function triggerConfetti(options = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.className = "confetti-canvas-layer";
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  const width = canvas.width = window.innerWidth;
+  const height = canvas.height = window.innerHeight;
+
+  const colors = ["#ff5722", "#ff8a1f", "#ffc107", "#4caf50", "#2196f3", "#e91e63", "#ffffff"];
+  const particleCount = options.particleCount || 70;
+  const particles = [];
+
+  const originX = options.x !== undefined ? options.x : width / 2;
+  const originY = options.y !== undefined ? options.y : height * 0.45;
+
+  for (let i = 0; i < particleCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 4 + Math.random() * 8;
+    particles.push({
+      x: originX,
+      y: originY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 3,
+      size: 6 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      vRotation: (Math.random() - 0.5) * 12,
+      opacity: 1,
+      gravity: 0.22,
+      decay: 0.014 + Math.random() * 0.01
+    });
+  }
+
+  let animationFrameId = null;
+  const startTime = Date.now();
+
+  function update() {
+    ctx.clearRect(0, 0, width, height);
+    let activeCount = 0;
+
+    for (let p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.98;
+      p.rotation += p.vRotation;
+      p.opacity -= p.decay;
+
+      if (p.opacity > 0) {
+        activeCount++;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+        ctx.restore();
+      }
+    }
+
+    if (activeCount > 0 && Date.now() - startTime < 3500) {
+      animationFrameId = requestAnimationFrame(update);
+    } else {
+      cancelAnimationFrame(animationFrameId);
+      canvas.remove();
+    }
+  }
+
+  update();
+}
+
+const FAVORITES_STORAGE_KEY = "foodhub_favorites_v1";
+
+function getFavoritesList() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function isFoodFavorite(foodId) {
+  const list = getFavoritesList();
+  return list.some(id => String(id) === String(foodId));
+}
+
+function toggleFoodFavorite(foodId, event) {
+  event?.stopPropagation?.();
+  event?.preventDefault?.();
+  const list = getFavoritesList();
+  const idStr = String(foodId);
+  const index = list.indexOf(idStr);
+  const button = event?.currentTarget || event?.target?.closest(".fav-heart-btn");
+
+  if (index >= 0) {
+    list.splice(index, 1);
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(list));
+    if (button) {
+      button.classList.remove("active", "heart-burst");
+      button.setAttribute("aria-label", "Thêm vào yêu thích");
+    }
+    showSiteToast("Đã xóa khỏi danh sách yêu thích", "info");
+  } else {
+    list.push(idStr);
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(list));
+    if (button) {
+      button.classList.add("active", "heart-burst");
+      button.setAttribute("aria-label", "Bỏ yêu thích");
+      setTimeout(() => button.classList.remove("heart-burst"), 500);
+    }
+    showSiteToast("Đã thêm vào món yêu thích ❤️", "success");
+  }
+}
+
+function renderFavButton(foodId) {
+  const active = isFoodFavorite(foodId);
+  return `
+    <button type="button" class="fav-heart-btn ${active ? "active" : ""}" onclick="toggleFoodFavorite(${foodId}, event)" aria-label="${active ? "Bỏ yêu thích" : "Thêm vào yêu thích"}">
+      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </button>
+  `;
+}
+
+function showFoodSkeleton(container, count = 4) {
+  const el = typeof container === "string" ? document.querySelector(container) : container;
+  if (!el) return;
+  el.innerHTML = `
+    <div class="skeleton-food-grid">
+      ${Array.from({ length: count }).map(() => `
+        <div class="food-skeleton-card">
+          <div class="skeleton-shimmer food-skeleton-img"></div>
+          <div class="skeleton-shimmer food-skeleton-title"></div>
+          <div class="skeleton-shimmer food-skeleton-desc"></div>
+          <div class="skeleton-shimmer food-skeleton-price"></div>
+          <div class="skeleton-shimmer food-skeleton-btn"></div>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
 function getSiteLoadingOverlay() {
@@ -956,14 +1123,21 @@ function animateCartAddButton(source) {
   setTimeout(() => button.classList.remove("cart-add-pop"), 420);
 
   const cartBadge = document.getElementById("cart-count");
-  if (!cartBadge) return;
-
-  cartBadge.classList.remove("cart-count-pop");
-  void cartBadge.offsetWidth;
-  cartBadge.classList.add("cart-count-pop");
-  setTimeout(() => cartBadge.classList.remove("cart-count-pop"), 520);
+  if (cartBadge) {
+    cartBadge.classList.remove("cart-count-pop");
+    void cartBadge.offsetWidth;
+    cartBadge.classList.add("cart-count-pop");
+    setTimeout(() => cartBadge.classList.remove("cart-count-pop"), 520);
+  }
 
   const cartButton = document.querySelector(".cart-btn");
+  if (cartButton) {
+    cartButton.classList.remove("cart-btn-bounce");
+    void cartButton.offsetWidth;
+    cartButton.classList.add("cart-btn-bounce");
+    setTimeout(() => cartButton.classList.remove("cart-btn-bounce"), 600);
+  }
+
   const sourceImage = button.closest(".food-detail-card, .home-food-card, .food-card, .suggestion-card, .cart-item")
     ?.querySelector(".food-detail-image, img");
   if (!cartButton || !sourceImage) return;
@@ -979,20 +1153,23 @@ function animateCartAddButton(source) {
   flyingImage.className = "cart-fly-image";
   flyingImage.src = sourceImage.currentSrc || sourceImage.src;
   flyingImage.alt = "";
-  flyingImage.style.left = `${start.left}px`;
-  flyingImage.style.top = `${start.top}px`;
-  flyingImage.style.width = `${Math.min(start.width, 92)}px`;
-  flyingImage.style.height = `${Math.min(start.height, 72)}px`;
+  const size = Math.min(start.width, start.height, 68);
+  flyingImage.style.left = `${start.left + (start.width - size) / 2}px`;
+  flyingImage.style.top = `${start.top + (start.height - size) / 2}px`;
+  flyingImage.style.width = `${size}px`;
+  flyingImage.style.height = `${size}px`;
   document.body.appendChild(flyingImage);
 
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      flyingImage.style.transform = `translate(${end.left + end.width / 2 - start.left}px, ${end.top + end.height / 2 - start.top}px) scale(0.18) rotate(10deg)`;
-      flyingImage.style.opacity = "0";
+      const deltaX = (end.left + end.width / 2) - (start.left + start.width / 2);
+      const deltaY = (end.top + end.height / 2) - (start.top + start.height / 2);
+      flyingImage.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(0.2) rotate(25deg)`;
+      flyingImage.style.opacity = "0.2";
     });
-  }, 180);
+  });
 
-  setTimeout(() => flyingImage.remove(), 1550);
+  setTimeout(() => flyingImage.remove(), 900);
 }
 
 async function loadFoods() {
@@ -1151,7 +1328,10 @@ function renderCompactFoodCard(food, options = {}) {
   return `
     <article class="${cardClass}" data-open-food-detail="${food.id}">
       <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
-      <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+      <div class="food-card-img-wrap">
+        <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+        ${renderFavButton(food.id)}
+      </div>
       <div class="home-food-card-body">
         <span class="home-food-category">${escapeHtml(getFoodDisplayCategory(food))}</span>
         <h3>${escapeHtml(food.name)}</h3>
@@ -2306,7 +2486,10 @@ function renderFoods() {
     return `
       <div class="food-card" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
         <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
-          <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+          <div class="food-card-img-wrap">
+            <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+            ${renderFavButton(food.id)}
+          </div>
           <h3>${escapeHtml(food.name)}</h3>
           <p>${escapeHtml(food.desc || "")}</p>
         </a>
@@ -2866,11 +3049,14 @@ async function applyCheckoutDiscount() {
 
     appliedDiscount = data;
     if (message) message.textContent = `Đã áp dụng ${data.code}: -${formatMoney(data.discountAmount || 0)}`;
+    triggerConfetti({ particleCount: 50 });
+    showSiteToast(`Áp dụng voucher ${data.code} thành công 🎉`, "success");
     renderOwnedVoucherSelect();
     renderCart();
   } catch (error) {
     appliedDiscount = null;
     if (message) message.textContent = error.message;
+    shakeInputElement("discountCodeInput");
     renderCart();
   } finally {
     hideSiteLoading();
@@ -3403,11 +3589,12 @@ async function submitOrder(event) {
       return;
     }
 
-    showSiteToast("Đặt hàng thành công. Đang chuyển sang trang tra cứu...");
+    triggerConfetti({ particleCount: 90 });
+    showSiteToast("Đặt hàng thành công! Đang chuyển sang trang tra cứu...", "success");
 
     setTimeout(() => {
       window.location.href = "track.html";
-    }, 900);
+    }, 1200);
   } catch (error) {
     showSiteToast("Không kết nối được server đặt hàng.", "error");
     console.error(error);

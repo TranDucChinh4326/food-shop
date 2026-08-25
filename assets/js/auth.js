@@ -27,18 +27,42 @@ function showToast(message, type = "info") {
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
+  toast.title = "Bấm để đóng";
   toast.innerHTML = `
     <span>${escapeHtml(message)}</span>
-    <i aria-hidden="true"></i>
+    <span class="site-toast-progress" aria-hidden="true"></span>
   `;
-  stack.appendChild(toast);
 
-  requestAnimationFrame(() => toast.classList.add("show"));
+  let dismissTimer = null;
+  const startTimer = (ms = 3600) => {
+    clearTimeout(dismissTimer);
+    dismissTimer = setTimeout(() => {
+      toast.classList.add("hide");
+      setTimeout(() => toast.remove(), 280);
+    }, ms);
+  };
 
-  setTimeout(() => {
+  toast.addEventListener("mouseenter", () => clearTimeout(dismissTimer));
+  toast.addEventListener("mouseleave", () => startTimer(1500));
+  toast.addEventListener("click", () => {
+    clearTimeout(dismissTimer);
     toast.classList.add("hide");
-    setTimeout(() => toast.remove(), 280);
-  }, 3600);
+    setTimeout(() => toast.remove(), 200);
+  });
+
+  stack.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+  startTimer(3600);
+}
+
+function shakeInputElement(input) {
+  const el = typeof input === "string" ? document.getElementById(input) || document.querySelector(input) : input;
+  if (!el) return;
+  el.classList.remove("input-error-shake");
+  void el.offsetWidth;
+  el.classList.add("input-error-shake");
+  setTimeout(() => el.classList.remove("input-error-shake"), 450);
+  el.focus();
 }
 
 function escapeHtml(value) {
@@ -435,6 +459,7 @@ async function login(event) {
     if (!response.ok) {
       hideAuthLoading();
       showToast(data.message || "Không thể đăng nhập.", "error");
+      shakeInputElement(form.querySelector("[name='password'], #password, #loginPassword"));
       return;
     }
 
