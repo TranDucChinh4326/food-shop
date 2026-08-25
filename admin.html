@@ -34,8 +34,7 @@
           <a href="admin.html?section=accounts&accountType=customers" data-admin-target="accounts" data-account-type="customers"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Khách hàng</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=announcements" data-admin-target="announcements"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
-      <a class="admin-nav-btn" href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="ad" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
+      <a class="admin-nav-btn" href="admin.html?section=news" data-admin-target="news"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Quản lý tin tức</span></a>
       <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
       <a class="admin-nav-btn" href="admin.html?section=shipping" data-admin-target="shipping"><span class="nav-icon" data-icon="delivery" aria-hidden="true"></span><span class="nav-text">Phí vận chuyển</span></a>
       <a class="admin-nav-btn" href="admin.html?section=audit-logs" data-admin-target="audit-logs"><span class="nav-icon" data-icon="audit" aria-hidden="true"></span><span class="nav-text">Nhật ký</span></a>
@@ -304,12 +303,12 @@
       </section>
     </section>
 
-    <section class="admin-section" data-admin-section="announcements">
-      <section class="panel accounts-panel admin-table-page">
+    <section class="admin-section" data-admin-section="news">
+      <section class="panel accounts-panel admin-table-page" data-news-panel="announcements">
         <div class="page-heading">
           <div>
-            <h2>Quản lý thông báo</h2>
-            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý thông báo</p>
+            <h2>Quản lý tin tức</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý tin tức <span>/</span> Thông báo</p>
           </div>
           <div class="heading-actions">
             <a href="admin-announcement.html" class="primary-btn button-link">+ Thêm mới</a>
@@ -334,14 +333,12 @@
 
         <div id="announcementsList" class="accounts-list table-state">Đang tải thông báo...</div>
       </section>
-    </section>
 
-    <section class="admin-section" data-admin-section="advertisements">
-      <section class="panel accounts-panel admin-table-page">
+      <section class="panel accounts-panel admin-table-page" data-news-panel="advertisements">
         <div class="page-heading">
           <div>
             <h2>Quản lý quảng cáo</h2>
-            <p><a href="index.html">Trang chủ</a> <span>/</span> Quảng cáo</p>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý tin tức <span>/</span> Quảng cáo</p>
           </div>
           <div class="heading-actions">
             <button id="resetAdvertisementFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
@@ -738,6 +735,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260824-order-refresh-scope"></script>
-  <script src="assets/js/admin/admin.js?v=20260826-system-audit"></script>
+  <script src="assets/js/admin/admin.js?v=20260826-news-management"></script>
 </body>
 </html>

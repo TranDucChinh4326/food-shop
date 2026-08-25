@@ -103,8 +103,7 @@ const SECTION_PERMISSIONS = {
   categories: ["foods.manage"],
   foods: ["foods.manage"],
   accounts: ["users.manage", "staff.manage"],
-  announcements: ["announcements.manage"],
-  advertisements: ["ads.manage"],
+  news: ["announcements.manage", "ads.manage"],
   discounts: ["discounts.manage"],
   shipping: ["shipping.manage"],
   feedback: ["feedback.manage"],
@@ -185,7 +184,7 @@ const STAFF_PERMISSION_GROUPS = [
   {
     value: "content",
     label: "Qu\u1ea3n l\u00fd m\u00f3n \u0103n",
-    permissions: ["foods.manage", "categories.manage", "advertisements.manage", "food-reviews.manage"]
+    permissions: ["foods.manage", "categories.manage", "ads.manage", "food-reviews.manage"]
   },
   {
     value: "support",
@@ -219,7 +218,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "news", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -248,6 +247,7 @@ function setAdminNavGroupOpen(toggleName, isOpen) {
 }
 
 function showAdminSection(sectionId) {
+  if (sectionId === "announcements" || sectionId === "advertisements") sectionId = "news";
   const exists = adminSections.some(section => section.dataset.adminSection === sectionId);
   const target = exists && canAccessSection(sectionId) ? sectionId : getFirstAllowedSection();
   const activeToggle = target === "foods"
@@ -318,6 +318,9 @@ function applyAdminPermissionUi() {
   adminSections.forEach(section => {
     section.hidden = !canAccessSection(section.dataset.adminSection);
   });
+
+  document.querySelector('[data-news-panel="announcements"]')?.toggleAttribute("hidden", !hasAdminPermission("announcements.manage"));
+  document.querySelector('[data-news-panel="advertisements"]')?.toggleAttribute("hidden", !hasAdminPermission("ads.manage"));
 }
 
 function getAccountTypeTitle() {
@@ -4038,10 +4041,10 @@ async function initAdminPage() {
     loadFoods();
   }
   if (canAccessSection("accounts")) loadUsers();
-  if (canAccessSection("announcements")) loadAnnouncements();
+  if (hasAdminPermission("announcements.manage")) loadAnnouncements();
   if (canAccessSection("discounts")) loadDiscounts();
   if (canAccessSection("shipping")) loadShippingMethodsAdmin();
-  if (canAccessSection("advertisements")) loadAdvertisements();
+  if (hasAdminPermission("ads.manage")) loadAdvertisements();
   if (canAccessSection("feedback")) loadFeedback();
   if (canAccessSection("food-reviews")) loadFoodReviews();
   if (canAccessSection("audit-logs")) loadAuditLogs();

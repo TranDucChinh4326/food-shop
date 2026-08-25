@@ -113,7 +113,7 @@ async function requestJson(url, options = {}) {
 
 function setModeText() {
   if (isEditMode) {
-    announcementFormTitle.textContent = "Cập nhật thong tin thông báo";
+    announcementFormTitle.textContent = "Cập nhật thông tin thông báo";
     announcementBreadcrumb.textContent = "Cập nhật";
     return;
   }
@@ -183,7 +183,7 @@ async function saveAnnouncement(event) {
       body: JSON.stringify(payload)
     });
 
-    sessionStorage.setItem("foodhub_admin_section", "announcements");
+    sessionStorage.setItem("foodhub_admin_section", "news");
     showAdminToast(isEditMode ? "Đã cập nhật thông báo." : "Đã tạo thông báo.");
     setTimeout(() => {
       window.location.href = "admin.html";
