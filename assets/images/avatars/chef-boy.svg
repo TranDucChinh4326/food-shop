@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bgBoy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe0b2"/>
+      <stop offset="100%" stop-color="#ffb74d"/>
+    </linearGradient>
+    <linearGradient id="hatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e0e0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#bgBoy)" stroke="#ff9800" stroke-width="2"/>
+  <path d="M24 92 C24 74 36 68 50 68 C64 68 76 74 76 92 Z" fill="#ff5722"/>
+  <polygon points="50,70 44,78 50,86 56,78" fill="#d32f2f"/>
+  <circle cx="32" cy="52" r="6" fill="#f5cba7"/>
+  <circle cx="68" cy="52" r="6" fill="#f5cba7"/>
+  <ellipse cx="50" cy="52" rx="19" ry="18" fill="#f5cba7"/>
+  <path d="M31 46 C31 38 40 34 50 34 C60 34 69 38 69 46 C65 42 59 42 50 44 C41 42 35 42 31 46 Z" fill="#5d4037"/>
+  <circle cx="43" cy="51" r="2.5" fill="#2c1b18"/>
+  <circle cx="57" cy="51" r="2.5" fill="#2c1b18"/>
+  <circle cx="44" cy="50" r="0.8" fill="#ffffff"/>
+  <circle cx="58" cy="50" r="0.8" fill="#ffffff"/>
+  <ellipse cx="38" cy="56" rx="2.5" ry="1.5" fill="#ff8a80" opacity="0.6"/>
+  <ellipse cx="62" cy="56" rx="2.5" ry="1.5" fill="#ff8a80" opacity="0.6"/>
+  <path d="M45 56 Q50 61 55 56" fill="none" stroke="#2c1b18" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M34 36 C28 32 30 20 40 22 C44 14 56 14 60 22 C70 20 72 32 66 36 Z" fill="url(#hatGrad)" stroke="#d7ccc8" stroke-width="1"/>
+  <rect x="35" y="32" width="30" height="6" rx="2" fill="#ffffff" stroke="#d7ccc8" stroke-width="1"/>
+  <line x1="43" y1="32" x2="43" y2="38" stroke="#ff5722" stroke-width="1.5"/>
+  <line x1="50" y1="32" x2="50" y2="38" stroke="#ff5722" stroke-width="1.5"/>
+  <line x1="57" y1="32" x2="57" y2="38" stroke="#ff5722" stroke-width="1.5"/>
+</svg>

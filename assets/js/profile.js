@@ -330,6 +330,69 @@ async function refreshPasswordCaptcha() {
   });
 }
 
+const PRESET_AVATARS = [
+  { id: "chef-boy", name: "Đầu bếp Nam", url: "assets/images/avatars/chef-boy.svg" },
+  { id: "chef-girl", name: "Đầu bếp Nữ", url: "assets/images/avatars/chef-girl.svg" },
+  { id: "burger-buddy", name: "Bé Burger", url: "assets/images/avatars/burger-buddy.svg" },
+  { id: "boba-cat", name: "Bé Trà Sữa", url: "assets/images/avatars/boba-cat.svg" },
+  { id: "pizza-slice", name: "Bé Pizza", url: "assets/images/avatars/pizza-slice.svg" },
+  { id: "ramen-bowl", name: "Bé Mì Ramen", url: "assets/images/avatars/ramen-bowl.svg" }
+];
+
+function renderPresetAvatars(currentAvatarUrl) {
+  const container = document.getElementById("presetAvatarsList");
+  if (!container) return;
+
+  container.innerHTML = PRESET_AVATARS.map(item => {
+    const isSelected = Boolean(currentAvatarUrl && currentAvatarUrl.includes(item.url));
+    return `
+      <button type="button" class="preset-avatar-btn ${isSelected ? "active" : ""}" data-preset-avatar="${item.url}" title="${item.name}" aria-label="Chọn ${item.name}">
+        <img src="${item.url}" alt="${item.name}">
+        <span class="preset-avatar-name">${item.name}</span>
+      </button>
+    `;
+  }).join("");
+
+  container.querySelectorAll("[data-preset-avatar]").forEach(btn => {
+    btn.addEventListener("click", () => selectPresetAvatar(btn.dataset.presetAvatar));
+  });
+}
+
+async function selectPresetAvatar(avatarUrl) {
+  if (!avatarUrl) return;
+
+  const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "{}");
+  selectedAvatarData = avatarUrl;
+  selectedAvatarFile = null;
+
+  renderAccountSummary({ ...user, avatar: avatarUrl });
+  renderPresetAvatars(avatarUrl);
+
+  try {
+    showSiteLoading("Đang cập nhật ảnh đại diện...");
+    const res = await requestProfileJson(`${PROFILE_AUTH_API}/avatar`, {
+      method: "POST",
+      body: JSON.stringify({ presetAvatar: avatarUrl })
+    });
+
+    const updatedUser = res.user || { ...user, avatar: avatarUrl };
+    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+
+    if (typeof broadcastUserUpdate === "function") {
+      broadcastUserUpdate(updatedUser);
+    }
+
+    renderAccountSummary(updatedUser);
+    renderPresetAvatars(avatarUrl);
+    showSiteToast("Đã chọn ảnh đại diện hệ thống! ✨", "success");
+  } catch (error) {
+    console.error("Lỗi chọn avatar có sẵn:", error);
+    showSiteToast(error.message || "Không thể cập nhật ảnh đại diện.", "error");
+  } finally {
+    hideSiteLoading();
+  }
+}
+
 function renderAccountSummary(user) {
   const name = document.getElementById("profileDisplayName");
   const email = document.getElementById("profileDisplayEmail");
@@ -344,9 +407,9 @@ function renderAccountSummary(user) {
   if (name) name.textContent = user?.fullname || "FoodHub User";
   if (email) email.textContent = user?.email || "";
 
-  if (avatar) {
-    const avatarSource = selectedAvatarData || user?.avatar || getDefaultAvatarDataUrl();
+  const avatarSource = selectedAvatarData || user?.avatar || (typeof getDefaultAvatarDataUrl === "function" ? getDefaultAvatarDataUrl() : "");
 
+  if (avatar) {
     if (avatarSource) {
       avatar.textContent = "";
       const image = document.createElement("img");
@@ -361,6 +424,8 @@ function renderAccountSummary(user) {
       avatar.textContent = initials;
     }
   }
+
+  renderPresetAvatars(avatarSource);
 }
 
 function renderPinMode(user) {
