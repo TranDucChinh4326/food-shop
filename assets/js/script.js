@@ -2768,10 +2768,16 @@ function renderAvailableVouchers() {
         <h3>${escapeHtml(item.name || item.code)}</h3>
         <p>${escapeHtml(getVoucherLabel(item))}</p>
         <small>${item.remainingGlobal === null ? "Không giới hạn số lượng" : `Còn ${item.remainingGlobal} voucher`}</small>
+        <div class="voucher-timer-badge" data-countdown-target="${item.endDate || item.expiredAt || ""}" title="Thời gian còn lại để nhận">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm.5-13H11v6l5.2 3.1.8-1.3-4.5-2.7z"/></svg>
+          <span class="countdown-text">Đang tính...</span>
+        </div>
       </div>
       <button type="button" class="ghost-btn" data-claim-voucher="${item.id}">Nhận voucher</button>
     </article>
   `).join("");
+
+  initLiveCountdowns();
 }
 
 async function loadAvailableVouchers() {
@@ -4072,6 +4078,152 @@ function logout() {
   }, 500);
 }
 
+/* ============================================================
+   Back To Top with Circular Scroll Progress
+   ============================================================ */
+function initBackToTopButton() {
+  if (document.getElementById("backToTopBtn")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "backToTopBtn";
+  btn.className = "back-to-top-btn";
+  btn.type = "button";
+  btn.setAttribute("aria-label", "Cuộn lên đầu trang");
+  btn.setAttribute("title", "Cuộn lên đầu trang");
+  btn.innerHTML = `
+    <svg class="progress-ring" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+      <circle class="progress-ring-bg" cx="22" cy="22" r="18" fill="none" stroke-width="3.5" />
+      <circle class="progress-ring-circle" cx="22" cy="22" r="18" fill="none" stroke-width="3.5" />
+    </svg>
+    <span class="back-to-top-arrow" aria-hidden="true">↑</span>
+  `;
+
+  document.body.appendChild(btn);
+
+  const circle = btn.querySelector(".progress-ring-circle");
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius; // ~113.097
+  circle.style.strokeDasharray = `${circumference} ${circumference}`;
+  circle.style.strokeDashoffset = `${circumference}`;
+
+  let isTicking = false;
+
+  function updateScrollProgress() {
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (scrollHeight > 0) {
+      const progress = Math.min(Math.max(scrollY / scrollHeight, 0), 1);
+      const offset = circumference - progress * circumference;
+      circle.style.strokeDashoffset = `${offset}`;
+    }
+
+    if (scrollY > 350) {
+      btn.classList.add("visible");
+    } else {
+      btn.classList.remove("visible");
+    }
+
+    isTicking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!isTicking) {
+      window.requestAnimationFrame(updateScrollProgress);
+      isTicking = true;
+    }
+  }, { passive: true });
+
+  btn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+
+  updateScrollProgress();
+}
+
+/* ============================================================
+   Live Flash Sale & Countdown Timer Engine
+   ============================================================ */
+let countdownTimerInterval = null;
+
+function getDailyGoldenHourTarget() {
+  const now = new Date();
+  const slot1 = new Date(now);
+  slot1.setHours(12, 0, 0, 0);
+
+  const slot2 = new Date(now);
+  slot2.setHours(19, 0, 0, 0);
+
+  const slot3 = new Date(now);
+  slot3.setHours(23, 59, 59, 999);
+
+  if (now < slot1) {
+    return slot1;
+  } else if (now < slot2) {
+    return slot2;
+  } else {
+    return slot3;
+  }
+}
+
+function updateCountdownDisplay(container, remainingMs) {
+  if (remainingMs <= 0) {
+    container.innerHTML = `<span style="color:#d63d00;font-weight:700;">Đã kết thúc</span>`;
+    return;
+  }
+
+  const totalSeconds = Math.floor(remainingMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const hStr = String(hours).padStart(2, "0");
+  const mStr = String(minutes).padStart(2, "0");
+  const sStr = String(seconds).padStart(2, "0");
+
+  const hoursEl = container.querySelector("[data-timer-hours]");
+  const minutesEl = container.querySelector("[data-timer-minutes]");
+  const secondsEl = container.querySelector("[data-timer-seconds]");
+  const textEl = container.querySelector(".countdown-text");
+
+  if (hoursEl && minutesEl && secondsEl) {
+    if (hoursEl.textContent !== hStr) hoursEl.textContent = hStr;
+    if (minutesEl.textContent !== mStr) minutesEl.textContent = mStr;
+    if (secondsEl.textContent !== sStr) secondsEl.textContent = sStr;
+  } else if (textEl) {
+    textEl.textContent = `Còn ${hStr}g : ${mStr}p : ${sStr}s`;
+  }
+}
+
+function initLiveCountdowns() {
+  function tickAllCountdowns() {
+    const now = Date.now();
+    const goldenHourTarget = getDailyGoldenHourTarget().getTime();
+
+    document.querySelectorAll("[data-flash-sale-countdown]").forEach(timer => {
+      const customTargetStr = timer.dataset.flashSaleCountdown;
+      const targetTime = customTargetStr ? Date.parse(customTargetStr) : goldenHourTarget;
+      const remainingMs = Math.max(0, targetTime - now);
+      updateCountdownDisplay(timer, remainingMs);
+    });
+
+    document.querySelectorAll("[data-countdown-target]").forEach(timer => {
+      const targetStr = timer.dataset.countdownTarget;
+      const targetTime = targetStr ? (Date.parse(targetStr) || goldenHourTarget) : goldenHourTarget;
+      const remainingMs = Math.max(0, targetTime - now);
+      updateCountdownDisplay(timer, remainingMs);
+    });
+  }
+
+  tickAllCountdowns();
+  if (!countdownTimerInterval) {
+    countdownTimerInterval = setInterval(tickAllCountdowns, 1000);
+  }
+}
+
 function initTrackPage() {
   const resultBox = document.getElementById("track-result");
 
@@ -4636,6 +4788,8 @@ if (protectCheckoutPage()) {
   initCompactHeader();
   initHeaderLiveSearch();
   initTrackPage();
+  initBackToTopButton();
+  initLiveCountdowns();
   initAnnouncementArchiveFilters();
   loadAnnouncementArchive();
   loadAvailableVouchers();
