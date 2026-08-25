@@ -315,10 +315,11 @@ body {
 .auth-slider-shell {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.78);
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 28px 80px rgba(78, 35, 20, 0.2);
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
   max-width: 1020px;
   min-height: 620px;
   overflow: hidden;
@@ -335,11 +336,12 @@ body {
   align-content: start;
   background: #fff;
   display: grid;
+  grid-row: 1;
   min-height: 0;
   overflow: visible;
-  padding: 48px;
+  padding: 44px 48px;
   position: relative;
-  transition: opacity 0.35s ease, transform 0.55s ease, visibility 0.35s ease;
+  transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .auth-slider-shell .auth-panel .auth-brand,
@@ -354,17 +356,11 @@ body {
   width: 100%;
 }
 
-.auth-slider-shell .auth-login-panel {
-  grid-column: 2;
-}
-
 .auth-slider-shell .auth-register-panel {
   grid-column: 1;
-}
-
-.auth-slider-shell .auth-register-panel {
-  padding-bottom: 30px;
-  padding-top: 30px;
+  grid-row: 1;
+  padding-bottom: 28px;
+  padding-top: 28px;
 }
 
 .auth-slider-shell .auth-register-panel .auth-brand {
@@ -417,20 +413,34 @@ body {
   margin-top: 10px;
 }
 
-.auth-slider-shell.login-active .auth-register-panel,
-.auth-slider-shell.register-active .auth-login-panel {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(24px);
-  visibility: hidden;
+.auth-slider-shell .auth-login-panel {
+  grid-column: 2;
+  grid-row: 1;
 }
 
-.auth-slider-shell.register-active .auth-register-panel,
+/* Đảm bảo 2 form luôn cùng 1 hàng, trượt êm không giật */
+.auth-slider-shell.login-active .auth-register-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-24px);
+}
+
 .auth-slider-shell.login-active .auth-login-panel {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
-  visibility: visible;
+}
+
+.auth-slider-shell.register-active .auth-login-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(24px);
+}
+
+.auth-slider-shell.register-active .auth-register-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
 }
 
 .auth-slider-cover {
@@ -440,13 +450,17 @@ body {
     linear-gradient(135deg, #b92d16 0%, #ff5722 58%, #ff8a1f 100%);
   color: #fff;
   display: grid;
+  height: 100%;
   inset: 0 auto 0 0;
   justify-items: center;
   overflow: hidden;
   padding: 48px;
   position: absolute;
-  transition: border-radius 0.65s ease, transform 0.65s cubic-bezier(0.77, 0, 0.18, 1), background 0.65s ease;
+  top: 0;
+  left: 0;
+  transition: border-radius 0.6s ease, transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
   width: 50%;
+  will-change: transform;
   z-index: 4;
 }
 
@@ -977,6 +991,8 @@ body {
   }
 
   .auth-slider-shell .auth-panel {
+    grid-column: auto;
+    grid-row: auto;
     min-height: 0;
     padding: 28px 22px;
   }
@@ -984,19 +1000,22 @@ body {
   .auth-slider-shell .auth-login-panel,
   .auth-slider-shell .auth-register-panel {
     grid-column: auto;
+    grid-row: auto;
   }
 
   .auth-slider-shell.login-active .auth-register-panel,
   .auth-slider-shell.register-active .auth-login-panel {
     display: none;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .auth-slider-shell.login-active .auth-login-panel,
   .auth-slider-shell.register-active .auth-register-panel {
     display: grid;
     opacity: 1;
+    pointer-events: auto;
     transform: none;
-    visibility: visible;
   }
 
   .auth-slider-shell .auth-panel .auth-brand,
