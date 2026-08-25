@@ -43,8 +43,8 @@
 
     <section class="account-summary-card">
       <div class="account-photo-wrap">
-        <div id="profileAvatar" class="account-photo">FH</div>
-        <button type="button" id="avatarUploadButton" class="account-photo-badge" title="Cập nhật ảnh đại diện">☰</button>
+        <div id="profileAvatar" class="account-photo" role="button" tabindex="0" title="Nhấp để xem ảnh phóng to" aria-label="Xem ảnh đại diện">FH</div>
+        <button type="button" id="avatarUploadButton" class="account-photo-badge" title="Tải lên và căn chỉnh ảnh đại diện">📷</button>
         <input type="file" id="avatarUploadInput" accept="image/*" hidden>
       </div>
       <div>
@@ -233,6 +233,58 @@
       </form>
     </section>
   </main>
+
+  <!-- Modal Cắt & Thu phóng Avatar -->
+  <dialog id="avatarCropModal" class="profile-modal avatar-crop-modal" aria-labelledby="avatarCropTitle">
+    <div class="profile-modal-content">
+      <div class="profile-modal-header">
+        <h2 id="avatarCropTitle">Căn chỉnh ảnh đại diện</h2>
+        <button type="button" class="profile-modal-close" data-close-avatar-crop aria-label="Đóng">✕</button>
+      </div>
+      <div class="avatar-crop-body">
+        <p class="avatar-crop-hint">Kéo ảnh để chọn vị trí và dùng thanh trượt để phóng to/thu nhỏ</p>
+        <div class="avatar-crop-canvas-wrap" id="avatarCropCanvasWrap">
+          <div class="avatar-crop-mask"></div>
+          <img id="avatarCropImage" class="avatar-crop-img" alt="Ảnh cắt" draggable="false">
+        </div>
+        <div class="avatar-crop-controls">
+          <div class="avatar-zoom-row">
+            <button type="button" id="avatarZoomOutBtn" class="crop-tool-btn" title="Thu nhỏ">🔍−</button>
+            <input type="range" id="avatarZoomRange" min="1" max="3" step="0.02" value="1" aria-label="Mức độ thu phóng">
+            <button type="button" id="avatarZoomInBtn" class="crop-tool-btn" title="Phóng to">🔍+</button>
+          </div>
+          <div class="avatar-action-row">
+            <button type="button" id="avatarRotateBtn" class="ghost-btn crop-util-btn" title="Xoay 90 độ">↻ Xoay ảnh</button>
+            <button type="button" id="avatarResetBtn" class="ghost-btn crop-util-btn" title="Đặt lại vị trí ban đầu">↺ Đặt lại</button>
+          </div>
+        </div>
+      </div>
+      <div class="profile-modal-footer">
+        <button type="button" class="ghost-btn" data-close-avatar-crop>Hủy</button>
+        <button type="button" id="avatarSaveCropBtn" class="btn primary-btn">Cắt & Lưu ảnh</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Modal Xem ảnh đại diện phóng to (Lightbox) -->
+  <dialog id="avatarPreviewModal" class="profile-modal avatar-preview-modal" aria-labelledby="avatarPreviewTitle">
+    <div class="profile-modal-content preview-content">
+      <div class="profile-modal-header">
+        <h2 id="avatarPreviewTitle">Ảnh đại diện</h2>
+        <button type="button" class="profile-modal-close" data-close-avatar-preview aria-label="Đóng">✕</button>
+      </div>
+      <div class="avatar-preview-body">
+        <div class="avatar-preview-frame">
+          <img id="avatarPreviewImage" alt="Ảnh đại diện phóng to">
+        </div>
+      </div>
+      <div class="profile-modal-footer preview-footer">
+        <button type="button" id="avatarPreviewChangeBtn" class="btn primary-btn">Thay đổi ảnh đại diện</button>
+        <button type="button" class="ghost-btn" data-close-avatar-preview>Đóng</button>
+      </div>
+    </div>
+  </dialog>
+
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
