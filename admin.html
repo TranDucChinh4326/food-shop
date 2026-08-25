@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260825-admin-overview-v2">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260826-discount-form-view">
   <link rel="stylesheet" href="assets/css/admin.css?v=20260825-admin-overview-v2">
 </head>
 <body>
@@ -448,98 +448,110 @@
           </div>
         </div>
 
-        <form id="discountForm" class="announcement-page-form discount-form">
-          <input type="hidden" id="discountId">
-          <div class="announcement-date-grid">
-            <label>
-              Mã giảm giá
-              <input id="discountCode" type="text" placeholder="VD: FOODHUB10" maxlength="40" required>
-            </label>
-            <label>
-              Tên chương trình
-              <input id="discountName" type="text" placeholder="VD: Giảm 10% cho đơn từ 100.000d" required>
-            </label>
+        <div id="discountFormView" class="admin-form-view" hidden>
+          <div class="form-subheading">
+            <div>
+              <h3 id="discountFormTitle">Thêm mới mã giảm giá</h3>
+              <p>Nhập thông tin chương trình, thời gian áp dụng và số lượt phát hành.</p>
+            </div>
+            <button type="button" class="ghost-btn" data-back-discount-list>Quay về danh sách</button>
           </div>
-          <div class="announcement-date-grid">
-            <label>
-              Kiểu giảm
-              <select id="discountType">
-                <option value="percent">Phần trăm</option>
-                <option value="fixed">Số tiền</option>
-                <option value="free_shipping">Miễn phí ship</option>
-              </select>
-            </label>
-            <label>
-              Giá trị
-              <input id="discountValue" type="number" min="1" step="1" placeholder="10 hoặc 20000" required>
-            </label>
-          </div>
-          <div class="announcement-date-grid">
-            <label>
-              Phạm vi áp dụng
-              <select id="discountApplyTo">
-                <option value="order">Món hàng / đơn hàng</option>
-                <option value="shipping">Phí giao hàng</option>
-              </select>
-            </label>
-          </div>
-          <div class="announcement-date-grid">
-            <label>
-              Đơn tối thiểu
-              <input id="discountMinOrder" type="number" min="0" step="1000" value="0">
-            </label>
-            <label>
-              Giảm tối đa
-              <input id="discountMaxDiscount" type="number" min="0" step="1000" placeholder="Bỏ trong nếu không giới hạn">
-            </label>
-          </div>
-          <div class="announcement-date-grid">
-            <label>
-              Số lượng phát hành
-              <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bỏ trống nếu phát hành không giới hạn">
-            </label>
-            <label>
-              Trạng thái
-              <select id="discountIsActive">
-                <option value="1">Hoạt động</option>
-                <option value="0">Ẩn</option>
-              </select>
-            </label>
-          </div>
-          <div class="announcement-date-grid">
-            <label>
-              Bắt đầu
-              <input id="discountStartsAt" type="datetime-local">
-            </label>
-            <label>
-              Hết hạn
-              <input id="discountExpiresAt" type="datetime-local">
-            </label>
-          </div>
-          <div class="account-form-actions form-actions">
-            <button id="saveDiscountBtn" type="submit" class="primary-btn">Lưu mã</button>
-            <button type="button" class="ghost-btn" data-reset-discount>Nhập lại</button>
-          </div>
-        </form>
 
-        <div class="discount-toolbar table-toolbar multi-filter">
-          <input type="search" id="discountSearch" placeholder="Tìm kiếm">
-          <select id="discountStatusFilter">
-            <option value="all">Tất cả</option>
-            <option value="active">Hoạt động</option>
-            <option value="scheduled">Sắp diễn ra</option>
-            <option value="expired">Hết hạn</option>
-            <option value="soldout">Hết lượt</option>
-            <option value="hidden">Đã ẩn</option>
-          </select>
-          <select id="discountPageSize" aria-label="Số dòng mã giảm giá mỗi trang">
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
+          <form id="discountForm" class="announcement-page-form discount-form">
+            <input type="hidden" id="discountId">
+            <div class="announcement-date-grid">
+              <label>
+                Mã giảm giá
+                <input id="discountCode" type="text" placeholder="VD: FOODHUB10" maxlength="40" required>
+              </label>
+              <label>
+                Tên chương trình
+                <input id="discountName" type="text" placeholder="VD: Giảm 10% cho đơn từ 100.000d" required>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Kiểu giảm
+                <select id="discountType">
+                  <option value="percent">Phần trăm</option>
+                  <option value="fixed">Số tiền</option>
+                  <option value="free_shipping">Miễn phí ship</option>
+                </select>
+              </label>
+              <label>
+                Giá trị
+                <input id="discountValue" type="number" min="1" step="1" placeholder="10 hoặc 20000" required>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Phạm vi áp dụng
+                <select id="discountApplyTo">
+                  <option value="order">Món hàng / đơn hàng</option>
+                  <option value="shipping">Phí giao hàng</option>
+                </select>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Đơn tối thiểu
+                <input id="discountMinOrder" type="number" min="0" step="1000" value="0">
+              </label>
+              <label>
+                Giảm tối đa
+                <input id="discountMaxDiscount" type="number" min="0" step="1000" placeholder="Bỏ trống nếu không giới hạn">
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Số lượng phát hành
+                <input id="discountUsageLimit" type="number" min="0" step="1" placeholder="Bỏ trống nếu phát hành không giới hạn">
+              </label>
+              <label>
+                Trạng thái
+                <select id="discountIsActive">
+                  <option value="1">Hoạt động</option>
+                  <option value="0">Ẩn</option>
+                </select>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Bắt đầu
+                <input id="discountStartsAt" type="datetime-local">
+              </label>
+              <label>
+                Hết hạn
+                <input id="discountExpiresAt" type="datetime-local">
+              </label>
+            </div>
+            <div class="account-form-actions form-actions">
+              <button id="saveDiscountBtn" type="submit" class="primary-btn">Lưu mã</button>
+              <button type="button" class="ghost-btn" data-reset-discount>Nhập lại</button>
+            </div>
+          </form>
         </div>
 
-        <div id="discountsList" class="accounts-list table-state">Đang tải mã giảm giá...</div>
+        <div id="discountListView" class="admin-list-view">
+          <div class="discount-toolbar table-toolbar multi-filter">
+            <input type="search" id="discountSearch" placeholder="Tìm kiếm">
+            <select id="discountStatusFilter">
+              <option value="all">Tất cả</option>
+              <option value="active">Hoạt động</option>
+              <option value="scheduled">Sắp diễn ra</option>
+              <option value="expired">Hết hạn</option>
+              <option value="soldout">Hết lượt</option>
+              <option value="hidden">Đã ẩn</option>
+            </select>
+            <select id="discountPageSize" aria-label="Số dòng mã giảm giá mỗi trang">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
+          <div id="discountsList" class="accounts-list table-state">Đang tải mã giảm giá...</div>
+        </div>
       </section>
     </section>
 
@@ -735,6 +747,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260824-order-refresh-scope"></script>
-  <script src="assets/js/admin/admin.js?v=20260826-news-management"></script>
+  <script src="assets/js/admin/admin.js?v=20260826-discount-form-view"></script>
 </body>
 </html>

@@ -1816,7 +1816,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   border: 1px solid var(--line);
   border-radius: 14px;
   display: none;
-  margin: 8px 30px 22px;
+  margin: 0;
   padding: 22px;
 }
 
@@ -1824,6 +1824,46 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 .discount-form.is-open {
   display: grid;
+}
+
+
+
+.admin-form-view,
+.admin-list-view {
+  padding: 0 30px 26px;
+}
+
+
+
+.form-subheading {
+  align-items: center;
+  background: #fffaf6;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding: 18px 20px;
+}
+
+
+
+.form-subheading h3 {
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 4px;
+}
+
+
+
+.form-subheading p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
 }
 
 

@@ -48,6 +48,9 @@ const announcementStatusFilter = document.getElementById("announcementStatusFilt
 const announcementsCount = document.getElementById("announcementsCount");
 const discountsList = document.getElementById("discountsList");
 const discountForm = document.getElementById("discountForm");
+const discountListView = document.getElementById("discountListView");
+const discountFormView = document.getElementById("discountFormView");
+const discountFormTitle = document.getElementById("discountFormTitle");
 const discountSearch = document.getElementById("discountSearch");
 const discountStatusFilter = document.getElementById("discountStatusFilter");
 const discountPageSize = document.getElementById("discountPageSize");
@@ -988,15 +991,18 @@ function resetDiscountForm() {
   document.getElementById("discountId").value = "";
   document.getElementById("discountMinOrder").value = "0";
   document.getElementById("discountIsActive").value = "1";
-  document.getElementById("saveDiscountBtn").textContent = "Lưu ma";
+  document.getElementById("saveDiscountBtn").textContent = "Lưu mã";
+  if (discountFormTitle) discountFormTitle.textContent = "Thêm mới mã giảm giá";
 }
 
 function openDiscountForm() {
   if (!discountForm) return;
 
+  if (discountListView) discountListView.hidden = true;
+  if (discountFormView) discountFormView.hidden = false;
   discountForm.classList.add("is-open");
   discountForm.hidden = false;
-  discountForm.scrollIntoView({ behavior: "smooth", block: "start" });
+  (discountFormView || discountForm).scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function closeDiscountForm() {
@@ -1004,6 +1010,8 @@ function closeDiscountForm() {
 
   discountForm.classList.remove("is-open");
   discountForm.hidden = true;
+  if (discountFormView) discountFormView.hidden = true;
+  if (discountListView) discountListView.hidden = false;
 }
 function fillDiscountForm(discount) {
   document.getElementById("discountId").value = discount.id;
@@ -1018,7 +1026,8 @@ function fillDiscountForm(discount) {
   document.getElementById("discountStartsAt").value = formatDateInputValue(discount.starts_at);
   document.getElementById("discountExpiresAt").value = formatDateInputValue(discount.expires_at);
   document.getElementById("discountIsActive").value = discount.is_active ? "1" : "0";
-  document.getElementById("saveDiscountBtn").textContent = "Cập nhật ma";
+  document.getElementById("saveDiscountBtn").textContent = "Cập nhật mã";
+  if (discountFormTitle) discountFormTitle.textContent = "Cập nhật mã giảm giá";
   openDiscountForm();
 }
 
@@ -1052,6 +1061,7 @@ async function saveDiscount(event) {
 
     showAdminToast(discountId ? "Đã cập nhật mã giảm giá." : "Đã tạo mã giảm giá.");
     resetDiscountForm();
+    closeDiscountForm();
     await loadDiscounts();
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -3201,6 +3211,10 @@ document.querySelector("[data-back-category-list]")?.addEventListener("click", (
 document.getElementById("resetDiscountFormBtn")?.addEventListener("click", () => {
   resetDiscountForm();
   openDiscountForm();
+});
+document.querySelector("[data-back-discount-list]")?.addEventListener("click", () => {
+  resetDiscountForm();
+  closeDiscountForm();
 });
 document.getElementById("resetShippingMethodFormBtn")?.addEventListener("click", () => {
   resetShippingMethodForm();
