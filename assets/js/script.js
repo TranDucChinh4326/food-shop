@@ -8,6 +8,7 @@ const ANNOUNCEMENTS_API = `${API_BASE_URL}/announcements`;
 const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const FOOD_REVIEWS_API = `${API_BASE_URL}/food-reviews`;
 const CHAT_API = `${API_BASE_URL}/chat`;
+const FOOD_FAVORITES_API = `${API_URL}/favorites`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
@@ -211,52 +212,127 @@ function triggerConfetti(options = {}) {
 }
 
 const FAVORITES_STORAGE_KEY = "foodhub_favorites_v1";
+let favoriteFoodIds = new Set();
+let favoritesLoaded = false;
 
-function getFavoritesList() {
+function getFavoritesStorageKey() {
+  const user = getCurrentUser();
+  return user?.id ? `${FAVORITES_STORAGE_KEY}_${user.id}` : FAVORITES_STORAGE_KEY;
+}
+
+function getLocalFavoritesList() {
+  if (!isLoggedIn()) return [];
+
   try {
-    return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+    return JSON.parse(localStorage.getItem(getFavoritesStorageKey()) || "[]");
   } catch {
     return [];
   }
 }
 
 function isFoodFavorite(foodId) {
-  const list = getFavoritesList();
-  return list.some(id => String(id) === String(foodId));
+  return favoriteFoodIds.has(String(foodId));
 }
 
-function toggleFoodFavorite(foodId, event) {
+function persistLocalFavorites() {
+  if (!isLoggedIn()) return;
+  localStorage.setItem(getFavoritesStorageKey(), JSON.stringify([...favoriteFoodIds]));
+}
+
+function updateFavoriteButtons(foodId) {
+  document.querySelectorAll(`.fav-heart-btn[data-food-id="${foodId}"]`).forEach(button => {
+    const active = isFoodFavorite(foodId);
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-label", active ? "Bỏ yêu thích" : "Thêm vào yêu thích");
+  });
+}
+
+async function loadFavoriteFoods() {
+  favoriteFoodIds = new Set(getLocalFavoritesList().map(String));
+
+  if (!isLoggedIn()) {
+    favoritesLoaded = true;
+    return;
+  }
+
+  try {
+    const response = await fetch(FOOD_FAVORITES_API, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) throw new Error(data.message || "Không thể tải món yêu thích");
+
+    favoriteFoodIds = new Set((data.favorites || []).map(id => String(id)));
+    favoritesLoaded = true;
+    persistLocalFavorites();
+    if (foods.length) renderFoodSurfaces();
+  } catch (error) {
+    favoritesLoaded = true;
+    console.error("Lỗi tải món yêu thích:", error);
+  }
+}
+
+async function toggleFoodFavorite(foodId, event) {
   event?.stopPropagation?.();
   event?.preventDefault?.();
-  const list = getFavoritesList();
   const idStr = String(foodId);
-  const index = list.indexOf(idStr);
   const button = event?.currentTarget || event?.target?.closest(".fav-heart-btn");
+  const wasFavorite = isFoodFavorite(foodId);
 
-  if (index >= 0) {
-    list.splice(index, 1);
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(list));
-    if (button) {
-      button.classList.remove("active", "heart-burst");
-      button.setAttribute("aria-label", "Thêm vào yêu thích");
-    }
-    showSiteToast("Đã xóa khỏi danh sách yêu thích", "info");
+  if (!isLoggedIn()) {
+    requireLogin("Vui lòng đăng nhập để lưu món yêu thích.", window.location.href);
+    return;
+  }
+
+  if (wasFavorite) {
+    favoriteFoodIds.delete(idStr);
   } else {
-    list.push(idStr);
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(list));
-    if (button) {
-      button.classList.add("active", "heart-burst");
-      button.setAttribute("aria-label", "Bỏ yêu thích");
-      setTimeout(() => button.classList.remove("heart-burst"), 500);
+    favoriteFoodIds.add(idStr);
+  }
+  persistLocalFavorites();
+  updateFavoriteButtons(foodId);
+
+  if (button && !wasFavorite) {
+    button.classList.add("heart-burst");
+    setTimeout(() => button.classList.remove("heart-burst"), 500);
+  }
+
+  try {
+    const response = await fetch(`${FOOD_FAVORITES_API}/${encodeURIComponent(foodId)}`, {
+      method: wasFavorite ? "DELETE" : "POST",
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || "Không thể cập nhật món yêu thích");
     }
-    showSiteToast("Đã thêm vào món yêu thích ❤️", "success");
+
+    showSiteToast(
+      wasFavorite ? "Đã xóa khỏi danh sách yêu thích" : "Đã thêm vào món yêu thích",
+      wasFavorite ? "info" : "success"
+    );
+  } catch (error) {
+    if (wasFavorite) {
+      favoriteFoodIds.add(idStr);
+    } else {
+      favoriteFoodIds.delete(idStr);
+    }
+    persistLocalFavorites();
+    updateFavoriteButtons(foodId);
+    showSiteToast(error.message || "Không thể cập nhật món yêu thích", "error");
   }
 }
 
 function renderFavButton(foodId) {
   const active = isFoodFavorite(foodId);
   return `
-    <button type="button" class="fav-heart-btn ${active ? "active" : ""}" onclick="toggleFoodFavorite(${foodId}, event)" aria-label="${active ? "Bỏ yêu thích" : "Thêm vào yêu thích"}">
+    <button type="button" class="fav-heart-btn ${active ? "active" : ""}" data-food-id="${foodId}" onclick="toggleFoodFavorite(${foodId}, event)" aria-label="${active ? "Bỏ yêu thích" : "Thêm vào yêu thích"}">
       <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
     </button>
   `;
@@ -4979,6 +5055,7 @@ if (protectCheckoutPage()) {
   });
 
   loadPublicCategories();
+  loadFavoriteFoods();
   loadFoods();
   loadPublicAnnouncements();
   loadFloatingAdvertisements();
