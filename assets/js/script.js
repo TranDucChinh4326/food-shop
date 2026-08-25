@@ -546,47 +546,59 @@ function renderMenuCategoryOptions() {
   const description = document.getElementById("menuCategoryDescription");
   const chipsBox = document.getElementById("menuCategoryChips");
 
-  if (!heading && !description && !chipsBox) return;
-
   const categoryValue = getMenuCategoryValue();
   const category = getPublicCategoryBySlug(categoryValue);
   const foodMatch = foods.find(food => food.subcategory === categoryValue || food.category === categoryValue);
-  const label = category?.name
-    || (foodMatch?.subcategory === categoryValue ? foodMatch.categoryName : foodMatch?.parentCategoryName || foodMatch?.categoryName)
-    || (categoryValue === "all" ? "Tất cả món" : categoryValue.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
 
-  if (heading) heading.textContent = label;
+  const KNOWN_LABELS = {
+    "do-an": "Đồ ăn",
+    "food": "Đồ ăn",
+    "nuoc-uong": "Nước uống",
+    "drink": "Nước uống",
+    "com": "Cơm",
+    "pho": "Phở",
+    "mi": "Mì",
+    "bun": "Bún",
+    "tra": "Trà",
+    "ca-phe": "Cà phê",
+    "nuoc-ep-sinh-to": "Nước ép & Sinh tố",
+    "nuoc-dong-chai": "Nước đóng chai"
+  };
+
+  let label = "";
+  if (categoryValue === "all" || !categoryValue) {
+    label = "Thực đơn FoodHub";
+  } else if (category?.name) {
+    label = category.name;
+  } else if (KNOWN_LABELS[categoryValue]) {
+    label = KNOWN_LABELS[categoryValue];
+  } else if (foodMatch?.subcategory === categoryValue && foodMatch?.categoryName) {
+    label = foodMatch.categoryName;
+  } else if (foodMatch?.category === categoryValue && foodMatch?.parentCategoryName) {
+    label = foodMatch.parentCategoryName;
+  } else {
+    label = categoryValue.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  }
+
+  if (heading) {
+    heading.textContent = label;
+  }
 
   if (description) {
-    description.textContent = categoryValue === "all"
-      ? "Hiển thị tất cả món theo thứ tự danh mục."
-      : `Đang hiển thị các món thuộc ${label}.`;
+    if (categoryValue === "all" || !categoryValue) {
+      description.textContent = "Khám phá trọn bộ các món ăn tươi ngon chuẩn vị, giao nhanh tận nơi trong 30 phút.";
+    } else {
+      description.textContent = `Danh sách các món ăn & thức uống tươi ngon thuộc danh mục ${label}.`;
+    }
+  }
+
+  if (heading && window.location.pathname.includes("menu.html")) {
+    document.title = `${label} - FoodHub`;
   }
 
   if (chipsBox) {
-    const rootCategories = getPublicRootCategories();
-    const childCategories = category?.parentId
-      ? getPublicChildCategories(category.parentId)
-      : category?.id
-        ? getPublicChildCategories(category.id)
-        : [];
-    const chipItems = [
-      { slug: "all", name: "Tất cả món" },
-      ...rootCategories.map(item => ({ slug: item.slug, name: item.name })),
-      ...childCategories.map(item => ({ slug: item.slug, name: item.name }))
-    ];
-    const seen = new Set();
-    chipsBox.innerHTML = chipItems
-      .filter(item => {
-        if (!item.slug || seen.has(item.slug)) return false;
-        seen.add(item.slug);
-        return true;
-      })
-      .map(item => `
-        <a class="${item.slug === categoryValue ? "active" : ""}" href="${getCategoryUrl(item.slug)}">
-          ${escapeHtml(item.name)}
-        </a>
-      `).join("");
+    chipsBox.innerHTML = "";
+    chipsBox.style.display = "none";
   }
 }
 

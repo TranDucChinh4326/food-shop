@@ -15,15 +15,13 @@
     <section class="menu-panel">
       <div class="menu-toolbar">
         <div>
-          <h2>Thực đơn FoodHub</h2>
-          <p>Khám phá trọn bộ các món ăn tươi ngon chuẩn vị, giao nhanh tận nơi trong 30 phút.</p>
+          <h2 id="menuCategoryHeading">Thực đơn FoodHub</h2>
+          <p id="menuCategoryDescription">Khám phá trọn bộ các món ăn tươi ngon chuẩn vị, giao nhanh tận nơi trong 30 phút.</p>
         </div>
         <div class="filter-box">
           <input type="search" id="searchInput" placeholder="Tìm kiếm món ăn..." oninput="renderFoods()" aria-label="Tìm kiếm món ăn">
         </div>
       </div>
-
-      <div id="menuCategoryChips" class="menu-category-chips" aria-label="Lọc danh mục"></div>
 
       <div class="food-list" id="food-list" aria-live="polite"></div>
     </section>
