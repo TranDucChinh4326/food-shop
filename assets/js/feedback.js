@@ -28,7 +28,7 @@ function feedbackStatusLabel(status) {
     closed: "Đã đóng"
   };
 
-  return labels[status] || "Không rõ";
+  return labels[status] || "Mới gửi";
 }
 
 function feedbackCategoryLabel(category) {
@@ -58,8 +58,6 @@ function requireFeedbackLogin() {
 }
 
 async function feedbackRequest(url, options = {}) {
-  // Wrapper gọi API feedback, tự gắn JWT và chuyển về login nếu phiên hết hạn.
-  // Output là JSON đã parse hoặc throw Error để UI hiển thị toast/trạng thái lỗi.
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -83,8 +81,6 @@ async function feedbackRequest(url, options = {}) {
 }
 
 async function loadMyFeedback() {
-  // Tải các phản hồi đã gửi của người dùng hiện tại.
-  // Dữ liệu liên kết với customer_feedback và phần admin quản lý phản hồi.
   if (!myFeedbackList) return;
 
   myFeedbackList.textContent = "Đang tải phản hồi...";
@@ -94,33 +90,85 @@ async function loadMyFeedback() {
     const items = data.feedback || [];
 
     if (!items.length) {
-      myFeedbackList.innerHTML = `<p class="empty-note">Bạn chưa gửi phản hồi nào.</p>`;
+      myFeedbackList.innerHTML = `
+        <div class="feedback-empty-state">
+          <span class="empty-icon">📝</span>
+          <strong>Chưa có phản hồi nào</strong>
+          <span>Mọi đóng góp ý kiến của bạn sẽ được hiển thị và phản hồi tại đây.</span>
+        </div>
+      `;
       return;
     }
 
-    myFeedbackList.innerHTML = items.map(item => `
-      <article class="feedback-history-card">
-        <div class="feedback-history-head">
-          <div>
-            <strong>${feedbackEscapeHtml(item.title)}</strong>
-            <small>${feedbackCategoryLabel(item.category)} - ${new Date(item.created_at).toLocaleString("vi-VN")}</small>
+    myFeedbackList.innerHTML = items.map(item => {
+      const status = item.status || "new";
+      const statusClass = status === "replied" ? "replied" : status === "in_progress" ? "in_progress" : "new";
+      const statusText = feedbackStatusLabel(status);
+
+      return `
+        <article class="feedback-history-card">
+          <div class="feedback-history-head">
+            <div>
+              <strong class="feedback-item-title">${feedbackEscapeHtml(item.title)}</strong>
+              <small class="feedback-item-meta">
+                <span class="category-tag">${feedbackCategoryLabel(item.category)}</span>
+                <span class="dot-sep">•</span>
+                <span>${new Date(item.created_at).toLocaleString("vi-VN")}</span>
+              </small>
+            </div>
+            <span class="feedback-status ${statusClass}">
+              <span class="status-dot"></span>
+              ${statusText}
+            </span>
           </div>
-          <span class="feedback-status ${feedbackEscapeHtml(item.status)}">${feedbackStatusLabel(item.status)}</span>
-        </div>
-        <div class="feedback-stars" aria-label="${Number(item.rating)} trên 5">${renderFeedbackStars(item.rating)}</div>
-        <p>${feedbackEscapeHtml(item.content)}</p>
-        ${item.admin_reply ? `
-          <div class="feedback-reply-box">
-            <strong>FoodHub phản hồi</strong>
-            <p>${feedbackEscapeHtml(item.admin_reply)}</p>
-            <small>${item.replied_at ? new Date(item.replied_at).toLocaleString("vi-VN") : ""}</small>
-          </div>
-        ` : ""}
-      </article>
-    `).join("");
+          <div class="feedback-stars" aria-label="${Number(item.rating)} trên 5">${renderFeedbackStars(item.rating)}</div>
+          <p class="feedback-item-text">${feedbackEscapeHtml(item.content)}</p>
+          ${item.admin_reply ? `
+            <div class="feedback-reply-box">
+              <div class="reply-box-head">
+                <span class="reply-badge-icon">👑</span>
+                <strong>Quản trị viên FoodHub phản hồi:</strong>
+              </div>
+              <p>${feedbackEscapeHtml(item.admin_reply)}</p>
+              <small class="reply-time">${item.replied_at ? new Date(item.replied_at).toLocaleString("vi-VN") : ""}</small>
+            </div>
+          ` : ""}
+        </article>
+      `;
+    }).join("");
   } catch (error) {
     myFeedbackList.textContent = error.message;
   }
+}
+
+// Đồng bộ Topic Chips với Category Select
+const topicChips = document.querySelectorAll(".topic-chip");
+const categorySelect = document.getElementById("feedbackCategory");
+const feedbackContentInput = document.getElementById("feedbackContent");
+const charCounter = document.getElementById("feedbackCharCount");
+
+if (topicChips.length && categorySelect) {
+  topicChips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      const topic = chip.dataset.topic;
+      categorySelect.value = topic;
+      topicChips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+    });
+  });
+
+  categorySelect.addEventListener("change", () => {
+    topicChips.forEach(c => {
+      c.classList.toggle("active", c.dataset.topic === categorySelect.value);
+    });
+  });
+}
+
+if (feedbackContentInput && charCounter) {
+  feedbackContentInput.addEventListener("input", () => {
+    const len = feedbackContentInput.value.length;
+    charCounter.textContent = `${len} / 2000`;
+  });
 }
 
 feedbackForm?.addEventListener("submit", async event => {
@@ -136,7 +184,7 @@ feedbackForm?.addEventListener("submit", async event => {
   };
 
   submitButton.disabled = true;
-  submitButton.textContent = "Đang gửi...";
+  submitButton.innerHTML = `<span>Đang gửi...</span>`;
 
   try {
     const data = await feedbackRequest(FEEDBACK_API, {
@@ -146,8 +194,12 @@ feedbackForm?.addEventListener("submit", async event => {
     feedbackForm.reset();
     const defaultRating = feedbackForm.querySelector("input[name='feedbackRating'][value='5']");
     if (defaultRating) defaultRating.checked = true;
+    if (charCounter) charCounter.textContent = "0 / 2000";
+    if (topicChips.length) {
+      topicChips.forEach((c, idx) => c.classList.toggle("active", idx === 0));
+    }
     if (typeof showSiteToast === "function") {
-      showSiteToast(data.message || "Đã gửi phản hồi.");
+      showSiteToast(data.message || "Đã gửi phản hồi thành công!");
     }
     await loadMyFeedback();
   } catch (error) {
@@ -156,7 +208,7 @@ feedbackForm?.addEventListener("submit", async event => {
     }
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Gửi phản hồi";
+    submitButton.innerHTML = `<span>Gửi phản hồi</span><span class="btn-arrow">→</span>`;
   }
 });
 

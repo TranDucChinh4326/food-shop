@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Phản hồi khách hàng - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824-pin-boxes">
-  <link rel="stylesheet" href="assets/css/feedback.css?v=20260824-heading-scale">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260826-feedback-v2">
+  <link rel="stylesheet" href="assets/css/feedback.css?v=20260826-feedback-v2">
 </head>
 <body>
   <div data-shared-header></div>
@@ -31,16 +31,24 @@
         <label>
           Mức độ hài lòng
           <div class="rating-picker" role="radiogroup" aria-label="Mức độ hài lòng">
-            <label><input type="radio" name="feedbackRating" value="1"><span>1</span><small>Rất tệ</small></label>
-            <label><input type="radio" name="feedbackRating" value="2"><span>2</span><small>Không tốt</small></label>
-            <label><input type="radio" name="feedbackRating" value="3"><span>3</span><small>Bình thường</small></label>
-            <label><input type="radio" name="feedbackRating" value="4"><span>4</span><small>Hài lòng</small></label>
-            <label><input type="radio" name="feedbackRating" value="5" checked><span>5</span><small>Rất hài lòng</small></label>
+            <label><input type="radio" name="feedbackRating" value="1"><span class="rating-emoji">😡</span><small>Rất tệ</small></label>
+            <label><input type="radio" name="feedbackRating" value="2"><span class="rating-emoji">🙁</span><small>Không tốt</small></label>
+            <label><input type="radio" name="feedbackRating" value="3"><span class="rating-emoji">😐</span><small>Bình thường</small></label>
+            <label><input type="radio" name="feedbackRating" value="4"><span class="rating-emoji">😊</span><small>Hài lòng</small></label>
+            <label><input type="radio" name="feedbackRating" value="5" checked><span class="rating-emoji">🤩</span><small>Rất hài lòng</small></label>
           </div>
         </label>
 
         <label>
           Nhóm phản hồi
+          <div class="feedback-topic-chips" role="group" aria-label="Chọn nhanh chủ đề">
+            <button type="button" class="topic-chip active" data-topic="general">🌟 Chung</button>
+            <button type="button" class="topic-chip" data-topic="order">🛍️ Đặt hàng</button>
+            <button type="button" class="topic-chip" data-topic="food">🍲 Món ăn</button>
+            <button type="button" class="topic-chip" data-topic="delivery">🛵 Giao hàng</button>
+            <button type="button" class="topic-chip" data-topic="payment">💳 Thanh toán</button>
+            <button type="button" class="topic-chip" data-topic="account">👤 Tài khoản</button>
+          </div>
           <select id="feedbackCategory" required>
             <option value="general">Trải nghiệm chung</option>
             <option value="order">Đặt hàng</option>
@@ -53,15 +61,21 @@
 
         <label>
           Tiêu đề
-          <input type="text" id="feedbackTitle" maxlength="150" placeholder="VD: Giao diện đặt hàng dễ sử dụng" required>
+          <input type="text" id="feedbackTitle" maxlength="150" placeholder="VD: Giao diện đặt hàng rất tiện lợi" required>
         </label>
 
         <label>
-          Nhận xét
-          <textarea id="feedbackContent" rows="6" maxlength="2000" placeholder="Mô tả trải nghiệm của bạn hoặc vấn đề cần FoodHub kiểm tra..." required></textarea>
+          <div class="label-with-counter">
+            <span>Nhận xét chi tiết</span>
+            <small id="feedbackCharCount" class="char-counter">0 / 2000</small>
+          </div>
+          <textarea id="feedbackContent" rows="5" maxlength="2000" placeholder="Mô tả trải nghiệm của bạn hoặc vấn đề cần FoodHub kiểm tra..." required></textarea>
         </label>
 
-        <button type="submit" class="btn">Gửi phản hồi</button>
+        <button type="submit" class="btn feedback-submit-btn">
+          <span>Gửi phản hồi</span>
+          <span class="btn-arrow">→</span>
+        </button>
       </form>
 
       <section class="feedback-card feedback-history-panel">
@@ -81,6 +95,6 @@
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260824-track-timeout"></script>
   <script src="assets/js/script.js?v=20260826-user-favorites"></script>
-  <script src="assets/js/feedback.js?v=20260826-system-audit"></script>
+  <script src="assets/js/feedback.js?v=20260826-feedback-v2"></script>
 </body>
 </html>
