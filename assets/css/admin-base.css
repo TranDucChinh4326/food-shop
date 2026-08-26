@@ -2068,7 +2068,57 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 .compact-table {
-  min-width: 560px;
+  min-width: 100% !important;
+  width: 100% !important;
+  overflow-x: auto;
+}
+
+.compact-table .admin-table {
+  min-width: 100% !important;
+  width: 100% !important;
+  table-layout: auto;
+}
+
+.compact-table .admin-table th,
+.compact-table .admin-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.compact-table .admin-table th:first-child,
+.compact-table .admin-table td:first-child {
+  text-align: left !important;
+  width: auto !important;
+  min-width: 140px;
+  white-space: normal;
+}
+
+.compact-table .admin-table th:nth-child(2),
+.compact-table .admin-table td:nth-child(2) {
+  text-align: left !important;
+  color: #ff5722;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.compact-table .admin-table th:nth-child(3),
+.compact-table .admin-table td:nth-child(3),
+.compact-table .admin-table th:nth-child(4),
+.compact-table .admin-table td:nth-child(4),
+.compact-table .admin-table th:nth-child(5),
+.compact-table .admin-table td:nth-child(5) {
+  text-align: center !important;
+  white-space: nowrap;
+}
+
+.compact-table .admin-table th:last-child,
+.compact-table .admin-table td:last-child {
+  text-align: center !important;
+  width: 90px !important;
+}
+
+.compact-table .table-actions {
+  justify-content: center !important;
 }
 
 .mini-list {
@@ -2076,8 +2126,42 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 }
 
 .flash-sale-item-form {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   display: grid;
-  margin-top: 18px;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 24px;
+}
+
+.flash-sale-item-form label {
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 8px;
+}
+
+.flash-sale-item-form label input,
+.flash-sale-item-form label select {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  color: #1e293b;
+  font-size: 14.5px;
+  height: 44px;
+  outline: none;
+  padding: 0 14px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  width: 100%;
+}
+
+.flash-sale-item-form label input:focus,
+.flash-sale-item-form label select:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.15);
 }
 
 .flash-sale-item-form.is-locked {
@@ -2103,6 +2187,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   border: 1px solid rgba(255, 90, 38, 0.16);
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .muted-note {
