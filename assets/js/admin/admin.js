@@ -2046,7 +2046,10 @@ function renderStats(data) {
   }
   if (statsDaily) statsDaily.innerHTML = renderRevenueTrend(data.dailyRevenue || [], trendMode);
   if (statsTopFoods) statsTopFoods.innerHTML = renderTopFoodsList(data.topFoods || []);
-  if (statsCategories) statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
+  if (statsCategories) {
+    statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
+    bindCategoryDonutInteractions();
+  }
   if (statsCustomers) statsCustomers.innerHTML = renderCustomerStats(data.customerStats || []);
   if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
@@ -2252,35 +2255,171 @@ function renderCategorySummary(rows) {
   if (!rows.length) return `<p class="empty-note">Chưa có dữ liệu danh mục.</p>`;
 
   const total = rows.reduce((sum, item) => sum + Number(item.quantity || 0), 0) || 1;
-  let current = 0;
-  const colors = ["#ff5722", "#ff8a1f", "#3b82f6", "#10b981", "#8b5cf6"];
-  const segments = rows.slice(0, 5).map((item, index) => {
-    const percent = Math.max(0, (Number(item.quantity || 0) / total) * 100);
-    const start = current;
-    current += percent;
-    return `${colors[index % colors.length]} ${start}% ${current}%`;
-  }).join(", ");
+  const topRows = rows.slice(0, 5);
+
+  const GRADIENTS = [
+    { id: "catGrad0", start: "#ff7a28", end: "#e63e00", solid: "#ff5722" },
+    { id: "catGrad1", start: "#ffb703", end: "#fb8500", solid: "#ff8a1f" },
+    { id: "catGrad2", start: "#38bdf8", end: "#0284c7", solid: "#0284c7" },
+    { id: "catGrad3", start: "#34d399", end: "#059669", solid: "#10b981" },
+    { id: "catGrad4", start: "#c084fc", end: "#7c3aed", solid: "#8b5cf6" }
+  ];
+
+  const R = 54;
+  const C = 2 * Math.PI * R; // ~339.292
+  let currentAnglePercent = 0;
+
+  const defsHtml = GRADIENTS.map(g => `
+    <linearGradient id="${g.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${g.start}"/>
+      <stop offset="100%" stop-color="${g.end}"/>
+    </linearGradient>
+  `).join("");
+
+  const segmentsHtml = topRows.map((item, index) => {
+    const qty = Number(item.quantity || 0);
+    const percent = total > 0 ? (qty / total) : 0;
+    const dashLength = Math.max(0.1, percent * C);
+    const gapLength = C - dashLength;
+    const offset = -(currentAnglePercent * C);
+    currentAnglePercent += percent;
+    const g = GRADIENTS[index % GRADIENTS.length];
+    const catName = escapeHtml(item.category_name || "Chưa phân loại");
+
+    return `
+      <circle
+        class="donut-segment"
+        cx="75"
+        cy="75"
+        r="${R}"
+        fill="transparent"
+        stroke="url(#${g.id})"
+        stroke-width="22"
+        stroke-dasharray="${dashLength.toFixed(2)} ${gapLength.toFixed(2)}"
+        stroke-dashoffset="${offset.toFixed(2)}"
+        data-cat-idx="${index}"
+        data-cat-name="${catName}"
+        data-cat-qty="${qty}"
+        data-cat-percent="${Math.round(percent * 100)}"
+        style="--seg-color: ${g.solid};"
+      />
+    `;
+  }).join("");
 
   return `
-    <div class="category-ring" style="background: conic-gradient(${segments});" aria-hidden="true">
-      <div class="category-ring-center">
-        <strong>${Number(total).toLocaleString("vi-VN")}</strong>
-        <small>Phần món</small>
+    <div class="category-donut-container">
+      <div class="donut-svg-wrap">
+        <svg viewBox="0 0 150 150" class="category-donut-svg" aria-label="Biểu đồ phân bố danh mục">
+          <defs>${defsHtml}</defs>
+          <circle cx="75" cy="75" r="${R}" fill="transparent" stroke="#f5e8e0" stroke-width="22"/>
+          <g class="donut-segments-group">
+            ${segmentsHtml}
+          </g>
+        </svg>
+        <div class="donut-center-badge" id="donutCenterBadge">
+          <strong id="donutCenterVal" class="donut-val-animate">${Number(total).toLocaleString("vi-VN")}</strong>
+          <small id="donutCenterLabel">Tổng bán</small>
+        </div>
+      </div>
+
+      <div class="category-list">
+        ${topRows.map((item, index) => {
+          const qty = Number(item.quantity || 0);
+          const percent = Math.round((qty / total) * 100);
+          const g = GRADIENTS[index % GRADIENTS.length];
+          const catName = escapeHtml(item.category_name || "Chưa phân loại");
+          return `
+            <div class="category-list-item" data-cat-idx="${index}" data-cat-name="${catName}" data-cat-qty="${qty}" data-cat-percent="${percent}">
+              <div class="category-item-header">
+                <span class="category-chip" style="background: linear-gradient(135deg, ${g.start}, ${g.end});"></span>
+                <span class="category-name">${catName}</span>
+                <strong class="category-qty">${qty.toLocaleString("vi-VN")} <small>(${percent}%)</small></strong>
+              </div>
+              <div class="category-item-bar-track">
+                <div class="category-item-bar-fill" style="width: ${percent}%; background: linear-gradient(90deg, ${g.start}, ${g.end});"></div>
+              </div>
+            </div>
+          `;
+        }).join("")}
       </div>
     </div>
-    <div class="category-list">
-      ${rows.slice(0, 5).map((item, index) => {
-        const percent = Math.round((Number(item.quantity || 0) / total) * 100);
-        return `
-          <div class="category-list-item">
-            <span class="category-chip" style="background: ${colors[index % colors.length]};"></span>
-            <span class="category-name">${escapeHtml(item.category_name || "Chưa phân loại")}</span>
-            <strong class="category-qty">${Number(item.quantity || 0).toLocaleString("vi-VN")} <small>(${percent}%)</small></strong>
-          </div>
-        `;
-      }).join("")}
-    </div>
   `;
+}
+
+function bindCategoryDonutInteractions() {
+  const container = document.querySelector(".category-donut-container");
+  if (!container) return;
+
+  const centerVal = container.querySelector("#donutCenterVal");
+  const centerLabel = container.querySelector("#donutCenterLabel");
+  const initialTotal = centerVal ? centerVal.textContent : "";
+  const initialLabel = centerLabel ? centerLabel.textContent : "Tổng bán";
+
+  const segments = container.querySelectorAll(".donut-segment");
+  const items = container.querySelectorAll(".category-list-item");
+
+  function setActiveCategory(idx, name, qty, percent) {
+    if (centerVal) {
+      centerVal.textContent = Number(qty).toLocaleString("vi-VN");
+      centerVal.classList.remove("donut-val-animate");
+      void centerVal.offsetWidth;
+      centerVal.classList.add("donut-val-animate");
+    }
+    if (centerLabel) {
+      centerLabel.textContent = `${name} (${percent}%)`;
+    }
+
+    segments.forEach(seg => {
+      if (seg.dataset.catIdx === String(idx)) {
+        seg.classList.add("is-hovered");
+        seg.classList.remove("is-dimmed");
+      } else {
+        seg.classList.remove("is-hovered");
+        seg.classList.add("is-dimmed");
+      }
+    });
+
+    items.forEach(item => {
+      if (item.dataset.catIdx === String(idx)) {
+        item.classList.add("is-active");
+      } else {
+        item.classList.remove("is-active");
+      }
+    });
+  }
+
+  function resetActiveCategory() {
+    if (centerVal) {
+      centerVal.textContent = initialTotal;
+      centerVal.classList.remove("donut-val-animate");
+      void centerVal.offsetWidth;
+      centerVal.classList.add("donut-val-animate");
+    }
+    if (centerLabel) {
+      centerLabel.textContent = initialLabel;
+    }
+
+    segments.forEach(seg => {
+      seg.classList.remove("is-hovered", "is-dimmed");
+    });
+    items.forEach(item => {
+      item.classList.remove("is-active");
+    });
+  }
+
+  segments.forEach(seg => {
+    seg.addEventListener("mouseenter", () => {
+      setActiveCategory(seg.dataset.catIdx, seg.dataset.catName, seg.dataset.catQty, seg.dataset.catPercent);
+    });
+    seg.addEventListener("mouseleave", resetActiveCategory);
+  });
+
+  items.forEach(item => {
+    item.addEventListener("mouseenter", () => {
+      setActiveCategory(item.dataset.catIdx, item.dataset.catName, item.dataset.catQty, item.dataset.catPercent);
+    });
+    item.addEventListener("mouseleave", resetActiveCategory);
+  });
 }
 
 function renderCustomerStats(rows) {
