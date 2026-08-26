@@ -4386,11 +4386,15 @@ function renderHeaderLiveSearchDropdown(query, matchingFoods = [], totalMatches 
     const category = getFoodDisplayCategory(food);
     const highlightedName = highlightSearchMatch(food.name, trimmed);
     const image = food.image || "assets/images/default-food.png";
+    const isSale = Boolean(getFoodFlashSale(food));
 
     return `
       <li role="option" id="searchItem-${food.id}" aria-selected="false">
-        <a class="search-dropdown-item" href="${getFoodDetailUrl(food.id, { from: "search" })}" data-food-id="${food.id}" data-search-index="${index}">
-          <img class="search-item-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%23ffd8c7\\'><rect width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'18\\' fill=\\'%23ff5722\\'>FH</text></svg>'">
+        <a class="search-dropdown-item ${isSale ? "is-flash-sale" : ""}" href="${getFoodDetailUrl(food.id, { from: "search" })}" data-food-id="${food.id}" data-search-index="${index}">
+          <div class="search-item-thumb-wrap">
+            <img class="search-item-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%23ffd8c7\\'><rect width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'18\\' fill=\\'%23ff5722\\'>FH</text></svg>'">
+            ${isSale ? `<span class="search-item-flash-tag">SALE</span>` : ""}
+          </div>
           <div class="search-item-info">
             <span class="search-item-name">${highlightedName}</span>
             <div class="search-item-meta">
