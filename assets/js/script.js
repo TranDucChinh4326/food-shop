@@ -9,6 +9,7 @@ const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const FOOD_REVIEWS_API = `${API_BASE_URL}/food-reviews`;
 const CHAT_API = `${API_BASE_URL}/chat`;
 const FOOD_FAVORITES_API = `${API_URL}/favorites`;
+const FLASH_SALES_API = `${API_BASE_URL}/flash-sales/active`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 const CART_KEY = "foodhub_cart";
@@ -17,6 +18,8 @@ const FOODS_CACHE_KEY = "foodhub_foods_cache_v1";
 const FOODS_CACHE_TTL = 2 * 60 * 1000;
 
 let foods = [];
+let activeFlashSales = [];
+let activeFlashSaleItems = new Map();
 // State phía trình duyệt: lưu dữ liệu đã tải, giỏ hàng session và trạng thái thanh toán/voucher đang thao tác.
 // Các biến này giúp nhiều trang dùng chung script mà không phải gọi lại API cho từng thao tác nhỏ.
 let foodReviews = [];
@@ -1091,6 +1094,106 @@ function normalizeFoodData(rawFoods = []) {
   }));
 }
 
+function normalizeFlashSaleData(rawSales = []) {
+  activeFlashSales = Array.isArray(rawSales) ? rawSales : [];
+  activeFlashSaleItems = new Map();
+
+  activeFlashSales.forEach(sale => {
+    (sale.items || []).forEach(item => {
+      const foodId = Number(item.foodId ?? item.food_id);
+      const salePrice = Number(item.salePrice ?? item.sale_price ?? 0);
+      const originalPrice = Number(item.originalPrice ?? item.original_price ?? 0);
+      if (!foodId || salePrice <= 0) return;
+
+      const current = activeFlashSaleItems.get(foodId);
+      const normalized = {
+        saleId: Number(sale.id || 0),
+        saleTitle: sale.title || "Flash sale",
+        itemId: Number(item.id || 0),
+        foodId,
+        salePrice,
+        originalPrice,
+        remaining: item.remaining === null || item.remaining === undefined ? null : Number(item.remaining),
+        endsAt: sale.endsAt || sale.ends_at || null
+      };
+
+      if (!current || salePrice < current.salePrice) activeFlashSaleItems.set(foodId, normalized);
+    });
+  });
+}
+
+function getFoodFlashSale(food) {
+  return activeFlashSaleItems.get(Number(food?.id)) || null;
+}
+
+function getFoodSalePrice(food) {
+  const sale = getFoodFlashSale(food);
+  const basePrice = Number(food?.price || 0);
+  return sale && sale.salePrice > 0 && sale.salePrice < basePrice ? sale.salePrice : basePrice;
+}
+
+function renderFoodPrice(food, className = "food-price-stack") {
+  const sale = getFoodFlashSale(food);
+  const basePrice = Number(food?.price || 0);
+
+  if (!sale || sale.salePrice >= basePrice) {
+    return `<strong>${formatMoney(basePrice)}</strong>`;
+  }
+
+  return `
+    <span class="${className}">
+      <span class="flash-price-row">
+        <strong>${formatMoney(sale.salePrice)}</strong>
+        <em>-${Math.max(1, Math.round((1 - sale.salePrice / basePrice) * 100))}%</em>
+      </span>
+      <del>${formatMoney(basePrice)}</del>
+    </span>
+  `;
+}
+
+function renderFlashSaleBadge(food) {
+  return getFoodFlashSale(food) ? `<span class="food-flash-badge">Flash sale</span>` : "";
+}
+
+function renderFlashSaleBanner() {
+  const banner = document.querySelector("[data-flash-sale-banner]");
+  if (!banner) return;
+
+  const sale = activeFlashSales.find(item => Array.isArray(item.items) && item.items.length > 0);
+  if (!sale) {
+    banner.hidden = true;
+    banner.querySelector("[data-flash-sale-items]")?.replaceChildren();
+    return;
+  }
+
+  const title = banner.querySelector("[data-flash-sale-title]");
+  const subtitle = banner.querySelector("[data-flash-sale-subtitle]");
+  const timer = banner.querySelector("[data-flash-sale-countdown]");
+  const itemsBox = banner.querySelector("[data-flash-sale-items]");
+  const saleItems = (sale.items || []).slice(0, 4);
+
+  if (title) title.textContent = sale.title || "Flash sale hôm nay";
+  if (subtitle) subtitle.textContent = `${saleItems.length} món đang giảm giá, số lượng có hạn.`;
+  if (timer) {
+    const endAt = sale.endsAt || sale.ends_at || "";
+    timer.hidden = !endAt;
+    timer.dataset.flashSaleCountdown = endAt;
+  }
+  if (itemsBox) {
+    itemsBox.innerHTML = saleItems.map(item => `
+      <a class="flash-sale-mini-card" href="${getFoodDetailUrl(item.foodId, { from: "home" })}">
+        <img src="${escapeHtml(item.image || "")}" alt="${escapeHtml(item.name || "Món flash sale")}">
+        <span>
+          <strong>${escapeHtml(item.name || "Món flash sale")}</strong>
+          <small><b>${formatMoney(item.salePrice || 0)}</b><del>${formatMoney(item.originalPrice || 0)}</del></small>
+        </span>
+      </a>
+    `).join("");
+  }
+
+  banner.hidden = false;
+}
+
 function readFoodsCache() {
   try {
     const cache = JSON.parse(localStorage.getItem(FOODS_CACHE_KEY) || "null");
@@ -1270,6 +1373,15 @@ async function loadFoods() {
     foods = cachedFoods.items;
     renderFoodSurfaces();
     loadFoodReviews();
+    loadActiveFlashSales().then(() => {
+      renderFoodSurfaces();
+      renderFoodDetailPage();
+      renderCart();
+    }).catch(error => {
+      console.error("Lỗi tải flash sale:", error);
+      normalizeFlashSaleData([]);
+      renderFlashSaleBanner();
+    });
 
     if (cachedFoods.age < FOODS_CACHE_TTL) {
       return;
@@ -1285,6 +1397,11 @@ async function loadFoods() {
 
     foods = normalizeFoodData(await response.json());
     writeFoodsCache(foods);
+    await loadActiveFlashSales().catch(error => {
+      console.error("Lỗi tải flash sale:", error);
+      normalizeFlashSaleData([]);
+      renderFlashSaleBanner();
+    });
     renderFoodSurfaces();
     if (!cachedFoods?.items.length) loadFoodReviews();
   } catch (error) {
@@ -1294,6 +1411,16 @@ async function loadFoods() {
     if (bestSellerBox) bestSellerBox.innerHTML = "<p>Không thể tải món bán chạy từ database.</p>";
     if (homeSectionBox) homeSectionBox.innerHTML = "<p>Không thể tải thực đơn từ database.</p>";
   }
+}
+
+async function loadActiveFlashSales() {
+  const response = await fetchWithTimeout(FLASH_SALES_API);
+  if (!response.ok) throw new Error(`Flash sale API returned ${response.status}`);
+
+  const data = await response.json();
+  normalizeFlashSaleData(data);
+  renderFlashSaleBanner();
+  return activeFlashSales;
 }
 function getFoodDisplayCategory(food) {
   return food.parentCategoryName || food.categoryName || "Món ăn";
@@ -1414,6 +1541,7 @@ function renderCompactFoodCard(food, options = {}) {
       <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <div class="food-card-img-wrap">
         <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+        ${renderFlashSaleBadge(food)}
         ${renderFavButton(food.id)}
       </div>
       <div class="home-food-card-body">
@@ -1426,7 +1554,7 @@ function renderCompactFoodCard(food, options = {}) {
         </div>
         <div class="home-food-stock">${renderStockBadge(stock)}</div>
         <div class="home-food-bottom">
-          <strong>${formatMoney(food.price)}</strong>
+          ${renderFoodPrice(food)}
           <button type="button" class="home-add-btn" onclick="event.stopPropagation(); addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>+</button>
         </div>
       </div>
@@ -1506,7 +1634,7 @@ function renderRecommendationCard(food, context = "cart") {
         <p>${renderRatingLabel(food.rating, food.reviewCount)} · Còn ${stock}</p>
       </div>
       <div class="suggestion-action">
-        <strong>${formatMoney(food.price)}</strong>
+        ${renderFoodPrice(food)}
         <button type="button" onclick="event.stopPropagation(); addToCart(${food.id}, event)">Thêm</button>
       </div>
     </article>
@@ -1537,6 +1665,7 @@ function renderBestSellerCard(food) {
     <article class="best-seller-card" data-open-food-detail="${food.id}">
       <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+      ${renderFlashSaleBadge(food)}
       <div class="best-seller-overlay">
         <span>Bán chạy</span>
         <h3>${escapeHtml(food.name)}</h3>
@@ -2036,7 +2165,7 @@ function showFoodDetail(foodId) {
             <span>${reviewCount} đánh giá</span>
           </div>
           <div class="food-detail-stock">${renderStockBadge(stock)}</div>
-          <strong class="food-detail-price">${formatMoney(food.price)}</strong>
+          <div class="food-detail-price">${renderFoodPrice(food)}</div>
           ${renderFoodDetailDescription(food)}
           <div class="food-detail-options">
             <h3>Tùy chọn thêm</h3>
@@ -2149,7 +2278,7 @@ function renderFoodDetailPage() {
               <span>${reviewCount} đánh giá</span>
             </div>
             <div class="food-detail-stock">${renderStockBadge(stock)}</div>
-            <strong class="food-detail-price">${formatMoney(food.price)}</strong>
+            <div class="food-detail-price">${renderFoodPrice(food)}</div>
             ${renderFoodDetailDescription(food)}
             <div class="food-detail-actions">
               <div class="food-detail-qty">
@@ -2573,6 +2702,7 @@ function renderFoods() {
           <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
             <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
           </a>
+          ${renderFlashSaleBadge(food)}
           ${renderFavButton(food.id)}
         </div>
         <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}">
@@ -2580,7 +2710,7 @@ function renderFoods() {
           <p>${escapeHtml(food.desc || "")}</p>
         </a>
         <div class="food-price-row">
-          <span>${formatMoney(food.price)}</span>
+          ${renderFoodPrice(food)}
           <span class="food-stock-badge ${stock > 0 ? "in-stock" : "out-stock"}">${stockLabel}</span>
         </div>
         <div class="food-qty-row">
@@ -2634,11 +2764,12 @@ function addToCart(foodId, event) {
 
   if (itemInCart) {
     itemInCart.quantity = totalRequestedQuantity;
+    itemInCart.price = getFoodSalePrice(food);
   } else {
     cart.push({
       id: food.id,
       name: food.name,
-      price: food.price,
+      price: getFoodSalePrice(food),
       quantity: cappedQuantity,
       image: food.image || ""
     });
@@ -3316,8 +3447,9 @@ function renderCart() {
   let totalQuantity = 0;
 
   cartItems.innerHTML = cart.map(item => {
-    const itemTotal = Number(item.price) * Number(item.quantity);
     const food = foods.find(entry => String(entry.id) === String(item.id));
+    if (food) item.price = getFoodSalePrice(food);
+    const itemTotal = Number(item.price) * Number(item.quantity);
     const image = item.image || food?.image || "";
     const imageMarkup = image
       ? `<img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">`
@@ -3332,7 +3464,7 @@ function renderCart() {
         </a>
         <div class="cart-item-info">
           <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a></h4>
-          <p>${formatMoney(item.price)}</p>
+          <p>${food ? renderFoodPrice(food) : formatMoney(item.price)}</p>
         </div>
 
         <div class="qty-box">
@@ -3346,6 +3478,7 @@ function renderCart() {
       </div>
     `;
   }).join("");
+  saveCart();
 
   if (cartRecommendations) {
     const recommendedFoods = getRecommendedFoods({ limit: 4 });
@@ -4213,7 +4346,7 @@ function renderHeaderLiveSearchDropdown(query, matchingFoods = [], totalMatches 
             </div>
           </div>
           <div class="search-item-price-wrap">
-            <strong class="search-item-price">${formatMoney(food.price)}</strong>
+            <span class="search-item-price">${renderFoodPrice(food)}</span>
             <button type="button" class="search-item-add-btn" title="Thêm vào giỏ hàng" onclick="event.preventDefault(); event.stopPropagation(); addToCart(${food.id}, event);" ${stock <= 0 ? "disabled" : ""}>+</button>
           </div>
         </a>

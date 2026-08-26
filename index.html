@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FoodHub - Đặt đồ ăn online</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260825-flash-align-v1">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260826-live-flash-sale-v1">
   <link rel="stylesheet" href="assets/css/index.css?v=20260824-home-add-button">
   <meta name="google-site-verification" content="kj9DsbVPEHMCK-UKt_DqLexRznkwFLazZUw3JdKs8SA" />
 </head>
@@ -13,14 +13,15 @@
   <div data-shared-header></div>
 
   <main>
-    <section class="flash-sale-banner" aria-label="Giờ vàng Flash Sale">
+    <section class="flash-sale-banner" data-flash-sale-banner aria-label="Giờ vàng Flash Sale" hidden>
       <div class="flash-sale-info">
-        <span class="flash-sale-badge">⚡ Flash Sale</span>
+        <span class="flash-sale-badge">Flash Sale</span>
         <div class="flash-sale-title">
-          Giờ vàng ưu đãi hôm nay
-          <small>Nhanh tay nhận voucher giảm giá & freeship cực hot!</small>
+          <span data-flash-sale-title>Flash sale hôm nay</span>
+          <small data-flash-sale-subtitle>Giá giảm theo từng món, số lượng có hạn.</small>
         </div>
       </div>
+      <div class="flash-sale-items" data-flash-sale-items></div>
       <div class="countdown-timer" data-flash-sale-countdown aria-label="Thời gian còn lại">
         <span class="timer-unit">
           <b class="timer-num" data-timer-hours>00</b>
@@ -81,6 +82,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260826-pin-clean-v6"></script>
-  <script src="assets/js/script.js?v=20260826-pin-clean-v6"></script>
+  <script src="assets/js/script.js?v=20260826-live-flash-sale-v1"></script>
 </body>
 </html>
