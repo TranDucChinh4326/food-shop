@@ -545,7 +545,6 @@ function startFoodHubIdleSessionGuard() {
         </div>
         <input type="hidden" data-user-pin-input data-pin-hidden required>
         <small data-user-pin-error></small>
-        <button type="submit">Mở khóa</button>
       </form>
     `;
     document.body.appendChild(overlay);
@@ -555,7 +554,7 @@ function startFoodHubIdleSessionGuard() {
       event.preventDefault();
       const input = overlay.querySelector("[data-user-pin-input]");
       const error = overlay.querySelector("[data-user-pin-error]");
-      const button = overlay.querySelector("button");
+      const boxes = overlay.querySelectorAll("[data-pin-box]");
       const pin = input.value.trim();
 
       if (!/^\d{6}$/.test(pin)) {
@@ -564,9 +563,8 @@ function startFoodHubIdleSessionGuard() {
         return;
       }
 
-      button.disabled = true;
-      button.textContent = "Đang mở khóa...";
-      error.textContent = "";
+      boxes.forEach(b => b.disabled = true);
+      error.textContent = "Đang kiểm tra mã PIN...";
 
       try {
         const response = await fetch(`${apiBase}/auth/pin/verify`, {
@@ -588,7 +586,7 @@ function startFoodHubIdleSessionGuard() {
           }
           error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
           input.value = "";
-          overlay.querySelectorAll("[data-pin-box]").forEach(box => {
+          boxes.forEach(box => {
             box.value = "";
           });
           overlay.querySelector("[data-pin-box]")?.focus();
@@ -604,8 +602,7 @@ function startFoodHubIdleSessionGuard() {
       } catch (_) {
         error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
       } finally {
-        button.disabled = false;
-        button.textContent = "Mở khóa";
+        boxes.forEach(b => b.disabled = false);
       }
     });
 
