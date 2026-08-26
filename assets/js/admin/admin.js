@@ -2064,37 +2064,50 @@ function renderRevenueTrend(rows, trendMode = "day") {
 
   const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
   const totalRevenue = ordered.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
-  const labelIndexes = getRevenueTrendLabelIndexes(ordered.length);
 
-  return `
-    ${totalRevenue === 0 ? `
+  if (totalRevenue === 0) {
+    return `
       <div class="chart-empty">
         <strong>Chưa có doanh thu hoàn tất</strong>
         <span>Biểu đồ sẽ cập nhật khi có đơn hoàn tất trong khoảng thời gian đã chọn.</span>
       </div>
-    ` : ""}
-    <div class="revenue-bars" role="img" aria-label="Biểu đồ cột doanh thu">
-      ${ordered.map(item => {
-        const revenue = Number(item.revenue || 0);
-        const height = totalRevenue === 0 ? 0 : Math.max(8, Math.round((revenue / maxRevenue) * 100));
-        return `
-          <div class="revenue-bar-item" title="${escapeHtml(formatTrendLabel(item, trendMode))}: ${formatMoney(revenue)}">
-            <span class="revenue-bar-value">${formatMoney(revenue)}</span>
-            <span class="revenue-bar" style="height:${height}%"></span>
-          </div>
-        `;
-      }).join("")}
-    </div>
-    <div class="chart-labels">
-      ${ordered.map((item, index) => {
-        const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
-        return !labelIndexes.has(index) ? "" : `
-        <span class="${index === 0 ? "is-first" : index === ordered.length - 1 ? "is-last" : ""}" style="left:${x}%">
-          <strong>${formatMoney(item.revenue || 0)}</strong>
-          ${escapeHtml(formatTrendLabel(item, trendMode))}
-        </span>
-      `;
-      }).join("")}
+    `;
+  }
+
+  return `
+    <div class="revenue-chart-wrap" role="img" aria-label="Biểu đồ cột xu hướng doanh thu">
+      <div class="revenue-chart-grid-bg" aria-hidden="true">
+        <span class="grid-line" style="bottom: 100%"><span>${formatMoney(maxRevenue)}</span></span>
+        <span class="grid-line" style="bottom: 66%"><span>${formatMoney(Math.round(maxRevenue * 0.66))}</span></span>
+        <span class="grid-line" style="bottom: 33%"><span>${formatMoney(Math.round(maxRevenue * 0.33))}</span></span>
+        <span class="grid-line" style="bottom: 0%"><span>0đ</span></span>
+      </div>
+      <div class="revenue-cols-container">
+        ${ordered.map(item => {
+          const revenue = Number(item.revenue || 0);
+          const isZero = revenue === 0;
+          const heightPercent = isZero ? 0 : Math.max(8, Math.min(100, Math.round((revenue / maxRevenue) * 90)));
+          const isPeak = revenue === maxRevenue && maxRevenue > 0;
+          const dateLabel = formatTrendLabel(item, trendMode);
+          return `
+            <div class="revenue-col ${isZero ? "is-zero" : ""} ${isPeak ? "is-peak" : ""}">
+              <div class="revenue-col-plot">
+                <div class="revenue-bar-tooltip">
+                  <strong>${formatMoney(revenue)}</strong>
+                  <small>${escapeHtml(dateLabel)}</small>
+                </div>
+                <div class="revenue-bar-track">
+                  <div class="revenue-bar-fill" style="height: ${heightPercent}%;"></div>
+                </div>
+              </div>
+              <div class="revenue-col-footer">
+                <strong class="col-amount ${isZero ? "text-muted" : ""}">${formatMoney(revenue)}</strong>
+                <span class="col-date">${escapeHtml(dateLabel)}</span>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
     </div>
   `;
 }
