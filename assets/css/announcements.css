@@ -240,3 +240,39 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.voucher-timer-badge {
+  align-items: center;
+  background: linear-gradient(135deg, #fff3eb 0%, #ffe8dc 100%) !important;
+  border: 1px solid rgba(255, 106, 42, 0.35) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 8px rgba(230, 62, 0, 0.08) !important;
+  color: #d63d00 !important;
+  display: inline-flex !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  gap: 7px !important;
+  line-height: 1 !important;
+  margin-top: 10px !important;
+  padding: 6px 14px !important;
+  white-space: nowrap !important;
+  width: fit-content !important;
+}
+
+.voucher-timer-badge svg {
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  height: 16px !important;
+  width: 16px !important;
+  fill: #e63e00 !important;
+}
+
+.voucher-timer-badge .countdown-text {
+  display: inline-block !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
