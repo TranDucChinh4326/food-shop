@@ -4656,17 +4656,21 @@ function initBackToTopButton() {
   btn.setAttribute("title", "Cuộn lên đầu trang");
   btn.innerHTML = `
     <svg class="progress-ring" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
-      <circle class="progress-ring-bg" cx="22" cy="22" r="18" fill="none" stroke-width="3.5" />
-      <circle class="progress-ring-circle" cx="22" cy="22" r="18" fill="none" stroke-width="3.5" />
+      <circle class="progress-ring-bg" cx="22" cy="22" r="19" fill="#ffffff" stroke-width="3" />
+      <circle class="progress-ring-circle" cx="22" cy="22" r="19" fill="none" stroke-width="3" stroke-linecap="round" />
     </svg>
-    <span class="back-to-top-arrow" aria-hidden="true">↑</span>
+    <span class="back-to-top-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 19V5M5 12l7-7 7 7"/>
+      </svg>
+    </span>
   `;
 
   document.body.appendChild(btn);
 
   const circle = btn.querySelector(".progress-ring-circle");
-  const radius = 18;
-  const circumference = 2 * Math.PI * radius; // ~113.097
+  const radius = 19;
+  const circumference = 2 * Math.PI * radius; // ~119.38
   circle.style.strokeDasharray = `${circumference} ${circumference}`;
   circle.style.strokeDashoffset = `${circumference}`;
 

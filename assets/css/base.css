@@ -6511,18 +6511,13 @@ footer {
    ============================================================ */
 .back-to-top-btn {
   align-items: center;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255, 218, 199, 0.95);
+  background: #ffffff;
+  border: none;
   border-radius: 50%;
   bottom: 96px;
-  box-shadow: 0 10px 28px rgba(45, 18, 10, 0.14), 0 2px 8px rgba(255, 87, 34, 0.12);
-  color: #ff5722;
   cursor: pointer;
   display: inline-flex;
   height: 48px;
-  justify-content: center;
   opacity: 0;
   padding: 0;
   pointer-events: none;
@@ -6531,22 +6526,19 @@ footer {
   transform: translateY(16px) scale(0.9);
   transition: opacity 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.22s ease,
-              border-color 0.22s ease;
+              box-shadow 0.22s ease;
   width: 48px;
   z-index: 1150;
+  box-sizing: border-box;
 }
 
 .back-to-top-btn.visible {
-  opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
-}
 
 .back-to-top-btn:hover {
   background: #ffffff;
-  border-color: #ff5722;
-  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.25), 0 4px 12px rgba(45, 18, 10, 0.12);
+  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.28), 0 4px 12px rgba(45, 18, 10, 0.15);
   transform: translateY(-3px) scale(1.08);
 }
 
@@ -6555,41 +6547,38 @@ footer {
   color: #ea2a0e;
 }
 
-.back-to-top-btn:active {
   transform: translateY(0) scale(0.94);
 }
 
 .back-to-top-btn .progress-ring {
-  height: 48px;
-  left: 0;
-  pointer-events: none;
   position: absolute;
-  top: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   transform: rotate(-90deg);
-  width: 48px;
+  pointer-events: none;
 }
 
 .back-to-top-btn .progress-ring-bg {
-  stroke: rgba(255, 122, 40, 0.16);
+  stroke: rgba(255, 122, 40, 0.18);
 }
 
 .back-to-top-btn .progress-ring-circle {
   stroke: #ff5722;
-  stroke-linecap: round;
-  stroke-dasharray: 113.1;
-  stroke-dashoffset: 113.1;
   transition: stroke-dashoffset 0.1s linear;
 }
-
 .back-to-top-arrow {
   align-items: center;
-  display: flex;
-  font-size: 20px;
-  font-weight: 900;
+  display: inline-flex;
   justify-content: center;
-  line-height: 1;
+  position: relative;
+  z-index: 2;
   transition: transform 0.2s ease, color 0.2s ease;
   user-select: none;
+}
+
+.back-to-top-arrow svg {
+  height: 20px;
 }
 
 /* ============================================================
@@ -6597,21 +6586,12 @@ footer {
    ============================================================ */
 .flash-sale-banner {
   align-items: center;
-  background: linear-gradient(135deg, #fff4ec 0%, #fff9f5 50%, #ffece2 100%);
   border: 1.5px solid #ffd8c5;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.08);
-  display: flex;
   flex-wrap: wrap;
   gap: 14px;
   justify-content: space-between;
   margin: 20px 8% 0;
-  overflow: hidden;
-  padding: 10px 18px;
-  position: relative;
-}
-
-.flash-sale-banner[hidden] {
   display: none !important;
 }
 
@@ -6881,9 +6861,9 @@ footer {
     width: 44px;
   }
 
-  .back-to-top-btn .progress-ring {
-    height: 44px;
-    width: 44px;
+  .back-to-top-arrow svg {
+    width: 18px;
+    height: 18px;
   }
 
   .flash-sale-banner {
@@ -6904,9 +6884,6 @@ footer {
     align-items: center;
     gap: 8px;
     min-width: 0;
-  }
-
-  .flash-sale-badge {
     font-size: 11px;
     padding: 4px 7px;
     letter-spacing: 0.2px;
