@@ -5281,12 +5281,23 @@ footer {
     width: 60px;
   }
 
-  .support-toggle span {
+  .support-toggle .support-toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100%;
     width: 100%;
   }
 
-  .support-toggle .support-robot-icon.with-wordmark {
+  .support-toggle .bot-online-badge {
+    height: 14px !important;
+    width: 14px !important;
+    top: 2px !important;
+    right: 2px !important;
+  }
+
+  .support-toggle .support-robot-icon.with-wordmark,
+  .support-toggle .support-robot-icon {
     height: 44px;
     width: 44px;
   }
