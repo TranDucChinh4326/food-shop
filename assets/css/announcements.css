@@ -1,15 +1,23 @@
-/* Page-specific styles for announcements.html. Shared styles live in base.css. */
+/* Page-specific styles for announcements.html and vouchers.html. Shared styles live in base.css. */
 
 .announcements-page {
   padding: 42px 8% 70px;
 }
 
+.announcements-page .flash-sale-banner {
+  margin: 0 auto 24px;
+  max-width: 1180px;
+  padding: 14px 24px;
+  width: 100%;
+}
+
+.voucher-panel,
 .announcement-archive-panel {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 244, 0.94)),
     radial-gradient(circle at 10% 0%, rgba(255, 107, 42, 0.12), transparent 30%);
   border: 1px solid rgba(255, 129, 76, 0.22);
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 18px 46px rgba(65, 35, 20, 0.1);
   margin: 0 auto;
   max-width: 1180px;
