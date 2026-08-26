@@ -32,8 +32,6 @@ const categoryPageSize = document.getElementById("categoryPageSize");
 const usersList = document.getElementById("usersList");
 const announcementsList = document.getElementById("announcementsList");
 const announcementPageSize = document.getElementById("announcementPageSize");
-const staffForm = document.getElementById("staffForm");
-const staffPermissions = document.getElementById("staffPermissions");
 const foodSearch = document.getElementById("foodSearch");
 const foodCategoryFilter = document.getElementById("foodCategoryFilter");
 const foodStatusFilter = document.getElementById("foodStatusFilter");
@@ -797,14 +795,12 @@ function showPermissionDialog(account) {
 async function loadAdminPermissions() {
   if (!hasAdminPermission("roles.manage")) {
     adminPermissions = [];
-    renderPermissionChecks(staffPermissions);
     return;
   }
 
   try {
     const data = await requestJson(`${ADMIN_API}/permissions`);
     adminPermissions = data.permissions || [];
-    renderPermissionChecks(staffPermissions);
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -3908,32 +3904,6 @@ async function deleteFood(foodId) {
   }
 }
 
-async function createStaff(event) {
-  event.preventDefault();
-
-  const payload = {
-    fullname: document.getElementById("staffName").value,
-    email: document.getElementById("staffEmail").value,
-    password: document.getElementById("staffPassword").value,
-    role: document.getElementById("staffRole").value,
-    permissions: getCheckedPermissions(staffPermissions)
-  };
-
-  try {
-    await requestJson(`${ADMIN_API}/staff`, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-
-    staffForm.reset();
-    renderPermissionChecks(staffPermissions);
-    await loadUsers();
-    showAdminToast("Đã tạo nhân viên.");
-  } catch (error) {
-    showAdminToast(error.message, "error");
-  }
-}
-
 async function saveAccount(detailRow, userId) {
   const payload = {
     fullname: detailRow.dataset.name,
@@ -4216,7 +4186,6 @@ shortcutButtons.forEach(button => {
     showAdminSection(button.dataset.adminShortcut);
   });
 });
-staffForm?.addEventListener("submit", createStaff);
 foodCategoryFilter?.addEventListener("change", () => {
   activeFoodSubcategory = foodCategoryFilter.value || "all";
   sessionStorage.setItem("foodhub_food_subcategory", activeFoodSubcategory);
