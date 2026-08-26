@@ -1018,11 +1018,26 @@ function resetFlashSaleForm() {
   flashSaleForm.reset();
   document.getElementById("flashSaleId").value = "";
   document.getElementById("flashSaleIsActive").value = "1";
+  document.getElementById("flashSaleScheduleType").value = "once";
+  syncFlashSaleScheduleFields();
   document.getElementById("saveFlashSaleBtn").textContent = "Lưu flash sale";
   if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Thêm mới flash sale";
   resetFlashSaleItemForm();
   renderFlashSaleItems();
   syncFlashSaleItemFormState();
+}
+
+function syncFlashSaleScheduleFields() {
+  const scheduleType = document.getElementById("flashSaleScheduleType")?.value || "once";
+  const onceFields = document.querySelector("[data-flash-sale-once-fields]");
+  const dailyFields = document.querySelector("[data-flash-sale-daily-fields]");
+  if (onceFields) onceFields.hidden = scheduleType !== "once";
+  if (dailyFields) dailyFields.hidden = scheduleType !== "daily";
+
+  document.getElementById("flashSaleStartsAt")?.toggleAttribute("required", scheduleType === "once");
+  document.getElementById("flashSaleEndsAt")?.toggleAttribute("required", scheduleType === "once");
+  document.getElementById("flashSaleStartTime")?.toggleAttribute("required", scheduleType === "daily");
+  document.getElementById("flashSaleEndTime")?.toggleAttribute("required", scheduleType === "daily");
 }
 
 function resetFlashSaleItemForm() {
@@ -1115,10 +1130,16 @@ function closeFlashSaleForm() {
 }
 
 function readFlashSalePayload() {
+  const scheduleType = document.getElementById("flashSaleScheduleType")?.value || "once";
   return {
     title: document.getElementById("flashSaleTitle").value,
-    startsAt: document.getElementById("flashSaleStartsAt").value || null,
-    endsAt: document.getElementById("flashSaleEndsAt").value || null,
+    scheduleType,
+    startsAt: scheduleType === "once" ? document.getElementById("flashSaleStartsAt").value || null : null,
+    endsAt: scheduleType === "once" ? document.getElementById("flashSaleEndsAt").value || null : null,
+    startDate: scheduleType === "daily" ? document.getElementById("flashSaleStartDate").value || null : null,
+    endDate: scheduleType === "daily" ? document.getElementById("flashSaleEndDate").value || null : null,
+    startTime: scheduleType === "daily" ? document.getElementById("flashSaleStartTime").value || null : null,
+    endTime: scheduleType === "daily" ? document.getElementById("flashSaleEndTime").value || null : null,
     isActive: document.getElementById("flashSaleIsActive").value === "1"
   };
 }
@@ -1171,9 +1192,15 @@ async function fillFlashSaleForm(sale) {
 
   document.getElementById("flashSaleId").value = detail.id || "";
   document.getElementById("flashSaleTitle").value = detail.title || "";
+  document.getElementById("flashSaleScheduleType").value = detail.schedule_type || detail.scheduleType || "once";
   document.getElementById("flashSaleStartsAt").value = formatDateInputValue(detail.starts_at || detail.startsAt);
   document.getElementById("flashSaleEndsAt").value = formatDateInputValue(detail.ends_at || detail.endsAt);
+  document.getElementById("flashSaleStartDate").value = detail.start_date || detail.startDate || "";
+  document.getElementById("flashSaleEndDate").value = detail.end_date || detail.endDate || "";
+  document.getElementById("flashSaleStartTime").value = String(detail.start_time || detail.startTime || "").slice(0, 5);
+  document.getElementById("flashSaleEndTime").value = String(detail.end_time || detail.endTime || "").slice(0, 5);
   document.getElementById("flashSaleIsActive").value = detail.is_active || detail.isActive ? "1" : "0";
+  syncFlashSaleScheduleFields();
   document.getElementById("saveFlashSaleBtn").textContent = "Cập nhật flash sale";
   if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Cập nhật flash sale";
   if (flashSaleItemForm) {
@@ -1221,6 +1248,25 @@ function renderFlashSaleStatus(status) {
   return `<span class="status-pill ${tone}">${labels[status] || status || "Không rõ"}</span>`;
 }
 
+function renderFlashSaleTime(item) {
+  const scheduleType = item.schedule_type || item.scheduleType || "once";
+  if (scheduleType === "daily") {
+    const startTime = String(item.start_time || item.startTime || "").slice(0, 5) || "--:--";
+    const endTime = String(item.end_time || item.endTime || "").slice(0, 5) || "--:--";
+    const startDate = item.start_date || item.startDate || "Từ hôm nay";
+    const endDate = item.end_date || item.endDate || "Không giới hạn";
+    return `
+      <span>Lặp mỗi ngày ${startTime} - ${endTime}</span>
+      <small>${escapeHtml(startDate)} đến ${escapeHtml(endDate)}</small>
+    `;
+  }
+
+  return `
+    <span>${formatDateTime(item.starts_at) || "Bắt đầu ngay"}</span>
+    <small>${formatDateTime(item.ends_at) || "Không giới hạn"}</small>
+  `;
+}
+
 function renderFlashSalesTable() {
   if (!flashSalesList) return;
 
@@ -1256,8 +1302,7 @@ function renderFlashSalesTable() {
             <tr>
               <td class="flash-sale-name"><strong>${escapeHtml(item.title || "")}</strong></td>
               <td class="flash-sale-time">
-                <span>${formatDateTime(item.starts_at) || "Bắt đầu ngay"}</span>
-                <small>${formatDateTime(item.ends_at) || "Không giới hạn"}</small>
+                ${renderFlashSaleTime(item)}
               </td>
               <td class="table-number">${Number(item.item_count || 0).toLocaleString("vi-VN")}</td>
               <td class="table-number">${Number(item.sold_count || 0).toLocaleString("vi-VN")}</td>
@@ -4005,6 +4050,7 @@ document.getElementById("resetFlashSaleFormBtn")?.addEventListener("click", asyn
   await loadFlashSaleFoodOptions();
   openFlashSaleForm();
 });
+document.getElementById("flashSaleScheduleType")?.addEventListener("change", syncFlashSaleScheduleFields);
 document.querySelector("[data-back-flash-sale-list]")?.addEventListener("click", () => {
   resetFlashSaleForm();
   closeFlashSaleForm();

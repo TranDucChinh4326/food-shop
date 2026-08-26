@@ -489,8 +489,15 @@
                   <option value="0">Ẩn</option>
                 </select>
               </label>
+              <label>
+                Kiểu khung giờ
+                <select id="flashSaleScheduleType">
+                  <option value="once">Một lần</option>
+                  <option value="daily">Lặp mỗi ngày</option>
+                </select>
+              </label>
             </div>
-            <div class="announcement-date-grid">
+            <div class="announcement-date-grid" data-flash-sale-once-fields>
               <label>
                 Bắt đầu
                 <input id="flashSaleStartsAt" type="datetime-local">
@@ -498,6 +505,24 @@
               <label>
                 Kết thúc
                 <input id="flashSaleEndsAt" type="datetime-local">
+              </label>
+            </div>
+            <div class="announcement-date-grid" data-flash-sale-daily-fields hidden>
+              <label>
+                Ngày bắt đầu
+                <input id="flashSaleStartDate" type="date">
+              </label>
+              <label>
+                Ngày kết thúc
+                <input id="flashSaleEndDate" type="date">
+              </label>
+              <label>
+                Giờ bắt đầu mỗi ngày
+                <input id="flashSaleStartTime" type="time">
+              </label>
+              <label>
+                Giờ kết thúc mỗi ngày
+                <input id="flashSaleEndTime" type="time">
               </label>
             </div>
             <div class="account-form-actions form-actions">
@@ -891,6 +916,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260824-order-refresh-scope"></script>
-  <script src="assets/js/admin/admin.js?v=20260826-flash-sale-time-v1"></script>
+  <script src="assets/js/admin/admin.js?v=20260826-flash-sale-daily-v1"></script>
 </body>
 </html>
