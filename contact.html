@@ -1,65 +1,198 @@
 <!DOCTYPE html>
-<!-- Trang liên hệ FoodHub: cung cấp thông tin cửa hàng và liên kết đến luồng phản hồi khách hàng. -->
+<!-- Trang liên hệ FoodHub: cung cấp thông tin cửa hàng, hotline, mạng xã hội và kênh gửi phản hồi. -->
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liên hệ - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260824-pin-boxes">
-  <link rel="stylesheet" href="assets/css/contact.css?v=20260824-heading-scale">
+  <title>Liên hệ & Hỗ trợ - FoodHub</title>
+  <link rel="stylesheet" href="assets/css/base.css?v=20260826-contact-v1">
+  <link rel="stylesheet" href="assets/css/contact.css?v=20260826-contact-v1">
 </head>
 <body>
   <div data-shared-header></div>
 
   <main class="contact-page">
     <section class="contact-heading">
-      <span class="contact-kicker">Hỗ trợ FoodHub</span>
+      <div class="contact-kicker-row">
+        <span class="contact-kicker">Hỗ trợ khách hàng FoodHub</span>
+        <span class="contact-live-status">
+          <span class="status-pulse-dot"></span>
+          Đang hoạt động (8:00 - 22:00)
+        </span>
+      </div>
       <h1>Liên hệ với chúng tôi</h1>
-      <p>Cần hỗ trợ đơn hàng, góp ý món ăn hoặc phản hồi dịch vụ? FoodHub luôn sẵn sàng lắng nghe.</p>
+      <p>Cần hỗ trợ đơn hàng, góp ý món ăn hoặc hợp tác kinh doanh? Đội ngũ FoodHub luôn sẵn sàng lắng nghe và giải đáp mọi thắc mắc của bạn.</p>
     </section>
 
-    <section class="contact-panel">
-      <div class="contact-list">
-        <article class="contact-row">
-          <span class="contact-icon">☎</span>
-          <div>
-            <h2>Hotline</h2>
-            <p>0123 456 789</p>
-            <small>Hỗ trợ mỗi ngày từ 8:00 đến 22:00</small>
-          </div>
-        </article>
+    <div class="contact-main-grid">
+      <!-- Cột trái: Kênh liên hệ trực tiếp -->
+      <section class="contact-channels-card">
+        <div class="channel-card-header">
+          <h2>Thông tin liên hệ trực tiếp</h2>
+          <p>Chọn kênh thuận tiện nhất cho bạn để được hỗ trợ nhanh chóng.</p>
+        </div>
 
-        <article class="contact-row">
-          <span class="contact-icon">✉</span>
-          <div>
-            <h2>Email</h2>
-            <p>foodhub@gmail.com</p>
-            <small>Phản hồi trong vòng 24 giờ</small>
-          </div>
-        </article>
+        <div class="contact-channels-list">
+          <article class="channel-item">
+            <div class="channel-icon-wrap icon-phone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="channel-content">
+              <h3>Hotline đặt món & Khiếu nại</h3>
+              <a href="tel:0123456789" class="channel-value highlight-link">0123 456 789</a>
+              <small>Hỗ trợ mỗi ngày từ 8:00 đến 22:00 (Miễn phí cước)</small>
+            </div>
+            <button type="button" class="copy-btn" onclick="copyContactText('0123456789', this)" title="Sao chép số điện thoại">Sao chép</button>
+          </article>
 
-        <article class="contact-row">
-          <span class="contact-icon">⌂</span>
-          <div>
-            <h2>Địa chỉ</h2>
-            <p>Cần Thơ, Việt Nam</p>
-            <small>Nhận đơn giao trong khu vực nội thành</small>
+          <article class="channel-item">
+            <div class="channel-icon-wrap icon-email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div class="channel-content">
+              <h3>Hòm thư hỗ trợ điện tử</h3>
+              <a href="mailto:foodhub@gmail.com" class="channel-value highlight-link">foodhub@gmail.com</a>
+              <small>Phản hồi và giải quyết trong vòng 24 giờ</small>
+            </div>
+            <button type="button" class="copy-btn" onclick="copyContactText('foodhub@gmail.com', this)" title="Sao chép Email">Sao chép</button>
+          </article>
+
+          <article class="channel-item">
+            <div class="channel-icon-wrap icon-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="channel-content">
+              <h3>Địa chỉ cửa hàng chính</h3>
+              <p class="channel-value">Cần Thơ, Việt Nam</p>
+              <small>Nhận giao hỏa tốc 30 phút trong khu vực nội thành</small>
+            </div>
+          </article>
+        </div>
+
+        <!-- Mạng xã hội kết nối nhanh -->
+        <div class="quick-social-connect">
+          <h3>Kết nối trực tuyến nhanh qua:</h3>
+          <div class="social-buttons-row">
+            <a href="https://zalo.me" target="_blank" rel="noopener" class="social-pill-btn zalo-btn">
+              <span class="social-icon">💬</span>
+              <span>Chat Zalo</span>
+            </a>
+            <a href="https://m.me" target="_blank" rel="noopener" class="social-pill-btn messenger-btn">
+              <span class="social-icon">⚡</span>
+              <span>Facebook Messenger</span>
+            </a>
+            <a href="feedback.html" class="social-pill-btn support-btn">
+              <span class="social-icon">📝</span>
+              <span>Gửi form phản hồi</span>
+            </a>
           </div>
-        </article>
+        </div>
+      </section>
+
+      <!-- Cột phải: Hộp hướng dẫn gửi phản hồi chi tiết -->
+      <aside class="contact-feedback-box">
+        <div class="feedback-box-kicker">
+          <span class="badge-tag">Hỗ trợ 24/7</span>
+          <span class="badge-glow"></span>
+        </div>
+        <h2>Gửi góp ý để quản trị viên xử lý</h2>
+        <p>Nếu bạn muốn theo dõi chi tiết tiến trình xử lý, lịch sử khiếu nại và nhận phản hồi chính thức kèm ưu đãi voucher tri ân từ FoodHub, hãy gửi phản hồi trực tiếp qua hệ thống.</p>
+        
+        <ul class="feedback-perks-list">
+          <li>
+            <span class="perk-check">✓</span>
+            <span>Theo dõi trạng thái xử lý đơn hàng & món ăn</span>
+          </li>
+          <li>
+            <span class="perk-check">✓</span>
+            <span>Bảo mật 100% thông tin phản hồi của bạn</span>
+          </li>
+          <li>
+            <span class="perk-check">✓</span>
+            <span>Nhận voucher giảm giá đặc biệt khi đóng góp ý kiến hay</span>
+          </li>
+        </ul>
+
+        <div class="feedback-cta-wrap">
+          <a class="btn feedback-primary-btn" href="feedback.html">
+            <span>Gửi phản hồi ngay</span>
+            <span class="btn-arrow">→</span>
+          </a>
+          <small class="feedback-cta-note">Thao tác nhanh, không cần thủ tục rườm rà</small>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Khối Câu hỏi thường gặp (FAQ) -->
+    <section class="contact-faq-section">
+      <div class="faq-section-header">
+        <span class="contact-kicker">Câu hỏi thường gặp</span>
+        <h2>Giải đáp thắc mắc nhanh</h2>
       </div>
 
-      <aside class="contact-action">
-        <span class="contact-kicker">Cần phản hồi chi tiết?</span>
-        <h2>Gửi góp ý để quản trị viên xử lý</h2>
-        <p>Nếu bạn muốn theo dõi trạng thái xử lý và câu trả lời từ FoodHub, hãy gửi phản hồi trong khu vực tài khoản.</p>
-        <a class="btn" href="feedback.html">Gửi phản hồi</a>
-      </aside>
+      <div class="faq-grid">
+        <details class="faq-card">
+          <summary>
+            <strong>Thời gian giao hàng mất bao lâu?</strong>
+            <span class="faq-chevron">▾</span>
+          </summary>
+          <p>FoodHub cam kết giao hàng hỏa tốc trong vòng 30 - 45 phút đối với các đơn hàng trong khu vực nội thành.</p>
+        </details>
+
+        <details class="faq-card">
+          <summary>
+            <strong>Phí vận chuyển được tính như thế nào?</strong>
+            <span class="faq-chevron">▾</span>
+          </summary>
+          <p>Phí giao hàng được tính tự động theo khoảng cách từ cửa hàng đến vị trí của bạn (chỉ từ 15.000đ). FoodHub thường xuyên có mã miễn phí vận chuyển trong mục Voucher.</p>
+        </details>
+
+        <details class="faq-card">
+          <summary>
+            <strong>Tôi có thể hủy hoặc đổi món sau khi đặt không?</strong>
+            <span class="faq-chevron">▾</span>
+          </summary>
+          <p>Khi đơn hàng đang ở trạng thái 'Chờ xác nhận', bạn có thể liên hệ ngay hotline 0123 456 789 để nhân viên hỗ trợ điều chỉnh kịp thời trước khi bếp chuẩn bị món.</p>
+        </details>
+
+        <details class="faq-card">
+          <summary>
+            <strong>FoodHub hỗ trợ những hình thức thanh toán nào?</strong>
+            <span class="faq-chevron">▾</span>
+          </summary>
+          <p>Chúng tôi hỗ trợ đa dạng phương thức: Tiền mặt khi nhận hàng (COD), Chuyển khoản QR ngân hàng tự động, và cổng thanh toán VNPay.</p>
+        </details>
+      </div>
     </section>
   </main>
+
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260824-track-timeout"></script>
-  <script src="assets/js/script.js?v=20260826-user-favorites"></script>
+  <script src="assets/js/shared-layout.js?v=20260826-contact-v1"></script>
+  <script src="assets/js/script.js?v=20260826-contact-v1"></script>
+  <script>
+    function copyContactText(text, btn) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          const original = btn.textContent;
+          btn.textContent = "Đã chép ✓";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      }
+    }
+  </script>
 </body>
 </html>
