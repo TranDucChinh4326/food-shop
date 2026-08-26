@@ -5952,27 +5952,6 @@ footer {
 }
 
 .suggestion-section {
-  background: linear-gradient(180deg, #fffaf6, #fff5ee);
-  border: 1px solid #f0dacd;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.suggestion-heading {
-  align-items: center;
-  display: flex;
-  gap: 14px;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.suggestion-heading span {
-  color: #ff5722;
-  display: block;
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-.suggestion-section {
   background: linear-gradient(180deg, #fffcf9 0%, #fff6ef 100%);
   border: 1px solid #f6ded2;
   border-radius: 16px;
