@@ -2050,7 +2050,10 @@ function renderStats(data) {
     statsCategories.innerHTML = renderCategorySummary(data.categorySales || []);
     bindCategoryDonutInteractions();
   }
-  if (statsCustomers) statsCustomers.innerHTML = renderCustomerStats(data.customerStats || []);
+  if (statsCustomers) {
+    statsCustomers.innerHTML = renderCustomerStats(data.customerStats || []);
+    bindCustomerStatsEvents();
+  }
   if (statsSatisfaction) statsSatisfaction.innerHTML = renderSatisfaction(data.feedback || {});
 }
 
@@ -2440,43 +2443,261 @@ function bindCategoryDonutInteractions() {
   });
 }
 
+let cachedCustomerStatsData = [];
+let customerStatsState = {
+  search: "",
+  filter: "all",
+  sortBy: "revenue",
+  sortDir: "desc",
+  page: 1,
+  pageSize: 5
+};
+
 function renderCustomerStats(rows) {
-  if (!rows.length) return `<p class="empty-note">Chưa có tài khoản khách hàng.</p>`;
+  cachedCustomerStatsData = rows || [];
+  customerStatsState.page = 1;
+  return renderCustomerStatsContainer();
+}
+
+function getFilteredCustomerStats() {
+  const query = customerStatsState.search.trim().toLowerCase();
+  const filter = customerStatsState.filter;
+
+  return cachedCustomerStatsData.filter(item => {
+    const totalOrders = Number(item.total_orders || 0);
+    const revenue = Number(item.revenue || 0);
+
+    if (filter === "has_orders" && totalOrders === 0) return false;
+    if (filter === "no_orders" && totalOrders > 0) return false;
+    if (filter === "vip" && revenue < 500000) return false;
+
+    if (query) {
+      const matchText = [
+        item.customer_name,
+        item.email,
+        item.phone
+      ].join(" ").toLowerCase();
+      if (!matchText.includes(query)) return false;
+    }
+
+    return true;
+  }).sort((a, b) => {
+    let diff = 0;
+    if (customerStatsState.sortBy === "revenue") {
+      diff = Number(b.revenue || 0) - Number(a.revenue || 0);
+    } else if (customerStatsState.sortBy === "orders") {
+      diff = Number(b.total_orders || 0) - Number(a.total_orders || 0);
+    } else if (customerStatsState.sortBy === "done_orders") {
+      diff = Number(b.done_orders || 0) - Number(a.done_orders || 0);
+    } else if (customerStatsState.sortBy === "date") {
+      const dateA = a.last_order_at ? new Date(a.last_order_at).getTime() : 0;
+      const dateB = b.last_order_at ? new Date(b.last_order_at).getTime() : 0;
+      diff = dateB - dateA;
+    } else if (customerStatsState.sortBy === "name") {
+      diff = String(a.customer_name || "").localeCompare(String(b.customer_name || ""), "vi");
+    }
+    return customerStatsState.sortDir === "asc" ? -diff : diff;
+  });
+}
+
+function renderCustomerStatsContainer() {
+  if (!cachedCustomerStatsData.length) return `<p class="empty-note">Chưa có tài khoản khách hàng.</p>`;
+
+  const filtered = getFilteredCustomerStats();
+  const totalCount = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / customerStatsState.pageSize));
+  customerStatsState.page = Math.min(Math.max(1, customerStatsState.page), totalPages);
+
+  const startIndex = (customerStatsState.page - 1) * customerStatsState.pageSize;
+  const pagedRows = filtered.slice(startIndex, startIndex + customerStatsState.pageSize);
+
+  const getSortIcon = (field) => {
+    if (customerStatsState.sortBy !== field) return '<span class="sort-neutral">↕</span>';
+    return customerStatsState.sortDir === "asc" ? '<span class="sort-active">↑</span>' : '<span class="sort-active">↓</span>';
+  };
 
   return `
-    <div class="table-wrap customer-stats-table">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Khách hàng</th>
-            <th>Tổng đơn</th>
-            <th>Hoàn tất</th>
-            <th>Tổng chi tiêu</th>
-            <th>Đơn gần nhất</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(item => `
+    <div class="customer-stats-container">
+      <!-- Toolbar tìm kiếm, lọc & kích thước trang -->
+      <div class="customer-stats-toolbar">
+        <div class="cust-stats-search-wrap">
+          <input
+            type="search"
+            id="custStatsSearchInput"
+            placeholder="Tìm theo tên, email, SĐT khách..."
+            value="${escapeHtml(customerStatsState.search)}"
+            aria-label="Tìm kiếm khách hàng"
+          />
+        </div>
+        <div class="cust-stats-filter-wrap">
+          <select id="custStatsFilterSelect" aria-label="Bộ lọc khách hàng">
+            <option value="all" ${customerStatsState.filter === "all" ? "selected" : ""}>Tất cả (${cachedCustomerStatsData.length})</option>
+            <option value="has_orders" ${customerStatsState.filter === "has_orders" ? "selected" : ""}>Đã mua hàng (${cachedCustomerStatsData.filter(c => Number(c.total_orders || 0) > 0).length})</option>
+            <option value="vip" ${customerStatsState.filter === "vip" ? "selected" : ""}>Khách VIP ≥ 500k (${cachedCustomerStatsData.filter(c => Number(c.revenue || 0) >= 500000).length})</option>
+            <option value="no_orders" ${customerStatsState.filter === "no_orders" ? "selected" : ""}>Chưa mua hàng (${cachedCustomerStatsData.filter(c => Number(c.total_orders || 0) === 0).length})</option>
+          </select>
+          <select id="custStatsPageSizeSelect" aria-label="Số dòng hiển thị">
+            <option value="5" ${customerStatsState.pageSize === 5 ? "selected" : ""}>5 dòng / trang</option>
+            <option value="10" ${customerStatsState.pageSize === 10 ? "selected" : ""}>10 dòng / trang</option>
+            <option value="20" ${customerStatsState.pageSize === 20 ? "selected" : ""}>20 dòng / trang</option>
+            <option value="50" ${customerStatsState.pageSize === 50 ? "selected" : ""}>50 dòng / trang</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bảng dữ liệu có thể sắp xếp theo cột -->
+      <div class="table-wrap customer-stats-table">
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td>
-                <div class="customer-cell">
-                  <span class="customer-avatar">${escapeHtml((item.customer_name || "KH").slice(0, 2).toUpperCase())}</span>
-                  <div>
-                    <strong>${escapeHtml(item.customer_name)}</strong>
-                    <small>${escapeHtml(item.email || "")}</small>
-                  </div>
-                </div>
-              </td>
-              <td><span class="badge badge-subtle">${Number(item.total_orders || 0).toLocaleString("vi-VN")}</span></td>
-              <td><span class="badge badge-success">${Number(item.done_orders || 0).toLocaleString("vi-VN")}</span></td>
-              <td><strong class="text-accent">${formatMoney(item.revenue || 0)}</strong></td>
-              <td><small>${item.last_order_at ? formatDateTime(item.last_order_at) : "Chưa có"}</small></td>
+              <th data-cust-sort="name" class="sortable-th ${customerStatsState.sortBy === "name" ? "is-sorted" : ""}" title="Bấm để sắp xếp theo Tên">
+                Khách hàng <span class="sort-indicator">${getSortIcon("name")}</span>
+              </th>
+              <th data-cust-sort="orders" class="sortable-th ${customerStatsState.sortBy === "orders" ? "is-sorted" : ""}" title="Bấm để sắp xếp theo Tổng đơn">
+                Tổng đơn <span class="sort-indicator">${getSortIcon("orders")}</span>
+              </th>
+              <th data-cust-sort="done_orders" class="sortable-th ${customerStatsState.sortBy === "done_orders" ? "is-sorted" : ""}" title="Bấm để sắp xếp theo Hoàn tất">
+                Hoàn tất <span class="sort-indicator">${getSortIcon("done_orders")}</span>
+              </th>
+              <th data-cust-sort="revenue" class="sortable-th ${customerStatsState.sortBy === "revenue" ? "is-sorted" : ""}" title="Bấm để sắp xếp theo Tổng chi tiêu">
+                Tổng chi tiêu <span class="sort-indicator">${getSortIcon("revenue")}</span>
+              </th>
+              <th data-cust-sort="date" class="sortable-th ${customerStatsState.sortBy === "date" ? "is-sorted" : ""}" title="Bấm để sắp xếp theo Đơn gần nhất">
+                Đơn gần nhất <span class="sort-indicator">${getSortIcon("date")}</span>
+              </th>
             </tr>
+          </thead>
+          <tbody>
+            ${!pagedRows.length ? `
+              <tr>
+                <td colspan="5" class="empty-table-cell">Không tìm thấy khách hàng nào phù hợp với tìm kiếm.</td>
+              </tr>
+            ` : pagedRows.map(item => {
+              const revenue = Number(item.revenue || 0);
+              const totalOrders = Number(item.total_orders || 0);
+              const doneOrders = Number(item.done_orders || 0);
+              const tierBadge = revenue >= 1000000
+                ? `<span class="cust-tier-badge tier-diamond" title="Khách Kim Cương (≥ 1 triệu)">👑 VIP</span>`
+                : revenue >= 500000
+                ? `<span class="cust-tier-badge tier-gold" title="Khách Vàng (≥ 500k)">💎 VIP</span>`
+                : totalOrders > 0
+                ? `<span class="cust-tier-badge tier-member" title="Thành viên đã mua">🌟 Thân thiết</span>`
+                : `<span class="cust-tier-badge tier-new" title="Khách mới đăng ký">👤 Mới</span>`;
+
+              return `
+                <tr>
+                  <td>
+                    <div class="customer-cell">
+                      <span class="customer-avatar ${revenue >= 500000 ? "has-vip-glow" : ""}">${escapeHtml((item.customer_name || "KH").slice(0, 2).toUpperCase())}</span>
+                      <div>
+                        <div class="cust-name-row">
+                          <strong>${escapeHtml(item.customer_name)}</strong>
+                          ${tierBadge}
+                        </div>
+                        <small>${escapeHtml(item.email || "")}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-subtle">${totalOrders.toLocaleString("vi-VN")}</span></td>
+                  <td><span class="badge ${doneOrders > 0 ? "badge-success" : "badge-subtle"}">${doneOrders.toLocaleString("vi-VN")}</span></td>
+                  <td><strong class="text-accent ${revenue > 0 ? "highlight-revenue" : ""}">${formatMoney(revenue)}</strong></td>
+                  <td><small class="last-order-time">${item.last_order_at ? formatDateTime(item.last_order_at) : '<span class="text-muted">Chưa có</span>'}</small></td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Phân trang thông minh -->
+      <div class="customer-stats-pagination">
+        <span class="cust-pagination-info">
+          Hiển thị <strong>${totalCount === 0 ? 0 : startIndex + 1} - ${Math.min(startIndex + customerStatsState.pageSize, totalCount)}</strong> trong tổng số <strong>${totalCount}</strong> khách hàng
+        </span>
+        <div class="cust-pagination-pages">
+          <button type="button" class="cust-page-btn" data-cust-page="${Math.max(1, customerStatsState.page - 1)}" ${customerStatsState.page <= 1 ? "disabled" : ""}>&lsaquo;</button>
+          ${Array.from({ length: totalPages }, (_, i) => i + 1).slice(
+            Math.max(0, Math.min(customerStatsState.page - 3, totalPages - 5)),
+            Math.max(5, Math.min(customerStatsState.page + 2, totalPages))
+          ).map(p => `
+            <button type="button" class="cust-page-btn ${p === customerStatsState.page ? "active" : ""}" data-cust-page="${p}">${p}</button>
           `).join("")}
-        </tbody>
-      </table>
+          <button type="button" class="cust-page-btn" data-cust-page="${Math.min(totalPages, customerStatsState.page + 1)}" ${customerStatsState.page >= totalPages ? "disabled" : ""}>&rsaquo;</button>
+        </div>
+      </div>
     </div>
   `;
+}
+
+function bindCustomerStatsEvents() {
+  const container = document.querySelector(".customer-stats-container");
+  if (!container) return;
+
+  const searchInput = container.querySelector("#custStatsSearchInput");
+  const filterSelect = container.querySelector("#custStatsFilterSelect");
+  const pageSizeSelect = container.querySelector("#custStatsPageSizeSelect");
+  const sortHeaders = container.querySelectorAll(".sortable-th");
+  const pageButtons = container.querySelectorAll("[data-cust-page]");
+
+  function updateTable() {
+    const statsCustomersBox = document.getElementById("statsCustomers");
+    if (statsCustomersBox) {
+      statsCustomersBox.innerHTML = renderCustomerStatsContainer();
+      bindCustomerStatsEvents();
+      const newSearchInput = statsCustomersBox.querySelector("#custStatsSearchInput");
+      if (newSearchInput && document.activeElement?.id === "custStatsSearchInput") {
+        newSearchInput.focus();
+        newSearchInput.selectionStart = newSearchInput.selectionEnd = newSearchInput.value.length;
+      }
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      customerStatsState.search = searchInput.value;
+      customerStatsState.page = 1;
+      updateTable();
+    });
+  }
+
+  if (filterSelect) {
+    filterSelect.addEventListener("change", () => {
+      customerStatsState.filter = filterSelect.value;
+      customerStatsState.page = 1;
+      updateTable();
+    });
+  }
+
+  if (pageSizeSelect) {
+    pageSizeSelect.addEventListener("change", () => {
+      customerStatsState.pageSize = Number(pageSizeSelect.value) || 5;
+      customerStatsState.page = 1;
+      updateTable();
+    });
+  }
+
+  sortHeaders.forEach(th => {
+    th.addEventListener("click", () => {
+      const sortField = th.dataset.custSort;
+      if (customerStatsState.sortBy === sortField) {
+        customerStatsState.sortDir = customerStatsState.sortDir === "asc" ? "desc" : "asc";
+      } else {
+        customerStatsState.sortBy = sortField;
+        customerStatsState.sortDir = "desc";
+      }
+      updateTable();
+    });
+  });
+
+  pageButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const page = Number(btn.dataset.custPage);
+      if (page && page !== customerStatsState.page) {
+        customerStatsState.page = page;
+        updateTable();
+      }
+    });
+  });
 }
 
 function renderSatisfaction(feedback) {
