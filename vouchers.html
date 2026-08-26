@@ -12,15 +12,15 @@
   <div data-shared-header></div>
 
   <main class="announcements-page">
-    <section class="flash-sale-banner" aria-label="Giờ vàng săn voucher">
+    <section class="flash-sale-banner" data-voucher-banner aria-label="Giờ vàng săn voucher" hidden>
       <div class="flash-sale-info">
         <span class="flash-sale-badge">⚡ Giờ vàng</span>
         <div class="flash-sale-title">
-          Khung giờ săn voucher hot
-          <small>Số lượng có hạn, nhanh tay nhận ưu đãi trước khi hết giờ!</small>
+          <span data-voucher-banner-title>Khung giờ săn voucher hot</span>
+          <small data-voucher-banner-subtitle>Số lượng có hạn, nhanh tay nhận ưu đãi trước khi hết giờ!</small>
         </div>
       </div>
-      <div class="countdown-timer" data-flash-sale-countdown aria-label="Thời gian còn lại">
+      <div class="countdown-timer" data-voucher-countdown aria-label="Thời gian còn lại">
         <span class="timer-unit">
           <b class="timer-num" data-timer-hours>00</b>
           <small>Giờ</small>
@@ -52,6 +52,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260826-pin-clean-v6"></script>
-  <script src="assets/js/script.js?v=20260826-pin-clean-v6"></script>
+  <script src="assets/js/script.js?v=20260826-voucher-banner-v1"></script>
 </body>
 </html>

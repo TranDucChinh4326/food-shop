@@ -3136,16 +3136,60 @@ async function loadOwnedVouchers() {
   }
 }
 
+function getVoucherEndTime(item = {}) {
+  const rawDate = item.endDate || item.expiredAt || item.expiresAt || item.expires_at || "";
+  if (!rawDate) return 0;
+  const normalized = String(rawDate).trim().replace(" ", "T");
+  const timestamp = Date.parse(normalized);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function renderVoucherHuntBanner(vouchers = []) {
+  const banner = document.querySelector("[data-voucher-banner]");
+  if (!banner) return;
+
+  const validVouchers = vouchers
+    .map(item => ({ ...item, endTime: getVoucherEndTime(item) }))
+    .filter(item => item.endTime > Date.now())
+    .sort((a, b) => a.endTime - b.endTime);
+
+  if (!validVouchers.length) {
+    banner.hidden = true;
+    const timer = banner.querySelector(".countdown-timer");
+    if (timer) delete timer.dataset.voucherCountdown;
+    return;
+  }
+
+  const nearest = validVouchers[0];
+  const title = banner.querySelector("[data-voucher-banner-title]");
+  const subtitle = banner.querySelector("[data-voucher-banner-subtitle]");
+  const timer = banner.querySelector(".countdown-timer");
+
+  if (title) title.textContent = nearest.name || nearest.code || "Voucher đang phát hành";
+  if (subtitle) {
+    const remainingText = nearest.remainingGlobal === null
+      ? "Không giới hạn số lượng"
+      : `Còn ${Number(nearest.remainingGlobal || 0).toLocaleString("vi-VN")} voucher có thể nhận`;
+    subtitle.textContent = `${remainingText}, nhận trước khi hết hạn.`;
+  }
+  if (timer) timer.dataset.voucherCountdown = new Date(nearest.endTime).toISOString();
+
+  banner.hidden = false;
+  initLiveCountdowns();
+}
+
 function renderAvailableVouchers() {
   const box = document.getElementById("availableVouchersList");
   if (!box) return;
 
   if (!isLoggedIn()) {
+    renderVoucherHuntBanner([]);
     box.innerHTML = `<p>Đăng nhập để nhận và lưu voucher vào tài khoản.</p>`;
     return;
   }
 
   if (!availableVouchers.length) {
+    renderVoucherHuntBanner([]);
     box.innerHTML = `<p>Hiện chưa có voucher đang phát hành.</p>`;
     return;
   }
@@ -3157,9 +3201,12 @@ function renderAvailableVouchers() {
   });
 
   if (!claimableVouchers.length) {
+    renderVoucherHuntBanner([]);
     box.innerHTML = `<p>Hiện không có voucher nào có thể nhận thêm.</p>`;
     return;
   }
+
+  renderVoucherHuntBanner(claimableVouchers);
 
   box.innerHTML = claimableVouchers.map(item => `
     <article class="voucher-card">
@@ -4643,9 +4690,23 @@ function initLiveCountdowns() {
       updateCountdownDisplay(timer, remainingMs);
     });
 
+    document.querySelectorAll("[data-voucher-countdown]").forEach(timer => {
+      const targetStr = timer.dataset.voucherCountdown;
+      if (!targetStr) return;
+      const targetTime = Date.parse(targetStr);
+      if (!targetTime) return;
+      const remainingMs = Math.max(0, targetTime - now);
+      updateCountdownDisplay(timer, remainingMs);
+    });
+
     document.querySelectorAll("[data-countdown-target]").forEach(timer => {
       const targetStr = timer.dataset.countdownTarget;
-      const targetTime = targetStr ? (Date.parse(targetStr) || goldenHourTarget) : goldenHourTarget;
+      const targetTime = targetStr ? Date.parse(String(targetStr).trim().replace(" ", "T")) : 0;
+      if (!targetTime) {
+        timer.hidden = true;
+        return;
+      }
+      timer.hidden = false;
       const remainingMs = Math.max(0, targetTime - now);
       updateCountdownDisplay(timer, remainingMs);
     });
