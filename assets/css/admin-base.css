@@ -1987,6 +1987,22 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   min-width: 560px;
 }
 
+.mini-list {
+  margin-top: 18px;
+}
+
+.mini-list .table-wrap {
+  border: 1px solid rgba(255, 90, 38, 0.16);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.muted-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 
 
 .foods-admin-table {

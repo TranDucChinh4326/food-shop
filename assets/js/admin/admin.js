@@ -2,6 +2,7 @@ const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:30
 // Dashboard admin dùng các endpoint này để quản lý dữ liệu thật trong backend.
 // Token admin được gửi kèm request để backend kiểm tra role/permissions trước khi cho thao tác.
 const ADMIN_API = `${API_BASE_URL}/admin`;
+const PUBLIC_FOODS_API = `${API_BASE_URL}/foods`;
 const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -47,6 +48,17 @@ const announcementSearch = document.getElementById("announcementSearch");
 const announcementStatusFilter = document.getElementById("announcementStatusFilter");
 const announcementsCount = document.getElementById("announcementsCount");
 const discountsList = document.getElementById("discountsList");
+const flashSalesList = document.getElementById("flashSalesList");
+const flashSaleForm = document.getElementById("flashSaleForm");
+const flashSaleItemForm = document.getElementById("flashSaleItemForm");
+const flashSaleListView = document.getElementById("flashSaleListView");
+const flashSaleFormView = document.getElementById("flashSaleFormView");
+const flashSaleFormTitle = document.getElementById("flashSaleFormTitle");
+const flashSaleSearch = document.getElementById("flashSaleSearch");
+const flashSaleStatusFilter = document.getElementById("flashSaleStatusFilter");
+const flashSalePageSize = document.getElementById("flashSalePageSize");
+const flashSaleFoodSelect = document.getElementById("flashSaleFoodSelect");
+const flashSaleItemsList = document.getElementById("flashSaleItemsList");
 const discountForm = document.getElementById("discountForm");
 const discountListView = document.getElementById("discountListView");
 const discountFormView = document.getElementById("discountFormView");
@@ -108,6 +120,7 @@ const SECTION_PERMISSIONS = {
   accounts: ["users.manage", "staff.manage"],
   announcements: ["announcements.manage"],
   advertisements: ["ads.manage"],
+  "flash-sales": ["discounts.manage"],
   discounts: ["discounts.manage"],
   shipping: ["shipping.manage"],
   feedback: ["feedback.manage"],
@@ -152,6 +165,11 @@ let cachedAnnouncements = [];
 let announcementsPage = 1;
 let announcementsPerPage = 5;
 let discountSearchTimer;
+let flashSaleSearchTimer;
+let cachedFlashSales = [];
+let flashSalesPage = 1;
+let flashSalesPerPage = 5;
+let flashSaleFoodOptions = [];
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
@@ -222,7 +240,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
+  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "flash-sales", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -259,9 +277,11 @@ function showAdminSection(sectionId) {
       ? "accounts-menu"
       : target === "announcements" || target === "advertisements"
         ? "news-menu"
-        : target === "feedback" || target === "food-reviews"
-          ? "customer-care-menu"
-          : "";
+        : target === "flash-sales" || target === "discounts"
+          ? "promotions-menu"
+          : target === "feedback" || target === "food-reviews"
+            ? "customer-care-menu"
+            : "";
 
   navButtons.forEach(button => {
     const isFoodNav = button.dataset.adminTarget === "foods";
@@ -316,9 +336,11 @@ function applyAdminPermissionUi() {
         ? hasAdminPermission("users.manage") || hasAdminPermission("staff.manage")
         : name === "news-menu"
           ? canAccessSection("announcements") || canAccessSection("advertisements")
-          : name === "customer-care-menu"
-            ? canAccessSection("feedback") || canAccessSection("food-reviews")
-            : true;
+          : name === "promotions-menu"
+            ? canAccessSection("flash-sales") || canAccessSection("discounts")
+            : name === "customer-care-menu"
+              ? canAccessSection("feedback") || canAccessSection("food-reviews")
+              : true;
     if (group) group.hidden = !allowed;
   });
 
@@ -984,6 +1006,309 @@ function renderAnnouncementsTable() {
       </div>
     </div>
   `;
+}
+
+function resetFlashSaleForm() {
+  if (!flashSaleForm) return;
+
+  flashSaleForm.reset();
+  document.getElementById("flashSaleId").value = "";
+  document.getElementById("flashSaleIsActive").value = "1";
+  document.getElementById("saveFlashSaleBtn").textContent = "Lưu flash sale";
+  if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Thêm mới flash sale";
+  resetFlashSaleItemForm();
+  if (flashSaleItemForm) flashSaleItemForm.hidden = true;
+  renderFlashSaleItems();
+}
+
+function resetFlashSaleItemForm() {
+  if (!flashSaleItemForm) return;
+
+  flashSaleItemForm.reset();
+  document.getElementById("flashSaleItemSaleId").value = document.getElementById("flashSaleId")?.value || "";
+  document.getElementById("flashSaleItemSort").value = "0";
+  document.getElementById("flashSaleItemIsActive").value = "1";
+}
+
+function renderFlashSaleItems(items = [], saleId = "") {
+  if (!flashSaleItemsList) return;
+
+  if (!items.length) {
+    flashSaleItemsList.innerHTML = `<p class="muted-note">Chưa có món nào trong flash sale.</p>`;
+    return;
+  }
+
+  flashSaleItemsList.innerHTML = `
+    <div class="table-wrap compact-table">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Món</th>
+            <th>Giá sale</th>
+            <th>Giới hạn</th>
+            <th>Đã bán</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(item => `
+            <tr>
+              <td><strong>${escapeHtml(item.food_name || item.foodName || item.name || "")}</strong></td>
+              <td>${formatMoney(item.sale_price || item.salePrice || 0)}</td>
+              <td>${Number(item.stock_limit ?? item.stockLimit ?? 0) || "Không giới hạn"}</td>
+              <td>${Number(item.sold_count ?? item.soldCount ?? 0).toLocaleString("vi-VN")}</td>
+              <td>${renderFlashSaleStatus(item.is_active || item.isActive ? "active" : "hidden")}</td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn delete" title="Xóa món" aria-label="Xóa món khỏi flash sale" data-delete-flash-sale-item="${item.id}" data-flash-sale-id="${saleId}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openFlashSaleForm() {
+  if (!flashSaleForm) return;
+
+  if (flashSaleListView) flashSaleListView.hidden = true;
+  if (flashSaleFormView) flashSaleFormView.hidden = false;
+  flashSaleForm.classList.add("is-open");
+  flashSaleForm.hidden = false;
+  (flashSaleFormView || flashSaleForm).scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeFlashSaleForm() {
+  if (!flashSaleForm) return;
+
+  flashSaleForm.classList.remove("is-open");
+  flashSaleForm.hidden = true;
+  if (flashSaleItemForm) flashSaleItemForm.hidden = true;
+  if (flashSaleFormView) flashSaleFormView.hidden = true;
+  if (flashSaleListView) flashSaleListView.hidden = false;
+}
+
+function readFlashSalePayload() {
+  return {
+    title: document.getElementById("flashSaleTitle").value,
+    startsAt: document.getElementById("flashSaleStartsAt").value || null,
+    endsAt: document.getElementById("flashSaleEndsAt").value || null,
+    isActive: document.getElementById("flashSaleIsActive").value === "1"
+  };
+}
+
+function readFlashSaleItemPayload() {
+  return {
+    foodId: document.getElementById("flashSaleFoodSelect").value,
+    salePrice: document.getElementById("flashSaleItemPrice").value,
+    stockLimit: document.getElementById("flashSaleItemStock").value,
+    perUserLimit: document.getElementById("flashSaleItemPerUser").value,
+    sortOrder: document.getElementById("flashSaleItemSort").value,
+    isActive: document.getElementById("flashSaleItemIsActive").value === "1"
+  };
+}
+
+function normalizeFlashSaleFood(food) {
+  return {
+    id: food.id,
+    name: food.name || food.title || "Món ăn",
+    price: Number(food.price || food.original_price || food.originalPrice || 0)
+  };
+}
+
+function renderFlashSaleFoodOptions() {
+  if (!flashSaleFoodSelect) return;
+
+  const options = flashSaleFoodOptions
+    .slice()
+    .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "vi"))
+    .map(food => `<option value="${food.id}">${escapeHtml(food.name)} - ${formatMoney(food.price || food.originalPrice || 0)}</option>`)
+    .join("");
+
+  flashSaleFoodSelect.innerHTML = `<option value="">Chọn món</option>${options}`;
+}
+
+async function loadFlashSaleFoodOptions() {
+  if (!flashSaleFoodSelect || flashSaleFoodOptions.length) return;
+
+  try {
+    const foods = await requestJson(PUBLIC_FOODS_API);
+    flashSaleFoodOptions = Array.isArray(foods) ? foods.map(normalizeFlashSaleFood) : [];
+    renderFlashSaleFoodOptions();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function fillFlashSaleForm(sale) {
+  const detail = sale.items ? sale : await requestJson(`${ADMIN_API}/flash-sales/${sale.id}`);
+
+  document.getElementById("flashSaleId").value = detail.id || "";
+  document.getElementById("flashSaleTitle").value = detail.title || "";
+  document.getElementById("flashSaleStartsAt").value = formatDateInputValue(detail.starts_at || detail.startsAt);
+  document.getElementById("flashSaleEndsAt").value = formatDateInputValue(detail.ends_at || detail.endsAt);
+  document.getElementById("flashSaleIsActive").value = detail.is_active || detail.isActive ? "1" : "0";
+  document.getElementById("saveFlashSaleBtn").textContent = "Cập nhật flash sale";
+  if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Cập nhật flash sale";
+  if (flashSaleItemForm) {
+    document.getElementById("flashSaleItemSaleId").value = detail.id || "";
+    flashSaleItemForm.hidden = false;
+  }
+  renderFlashSaleItems(detail.items || [], detail.id || "");
+  await loadFlashSaleFoodOptions();
+  openFlashSaleForm();
+}
+
+function getFilteredFlashSales() {
+  const q = String(flashSaleSearch?.value || "").trim().toLowerCase();
+  const status = flashSaleStatusFilter?.value || "all";
+
+  return cachedFlashSales.filter(sale => {
+    const matchesSearch = !q || `${sale.title || ""}`.toLowerCase().includes(q);
+    const matchesStatus = status === "all" || sale.status === status;
+    return matchesSearch && matchesStatus;
+  });
+}
+
+async function loadFlashSales() {
+  if (!flashSalesList) return;
+
+  flashSalesList.textContent = "Đang tải flash sale...";
+
+  try {
+    cachedFlashSales = await requestJson(`${ADMIN_API}/flash-sales`);
+    flashSalesPage = Math.min(flashSalesPage, Math.ceil(cachedFlashSales.length / flashSalesPerPage)) || 1;
+    renderFlashSalesTable();
+  } catch (error) {
+    flashSalesList.textContent = error.message;
+  }
+}
+
+function renderFlashSaleStatus(status) {
+  const labels = {
+    active: "Đang chạy",
+    scheduled: "Sắp diễn ra",
+    expired: "Đã kết thúc",
+    hidden: "Đã ẩn"
+  };
+  const tone = status === "active" ? "success" : status === "hidden" ? "danger" : status === "scheduled" ? "warning" : "muted";
+  return `<span class="status-pill ${tone}">${labels[status] || status || "Không rõ"}</span>`;
+}
+
+function renderFlashSalesTable() {
+  if (!flashSalesList) return;
+
+  flashSalesPerPage = Number(flashSalePageSize?.value || flashSalesPerPage || 5);
+  if (![5, 10, 20].includes(flashSalesPerPage)) flashSalesPerPage = 5;
+  const rows = getFilteredFlashSales();
+  const total = rows.length;
+  const totalPages = Math.max(1, Math.ceil(total / flashSalesPerPage));
+  flashSalesPage = Math.min(Math.max(flashSalesPage, 1), totalPages);
+  const startIndex = (flashSalesPage - 1) * flashSalesPerPage;
+  const pageItems = rows.slice(startIndex, startIndex + flashSalesPerPage);
+
+  if (!pageItems.length) {
+    flashSalesList.textContent = "Chưa có flash sale phù hợp.";
+    return;
+  }
+
+  flashSalesList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table discounts-table">
+        <thead>
+          <tr>
+            <th>Chương trình</th>
+            <th>Thời gian</th>
+            <th>Món</th>
+            <th>Đã bán</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pageItems.map(item => `
+            <tr>
+              <td><strong>${escapeHtml(item.title || "")}</strong></td>
+              <td>
+                <span>${formatDateTime(item.starts_at) || "Bắt đầu ngay"}</span>
+                <small>${formatDateTime(item.ends_at) || "Không giới hạn"}</small>
+              </td>
+              <td>${Number(item.item_count || 0).toLocaleString("vi-VN")}</td>
+              <td>${Number(item.sold_count || 0).toLocaleString("vi-VN")}</td>
+              <td>${renderFlashSaleStatus(item.status)}</td>
+              <td>
+                <div class="table-actions">
+                  <button type="button" class="icon-btn edit" title="Sửa" aria-label="Sửa flash sale" data-edit-flash-sale="${item.id}">${editIcon()}</button>
+                  <button type="button" class="icon-btn delete" title="Xóa" aria-label="Xóa flash sale" data-delete-flash-sale="${item.id}">${trashIcon()}</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="admin-pagination">
+      <span>Hiển thị ${startIndex + 1}-${Math.min(startIndex + flashSalesPerPage, total)} / ${total}</span>
+      <div class="pagination-buttons">
+        <button type="button" data-flash-sales-page="prev" ${flashSalesPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${getCompactPaginationItems(totalPages, flashSalesPage).map(page => renderAdminPaginationButton(page, flashSalesPage, "flash-sales")).join("")}
+        <button type="button" data-flash-sales-page="next" ${flashSalesPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveFlashSale(event) {
+  event.preventDefault();
+
+  const flashSaleId = document.getElementById("flashSaleId").value;
+  const payload = readFlashSalePayload();
+
+  try {
+    const result = await requestJson(`${ADMIN_API}/flash-sales${flashSaleId ? `/${flashSaleId}` : ""}`, {
+      method: flashSaleId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+    const savedId = flashSaleId || result.id;
+
+    document.getElementById("flashSaleId").value = savedId || "";
+    document.getElementById("flashSaleItemSaleId").value = savedId || "";
+    if (flashSaleItemForm && savedId) flashSaleItemForm.hidden = false;
+    if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Cập nhật flash sale";
+    document.getElementById("saveFlashSaleBtn").textContent = "Cập nhật flash sale";
+    showAdminToast(flashSaleId ? "Đã cập nhật flash sale." : "Đã tạo flash sale.");
+    await loadFlashSales();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function saveFlashSaleItem(event) {
+  event.preventDefault();
+
+  const saleId = document.getElementById("flashSaleItemSaleId").value || document.getElementById("flashSaleId").value;
+  if (!saleId) {
+    showAdminToast("Vui lòng lưu flash sale trước khi thêm món.", "error");
+    return;
+  }
+
+  try {
+    await requestJson(`${ADMIN_API}/flash-sales/${saleId}/items`, {
+      method: "POST",
+      body: JSON.stringify(readFlashSaleItemPayload())
+    });
+    showAdminToast("Đã lưu món flash sale.");
+    resetFlashSaleItemForm();
+    const detail = await requestJson(`${ADMIN_API}/flash-sales/${saleId}`);
+    renderFlashSaleItems(detail.items || [], saleId);
+    await loadFlashSales();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
 }
 
 function resetDiscountForm() {
@@ -3639,6 +3964,7 @@ document.getElementById("refreshCategoriesBtn")?.addEventListener("click", loadC
 document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
+document.getElementById("refreshFlashSalesBtn")?.addEventListener("click", loadFlashSales);
 document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDiscounts);
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
@@ -3678,6 +4004,15 @@ document.getElementById("resetDiscountFormBtn")?.addEventListener("click", () =>
   resetDiscountForm();
   openDiscountForm();
 });
+document.getElementById("resetFlashSaleFormBtn")?.addEventListener("click", async () => {
+  resetFlashSaleForm();
+  await loadFlashSaleFoodOptions();
+  openFlashSaleForm();
+});
+document.querySelector("[data-back-flash-sale-list]")?.addEventListener("click", () => {
+  resetFlashSaleForm();
+  closeFlashSaleForm();
+});
 document.querySelector("[data-back-discount-list]")?.addEventListener("click", () => {
   resetDiscountForm();
   closeDiscountForm();
@@ -3697,6 +4032,33 @@ document.getElementById("resetAdvertisementFormBtn")?.addEventListener("click", 
 });
 categoryForm?.addEventListener("submit", saveCategory);
 categoryForm?.querySelector("[data-reset-category]")?.addEventListener("click", resetCategoryForm);
+flashSaleForm?.addEventListener("submit", saveFlashSale);
+flashSaleForm?.querySelector("[data-reset-flash-sale]")?.addEventListener("click", () => {
+  resetFlashSaleForm();
+  closeFlashSaleForm();
+});
+flashSaleItemForm?.addEventListener("submit", saveFlashSaleItem);
+flashSaleItemForm?.querySelector("[data-reset-flash-sale-item]")?.addEventListener("click", resetFlashSaleItemForm);
+flashSaleItemsList?.addEventListener("click", async event => {
+  const deleteButton = event.target.closest("[data-delete-flash-sale-item]");
+  if (!deleteButton) return;
+
+  const saleId = deleteButton.dataset.flashSaleId || document.getElementById("flashSaleId").value;
+  if (!saleId || !confirm("Xóa món này khỏi flash sale?")) return;
+
+  try {
+    await requestJson(`${ADMIN_API}/flash-sales/${saleId}/items/${deleteButton.dataset.deleteFlashSaleItem}`, {
+      method: "DELETE"
+    });
+    const detail = await requestJson(`${ADMIN_API}/flash-sales/${saleId}`);
+    renderFlashSaleItems(detail.items || [], saleId);
+    await loadFlashSales();
+    showAdminToast("Đã xóa món khỏi flash sale.");
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+closeFlashSaleForm();
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", () => {
   resetDiscountForm();
@@ -3884,6 +4246,20 @@ announcementSearch?.addEventListener("input", () => {
   clearTimeout(announcementSearchTimer);
   announcementsPage = 1;
   announcementSearchTimer = setTimeout(loadAnnouncements, 300);
+});
+flashSaleStatusFilter?.addEventListener("change", () => {
+  flashSalesPage = 1;
+  renderFlashSalesTable();
+});
+flashSalePageSize?.addEventListener("change", () => {
+  flashSalesPerPage = Number(flashSalePageSize.value || 5);
+  flashSalesPage = 1;
+  renderFlashSalesTable();
+});
+flashSaleSearch?.addEventListener("input", () => {
+  clearTimeout(flashSaleSearchTimer);
+  flashSalesPage = 1;
+  flashSaleSearchTimer = setTimeout(renderFlashSalesTable, 250);
 });
 discountStatusFilter?.addEventListener("change", () => {
   discountsPage = 1;
@@ -4189,6 +4565,49 @@ announcementsList?.addEventListener("click", async event => {
       });
       showAdminToast("Đã xóa thông báo.");
       await loadAnnouncements();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
+
+flashSalesList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-flash-sales-page]");
+  const editButton = event.target.closest("[data-edit-flash-sale]");
+  const deleteButton = event.target.closest("[data-delete-flash-sale]");
+
+  try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.flashSalesPage;
+      const totalPages = Math.max(1, Math.ceil(getFilteredFlashSales().length / flashSalesPerPage));
+
+      if (pageAction === "prev") {
+        flashSalesPage -= 1;
+      } else if (pageAction === "next") {
+        flashSalesPage += 1;
+      } else {
+        flashSalesPage = Number(pageAction);
+      }
+
+      flashSalesPage = Math.min(Math.max(flashSalesPage, 1), totalPages);
+      renderFlashSalesTable();
+      return;
+    }
+
+    if (editButton) {
+      const sale = await requestJson(`${ADMIN_API}/flash-sales/${editButton.dataset.editFlashSale}`);
+      await fillFlashSaleForm(sale);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("Xóa vĩnh viễn flash sale này?")) return;
+
+      await requestJson(`${ADMIN_API}/flash-sales/${deleteButton.dataset.deleteFlashSale}`, {
+        method: "DELETE"
+      });
+      showAdminToast("Đã xóa flash sale.");
+      await loadFlashSales();
     }
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -4522,6 +4941,7 @@ async function initAdminPage() {
   }
   if (canAccessSection("accounts")) loadUsers();
   if (hasAdminPermission("announcements.manage")) loadAnnouncements();
+  if (canAccessSection("flash-sales")) loadFlashSales();
   if (canAccessSection("discounts")) loadDiscounts();
   if (canAccessSection("shipping")) loadShippingMethodsAdmin();
   if (hasAdminPermission("ads.manage")) loadAdvertisements();

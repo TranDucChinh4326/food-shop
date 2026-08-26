@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản trị FoodHub</title>
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260826-customer-pagination-v7">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260826-flash-sale-admin-v1">
   <link rel="stylesheet" href="assets/css/admin.css?v=20260826-customer-pagination-v7">
 </head>
 <body>
@@ -43,7 +43,15 @@
           <a href="admin.html?section=advertisements" data-admin-target="advertisements"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
         </div>
       </div>
-      <a class="admin-nav-btn" href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      <div class="admin-nav-group">
+        <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="promotions-menu" aria-expanded="false">
+          <span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Quản lý khuyến mãi</span>
+        </button>
+        <div class="admin-subnav">
+          <a href="admin.html?section=flash-sales" data-admin-target="flash-sales"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Flash sale</span></a>
+          <a href="admin.html?section=discounts" data-admin-target="discounts"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+        </div>
+      </div>
       <a class="admin-nav-btn" href="admin.html?section=shipping" data-admin-target="shipping"><span class="nav-icon" data-icon="delivery" aria-hidden="true"></span><span class="nav-text">Phí vận chuyển</span></a>
       <a class="admin-nav-btn" href="admin.html?section=audit-logs" data-admin-target="audit-logs"><span class="nav-icon" data-icon="audit" aria-hidden="true"></span><span class="nav-text">Nhật ký</span></a>
       <div class="admin-nav-group">
@@ -445,12 +453,137 @@
       </section>
     </section>
 
+    <section class="admin-section" data-admin-section="flash-sales">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Flash sale</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý khuyến mãi <span>/</span> Flash sale</p>
+          </div>
+          <div class="heading-actions">
+            <button id="resetFlashSaleFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshFlashSalesBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div id="flashSaleFormView" class="admin-form-view" hidden>
+          <div class="form-subheading">
+            <div>
+              <h3 id="flashSaleFormTitle">Thêm mới flash sale</h3>
+              <p>Tạo khung giờ giảm giá và gắn món sale với số lượng giới hạn.</p>
+            </div>
+            <button type="button" class="ghost-btn" data-back-flash-sale-list>Quay về danh sách</button>
+          </div>
+
+          <form id="flashSaleForm" class="announcement-page-form discount-form">
+            <input type="hidden" id="flashSaleId">
+            <div class="announcement-date-grid">
+              <label>
+                Tên chương trình
+                <input id="flashSaleTitle" type="text" placeholder="VD: Giờ vàng trưa nay" maxlength="150" required>
+              </label>
+              <label>
+                Trạng thái
+                <select id="flashSaleIsActive">
+                  <option value="1">Hoạt động</option>
+                  <option value="0">Ẩn</option>
+                </select>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Bắt đầu
+                <input id="flashSaleStartsAt" type="datetime-local">
+              </label>
+              <label>
+                Kết thúc
+                <input id="flashSaleEndsAt" type="datetime-local">
+              </label>
+            </div>
+            <div class="account-form-actions form-actions">
+              <button id="saveFlashSaleBtn" type="submit" class="primary-btn">Lưu flash sale</button>
+              <button type="button" class="ghost-btn" data-reset-flash-sale>Nhập lại</button>
+            </div>
+          </form>
+
+          <form id="flashSaleItemForm" class="announcement-page-form discount-form flash-sale-item-form" hidden>
+            <input type="hidden" id="flashSaleItemSaleId">
+            <div class="form-subheading compact">
+              <div>
+                <h3>Món trong flash sale</h3>
+                <p>Giá flash sale phải nhỏ hơn giá gốc. Số lượng sale bỏ trống là không giới hạn.</p>
+              </div>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Chọn món
+                <select id="flashSaleFoodSelect" required>
+                  <option value="">Chọn món</option>
+                </select>
+              </label>
+              <label>
+                Giá flash sale
+                <input id="flashSaleItemPrice" type="number" min="1000" step="1000" placeholder="VD: 25000" required>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Số lượng sale
+                <input id="flashSaleItemStock" type="number" min="0" step="1" placeholder="Bỏ trống nếu không giới hạn">
+              </label>
+              <label>
+                Giới hạn mỗi khách
+                <input id="flashSaleItemPerUser" type="number" min="0" step="1" placeholder="VD: 2">
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Thứ tự
+                <input id="flashSaleItemSort" type="number" min="0" step="1" value="0">
+              </label>
+              <label>
+                Trạng thái món
+                <select id="flashSaleItemIsActive">
+                  <option value="1">Hoạt động</option>
+                  <option value="0">Ẩn</option>
+                </select>
+              </label>
+            </div>
+            <div class="account-form-actions form-actions">
+              <button type="submit" class="primary-btn">Thêm / cập nhật món</button>
+              <button type="button" class="ghost-btn" data-reset-flash-sale-item>Nhập lại món</button>
+            </div>
+            <div id="flashSaleItemsList" class="mini-list"></div>
+          </form>
+        </div>
+
+        <div id="flashSaleListView" class="admin-list-view">
+          <div class="table-toolbar multi-filter">
+            <input type="search" id="flashSaleSearch" placeholder="Tìm kiếm">
+            <select id="flashSaleStatusFilter">
+              <option value="all">Tất cả</option>
+              <option value="active">Đang chạy</option>
+              <option value="scheduled">Sắp diễn ra</option>
+              <option value="expired">Đã kết thúc</option>
+              <option value="hidden">Đã ẩn</option>
+            </select>
+            <select id="flashSalePageSize" aria-label="Số dòng flash sale mỗi trang">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div id="flashSalesList" class="accounts-list table-state">Đang tải flash sale...</div>
+        </div>
+      </section>
+    </section>
+
     <section class="admin-section" data-admin-section="discounts">
       <section class="panel accounts-panel admin-table-page">
         <div class="page-heading">
           <div>
             <h2>Quản lý mã giảm giá</h2>
-            <p><a href="index.html">Trang chủ</a> <span>/</span> Mã giảm giá</p>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý khuyến mãi <span>/</span> Mã giảm giá</p>
           </div>
           <div class="heading-actions">
             <button id="resetDiscountFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
@@ -757,6 +890,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260824-order-refresh-scope"></script>
-  <script src="assets/js/admin/admin.js?v=20260826-customer-pagination-v7"></script>
+  <script src="assets/js/admin/admin.js?v=20260826-flash-sale-admin-v1"></script>
 </body>
 </html>
