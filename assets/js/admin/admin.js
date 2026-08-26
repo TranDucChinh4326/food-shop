@@ -480,6 +480,12 @@ function formatDiscountQuantity(discount) {
 
 function formatDateInputValue(value) {
   if (!value) return "";
+  if (typeof value === "string") {
+    const localMatch = value.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/);
+    if (localMatch && !/[zZ]|[+-]\d{2}:?\d{2}$/.test(value)) {
+      return `${localMatch[1]}T${localMatch[2]}`;
+    }
+  }
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
