@@ -1228,49 +1228,38 @@ button.account-photo-badge {
     flex-direction: row !important;
     overflow-x: auto !important;
     gap: 8px !important;
-    padding: 6px !important;
-    border-radius: 12px !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 4px 16px rgba(77, 42, 22, 0.06) !important;
+    padding: 10px 8px !important;
+    border-radius: 14px !important;
+    background: #ffffff !important;
+    border: 1px solid #f0ded4 !important;
+    box-shadow: 0 4px 14px rgba(77, 42, 22, 0.05) !important;
     box-sizing: border-box !important;
-  }
-
-  .account-sidebar::-webkit-scrollbar {
     display: none !important;
   }
 
   .account-nav-item {
-    flex-shrink: 0 !important;
+    flex: 0 0 auto !important;
     white-space: nowrap !important;
-    min-height: 42px !important;
+    min-height: 40px !important;
     padding: 0 16px !important;
-    font-size: 14px !important;
+    font-size: 13.5px !important;
     gap: 8px !important;
     border-radius: 999px !important;
-    width: auto !important;
     border: 1px solid #f2dbce !important;
-    background: #ffffff !important;
+    background: #fff8f4 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.16s ease, background 0.16s ease !important;
   }
 
-  .account-nav-item.active {
-    background: linear-gradient(135deg, #ff5a23, #ff8722) !important;
-    border-color: #ff7443 !important;
-    color: #fff !important;
+    border-color: #ff5722 !important;
+    color: #ffffff !important;
+    color: #ffffff !important;
   }
 
   .account-summary-card {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
     text-align: center !important;
     gap: 14px !important;
-    padding: 20px 16px !important;
-    border-radius: 14px !important;
-    box-sizing: border-box !important;
-  }
 
   .account-summary-card > div:not(.account-photo-wrap):not(.summary-social-links) {
     width: 100% !important;
