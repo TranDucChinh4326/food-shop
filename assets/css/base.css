@@ -6873,3 +6873,74 @@ footer {
   40%, 60% { transform: translate3d(6px, 0, 0); }
 }
 
+/* ==========================================================================
+   10. Flash Sale Border Beam Effect (Đèn sáng chạy vòng quanh ô món sale)
+   ========================================================================== */
+
+@property --flash-beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes flashSaleBorderRotate {
+  0% {
+    --flash-beam-angle: 0deg;
+  }
+  100% {
+    --flash-beam-angle: 360deg;
+  }
+}
+
+@keyframes flashSaleCardPulse {
+  0%, 100% {
+    box-shadow: 0 14px 34px rgba(255, 75, 31, 0.16), 0 0 14px rgba(255, 122, 40, 0.18);
+  }
+  50% {
+    box-shadow: 0 18px 46px rgba(255, 75, 31, 0.28), 0 0 24px rgba(255, 122, 40, 0.35);
+  }
+}
+
+.home-food-card.is-flash-sale,
+.food-card.is-flash-sale,
+.best-seller-card.is-flash-sale,
+.suggestion-card.is-flash-sale {
+  position: relative !important;
+  isolation: isolate;
+  border-color: rgba(255, 120, 50, 0.35) !important;
+  animation: flashSaleCardPulse 2.4s ease-in-out infinite;
+}
+
+/* Tia sáng chạy vòng quanh viền card */
+.home-food-card.is-flash-sale::before,
+.food-card.is-flash-sale::before,
+.best-seller-card.is-flash-sale::before,
+.suggestion-card.is-flash-sale::before {
+  content: "";
+  position: absolute;
+  inset: -2.5px;
+  border-radius: inherit;
+  padding: 2.5px;
+  background: conic-gradient(
+    from var(--flash-beam-angle, 0deg),
+    transparent 0deg,
+    transparent 230deg,
+    rgba(255, 120, 50, 0.25) 270deg,
+    #ff4b1f 315deg,
+    #ffb703 345deg,
+    #ffffff 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: flashSaleBorderRotate 3.2s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 6px rgba(255, 87, 34, 0.8));
+}
+
+.is-flash-sale .food-flash-badge {
+  box-shadow: 0 0 12px rgba(255, 75, 31, 0.6) !important;
+  animation: flashBadgePulse 1.8s ease-in-out infinite alternate !important;
+}

@@ -1534,7 +1534,11 @@ function renderStockBadge(stock, className = "food-stock-badge") {
 function renderCompactFoodCard(food, options = {}) {
   const stock = Number(food.stockQuantity || 0);
   const sold = Number(food.soldCount || 0);
-  const cardClass = options.compact ? "home-food-card compact" : "home-food-card";
+  const isSale = Boolean(getFoodFlashSale(food));
+  const cardClass = [
+    options.compact ? "home-food-card compact" : "home-food-card",
+    isSale ? "is-flash-sale" : ""
+  ].filter(Boolean).join(" ");
 
   return `
     <article class="${cardClass}" data-open-food-detail="${food.id}">
@@ -1624,9 +1628,10 @@ function renderRecommendationCard(food, context = "cart") {
     ? `<img src="${escapeHtml(food.image)}" alt="${escapeHtml(food.name)}">`
     : `<span aria-hidden="true">FH</span>`;
   const detailUrl = getFoodDetailUrl(food.id, { from: context === "cart" ? "cart" : "home" });
+  const isSale = Boolean(getFoodFlashSale(food));
 
   return `
-    <article class="suggestion-card" data-open-food-detail="${food.id}" data-detail-from="${context === "cart" ? "cart" : "home"}">
+    <article class="suggestion-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}" data-detail-from="${context === "cart" ? "cart" : "home"}">
       <a class="suggestion-image" href="${detailUrl}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">${image}</a>
       <div>
         <small>${escapeHtml(getFoodDisplayCategory(food))}</small>
@@ -1661,8 +1666,9 @@ function renderSuggestionSection(items, title, subtitle, context = "cart") {
 }
 
 function renderBestSellerCard(food) {
+  const isSale = Boolean(getFoodFlashSale(food));
   return `
-    <article class="best-seller-card" data-open-food-detail="${food.id}">
+    <article class="best-seller-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}">
       <a class="home-food-detail-trigger" href="${getFoodDetailUrl(food.id, { from: "home" })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}"></a>
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       ${renderFlashSaleBadge(food)}
@@ -2695,9 +2701,10 @@ function renderFoods() {
     const quantityInput = `<input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>`;
     const buttonLabel = stock > 0 ? "Thêm vào giỏ" : "Hết hàng";
     const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
+    const isSale = Boolean(getFoodFlashSale(food));
 
     return `
-      <div class="food-card" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
+      <div class="food-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
         <div class="food-card-img-wrap">
           <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
             <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
