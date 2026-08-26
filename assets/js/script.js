@@ -4945,8 +4945,8 @@ function initChatSupportWidget() {
             ${robotIcon}
           </span>
           <div>
-            <strong>FoodHub</strong>
-            <small>Chat voi chung toi</small>
+            <strong>FoodHub Assistant</strong>
+            <small><span class="chat-live-status-dot"></span>Trực tuyến • Sẵn sàng hỗ trợ</small>
           </div>
         </div>
         <div class="chat-header-actions">
@@ -4964,6 +4964,12 @@ function initChatSupportWidget() {
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, FoodHub có thể hỗ trợ gì cho bạn?</div>
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, giá, khuyến mãi, giao hàng, giỏ hàng hoặc trạng thái đơn.</div>
+        <div class="chat-quick-suggestions">
+          <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
+          <button type="button" class="chat-suggestion-chip" data-chat-prompt="Có những mã giảm giá nào?">🎟️ Voucher ưu đãi</button>
+          <button type="button" class="chat-suggestion-chip" data-chat-prompt="Phí và thời gian giao hàng như thế nào?">🛵 Phí & giao hàng</button>
+          <button type="button" class="chat-suggestion-chip" data-chat-prompt="Kiểm tra trạng thái đơn hàng của tôi">📦 Tra cứu đơn hàng</button>
+        </div>
       </div>
       <form class="chat-form">
         <input type="file" class="chat-file" aria-label="Đính kèm tệp" hidden>
@@ -5099,6 +5105,15 @@ function initChatSupportWidget() {
       <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận tin nhắn của bạn.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  chatMessages.addEventListener("click", event => {
+    const chip = event.target.closest(".chat-suggestion-chip");
+    if (!chip) return;
+    const prompt = chip.dataset.chatPrompt;
+    if (!prompt) return;
+    chatInput.value = prompt;
+    chatForm.dispatchEvent(new Event("submit", { cancelable: true }));
   });
 
   chatForm.addEventListener("submit", async event => {
