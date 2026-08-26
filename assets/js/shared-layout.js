@@ -34,44 +34,46 @@ function renderSharedHeader() {
           </div>
           <div id="headerSearchDropdown" class="header-search-dropdown" hidden role="listbox" aria-label="Gợi ý món ăn"></div>
         </form>
-        <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher khuyến mãi" aria-label="Voucher khuyến mãi" data-voucher-link>
-          <svg class="header-action-svg voucher-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <linearGradient id="fhVoucherGrad" x1="2" y1="4" x2="22" y2="20" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#ff7a28"/>
-                <stop offset="100%" stop-color="#e63e00"/>
-              </linearGradient>
-            </defs>
-            <path d="M3 8.5C4.38 8.5 5.5 7.38 5.5 6V5C5.5 4.45 5.95 4 6.5 4H17.5C18.05 4 18.5 4.45 18.5 5V6C18.5 7.38 19.62 8.5 21 8.5C21.55 8.5 22 8.95 22 9.5V14.5C22 15.05 21.55 15.5 21 15.5C19.62 15.5 18.5 16.62 18.5 18V19C18.5 19.55 18.05 20 17.5 20H6.5C5.95 20 5.5 19.55 5.5 19V18C5.5 16.62 4.38 15.5 3 15.5C2.45 15.5 2 15.05 2 14.5V9.5C2 8.95 2.45 8.5 3 8.5Z" fill="url(#fhVoucherGrad)"/>
-            <path d="M9.5 5V19" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.8 1.8" opacity="0.85"/>
-            <circle cx="14" cy="9.5" r="1.3" fill="#ffffff"/>
-            <circle cx="17" cy="14.5" r="1.3" fill="#ffffff"/>
-            <path d="M17.5 9L13.5 15" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
-          <strong class="top-icon-badge" data-voucher-unread hidden>0</strong>
-        </a>
-        <a href="announcements.html" class="top-icon announcement-icon" title="Thông báo" aria-label="Thông báo" data-announcement-link>
-          <svg class="header-action-svg bell-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <linearGradient id="fhBellGrad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#ff9900"/>
-                <stop offset="100%" stop-color="#ea580c"/>
-              </linearGradient>
-            </defs>
-            <g class="bell-body">
-              <path d="M12 3C8.69 3 6 5.69 6 9V14.17L4.29 15.88C3.8 16.37 4.15 17.21 4.85 17.21H19.15C19.85 17.21 20.2 16.37 19.71 15.88L18 14.17V9C18 5.69 15.31 3 12 3Z" fill="url(#fhBellGrad)"/>
-              <circle cx="12" cy="2.5" r="1.5" fill="url(#fhBellGrad)"/>
-              <path d="M9 8.5C9 6.84 10.34 5.5 12 5.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
-            </g>
-            <path class="bell-clapper" d="M10 18.5C10 19.6 10.9 20.5 12 20.5C13.1 20.5 14 19.6 14 18.5" stroke="#ea580c" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <strong class="top-icon-badge" data-announcement-unread hidden>0</strong>
-        </a>
-        <div id="user-area">
-          <a href="login.html" class="header-action primary">Đăng nhập</a>
-          <a href="register.html" class="header-action secondary">Đăng ký</a>
+        <div class="header-actions-group">
+          <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher khuyến mãi" aria-label="Voucher khuyến mãi" data-voucher-link>
+            <svg class="header-action-svg voucher-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="fhVoucherGrad" x1="2" y1="4" x2="22" y2="20" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ff7a28"/>
+                  <stop offset="100%" stop-color="#e63e00"/>
+                </linearGradient>
+              </defs>
+              <path d="M3 8.5C4.38 8.5 5.5 7.38 5.5 6V5C5.5 4.45 5.95 4 6.5 4H17.5C18.05 4 18.5 4.45 18.5 5V6C18.5 7.38 19.62 8.5 21 8.5C21.55 8.5 22 8.95 22 9.5V14.5C22 15.05 21.55 15.5 21 15.5C19.62 15.5 18.5 16.62 18.5 18V19C18.5 19.55 18.05 20 17.5 20H6.5C5.95 20 5.5 19.55 5.5 19V18C5.5 16.62 4.38 15.5 3 15.5C2.45 15.5 2 15.05 2 14.5V9.5C2 8.95 2.45 8.5 3 8.5Z" fill="url(#fhVoucherGrad)"/>
+              <path d="M9.5 5V19" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="1.8 1.8" opacity="0.85"/>
+              <circle cx="14" cy="9.5" r="1.3" fill="#ffffff"/>
+              <circle cx="17" cy="14.5" r="1.3" fill="#ffffff"/>
+              <path d="M17.5 9L13.5 15" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <strong class="top-icon-badge" data-voucher-unread hidden>0</strong>
+          </a>
+          <a href="announcements.html" class="top-icon announcement-icon" title="Thông báo" aria-label="Thông báo" data-announcement-link>
+            <svg class="header-action-svg bell-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="fhBellGrad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ff9900"/>
+                  <stop offset="100%" stop-color="#ea580c"/>
+                </linearGradient>
+              </defs>
+              <g class="bell-body">
+                <path d="M12 3C8.69 3 6 5.69 6 9V14.17L4.29 15.88C3.8 16.37 4.15 17.21 4.85 17.21H19.15C19.85 17.21 20.2 16.37 19.71 15.88L18 14.17V9C18 5.69 15.31 3 12 3Z" fill="url(#fhBellGrad)"/>
+                <circle cx="12" cy="2.5" r="1.5" fill="url(#fhBellGrad)"/>
+                <path d="M9 8.5C9 6.84 10.34 5.5 12 5.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+              </g>
+              <path class="bell-clapper" d="M10 18.5C10 19.6 10.9 20.5 12 20.5C13.1 20.5 14 19.6 14 18.5" stroke="#ea580c" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <strong class="top-icon-badge" data-announcement-unread hidden>0</strong>
+          </a>
+          <div id="user-area">
+            <a href="login.html" class="header-action primary">Đăng nhập</a>
+            <a href="register.html" class="header-action secondary">Đăng ký</a>
+          </div>
+          <a href="cart.html" class="cart-btn" aria-label="Giỏ hàng">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
         </div>
-        <a href="cart.html" class="cart-btn">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
       </div>
     </div>
 

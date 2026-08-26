@@ -70,6 +70,13 @@ header {
   min-width: 0;
 }
 
+.header-actions-group {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
 
 
 header.header-compact {
@@ -4836,19 +4843,23 @@ footer {
   }
 
   .header-top {
+    align-items: center;
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    gap: 10px;
-    min-height: 66px;
-    padding: 10px 14px;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 8px 10px;
+    min-height: auto;
+    padding: 10px 14px 12px;
   }
 
   .logo {
+    grid-column: 2;
+    grid-row: 1;
     line-height: 1;
     min-width: 0;
     overflow: visible;
     text-align: left;
     white-space: nowrap;
+    justify-self: start;
   }
 
   .brand-logo {
@@ -4871,15 +4882,72 @@ footer {
 
   .header-tools {
     display: contents;
+  }
+
+  .header-actions-group {
+    align-items: center;
+    display: flex;
     gap: 8px;
-    min-width: 0;
+    grid-column: 3;
+    grid-row: 1;
+    justify-content: flex-end;
+  }
+
+  .header-actions-group .top-icon,
+  .header-actions-group .cart-btn {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #f1e3d8;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(40, 24, 14, 0.06);
+    display: inline-flex;
+    height: 38px;
+    justify-content: center;
+    position: relative;
+    text-decoration: none;
+    width: 38px;
+    transition: transform 0.16s ease, border-color 0.16s ease;
+  }
+
+  .header-actions-group .top-icon:active,
+  .header-actions-group .cart-btn:active {
+    transform: scale(0.94);
+  }
+
+  .header-actions-group .cart-btn {
+    font-size: 16px;
+    padding: 0;
+  }
+
+  .header-actions-group .cart-btn span {
+    display: none;
+  }
+
+  .header-actions-group .top-icon-badge,
+  .header-actions-group #cart-count {
+    background: #ff3b30;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(255, 59, 48, 0.35);
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 800;
+    height: 18px;
+    line-height: 14px;
+    min-width: 18px;
+    padding: 0 4px;
+    position: absolute;
+    right: -3px;
+    top: -3px;
+    text-align: center;
+    z-index: 2;
   }
 
   .header-search {
     flex: none;
     grid-column: 1 / -1;
     grid-row: 2;
-    margin: 0;
+    margin: 4px 0 0;
     max-width: none;
     min-width: 0;
     width: 100%;
@@ -4895,12 +4963,6 @@ footer {
     width: 50px;
   }
 
-  .top-icon {
-    font-size: 18px;
-    height: 40px;
-    width: 40px;
-  }
-
   .site-announcements {
     padding: 4px 14px;
   }
@@ -4909,14 +4971,16 @@ footer {
     align-items: center;
     background: #fff7f1;
     border: 1px solid #f4e5dc;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     display: inline-flex;
     flex-direction: column;
     gap: 5px;
-    height: 42px;
+    grid-column: 1;
+    grid-row: 1;
+    height: 40px;
     justify-content: center;
-    width: 42px;
+    width: 40px;
     z-index: 135;
   }
 
@@ -5637,30 +5701,45 @@ footer {
 
   .header-top {
     align-items: center;
-    grid-template-columns: 46px minmax(0, 1fr) auto;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 8px 8px;
     max-width: 100vw;
-    padding: 14px 16px;
+    padding: 10px 12px 10px;
   }
 
   .mobile-menu-toggle {
-    border-radius: 12px;
-    height: 46px;
-    width: 46px;
+    border-radius: 10px;
+    height: 40px;
+    width: 40px;
   }
 
-  .logo {
-    justify-self: start;
-    min-width: 0;
+  .brand-logo {
+    gap: 6px;
   }
 
-  .header-tools {
-    gap: 8px;
-    justify-content: flex-end;
-    min-width: 0;
+  .brand-mark {
+    height: 34px;
+    width: 34px;
+    border-radius: 10px;
   }
 
-  .header-tools .top-icon:not([href="announcements.html"]):not([href="vouchers.html"]) {
-    display: none;
+  .brand-copy strong {
+    font-size: 21px;
+  }
+
+  .header-actions-group {
+    gap: 6px;
+  }
+
+  .header-actions-group .top-icon,
+  .header-actions-group .cart-btn {
+    height: 36px;
+    width: 36px;
+  }
+
+  .header-actions-group .header-action-svg {
+    height: 20px;
+    width: 20px;
   }
 
   .mobile-menu-overlay {
