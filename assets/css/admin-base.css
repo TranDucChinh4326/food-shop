@@ -1992,6 +1992,7 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 }
 
 .flash-sale-item-form {
+  display: grid;
   margin-top: 18px;
 }
 
