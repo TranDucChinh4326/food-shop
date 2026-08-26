@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Liên hệ & Hỗ trợ - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260826-contact-v1">
-  <link rel="stylesheet" href="assets/css/contact.css?v=20260826-contact-v1">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260826-realtime-hours-v2">
+  <link rel="stylesheet" href="assets/css/contact.css?v=20260826-realtime-hours-v2">
 </head>
 <body>
   <div data-shared-header></div>
@@ -15,9 +15,9 @@
     <section class="contact-heading">
       <div class="contact-kicker-row">
         <span class="contact-kicker">Hỗ trợ khách hàng FoodHub</span>
-        <span class="contact-live-status">
+        <span id="storeLiveStatus" class="contact-live-status">
           <span class="status-pulse-dot"></span>
-          Đang hoạt động (8:00 - 22:00)
+          <span>Đang kiểm tra giờ hoạt động...</span>
         </span>
       </div>
       <h1>Liên hệ với chúng tôi</h1>
@@ -180,6 +180,42 @@
   <script src="assets/js/shared-layout.js?v=20260826-contact-v1"></script>
   <script src="assets/js/script.js?v=20260826-contact-v1"></script>
   <script>
+    function updateStoreLiveStatus() {
+      const statusEl = document.getElementById("storeLiveStatus");
+      if (!statusEl) return;
+
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const currentTimeInMinutes = currentHour * 60 + currentMinute;
+      
+      const openTime = 8 * 60;   // 08:00 AM
+      const closeTime = 22 * 60; // 22:00 PM
+
+      const isOpen = currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime;
+
+      if (isOpen) {
+        statusEl.className = "contact-live-status is-open";
+        statusEl.innerHTML = `
+          <span class="status-pulse-dot"></span>
+          <span>Đang hoạt động (Mở cửa đến 22:00)</span>
+        `;
+      } else {
+        statusEl.className = "contact-live-status is-closed";
+        const statusText = currentTimeInMinutes < openTime 
+          ? `Đang nghỉ (Mở cửa lúc 08:00)` 
+          : `Đã đóng cửa (Mở lại 08:00 sáng mai)`;
+        statusEl.innerHTML = `
+          <span class="status-closed-dot"></span>
+          <span>${statusText}</span>
+        `;
+      }
+    }
+
+    // Khởi chạy ngay và tự động cập nhật
+    updateStoreLiveStatus();
+    setInterval(updateStoreLiveStatus, 15000);
+
     function copyContactText(text, btn) {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {

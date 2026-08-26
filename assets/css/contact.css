@@ -34,15 +34,25 @@
 
 .contact-live-status {
   align-items: center;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
   border-radius: 20px;
-  color: #059669;
   display: inline-flex;
   font-size: 12px;
   font-weight: 800;
   gap: 6px;
   padding: 3px 12px;
+  transition: all 0.25s ease;
+}
+
+.contact-live-status.is-open {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+}
+
+.contact-live-status.is-closed {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
 }
 
 .status-pulse-dot {
@@ -53,6 +63,15 @@
   height: 7px;
   width: 7px;
   animation: statusPulse 1.6s infinite;
+}
+
+.status-closed-dot {
+  background: #f43f5e;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.4);
+  display: inline-block;
+  height: 7px;
+  width: 7px;
 }
 
 @keyframes statusPulse {
