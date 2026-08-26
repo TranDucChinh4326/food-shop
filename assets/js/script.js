@@ -95,6 +95,24 @@ function showSiteToast(message, type = "success") {
     document.body.appendChild(stack);
   }
 
+  // De-duplicate: If identical toast is already active, pulse & refresh
+  const existing = Array.from(stack.querySelectorAll(".site-toast:not(.hide)")).find(
+    el => el.querySelector("span")?.textContent?.trim() === message?.trim()
+  );
+  if (existing) {
+    existing.classList.remove("site-toast-pop");
+    void existing.offsetWidth;
+    existing.classList.add("site-toast-pop");
+    return;
+  }
+
+  // Limit max active toasts to 3
+  const activeToasts = stack.querySelectorAll(".site-toast:not(.hide)");
+  if (activeToasts.length >= 3) {
+    activeToasts[0].classList.add("hide");
+    setTimeout(() => activeToasts[0].remove(), 200);
+  }
+
   const toast = document.createElement("div");
   toast.className = `site-toast ${type}`;
   toast.title = "Bấm để đóng";
