@@ -1336,6 +1336,10 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.announcement-date-grid[hidden] {
+  display: none !important;
+}
+
 .staff-form-grid .permission-list {
   grid-column: 1 / -1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
