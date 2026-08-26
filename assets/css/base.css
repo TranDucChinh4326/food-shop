@@ -6597,12 +6597,21 @@ footer {
    ============================================================ */
 .flash-sale-banner {
   align-items: center;
+  background: linear-gradient(135deg, #fff4ec 0%, #fff9f5 50%, #ffece2 100%);
   border: 1.5px solid #ffd8c5;
   border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.08);
+  display: flex;
   flex-wrap: wrap;
   gap: 14px;
   justify-content: space-between;
   margin: 20px 8% 0;
+  overflow: hidden;
+  padding: 10px 18px;
+  position: relative;
+}
+
+.flash-sale-banner[hidden] {
   display: none !important;
 }
 
