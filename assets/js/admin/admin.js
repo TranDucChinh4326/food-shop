@@ -2064,12 +2064,6 @@ function renderRevenueTrend(rows, trendMode = "day") {
 
   const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
   const totalRevenue = ordered.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
-  const points = ordered.map((item, index) => {
-    const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
-    const y = 86 - (Number(item.revenue || 0) / maxRevenue) * 66;
-    return `${x},${y}`;
-  }).join(" ");
-  const areaPoints = `0,92 ${points} 100,92`;
   const labelIndexes = getRevenueTrendLabelIndexes(ordered.length);
 
   return `
@@ -2079,16 +2073,18 @@ function renderRevenueTrend(rows, trendMode = "day") {
         <span>Biểu đồ sẽ cập nhật khi có đơn hoàn tất trong khoảng thời gian đã chọn.</span>
       </div>
     ` : ""}
-    <svg class="revenue-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stop-color="#ff7a1a" stop-opacity="0.38"></stop>
-          <stop offset="100%" stop-color="#ff7a1a" stop-opacity="0.04"></stop>
-        </linearGradient>
-      </defs>
-      <polygon points="${areaPoints}" fill="url(#revenueFill)"></polygon>
-      <polyline points="${points}" fill="none" stroke="#ff7a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-    </svg>
+    <div class="revenue-bars" role="img" aria-label="Biểu đồ cột doanh thu">
+      ${ordered.map(item => {
+        const revenue = Number(item.revenue || 0);
+        const height = totalRevenue === 0 ? 0 : Math.max(8, Math.round((revenue / maxRevenue) * 100));
+        return `
+          <div class="revenue-bar-item" title="${escapeHtml(formatTrendLabel(item, trendMode))}: ${formatMoney(revenue)}">
+            <span class="revenue-bar-value">${formatMoney(revenue)}</span>
+            <span class="revenue-bar" style="height:${height}%"></span>
+          </div>
+        `;
+      }).join("")}
+    </div>
     <div class="chart-labels">
       ${ordered.map((item, index) => {
         const x = ordered.length === 1 ? 50 : (index / (ordered.length - 1)) * 100;
