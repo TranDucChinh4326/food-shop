@@ -901,7 +901,7 @@ function renderUsersTable() {
                       : `
                         <a class="icon-btn edit" href="admin-account.html?id=${account.id}&type=${activeAccountType === "customers" ? "customer" : "staff"}" title="Sửa" aria-label="Sửa tài khoản">${editIcon()}</a>
                         ${activeAccountType === "staff" && hasAdminPermission("roles.manage") ? `<button type="button" class="icon-btn permission" title="Phân quyền" aria-label="Phân quyền" data-permission-user="${account.id}">${shieldIcon()}</button>` : ""}
-                        <button type="button" class="icon-btn key" title="Dat mật khẩu" aria-label="Dat mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
+                        <button type="button" class="icon-btn key" title="Đặt mật khẩu" aria-label="Đặt mật khẩu" data-reset-password="${account.id}">${keyIcon()}</button>
                         <button type="button" class="icon-btn" title="${account.isActive ? "Khóa" : "Mở khóa"}" aria-label="${account.isActive ? "Khóa tài khoản" : "Mở khóa tài khoản"}" data-toggle-user="${account.id}" data-active="${account.isActive ? "0" : "1"}">${lockIcon(account.isActive)}</button>
                         <button type="button" class="icon-btn delete" title="Xóa vĩnh viễn" aria-label="Xóa vĩnh viễn tài khoản" data-delete-user="${account.id}">${trashIcon()}</button>
                       `}
