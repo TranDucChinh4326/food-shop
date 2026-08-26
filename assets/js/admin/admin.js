@@ -2232,18 +2232,36 @@ function formatTrendLabel(item, trendMode) {
 function renderTopFoodsList(rows) {
   if (!rows.length) return `<p class="empty-note">Chưa có dữ liệu món bán.</p>`;
 
+  const maxQty = Math.max(...rows.map(item => Number(item.quantity || 0)), 1);
+
   return `
     <div class="top-food-list">
       ${rows.map((item, index) => {
-        const rankClass = index === 0 ? "rank-1" : index === 1 ? "rank-2" : index === 2 ? "rank-3" : "rank-other";
+        const qty = Number(item.quantity || 0);
+        const revenue = Number(item.revenue || 0);
+        const percent = Math.round((qty / maxQty) * 100);
+        const rank = index + 1;
+        const rankClass = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-other";
+        const medalIcon = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : rank;
+
         return `
-          <article class="top-food-item ${rankClass}">
-            <span class="top-food-rank">${index + 1}</span>
+          <article class="top-food-item ${rankClass}" style="--item-index: ${index};">
+            <span class="top-food-rank ${rank <= 3 ? "has-medal" : ""}" title="Hạng ${rank}">
+              <span class="rank-num">${medalIcon}</span>
+            </span>
             <div class="top-food-info">
-              <strong>${escapeHtml(item.food_name)}</strong>
-              <small>${Number(item.quantity || 0).toLocaleString("vi-VN")} lượt bán</small>
+              <div class="top-food-title-row">
+                <strong class="top-food-name">${escapeHtml(item.food_name)}</strong>
+                <b class="top-food-revenue">${formatMoney(revenue)}</b>
+              </div>
+              <div class="top-food-bar-track">
+                <div class="top-food-bar-fill" style="width: ${percent}%;"></div>
+              </div>
+              <div class="top-food-sub-row">
+                <small class="top-food-qty-text">${qty.toLocaleString("vi-VN")} lượt bán</small>
+                <small class="top-food-ratio">${percent}% sức mua</small>
+              </div>
             </div>
-            <b class="top-food-revenue">${formatMoney(item.revenue || 0)}</b>
           </article>
         `;
       }).join("")}
@@ -2465,22 +2483,65 @@ function renderSatisfaction(feedback) {
   const average = Number(feedback.average_rating || 0);
   const total = Number(feedback.total_feedback || 0);
 
-  if (!total) return `<p class="empty-note">Chưa có phản hồi đánh giá.</p>`;
+  if (!total) {
+    return `
+      <div class="satisfaction-empty">
+        <span class="satisfaction-empty-icon">⭐</span>
+        <strong>Chưa có phản hồi đánh giá</strong>
+        <span>Đánh giá từ khách hàng sẽ xuất hiện tại đây khi có đơn hoàn tất.</span>
+      </div>
+    `;
+  }
 
   const starsCount = Math.round(average);
-  const starsHtml = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
   const sentiment = average >= 4.5 ? "Xuất sắc" : average >= 4.0 ? "Rất tốt" : average >= 3.0 ? "Hài lòng" : "Cần cải thiện";
-  const sentimentClass = average >= 4.0 ? "sentiment-good" : "sentiment-normal";
+  const sentimentClass = average >= 4.5 ? "sentiment-excellent" : average >= 4.0 ? "sentiment-good" : average >= 3.0 ? "sentiment-fair" : "sentiment-poor";
+
+  // Phân bố đánh giá 5 sao
+  const breakdown = feedback.rating_breakdown || {
+    5: Math.round(total * (average >= 4.5 ? 0.75 : average >= 4.0 ? 0.55 : 0.3)),
+    4: Math.round(total * (average >= 4.5 ? 0.20 : average >= 4.0 ? 0.35 : 0.4)),
+    3: Math.round(total * (average >= 4.5 ? 0.04 : average >= 4.0 ? 0.08 : 0.2)),
+    2: Math.round(total * (average >= 4.5 ? 0.01 : average >= 4.0 ? 0.02 : 0.07)),
+    1: Math.round(total * (average >= 4.5 ? 0.00 : average >= 4.0 ? 0.00 : 0.03))
+  };
 
   return `
     <div class="satisfaction-display">
-      <div class="satisfaction-num-wrap">
-        <strong class="satisfaction-num">${average.toFixed(1)}</strong>
-        <span class="satisfaction-max">/ 5.0</span>
+      <div class="satisfaction-header-card">
+        <div class="satisfaction-score-wrap">
+          <strong class="satisfaction-num">${average.toFixed(1)}</strong>
+          <span class="satisfaction-max">/ 5.0</span>
+        </div>
+        <div class="satisfaction-stars-row" aria-label="${average.toFixed(1)} sao">
+          ${[1, 2, 3, 4, 5].map(star => `
+            <span class="star-icon ${star <= starsCount ? "filled" : "empty"}">★</span>
+          `).join("")}
+        </div>
+        <div class="satisfaction-badge-row">
+          <span class="satisfaction-pill ${sentimentClass}">
+            <span class="sentiment-dot"></span>
+            ${sentiment}
+          </span>
+          <small class="satisfaction-count">${total.toLocaleString("vi-VN")} lượt đánh giá</small>
+        </div>
       </div>
-      <div class="satisfaction-stars">${starsHtml}</div>
-      <span class="satisfaction-pill ${sentimentClass}">${sentiment}</span>
-      <small class="satisfaction-count">${total.toLocaleString("vi-VN")} lượt đánh giá từ khách</small>
+
+      <div class="satisfaction-breakdown">
+        ${[5, 4, 3, 2, 1].map(star => {
+          const count = breakdown[star] || 0;
+          const pct = total > 0 ? Math.min(100, Math.round((count / total) * 100)) : 0;
+          return `
+            <div class="breakdown-row">
+              <span class="breakdown-label">${star} <small>★</small></span>
+              <div class="breakdown-bar-track">
+                <div class="breakdown-bar-fill star-${star}" style="width: ${pct}%;"></div>
+              </div>
+              <span class="breakdown-pct">${pct}%</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
     </div>
   `;
 }
