@@ -1,3 +1,16 @@
+function getFoodHubConfig() {
+  return window["FOODHUB_CONFIG"] || {};
+}
+
+function getSharedApiBase() {
+  return getFoodHubConfig().API_BASE_URL || "http://localhost:3000/api";
+}
+
+function getWindowFunction(name) {
+  const fn = window[name];
+  return typeof fn === "function" ? fn : null;
+}
+
 function renderSharedHeader() {
   document.querySelectorAll("[data-shared-header]").forEach(slot => {
     slot.outerHTML = `
@@ -233,10 +246,10 @@ function syncSharedNavActive() {
 
 function startFoodHubPresenceHeartbeat() {
   const token = sessionStorage.getItem("foodhub_token");
-  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
-  if (!token || window.__foodHubPresenceHeartbeatStarted) return;
+  const apiBase = getSharedApiBase();
+  if (!token || window["__foodHubPresenceHeartbeatStarted"]) return;
 
-  window.__foodHubPresenceHeartbeatStarted = true;
+  window["__foodHubPresenceHeartbeatStarted"] = true;
   const pingPresence = () => {
     fetch(`${apiBase}/auth/ping`, {
       method: "POST",
@@ -255,12 +268,12 @@ function startFoodHubPresenceHeartbeat() {
 
 function startFoodHubRealtime() {
   const token = sessionStorage.getItem("foodhub_token");
-  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const apiBase = getSharedApiBase();
   const socketBase = apiBase.replace(/\/api\/?$/, "");
-  if (!token || window.__foodHubRealtimeStarted) return;
+  if (!token || window["__foodHubRealtimeStarted"]) return;
 
   const loadSocketClient = () => new Promise((resolve, reject) => {
-    if (window.io) {
+    if (window["io"]) {
       resolve();
       return;
     }
@@ -274,29 +287,34 @@ function startFoodHubRealtime() {
   });
 
   loadSocketClient().then(() => {
-    if (!window.io || window.__foodHubRealtimeStarted) return;
-    window.__foodHubRealtimeStarted = true;
+    const socketClient = window["io"];
+    if (!socketClient || window["__foodHubRealtimeStarted"]) return;
+    window["__foodHubRealtimeStarted"] = true;
 
-    const socket = window.io(socketBase, {
+    const socket = socketClient(socketBase, {
       auth: { token },
       transports: ["websocket", "polling"]
     });
 
     socket.on("order:created", payload => {
-      if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
-        window.loadOrderHistory({ silent: true });
+      const loadOrderHistory = getWindowFunction("loadOrderHistory");
+      const showSiteToast = getWindowFunction("showSiteToast");
+      if (loadOrderHistory && document.getElementById("track-result")) {
+        loadOrderHistory({ silent: true });
       }
-      if (typeof window.showSiteToast === "function") {
-        window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} đã được ghi nhận.`, "info");
+      if (showSiteToast) {
+        showSiteToast(`Đơn hàng #${payload?.order?.id || ""} đã được ghi nhận.`, "info");
       }
     });
 
     socket.on("order:updated", payload => {
-      if (typeof window.loadOrderHistory === "function" && document.getElementById("track-result")) {
-        window.loadOrderHistory({ silent: true });
+      const loadOrderHistory = getWindowFunction("loadOrderHistory");
+      const showSiteToast = getWindowFunction("showSiteToast");
+      if (loadOrderHistory && document.getElementById("track-result")) {
+        loadOrderHistory({ silent: true });
       }
-      if (typeof window.showSiteToast === "function") {
-        window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} vừa được cập nhật.`, "info");
+      if (showSiteToast) {
+        showSiteToast(`Đơn hàng #${payload?.order?.id || ""} vừa được cập nhật.`, "info");
       }
     });
   }).catch(err => {
@@ -307,7 +325,7 @@ function startFoodHubRealtime() {
 function startFoodHubNotificationBadges() {
   const token = sessionStorage.getItem("foodhub_token");
   const userRaw = sessionStorage.getItem("foodhub_user");
-  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const apiBase = getSharedApiBase();
   const isAnnouncementPage = location.pathname.endsWith("/announcements.html") || location.pathname.endsWith("announcements.html");
   const isVoucherPage = location.pathname.endsWith("/vouchers.html") || location.pathname.endsWith("vouchers.html");
   let userId = "guest";
@@ -356,8 +374,9 @@ function startFoodHubNotificationBadges() {
     sessionStorage.setItem(marker, "1");
 
     setTimeout(() => {
-      if (typeof window.showSiteToast === "function") {
-        window.showSiteToast(message, type);
+      const showSiteToast = getWindowFunction("showSiteToast");
+      if (showSiteToast) {
+        showSiteToast(message, type);
       }
     }, 450);
   };
@@ -440,15 +459,15 @@ function startFoodHubIdleSessionGuard() {
   const cartKey = "foodhub_cart";
   const activityKey = "foodhub_last_activity_at";
   const userPinLockKey = "foodhub_user_pin_locked";
-  const idleLimitMs = Number(window.FOODHUB_CONFIG?.USER_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
+  const idleLimitMs = Number(getFoodHubConfig().USER_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
   const token = sessionStorage.getItem(tokenKey);
-  const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
+  const apiBase = getSharedApiBase();
   let failedAttempts = 0;
   let isLocked = sessionStorage.getItem(userPinLockKey) === "1";
 
-  if (!token || window.__foodHubIdleSessionStarted) return;
+  if (!token || window["__foodHubIdleSessionStarted"]) return;
 
-  window.__foodHubIdleSessionStarted = true;
+  window["__foodHubIdleSessionStarted"] = true;
   const now = Date.now();
   const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
 
