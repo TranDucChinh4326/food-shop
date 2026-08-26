@@ -486,6 +486,96 @@ button.account-photo-badge {
   text-transform: uppercase;
 }
 
+.profile-favorite-food-list {
+  display: grid;
+  gap: 14px;
+}
+
+.profile-favorite-food-card {
+  align-items: center;
+  background: #fffaf7;
+  border: 1px solid #efd7c8;
+  border-left: 5px solid #ff6b2b;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(83, 45, 23, 0.06);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  padding: 14px;
+}
+
+.profile-favorite-image,
+.profile-favorite-image img,
+.profile-favorite-placeholder {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  width: 96px;
+}
+
+.profile-favorite-image img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-favorite-placeholder {
+  background: #fff0e8;
+  color: #ff5722;
+  font-weight: 900;
+}
+
+.profile-favorite-main span {
+  color: #ff5722;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-favorite-main h3 {
+  color: #25150f;
+  font-size: 20px;
+  margin: 5px 0;
+}
+
+.profile-favorite-main h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.profile-favorite-main p,
+.profile-favorite-main small {
+  color: #6b5b52;
+  margin: 0;
+}
+
+.profile-favorite-main p {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+.profile-favorite-actions {
+  align-items: flex-end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.profile-favorite-actions strong {
+  color: #ff5722;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.social-link-btn.subtle {
+  background: #fff;
+  color: #6f5246;
+}
+
 .profile-page .social-link-card {
   grid-column: auto;
 }
@@ -1368,6 +1458,21 @@ button.account-photo-badge {
 
   .preset-avatars-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .profile-favorite-food-card {
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+  }
+
+  .profile-favorite-image,
+  .profile-favorite-image img,
+  .profile-favorite-placeholder {
+    width: 76px !important;
+  }
+
+  .profile-favorite-actions {
+    grid-column: 1 / -1;
+    justify-items: stretch;
   }
 }
 

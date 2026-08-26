@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tài khoản - FoodHub</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260826-mobile-header-pro-v5">
-  <link rel="stylesheet" href="assets/css/profile.css?v=20260826-profile-mobile-v7">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260826-favorites-v1">
+  <link rel="stylesheet" href="assets/css/profile.css?v=20260826-profile-favorites-v1">
 </head>
 <body>
   <div data-shared-header></div>
@@ -30,6 +30,10 @@
       <button type="button" class="account-nav-item" data-profile-tab="vouchers">
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M9 9h6M9 15h6"/></svg></span>
         <span>Voucher của tôi</span>
+      </button>
+      <button type="button" class="account-nav-item" data-profile-tab="favorites">
+        <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.7-9.2-9A5.5 5.5 0 0 1 12 5.5 5.5 5.5 0 0 1 21.2 12C19 16.3 12 21 12 21Z"/></svg></span>
+        <span>Món yêu thích</span>
       </button>
       <button type="button" class="account-nav-item" data-profile-tab="password">
         <span class="account-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><path d="M5 11h14v10H5z"/><path d="M12 15v2"/></svg></span>
@@ -152,6 +156,16 @@
           </div>
         </div>
         <div id="profileVoucherList" class="profile-voucher-list">Đang tải voucher...</div>
+      </section>
+
+      <section class="profile-card favorites-panel" data-profile-panel="favorites" hidden>
+        <div class="section-heading">
+          <div>
+            <h2>Món yêu thích</h2>
+            <p>Các món bạn đã lưu để đặt lại nhanh hơn trong những lần sau.</p>
+          </div>
+        </div>
+        <div id="profileFavoriteFoodsList" class="profile-favorite-food-list">Đang tải món yêu thích...</div>
       </section>
 
       <form id="passwordForm" class="profile-card password-card" data-profile-panel="password" autocomplete="off" hidden>
@@ -321,7 +335,7 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260826-mobile-header-pro-v5"></script>
-  <script src="assets/js/script.js?v=20260826-mobile-header-pro-v5"></script>
-  <script src="assets/js/profile.js?v=20260826-profile-mobile-v6"></script>
+  <script src="assets/js/script.js?v=20260826-favorites-v1"></script>
+  <script src="assets/js/profile.js?v=20260826-profile-favorites-v1"></script>
 </body>
 </html>

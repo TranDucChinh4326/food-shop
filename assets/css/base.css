@@ -7127,6 +7127,15 @@ footer {
   animation: heartSpringBurst 0.5s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
 }
 
+.food-detail-tags-row .fav-heart-btn {
+  box-shadow: 0 8px 18px rgba(255, 56, 92, 0.16) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  min-width: 38px !important;
+  position: static !important;
+  width: 38px !important;
+}
+
 @keyframes heartSpringBurst {
   0% { transform: scale(1); }
   25% { transform: scale(0.6); }

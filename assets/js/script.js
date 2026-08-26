@@ -2226,6 +2226,7 @@ function showFoodDetail(foodId) {
           <div class="food-detail-tags-row">
             <span class="food-detail-category">${escapeHtml(category)}</span>
             ${isSale ? `<span class="food-detail-sale-pill">🔥 Đang Flash Sale</span>` : ""}
+            ${renderFavButton(food.id)}
           </div>
           <h2 id="foodDetailTitle">${escapeHtml(food.name)}</h2>
           <div class="food-detail-stats">
@@ -2347,6 +2348,7 @@ function renderFoodDetailPage() {
             <div class="food-detail-tags-row">
               <span class="food-detail-category">${escapeHtml(category)}</span>
               ${isSale ? `<span class="food-detail-sale-pill">🔥 Đang Flash Sale</span>` : ""}
+              ${renderFavButton(food.id)}
             </div>
             <h1>${escapeHtml(food.name)}</h1>
             <div class="food-detail-stats">

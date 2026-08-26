@@ -1,4 +1,5 @@
 const PROFILE_AUTH_API = `${API_BASE_URL}/auth`;
+const PROFILE_FAVORITES_API = `${API_BASE_URL}/foods/favorites`;
 // Trang hồ sơ dùng API auth để đọc/cập nhật thông tin cá nhân, địa chỉ, avatar và liên kết mạng xã hội.
 // Mọi request riêng tư đều gắn token đăng nhập để backend xác thực đúng người dùng.
 const PROFILE_GOOGLE_CLIENT_ID = window.FOODHUB_CONFIG?.GOOGLE_CLIENT_ID || "";
@@ -581,6 +582,66 @@ async function loadProfileVouchers() {
   }
 }
 
+function getProfileFoodCategory(food = {}) {
+  return food.categoryName || food.parentCategoryName || food.category || food.parentCategory || "Món ăn";
+}
+
+function renderProfileFavoriteFoods(favoriteFoods = []) {
+  const container = document.getElementById("profileFavoriteFoodsList");
+  if (!container) return;
+
+  if (!favoriteFoods.length) {
+    container.innerHTML = `
+      <p class="empty-cart">Bạn chưa lưu món yêu thích nào.</p>
+      <a class="social-link-btn" href="menu.html">Khám phá thực đơn</a>
+    `;
+    return;
+  }
+
+  container.innerHTML = favoriteFoods.map(food => {
+    const stock = Number(food.stockQuantity ?? food.stock_quantity ?? 0);
+    const image = food.image
+      ? `<img src="${escapeHtml(food.image)}" alt="${escapeHtml(food.name)}">`
+      : `<span class="profile-favorite-placeholder">FH</span>`;
+    return `
+      <article class="profile-favorite-food-card" data-profile-favorite-food="${food.id}">
+        <a class="profile-favorite-image" href="food-detail.html?id=${encodeURIComponent(food.id)}&from=profile">
+          ${image}
+        </a>
+        <div class="profile-favorite-main">
+          <span>${escapeHtml(getProfileFoodCategory(food))}</span>
+          <h3><a href="food-detail.html?id=${encodeURIComponent(food.id)}&from=profile">${escapeHtml(food.name || "Món ăn")}</a></h3>
+          <p>${escapeHtml(food.desc || food.description || "Món đã lưu trong danh sách yêu thích của bạn.")}</p>
+          <small>${stock > 0 ? `Còn ${stock} phần` : "Hết hàng"}${food.favoritedAt ? ` - Đã lưu ${new Date(food.favoritedAt).toLocaleDateString("vi-VN")}` : ""}</small>
+        </div>
+        <div class="profile-favorite-actions">
+          <strong>${formatMoney(food.price || 0)}</strong>
+          <button type="button" class="social-link-btn" data-profile-add-favorite="${food.id}" ${stock <= 0 ? "disabled" : ""}>Thêm vào giỏ</button>
+          <button type="button" class="social-link-btn subtle" data-profile-remove-favorite="${food.id}">Bỏ lưu</button>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadProfileFavoriteFoods() {
+  const container = document.getElementById("profileFavoriteFoodsList");
+  if (!container) return;
+
+  container.innerHTML = `<p class="empty-cart">Đang tải món yêu thích...</p>`;
+
+  try {
+    const response = await fetch(`${PROFILE_FAVORITES_API}/detail`, {
+      headers: { Authorization: `Bearer ${getAuthToken()}` }
+    });
+    const data = await response.json().catch(() => []);
+    if (!response.ok) throw new Error(data.message || "Không thể tải món yêu thích.");
+    renderProfileFavoriteFoods(Array.isArray(data) ? data : []);
+  } catch (error) {
+    container.innerHTML = `<p class="empty-cart">${escapeHtml(error.message)}</p>`;
+  }
+}
+
 async function loadSocialAccounts() {
   try {
     const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/accounts`);
@@ -885,6 +946,7 @@ async function loadProfile() {
     await loadSocialAccounts();
     await loadSavedAddresses();
     await loadProfileVouchers();
+    await loadProfileFavoriteFoods();
   } catch (error) {
     showSiteToast(error.message, "error");
   }
@@ -1419,6 +1481,20 @@ document.getElementById("savedAddressList")?.addEventListener("click", event => 
 
   if (editButton) editAddress(editButton.dataset.editAddress);
   if (deleteButton) deleteAddress(deleteButton.dataset.deleteAddress);
+});
+document.getElementById("profileFavoriteFoodsList")?.addEventListener("click", async event => {
+  const addButton = event.target.closest("[data-profile-add-favorite]");
+  const removeButton = event.target.closest("[data-profile-remove-favorite]");
+
+  if (addButton) {
+    addToCart(addButton.dataset.profileAddFavorite, event);
+    return;
+  }
+
+  if (removeButton) {
+    await toggleFoodFavorite(removeButton.dataset.profileRemoveFavorite, event);
+    await loadProfileFavoriteFoods();
+  }
 });
 document.querySelectorAll("[data-profile-tab]").forEach(button => {
   button.addEventListener("click", () => setProfileTab(button.dataset.profileTab));
