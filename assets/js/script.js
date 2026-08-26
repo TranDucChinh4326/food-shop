@@ -1170,8 +1170,7 @@ function renderFlashSaleBanner() {
   const subtitle = banner.querySelector("[data-flash-sale-subtitle]");
   const timer = banner.querySelector("[data-flash-sale-countdown]");
   const itemsBox = banner.querySelector("[data-flash-sale-items]");
-  const saleItems = (sale.items || []).slice(0, 4);
-
+  const saleItems = Array.isArray(sale.items) ? sale.items : [];
   if (title) title.textContent = sale.title || "Flash sale hôm nay";
   if (subtitle) subtitle.textContent = `${saleItems.length} món đang giảm giá, số lượng có hạn.`;
   if (timer) {
