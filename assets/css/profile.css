@@ -494,131 +494,6 @@ button.account-photo-badge {
   display: none !important;
 }
 
-@media (max-width: 900px) {
-  .profile-page {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 22px 5% 44px;
-  }
-
-  .account-sidebar,
-  .account-summary-card,
-  .profile-page .profile-grid {
-    grid-column: 1;
-    grid-row: auto;
-    min-width: 0;
-  }
-
-  .account-sidebar {
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    overflow: visible;
-    padding-bottom: 0;
-    position: static;
-  }
-
-  .account-nav-item {
-    justify-content: flex-start;
-    min-width: 0;
-    white-space: normal;
-  }
-
-  .account-summary-card {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .summary-social-links {
-    grid-column: 1 / -1;
-  }
-
-  .summary-social-links .social-account-list {
-    justify-content: flex-start;
-  }
-
-  .profile-page #profileForm,
-  .profile-page .password-card,
-  .profile-page .pin-card {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .profile-page .pin-card .section-heading {
-    align-items: flex-start;
-    display: grid;
-  }
-}
-
-@media (max-width: 560px) {
-  .profile-page {
-    gap: 12px;
-    max-width: 100%;
-    overflow-x: hidden;
-    padding: 18px 16px 36px;
-  }
-
-  .account-sidebar {
-    margin-inline: -16px;
-    padding: 0 16px;
-  }
-
-  .account-nav-item {
-    min-height: 44px;
-    padding: 0 14px;
-  }
-
-  .account-summary-card {
-    align-items: flex-start;
-    grid-template-columns: minmax(0, 1fr);
-    padding: 18px;
-  }
-
-  .account-photo-wrap {
-    justify-self: start;
-  }
-
-  .summary-social-links .social-account-list,
-  .profile-page .profile-grid,
-  .address-book-form,
-  .saved-address-card,
-  .profile-voucher-card {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .summary-social-links .social-account-item,
-  .social-account-item {
-    flex-basis: 100%;
-    max-width: 100%;
-  }
-
-  .profile-page .profile-card {
-    padding: 18px;
-  }
-
-  .profile-page .captcha-row {
-    align-items: end;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: minmax(0, 1fr) 96px;
-    padding: 12px;
-  }
-
-  .profile-page .captcha-canvas {
-    height: 52px;
-    width: 100%;
-  }
-
-  .profile-page .captcha-row .social-link-btn {
-    font-size: 14px;
-    min-height: 52px;
-    padding: 0 10px;
-    width: 96px;
-  }
-
-  .profile-page .profile-card .btn {
-    justify-self: stretch;
-    width: 100%;
-  }
-}
-
 /* Profile workspace polish */
 .profile-page {
   background:
@@ -1331,4 +1206,180 @@ button.account-photo-badge {
   font-weight: 700;
   font-size: 14px;
 }
+
+/* ============================================================
+   Responsive Mobile & Tablet Layout for Profile Page
+   ============================================================ */
+
+@media (max-width: 992px) {
+  .profile-page {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 16px 16px 40px !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  .account-sidebar {
+    position: static !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    gap: 8px !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 4px 16px rgba(77, 42, 22, 0.06) !important;
+    box-sizing: border-box !important;
+  }
+
+  .account-sidebar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .account-nav-item {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    min-height: 42px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    gap: 8px !important;
+    border-radius: 999px !important;
+    width: auto !important;
+    border: 1px solid #f2dbce !important;
+    background: #ffffff !important;
+  }
+
+  .account-nav-item.active {
+    background: linear-gradient(135deg, #ff5a23, #ff8722) !important;
+    border-color: #ff7443 !important;
+    color: #fff !important;
+  }
+
+  .account-summary-card {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 14px !important;
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .account-summary-card > div:not(.account-photo-wrap):not(.summary-social-links) {
+    width: 100% !important;
+    text-align: center !important;
+    flex: none !important;
+  }
+
+  .account-summary-card h1 {
+    font-size: 20px !important;
+    margin: 0 0 4px !important;
+  }
+
+  .account-summary-card p {
+    font-size: 14px !important;
+    margin: 0 !important;
+    word-break: break-all !important;
+  }
+
+  .summary-social-links {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px dashed #f1d8ca !important;
+    padding-top: 14px !important;
+    flex: none !important;
+  }
+
+  .summary-social-links .social-account-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .summary-social-links .social-account-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 10px 14px !important;
+    min-height: 52px !important;
+    box-sizing: border-box !important;
+  }
+
+  .profile-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .profile-page .profile-card {
+    width: 100% !important;
+    padding: 18px 16px !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .profile-page .section-heading {
+    padding: 12px 14px !important;
+  }
+
+  .profile-page .section-heading h2 {
+    font-size: 18px !important;
+  }
+
+  .profile-page .profile-card label {
+    font-size: 13.5px !important;
+  }
+
+  .profile-page .profile-card input,
+  .profile-page .profile-card select,
+  .profile-page .profile-card textarea {
+    font-size: 15px !important;
+    min-height: 46px !important;
+    padding: 0 14px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .profile-page .profile-card .btn {
+    width: 100% !important;
+    justify-self: stretch !important;
+    min-height: 46px !important;
+    margin-top: 6px !important;
+  }
+
+  .address-input-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-page .pin-card .pin-box-row {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .profile-page .pin-card .pin-box-row input {
+    width: 44px !important;
+    height: 52px !important;
+    font-size: 22px !important;
+    text-align: center !important;
+    padding: 0 !important;
+  }
+
+  .preset-avatars-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
 
