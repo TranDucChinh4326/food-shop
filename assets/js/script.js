@@ -405,10 +405,6 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
 
 async function withSiteLoading(message, task) {
   showSiteLoading(message);
-  if (!cachedFoods?.items.length && !foodList && (bestSellerBox || homeSectionBox)) {
-    renderHomeFoodSkeletons();
-  }
-
   try {
     return await task();
   } finally {
