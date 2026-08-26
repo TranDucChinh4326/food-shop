@@ -6874,7 +6874,7 @@ footer {
 }
 
 /* ==========================================================================
-   10. Flash Sale Border Beam Effect (Đèn sáng chạy vòng quanh ô món sale)
+   10. Flash Sale Dual-Beam Chase Effect (2 đốm sáng đối diện rượt đuổi quanh viền)
    ========================================================================== */
 
 @property --flash-beam-angle {
@@ -6894,10 +6894,12 @@ footer {
 
 @keyframes flashSaleCardPulse {
   0%, 100% {
-    box-shadow: 0 14px 34px rgba(255, 75, 31, 0.16), 0 0 14px rgba(255, 122, 40, 0.18);
+    box-shadow: 0 14px 36px rgba(255, 75, 31, 0.22), 0 0 16px rgba(255, 136, 0, 0.25);
+    border-color: rgba(255, 110, 40, 0.45) !important;
   }
   50% {
-    box-shadow: 0 18px 46px rgba(255, 75, 31, 0.28), 0 0 24px rgba(255, 122, 40, 0.35);
+    box-shadow: 0 18px 48px rgba(255, 75, 31, 0.38), 0 0 28px rgba(255, 160, 0, 0.45);
+    border-color: rgba(255, 140, 60, 0.8) !important;
   }
 }
 
@@ -6907,40 +6909,50 @@ footer {
 .suggestion-card.is-flash-sale {
   position: relative !important;
   isolation: isolate;
-  border-color: rgba(255, 120, 50, 0.35) !important;
-  animation: flashSaleCardPulse 2.4s ease-in-out infinite;
+  border-color: rgba(255, 120, 50, 0.45) !important;
+  animation: flashSaleCardPulse 2.2s ease-in-out infinite;
 }
 
-/* Tia sáng chạy vòng quanh viền card */
+/* 2 đốm sáng đối xứng 180 độ rượt đuổi nhau vòng quanh viền */
 .home-food-card.is-flash-sale::before,
 .food-card.is-flash-sale::before,
 .best-seller-card.is-flash-sale::before,
 .suggestion-card.is-flash-sale::before {
   content: "";
   position: absolute;
-  inset: -2.5px;
+  inset: -3px;
   border-radius: inherit;
-  padding: 2.5px;
+  padding: 3px;
   background: conic-gradient(
     from var(--flash-beam-angle, 0deg),
+    /* Đốm sáng 1: Vệt cam sáng dần lên trắng tinh rực rỡ */
     transparent 0deg,
-    transparent 230deg,
-    rgba(255, 120, 50, 0.25) 270deg,
-    #ff4b1f 315deg,
-    #ffb703 345deg,
+    transparent 45deg,
+    rgba(255, 60, 0, 0.2) 80deg,
+    #ff3300 120deg,
+    #ff8800 150deg,
+    #ffe600 170deg,
+    #ffffff 180deg,
+    /* Đốm sáng 2: Đối xứng 180 độ rượt đuổi */
+    transparent 180.1deg,
+    transparent 225deg,
+    rgba(255, 60, 0, 0.2) 260deg,
+    #ff3300 300deg,
+    #ff8800 330deg,
+    #ffe600 350deg,
     #ffffff 360deg
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  animation: flashSaleBorderRotate 3.2s linear infinite;
+  animation: flashSaleBorderRotate 2.2s linear infinite;
   pointer-events: none;
   z-index: 2;
-  filter: drop-shadow(0 0 6px rgba(255, 87, 34, 0.8));
+  filter: drop-shadow(0 0 7px rgba(255, 87, 34, 0.95)) drop-shadow(0 0 14px rgba(255, 180, 0, 0.7));
 }
 
 .is-flash-sale .food-flash-badge {
-  box-shadow: 0 0 12px rgba(255, 75, 31, 0.6) !important;
-  animation: flashBadgePulse 1.8s ease-in-out infinite alternate !important;
+  box-shadow: 0 0 14px rgba(255, 75, 31, 0.8) !important;
+  animation: flashBadgePulse 1.5s ease-in-out infinite alternate !important;
 }
