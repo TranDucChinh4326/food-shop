@@ -6515,9 +6515,12 @@ footer {
   border: none;
   border-radius: 50%;
   bottom: 96px;
+  box-shadow: 0 8px 24px rgba(45, 18, 10, 0.15), 0 2px 8px rgba(255, 87, 34, 0.12);
+  color: #ff5722;
   cursor: pointer;
   display: inline-flex;
   height: 48px;
+  justify-content: center;
   opacity: 0;
   padding: 0;
   pointer-events: none;
@@ -6533,8 +6536,10 @@ footer {
 }
 
 .back-to-top-btn.visible {
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateY(0) scale(1) !important;
+}
 
 .back-to-top-btn:hover {
   background: #ffffff;
@@ -6547,6 +6552,7 @@ footer {
   color: #ea2a0e;
 }
 
+.back-to-top-btn:active {
   transform: translateY(0) scale(0.94);
 }
 
@@ -6565,12 +6571,15 @@ footer {
 
 .back-to-top-btn .progress-ring-circle {
   stroke: #ff5722;
+  stroke-linecap: round;
   transition: stroke-dashoffset 0.1s linear;
 }
+
 .back-to-top-arrow {
   align-items: center;
   display: inline-flex;
   justify-content: center;
+  line-height: 1;
   position: relative;
   z-index: 2;
   transition: transform 0.2s ease, color 0.2s ease;
@@ -6578,6 +6587,8 @@ footer {
 }
 
 .back-to-top-arrow svg {
+  display: block;
+  width: 20px;
   height: 20px;
 }
 
