@@ -454,20 +454,43 @@ function startFoodHubIdleSessionGuard() {
 
   const shouldUsePinLock = () => Boolean(getSessionUser()?.hasPin);
 
+  const resetPinOverlayInputs = overlay => {
+    if (!overlay) return;
+    const input = overlay.querySelector("[data-user-pin-input]");
+    const error = overlay.querySelector("[data-user-pin-error]");
+    const boxes = overlay.querySelectorAll("[data-pin-box]");
+    if (input) input.value = "";
+    if (error) error.textContent = "";
+    boxes.forEach(box => {
+      box.value = "";
+    });
+  };
+
   const initPinBoxes = container => {
     const hiddenInput = container.querySelector("[data-pin-hidden]");
     const boxes = Array.from(container.querySelectorAll("[data-pin-box]"));
     if (!hiddenInput || !boxes.length || container.dataset.pinReady === "1") return;
 
     container.dataset.pinReady = "1";
-    const syncHidden = () => {
-      hiddenInput.value = boxes.map(input => input.value).join("");
+    const syncHiddenAndAutoSubmit = () => {
+      const val = boxes.map(input => input.value).join("");
+      hiddenInput.value = val;
+      if (val.length === 6 && /^\d{6}$/.test(val)) {
+        const form = container.querySelector("[data-user-pin-form]");
+        if (form) {
+          if (typeof form.requestSubmit === "function") {
+            form.requestSubmit();
+          } else {
+            form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+          }
+        }
+      }
     };
 
     boxes.forEach((input, index) => {
       input.addEventListener("input", () => {
         input.value = input.value.replace(/\D/g, "").slice(-1);
-        syncHidden();
+        syncHiddenAndAutoSubmit();
         if (input.value && boxes[index + 1]) boxes[index + 1].focus();
       });
 
@@ -483,7 +506,7 @@ function startFoodHubIdleSessionGuard() {
         digits.split("").forEach((digit, digitIndex) => {
           boxes[digitIndex].value = digit;
         });
-        syncHidden();
+        syncHiddenAndAutoSubmit();
         boxes[Math.min(digits.length, boxes.length) - 1]?.focus();
       });
     });
@@ -542,6 +565,7 @@ function startFoodHubIdleSessionGuard() {
       }
 
       button.disabled = true;
+      button.textContent = "Đang mở khóa...";
       error.textContent = "";
 
       try {
@@ -575,11 +599,13 @@ function startFoodHubIdleSessionGuard() {
         isLocked = false;
         sessionStorage.removeItem(userPinLockKey);
         sessionStorage.setItem(activityKey, String(Date.now()));
+        resetPinOverlayInputs(overlay);
         overlay.classList.remove("is-visible");
       } catch (_) {
         error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
       } finally {
         button.disabled = false;
+        button.textContent = "Mở khóa";
       }
     });
 
@@ -596,6 +622,7 @@ function startFoodHubIdleSessionGuard() {
     isLocked = true;
     sessionStorage.setItem(userPinLockKey, "1");
     const overlay = ensurePinOverlay();
+    resetPinOverlayInputs(overlay);
     overlay.classList.add("is-visible");
     setTimeout(() => overlay.querySelector("[data-pin-box]")?.focus(), 50);
   };
@@ -607,6 +634,7 @@ function startFoodHubIdleSessionGuard() {
 
   if (isLocked && shouldUsePinLock()) {
     const overlay = ensurePinOverlay();
+    resetPinOverlayInputs(overlay);
     overlay.classList.add("is-visible");
     setTimeout(() => overlay.querySelector("[data-pin-box]")?.focus(), 50);
   } else if (isLocked) {
