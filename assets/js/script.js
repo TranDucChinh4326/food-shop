@@ -1628,18 +1628,27 @@ function renderRecommendationCard(food, context = "cart") {
     : `<span aria-hidden="true">FH</span>`;
   const detailUrl = getFoodDetailUrl(food.id, { from: context === "cart" ? "cart" : "home" });
   const isSale = Boolean(getFoodFlashSale(food));
+  const rating = Number(food.rating || 5);
 
   return `
     <article class="suggestion-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}" data-detail-from="${context === "cart" ? "cart" : "home"}">
-      <a class="suggestion-image" href="${detailUrl}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">${image}</a>
-      <div>
-        <small>${escapeHtml(getFoodDisplayCategory(food))}</small>
+      <div class="suggestion-image-wrap">
+        <a class="suggestion-image" href="${detailUrl}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">${image}</a>
+        <span class="suggestion-badge">${isSale ? "⚡ SALE" : rating >= 4.9 ? "👑 Top món" : "✨ Gợi ý"}</span>
+      </div>
+      <div class="suggestion-body">
+        <small class="suggestion-category">${escapeHtml(getFoodDisplayCategory(food))}</small>
         <h4><a href="${detailUrl}">${escapeHtml(food.name)}</a></h4>
-        <p>${renderRatingLabel(food.rating, food.reviewCount)} · Còn ${stock}</p>
+        <p class="suggestion-meta">
+          <span class="suggestion-stars">★ ${rating.toFixed(1)}</span>
+          <span class="suggestion-stock">${stock > 0 ? `Còn ${stock}` : "Hết"}</span>
+        </p>
       </div>
       <div class="suggestion-action">
         ${renderFoodPrice(food)}
-        <button type="button" onclick="event.stopPropagation(); addToCart(${food.id}, event)">Thêm</button>
+        <button type="button" class="suggestion-add-btn" title="Thêm vào giỏ" onclick="event.stopPropagation(); addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>
+          <span>+ Thêm</span>
+        </button>
       </div>
     </article>
   `;
@@ -1652,10 +1661,10 @@ function renderSuggestionSection(items, title, subtitle, context = "cart") {
     <section class="suggestion-section">
       <div class="suggestion-heading">
         <div>
-          <span>${escapeHtml(title)}</span>
+          <span>✨ ${escapeHtml(title)}</span>
           <h3>${escapeHtml(subtitle)}</h3>
         </div>
-        <a href="menu.html">Xem thêm</a>
+        <a href="menu.html">Xem thêm &rarr;</a>
       </div>
       <div class="suggestion-list">
         ${items.map(food => renderRecommendationCard(food, context)).join("")}
