@@ -1991,6 +1991,29 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   margin-top: 18px;
 }
 
+.flash-sale-item-form {
+  margin-top: 18px;
+}
+
+.flash-sale-item-form.is-locked {
+  background: rgba(255, 248, 244, 0.78);
+}
+
+.flash-sale-item-form.is-locked .announcement-date-grid,
+.flash-sale-item-form.is-locked .account-form-actions {
+  opacity: 0.55;
+}
+
+.form-inline-note {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 90, 38, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 90, 38, 0.08);
+  color: var(--text);
+  font-weight: 800;
+}
+
 .mini-list .table-wrap {
   border: 1px solid rgba(255, 90, 38, 0.16);
   border-radius: 14px;

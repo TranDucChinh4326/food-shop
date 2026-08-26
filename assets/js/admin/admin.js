@@ -59,6 +59,8 @@ const flashSaleStatusFilter = document.getElementById("flashSaleStatusFilter");
 const flashSalePageSize = document.getElementById("flashSalePageSize");
 const flashSaleFoodSelect = document.getElementById("flashSaleFoodSelect");
 const flashSaleItemsList = document.getElementById("flashSaleItemsList");
+const flashSaleItemNotice = document.getElementById("flashSaleItemNotice");
+const saveFlashSaleItemBtn = document.getElementById("saveFlashSaleItemBtn");
 const discountForm = document.getElementById("discountForm");
 const discountListView = document.getElementById("discountListView");
 const discountFormView = document.getElementById("discountFormView");
@@ -1017,8 +1019,8 @@ function resetFlashSaleForm() {
   document.getElementById("saveFlashSaleBtn").textContent = "Lưu flash sale";
   if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Thêm mới flash sale";
   resetFlashSaleItemForm();
-  if (flashSaleItemForm) flashSaleItemForm.hidden = true;
   renderFlashSaleItems();
+  syncFlashSaleItemFormState();
 }
 
 function resetFlashSaleItemForm() {
@@ -1028,6 +1030,25 @@ function resetFlashSaleItemForm() {
   document.getElementById("flashSaleItemSaleId").value = document.getElementById("flashSaleId")?.value || "";
   document.getElementById("flashSaleItemSort").value = "0";
   document.getElementById("flashSaleItemIsActive").value = "1";
+}
+
+function syncFlashSaleItemFormState() {
+  if (!flashSaleItemForm) return;
+
+  const hasSale = Boolean(document.getElementById("flashSaleId")?.value);
+  flashSaleItemForm.classList.toggle("is-locked", !hasSale);
+  flashSaleItemForm.querySelectorAll("select, input, button").forEach(control => {
+    if (control.id === "flashSaleItemSaleId") return;
+    control.disabled = !hasSale;
+  });
+  if (saveFlashSaleItemBtn) {
+    saveFlashSaleItemBtn.textContent = hasSale ? "Thêm món vào flash sale" : "Lưu flash sale trước";
+  }
+  if (flashSaleItemNotice) {
+    flashSaleItemNotice.textContent = hasSale
+      ? "Chọn từng món áp dụng giảm giá, nhập giá sale và số lượng giới hạn nếu cần."
+      : "Lưu thông tin flash sale trước, sau đó chọn món và giá giảm ở đây.";
+  }
 }
 
 function renderFlashSaleItems(items = [], saleId = "") {
@@ -1087,7 +1108,6 @@ function closeFlashSaleForm() {
 
   flashSaleForm.classList.remove("is-open");
   flashSaleForm.hidden = true;
-  if (flashSaleItemForm) flashSaleItemForm.hidden = true;
   if (flashSaleFormView) flashSaleFormView.hidden = true;
   if (flashSaleListView) flashSaleListView.hidden = false;
 }
@@ -1156,9 +1176,9 @@ async function fillFlashSaleForm(sale) {
   if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Cập nhật flash sale";
   if (flashSaleItemForm) {
     document.getElementById("flashSaleItemSaleId").value = detail.id || "";
-    flashSaleItemForm.hidden = false;
   }
   renderFlashSaleItems(detail.items || [], detail.id || "");
+  syncFlashSaleItemFormState();
   await loadFlashSaleFoodOptions();
   openFlashSaleForm();
 }
@@ -1277,7 +1297,7 @@ async function saveFlashSale(event) {
 
     document.getElementById("flashSaleId").value = savedId || "";
     document.getElementById("flashSaleItemSaleId").value = savedId || "";
-    if (flashSaleItemForm && savedId) flashSaleItemForm.hidden = false;
+    syncFlashSaleItemFormState();
     if (flashSaleFormTitle) flashSaleFormTitle.textContent = "Cập nhật flash sale";
     document.getElementById("saveFlashSaleBtn").textContent = "Cập nhật flash sale";
     showAdminToast(flashSaleId ? "Đã cập nhật flash sale." : "Đã tạo flash sale.");
