@@ -5220,24 +5220,56 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeFoodDetail();
 });
 
-if (protectCheckoutPage()) {
+// Khởi tạo các module toàn trang ngay lập tức
+loadPublicCategories();
+loadFavoriteFoods();
+loadFoods();
+loadPublicAnnouncements();
+loadFloatingAdvertisements();
+renderCart();
+renderUser();
+initAccountMenu();
+initMobileMenu();
+initCompactHeader();
+initHeaderLiveSearch();
+initTrackPage();
+initBackToTopButton();
+initLiveCountdowns();
+initAnnouncementArchiveFilters();
+loadAnnouncementArchive();
+loadAvailableVouchers();
+loadOwnedVouchers();
+loadShippingMethods();
+initChatSupportWidget();
+
+// Xử lý riêng cho trang Giỏ hàng / Đặt hàng (checkout)
+if (document.getElementById("orderForm") && protectCheckoutPage()) {
   (async () => {
     await initAddressSelectors();
-  const currentUser = await loadCheckoutProfile() || getCurrentUser();
-  const savedAddresses = await loadCheckoutSavedAddresses();
-  const hasCheckoutAddress = Boolean(
-    savedAddresses.length
-      || currentUser?.address
-      || (
-        document.getElementById("customerCity")?.value
-        && document.getElementById("customerWard")?.value
-        && document.getElementById("customerAddress")?.value
-      )
-  );
-  setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
+    const currentUser = await loadCheckoutProfile() || getCurrentUser();
+    const savedAddresses = await loadCheckoutSavedAddresses();
+    const hasCheckoutAddress = Boolean(
+      savedAddresses.length
+        || currentUser?.address
+        || (
+          document.getElementById("customerCity")?.value
+          && document.getElementById("customerWard")?.value
+          && document.getElementById("customerAddress")?.value
+        )
+    );
+    setCheckoutAddressRequiredState(hasCheckoutAddress, "Bạn cần cập nhật địa chỉ giao hàng trong tài khoản trước khi đặt hàng.");
 
-  ["customerCity", "customerWard", "customerAddress", "savedAddressSelect"].forEach(id => {
-    document.getElementById(id)?.addEventListener("change", () => {
+    ["customerCity", "customerWard", "customerAddress", "savedAddressSelect"].forEach(id => {
+      document.getElementById(id)?.addEventListener("change", () => {
+        appliedDiscount = null;
+        shippingQuote = null;
+        setCustomerLocationValue(null);
+        document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
+        renderCart();
+        scheduleShippingQuoteRefresh();
+      });
+    });
+    document.getElementById("customerAddress")?.addEventListener("input", () => {
       appliedDiscount = null;
       shippingQuote = null;
       setCustomerLocationValue(null);
@@ -5245,71 +5277,41 @@ if (protectCheckoutPage()) {
       renderCart();
       scheduleShippingQuoteRefresh();
     });
-  });
-  document.getElementById("customerAddress")?.addEventListener("input", () => {
-    appliedDiscount = null;
-    shippingQuote = null;
-    setCustomerLocationValue(null);
-    document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
-    renderCart();
-    scheduleShippingQuoteRefresh();
-  });
-  document.getElementById("openDeliveryMapBtn")?.addEventListener("click", openDeliveryMapPicker);
-  document.querySelector(".delivery-map-close")?.addEventListener("click", closeDeliveryMapPicker);
-  document.getElementById("deliveryMapDialog")?.addEventListener("click", event => {
-    if (event.target.id === "deliveryMapDialog") closeDeliveryMapPicker();
-  });
-  document.getElementById("useCurrentLocationBtn")?.addEventListener("click", useCurrentDeliveryLocation);
-  document.getElementById("searchDeliveryMapBtn")?.addEventListener("click", searchDeliveryMapLocation);
-  document.getElementById("deliveryMapSearchInput")?.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      searchDeliveryMapLocation();
-    }
-  });
-  document.getElementById("confirmDeliveryLocationBtn")?.addEventListener("click", confirmDeliveryLocation);
-  document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
-  document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {
-    const input = document.getElementById("discountCodeInput");
-    if (input) input.value = "";
-    applyCheckoutDiscount();
-  });
-  document.getElementById("shippingMethodOptions")?.addEventListener("change", event => {
-    const input = event.target.closest("input[name='shippingMethod']");
-    if (!input) return;
+    document.getElementById("openDeliveryMapBtn")?.addEventListener("click", openDeliveryMapPicker);
+    document.querySelector(".delivery-map-close")?.addEventListener("click", closeDeliveryMapPicker);
+    document.getElementById("deliveryMapDialog")?.addEventListener("click", event => {
+      if (event.target.id === "deliveryMapDialog") closeDeliveryMapPicker();
+    });
+    document.getElementById("useCurrentLocationBtn")?.addEventListener("click", useCurrentDeliveryLocation);
+    document.getElementById("searchDeliveryMapBtn")?.addEventListener("click", searchDeliveryMapLocation);
+    document.getElementById("deliveryMapSearchInput")?.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        searchDeliveryMapLocation();
+      }
+    });
+    document.getElementById("confirmDeliveryLocationBtn")?.addEventListener("click", confirmDeliveryLocation);
+    document.getElementById("applyDiscountBtn")?.addEventListener("click", applyCheckoutDiscount);
+    document.getElementById("ownedVoucherSelect")?.addEventListener("change", () => {
+      const input = document.getElementById("discountCodeInput");
+      if (input) input.value = "";
+      applyCheckoutDiscount();
+    });
+    document.getElementById("shippingMethodOptions")?.addEventListener("change", event => {
+      const input = event.target.closest("input[name='shippingMethod']");
+      if (!input) return;
 
-    selectedShippingMethodId = input.value;
-    appliedDiscount = null;
-    shippingQuote = null;
-    document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
-    renderCart();
-    scheduleShippingQuoteRefresh();
-  });
-  initCheckoutSteps();
-  document.getElementById("availableVouchersList")?.addEventListener("click", event => {
-    const button = event.target.closest("[data-claim-voucher]");
-    if (button) claimVoucher(Number(button.dataset.claimVoucher));
-  });
-
-  loadPublicCategories();
-  loadFavoriteFoods();
-  loadFoods();
-  loadPublicAnnouncements();
-  loadFloatingAdvertisements();
-  renderCart();
-  renderUser();
-  initAccountMenu();
-  initMobileMenu();
-  initCompactHeader();
-  initHeaderLiveSearch();
-  initTrackPage();
-  initBackToTopButton();
-  initLiveCountdowns();
-  initAnnouncementArchiveFilters();
-  loadAnnouncementArchive();
-  loadAvailableVouchers();
-  loadOwnedVouchers();
-  loadShippingMethods();
-  initChatSupportWidget();
+      selectedShippingMethodId = input.value;
+      appliedDiscount = null;
+      shippingQuote = null;
+      document.getElementById("discountMessage") && (document.getElementById("discountMessage").textContent = "");
+      renderCart();
+      scheduleShippingQuoteRefresh();
+    });
+    initCheckoutSteps();
+    document.getElementById("availableVouchersList")?.addEventListener("click", event => {
+      const button = event.target.closest("[data-claim-voucher]");
+      if (button) claimVoucher(Number(button.dataset.claimVoucher));
+    });
   })();
 }
