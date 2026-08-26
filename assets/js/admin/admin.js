@@ -1237,8 +1237,8 @@ function renderFlashSalesTable() {
   }
 
   flashSalesList.innerHTML = `
-    <div class="table-wrap">
-      <table class="admin-table discounts-table">
+    <div class="table-wrap flash-sales-table-wrap">
+      <table class="admin-table flash-sales-table">
         <thead>
           <tr>
             <th>Chương trình</th>
@@ -1252,13 +1252,13 @@ function renderFlashSalesTable() {
         <tbody>
           ${pageItems.map(item => `
             <tr>
-              <td><strong>${escapeHtml(item.title || "")}</strong></td>
-              <td>
+              <td class="flash-sale-name"><strong>${escapeHtml(item.title || "")}</strong></td>
+              <td class="flash-sale-time">
                 <span>${formatDateTime(item.starts_at) || "Bắt đầu ngay"}</span>
                 <small>${formatDateTime(item.ends_at) || "Không giới hạn"}</small>
               </td>
-              <td>${Number(item.item_count || 0).toLocaleString("vi-VN")}</td>
-              <td>${Number(item.sold_count || 0).toLocaleString("vi-VN")}</td>
+              <td class="table-number">${Number(item.item_count || 0).toLocaleString("vi-VN")}</td>
+              <td class="table-number">${Number(item.sold_count || 0).toLocaleString("vi-VN")}</td>
               <td>${renderFlashSaleStatus(item.status)}</td>
               <td>
                 <div class="table-actions">
@@ -1271,9 +1271,9 @@ function renderFlashSalesTable() {
         </tbody>
       </table>
     </div>
-    <div class="admin-pagination">
+    <div class="table-footer">
       <span>Hiển thị ${startIndex + 1}-${Math.min(startIndex + flashSalesPerPage, total)} / ${total}</span>
-      <div class="pagination-buttons">
+      <div class="pager">
         <button type="button" data-flash-sales-page="prev" ${flashSalesPage === 1 ? "disabled" : ""}>&lsaquo;</button>
         ${getCompactPaginationItems(totalPages, flashSalesPage).map(page => renderAdminPaginationButton(page, flashSalesPage, "flash-sales")).join("")}
         <button type="button" data-flash-sales-page="next" ${flashSalesPage === totalPages ? "disabled" : ""}>&rsaquo;</button>

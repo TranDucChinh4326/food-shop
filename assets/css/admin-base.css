@@ -1981,6 +1981,90 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   min-width: 210px;
 }
 
+.flash-sales-table-wrap {
+  overflow-x: visible;
+}
+
+.flash-sales-table {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.flash-sales-table th:first-child,
+.flash-sales-table td:first-child {
+  text-align: left;
+  width: 22%;
+}
+
+.flash-sales-table th:nth-child(2),
+.flash-sales-table td:nth-child(2) {
+  width: 28%;
+}
+
+.flash-sales-table th:nth-child(3),
+.flash-sales-table td:nth-child(3),
+.flash-sales-table th:nth-child(4),
+.flash-sales-table td:nth-child(4) {
+  text-align: center;
+  width: 90px;
+}
+
+.flash-sales-table th:nth-child(5),
+.flash-sales-table td:nth-child(5) {
+  width: 150px;
+}
+
+.flash-sales-table th:last-child,
+.flash-sales-table td:last-child {
+  width: 130px;
+}
+
+.flash-sale-name strong {
+  line-height: 1.35;
+  word-break: normal;
+}
+
+.flash-sale-time span,
+.flash-sale-time small {
+  white-space: nowrap;
+}
+
+.table-number {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.status-pill {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 900;
+  min-height: 30px;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.status-pill.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.warning {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.status-pill.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill.muted {
+  background: #f1f5f9;
+  color: #475569;
+}
+
 
 
 .compact-table {
