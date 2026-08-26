@@ -3562,6 +3562,201 @@ function showQrPaymentDialog(order) {
 
   qrPaymentStatusTimer = setInterval(() => {
     if (activeQrPayment?.orderId) checkQrPaymentStatus(activeQrPayment.orderId);
+    const shippingFee = getCheckoutShippingFee(total);
+    const discountAmount = Number(appliedDiscount?.discountAmount || 0);
+    const finalTotal = Math.max(0, total + (shippingFee || 0) - discountAmount);
+    const shippingText = shippingFee === null ? "Chưa áp dụng" : shippingFee === 0 ? "Miễn phí" : formatMoney(shippingFee);
+
+    totalPrice.textContent = formatMoney(finalTotal);
+
+    checkoutSummary.innerHTML = `
+      <div><span>Tổng mặt hàng</span><strong>${totalQuantity}</strong></div>
+      <div><span>Tạm tính</span><strong>${formatMoney(total)}</strong></div>
+      <div><span>Phí giao hàng</span><strong>${shippingText}</strong></div>
+      ${discountAmount > 0 ? `<div><span>Mã giảm giá ${escapeHtml(appliedDiscount.code || "")}</span><strong>-${formatMoney(discountAmount)}</strong></div>` : ""}
+      <div class="checkout-summary-total"><span>Tổng thanh toán</span><strong>${formatMoney(finalTotal)}</strong></div>
+    `;
+  }
+  renderCheckoutReviewInfo();
+}
+
+function changeQuantity(foodId, amount) {
+  const item = cart.find(item => item.id === foodId);
+
+  if (!item) return;
+
+  const food = foods.find(entry => entry.id === foodId);
+  const stock = Number(food?.stockQuantity ?? Number.MAX_SAFE_INTEGER);
+  const nextQuantity = item.quantity + amount;
+
+  if (nextQuantity > stock) {
+    showSiteToast(`Số lượng tối đa còn lại cho món này là ${stock}.`, "error");
+    return;
+  }
+
+  item.quantity = nextQuantity;
+
+  if (item.quantity <= 0) {
+    cart = cart.filter(cartItem => cartItem.id !== foodId);
+  }
+
+  saveCart();
+  renderCart();
+}
+
+function removeItem(foodId) {
+  cart = cart.filter(item => item.id !== foodId);
+  saveCart();
+  renderCart();
+}
+
+function formatCountdown(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
+
+function getBankDisplayName(bankCode) {
+  const bankNames = {
+    "970424": "Shinhan Bank Việt Nam"
+  };
+
+  return bankNames[String(bankCode || "")] || bankCode || "Ngân hàng";
+}
+
+async function cancelActiveQrPayment(reason = "manual") {
+  if (!activeQrPayment?.orderId) return;
+
+  const orderId = activeQrPayment.orderId;
+  activeQrPayment = null;
+
+  if (qrPaymentCountdownTimer) {
+    clearInterval(qrPaymentCountdownTimer);
+    qrPaymentCountdownTimer = null;
+  }
+
+  if (qrPaymentStatusTimer) {
+    clearInterval(qrPaymentStatusTimer);
+    qrPaymentStatusTimer = null;
+  }
+
+  try {
+    await fetch(`${ORDERS_API}/${orderId}/payment/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      },
+      body: JSON.stringify({ reason })
+    });
+  } catch (error) {
+    console.error("Không hủy được giao dịch QR:", error);
+  }
+}
+
+function stopQrPaymentTimers() {
+  if (qrPaymentCountdownTimer) {
+    clearInterval(qrPaymentCountdownTimer);
+    qrPaymentCountdownTimer = null;
+  }
+
+  if (qrPaymentStatusTimer) {
+    clearInterval(qrPaymentStatusTimer);
+    qrPaymentStatusTimer = null;
+  }
+}
+
+function closeQrPaymentDialog({ cancel = true } = {}) {
+  const dialog = document.getElementById("qrPaymentDialog");
+
+  if (dialog) dialog.remove();
+  document.body.classList.remove("qr-payment-open");
+  if (cancel) cancelActiveQrPayment("closed");
+  if (!cancel) stopQrPaymentTimers();
+}
+
+async function checkQrPaymentStatus(orderId) {
+  try {
+    const response = await fetch(`${ORDERS_API}/${orderId}/payment/status`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    if (data.paymentStatus === "paid") {
+      activeQrPayment = null;
+      closeQrPaymentDialog({ cancel: false });
+      showSiteToast("Thanh to\u00e1n QR th\u00e0nh c\u00f4ng. \u0110\u01a1n h\u00e0ng \u0111ang ch\u1edd x\u00e1c nh\u1eadn.");
+      setTimeout(() => {
+        window.location.href = "track.html";
+      }, 900);
+    }
+  } catch (error) {
+    console.error("Cannot check QR payment status:", error);
+  }
+}
+
+function showQrPaymentDialog(order) {
+  const session = order.paymentSession;
+  if (!session?.qrUrl) return;
+
+  activeQrPayment = {
+    orderId: order.id,
+    startedAt: Date.now()
+  };
+
+  const oldDialog = document.getElementById("qrPaymentDialog");
+  if (oldDialog) oldDialog.remove();
+  document.body.classList.add("qr-payment-open");
+
+  const dialog = document.createElement("div");
+  dialog.id = "qrPaymentDialog";
+  dialog.className = "qr-payment-dialog";
+  dialog.innerHTML = `
+    <div class="qr-payment-card" role="dialog" aria-modal="true" aria-labelledby="qrPaymentTitle">
+      <div class="qr-payment-head">
+        <div>
+          <h2 id="qrPaymentTitle">Thanh toán QR đơn #${order.id}</h2>
+          <p>Không rời trang trong lúc giao dịch đang chờ xử lý.</p>
+        </div>
+        <button type="button" class="qr-payment-close" aria-label="Hủy thanh toán">×</button>
+      </div>
+      <img class="qr-payment-image" src="${escapeHtml(session.qrUrl)}" alt="Mã QR thanh toán đơn ${order.id}">
+      <div class="qr-payment-info">
+        <div><span>Số tiền</span><strong>${formatMoney(session.amount)}</strong></div>
+        <div><span>Ngân hàng</span><strong>${escapeHtml(getBankDisplayName(session.bankCode))}</strong></div>
+        <div><span>Số tài khoản</span><strong>${escapeHtml(session.bankAccountNo)}</strong></div>
+        <div><span>Chủ tài khoản</span><strong>${escapeHtml(session.bankAccountName)}</strong></div>
+        <div><span>Nội dung</span><strong>${escapeHtml(session.transferContent)}</strong></div>
+        <div><span>Thời gian còn lại</span><strong id="qrPaymentCountdown">${formatCountdown(session.expiresInSeconds || 600)}</strong></div>
+      </div>
+      <div class="qr-payment-actions">
+        <button type="button" class="social-link-btn" data-qr-cancel>Hủy giao dịch</button>
+        <a class="btn" href="track.html">Tôi đã chuyển khoản</a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  let remaining = Number(session.expiresInSeconds || 600);
+  qrPaymentCountdownTimer = setInterval(() => {
+    remaining -= 1;
+    const countdown = document.getElementById("qrPaymentCountdown");
+    if (countdown) countdown.textContent = formatCountdown(Math.max(remaining, 0));
+
+    if (remaining <= 0) {
+      closeQrPaymentDialog({ cancel: true });
+      showSiteToast("Giao dịch QR đã hết hạn và được hủy.", "error");
+    }
+  }, 1000);
+
+  qrPaymentStatusTimer = setInterval(() => {
+    if (activeQrPayment?.orderId) checkQrPaymentStatus(activeQrPayment.orderId);
   }, 3000);
 
   dialog.querySelector(".qr-payment-close")?.addEventListener("click", () => closeQrPaymentDialog({ cancel: true }));
@@ -3654,7 +3849,7 @@ async function submitOrder(event) {
     if (response.status === 401) {
       sessionStorage.removeItem(AUTH_TOKEN_KEY);
       sessionStorage.removeItem(AUTH_USER_KEY);
-      requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "cart.html");
+      requireLogin(data.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "cart.html");
       return;
     }
 
@@ -3695,6 +3890,20 @@ async function submitOrder(event) {
   }
 }
 
+function formatReadableAddress(address) {
+  if (!address) return "Chưa cập nhật địa chỉ";
+  const str = String(address).trim();
+  if (!str.includes("|")) return str;
+
+  const parts = str.split("|").map(part => part.trim()).filter(Boolean);
+  if (parts.length === 3) {
+    return `${parts[2]}, ${parts[1]}, ${parts[0]}`;
+  } else if (parts.length >= 4) {
+    return `${parts[3]}, ${parts[2]}, ${parts[1]}, ${parts[0]}`;
+  }
+  return parts.reverse().join(", ") || str;
+}
+
 async function trackOrder(event) {
   if (event) event.preventDefault();
 
@@ -3721,7 +3930,7 @@ async function trackOrder(event) {
         <p><strong>Trạng thái:</strong> ${getOrderStatusLabel(data.status)}</p>
         <p><strong>Khách hàng:</strong> ${data.customer_name}</p>
         <p><strong>Số điện thoại:</strong> ${data.phone}</p>
-        <p><strong>Địa chỉ:</strong> ${data.address}</p>
+        <p><strong>Địa chỉ:</strong> ${escapeHtml(formatReadableAddress(data.address))}</p>
         <p><strong>Thanh toán:</strong> ${getPaymentMethodLabel(data.payment_method)} - ${getPaymentStatusLabel(data.payment_status)}</p>
         ${data.note ? `<p><strong>Ghi chú:</strong> ${data.note}</p>` : ""}
         <div>
@@ -3794,7 +4003,7 @@ async function loadOrderHistory(eventOrOptions) {
       if (response.status === 401) {
         sessionStorage.removeItem(AUTH_TOKEN_KEY);
         sessionStorage.removeItem(AUTH_USER_KEY);
-        requireLogin(data.message || "Phiên đăng nhập da hết hạn. Vui lòng đăng nhập lai.", "track.html");
+        requireLogin(data.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "track.html");
         return;
       }
 
@@ -3837,61 +4046,74 @@ function renderOrderHistory(orders) {
     return;
   }
 
-  resultBox.innerHTML = orders.map(order => `
-    <article class="track-card order-card">
-      <div class="order-history-top">
-        <div>
-          <p class="order-code">Đơn hàng #${order.id}</p>
-          <h3>${formatMoney(order.total_price)}</h3>
-          <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
-        </div>
-        <span class="status-pill">${getOrderStatusLabel(order.status)}</span>
-      </div>
+  resultBox.innerHTML = orders.map(order => {
+    const formattedAddress = formatReadableAddress(order.address);
+    const status = order.status || "pending";
+    const statusClasses = {
+      done: "status-done",
+      delivering: "status-delivering",
+      confirmed: "status-confirmed",
+      pending: "status-pending",
+      canceled: "status-canceled"
+    };
+    const statusClass = statusClasses[status] || "status-pending";
 
-      <div class="history-info">
-        <div>
-          <small>Người nhận</small>
-          <p>${escapeHtml(order.customer_name)} - ${escapeHtml(order.phone)}</p>
+    return `
+      <article class="track-card order-card">
+        <div class="order-history-top">
+          <div>
+            <p class="order-code">Đơn hàng #${order.id}</p>
+            <h3>${formatMoney(order.total_price)}</h3>
+            <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
+          </div>
+          <span class="status-pill ${statusClass}">${getOrderStatusLabel(order.status)}</span>
         </div>
-        <div>
-          <small>Địa chỉ giao hàng</small>
-          <p>${escapeHtml(order.address)}</p>
-        </div>
-        <div>
-          <small>Thanh toán</small>
-          <p>${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
-        </div>
-        ${order.note ? `<div><small>Ghi chú</small><p>${escapeHtml(order.note)}</p></div>` : ""}
-      </div>
 
-      <div class="history-items">
-        ${order.items.map(item => `
+        <div class="history-info">
+          <div>
+            <small>Người nhận</small>
+            <p>${escapeHtml(order.customer_name)} - ${escapeHtml(order.phone)}</p>
+          </div>
+          <div>
+            <small>Địa chỉ giao hàng</small>
+            <p>${escapeHtml(formattedAddress)}</p>
+          </div>
+          <div>
+            <small>Thanh toán</small>
+            <p>${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
+          </div>
+          ${order.note ? `<div><small>Ghi chú</small><p>${escapeHtml(order.note)}</p></div>` : ""}
+        </div>
+
+        <div class="history-items">
+          ${order.items.map(item => `
+            <div class="track-line order-item-row">
+              <div class="order-item-main">
+                <span>${escapeHtml(item.food_name)}</span>
+                <small>Số lượng: ${Number(item.quantity)}</small>
+                ${renderOrderReviewControl(order, item)}
+              </div>
+              <strong>${formatMoney(item.subtotal)}</strong>
+            </div>
+          `).join("")}
           <div class="track-line order-item-row">
             <div class="order-item-main">
-              <span>${escapeHtml(item.food_name)}</span>
-              <small>Số lượng: ${Number(item.quantity)}</small>
-              ${renderOrderReviewControl(order, item)}
+              <span>Phí giao hàng${order.shipping_method_name ? ` - ${escapeHtml(order.shipping_method_name)}` : ""}</span>
             </div>
-            <strong>${formatMoney(item.subtotal)}</strong>
+            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
           </div>
-        `).join("")}
-        <div class="track-line order-item-row">
-          <div class="order-item-main">
-            <span>Phí giao hàng${order.shipping_method_name ? ` - ${escapeHtml(order.shipping_method_name)}` : ""}</span>
-          </div>
-          <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
+          ${Number(order.discount_amount || 0) > 0 ? `
+            <div class="track-line order-item-row">
+              <div class="order-item-main">
+                <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
+              </div>
+              <strong>-${formatMoney(order.discount_amount)}</strong>
+            </div>
+          ` : ""}
         </div>
-        ${Number(order.discount_amount || 0) > 0 ? `
-          <div class="track-line order-item-row">
-            <div class="order-item-main">
-              <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
-            </div>
-            <strong>-${formatMoney(order.discount_amount)}</strong>
-          </div>
-        ` : ""}
-      </div>
-    </article>
-  `).join("");
+      </article>
+    `;
+  }).join("");
 }
 
 function resetOrderHistoryFilter() {

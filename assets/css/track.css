@@ -83,4 +83,92 @@
   gap: 8px;
   min-width: 0;
 }
-/* Style cho trang tra cứu đơn: trạng thái đơn hàng, thanh toán và thông tin giao hàng. */
+
+.order-history-top {
+  align-items: flex-start;
+  border-bottom: 1px solid #f3e5dc;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 14px;
+}
+
+.order-code {
+  color: #221711;
+  font-size: 16px;
+  font-weight: 900;
+  margin: 0 0 2px;
+}
+
+.status-pill {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12.5px;
+  font-weight: 800;
+  gap: 6px;
+  padding: 5px 14px;
+  white-space: nowrap;
+}
+
+.status-pill.status-done {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+}
+
+.status-pill.status-delivering {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+}
+
+.status-pill.status-confirmed {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  color: #ca8a04;
+}
+
+.status-pill.status-pending {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+}
+
+.status-pill.status-canceled {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+}
+
+.history-info {
+  background: #fffaf7;
+  border: 1px solid #f5e4da;
+  border-radius: 10px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 16px 0;
+  padding: 14px 18px;
+}
+
+.history-info > div {
+  display: grid;
+  gap: 4px;
+}
+
+.history-info small {
+  color: #8c7164;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.history-info p {
+  color: #201814;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+}
+
