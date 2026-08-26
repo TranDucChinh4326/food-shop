@@ -244,7 +244,9 @@ function startFoodHubPresenceHeartbeat() {
         Authorization: `Bearer ${token}`
       },
       keepalive: true
-    }).catch(() => {});
+    }).catch(err => {
+      console.warn("Presence ping skipped:", err.message);
+    });
   };
 
   pingPresence();
@@ -297,7 +299,9 @@ function startFoodHubRealtime() {
         window.showSiteToast(`Đơn hàng #${payload?.order?.id || ""} vừa được cập nhật.`, "info");
       }
     });
-  }).catch(() => {});
+  }).catch(err => {
+    console.warn("Realtime socket client skipped:", err.message);
+  });
 }
 
 function startFoodHubNotificationBadges() {
@@ -311,7 +315,7 @@ function startFoodHubNotificationBadges() {
   try {
     const user = JSON.parse(userRaw || "null");
     userId = user?.id ? String(user.id) : "guest";
-  } catch (_) {
+  } catch (err) {
     userId = "guest";
   }
 
@@ -322,7 +326,7 @@ function startFoodHubNotificationBadges() {
     try {
       const parsed = JSON.parse(localStorage.getItem(key) || "[]");
       return Array.isArray(parsed) ? parsed.map(String) : [];
-    } catch (_) {
+    } catch (err) {
       return [];
     }
   };
@@ -382,7 +386,9 @@ function startFoodHubNotificationBadges() {
       if (token && unreadCount > 0) {
         notifyOnce("foodhub_new_announcements", `Bạn có ${unreadCount} thông báo mới.`);
       }
-    } catch (_) {}
+    } catch (err) {
+      console.warn("Announcement badge skipped:", err.message);
+    }
   };
 
   const loadVoucherBadge = async () => {
@@ -419,7 +425,9 @@ function startFoodHubNotificationBadges() {
       if (unreadCount > 0) {
         notifyOnce("foodhub_new_vouchers", `Bạn có ${unreadCount} voucher mới có thể nhận.`);
       }
-    } catch (_) {}
+    } catch (err) {
+      console.warn("Voucher badge skipped:", err.message);
+    }
   };
 
   loadAnnouncementBadge();
@@ -447,7 +455,7 @@ function startFoodHubIdleSessionGuard() {
   const getSessionUser = () => {
     try {
       return JSON.parse(sessionStorage.getItem(userKey) || "null");
-    } catch (_) {
+    } catch (err) {
       return null;
     }
   };
@@ -457,10 +465,10 @@ function startFoodHubIdleSessionGuard() {
   const resetPinOverlayInputs = overlay => {
     if (!overlay) return;
     const input = overlay.querySelector("[data-user-pin-input]");
-    const error = overlay.querySelector("[data-user-pin-error]");
+    const errorEl = overlay.querySelector("[data-user-pin-error]");
     const boxes = overlay.querySelectorAll("[data-pin-box]");
     if (input) input.value = "";
-    if (error) error.textContent = "";
+    if (errorEl) errorEl.textContent = "";
     boxes.forEach(box => {
       box.value = "";
     });
@@ -553,18 +561,20 @@ function startFoodHubIdleSessionGuard() {
     overlay.querySelector("[data-user-pin-form]").addEventListener("submit", async event => {
       event.preventDefault();
       const input = overlay.querySelector("[data-user-pin-input]");
-      const error = overlay.querySelector("[data-user-pin-error]");
+      const errorEl = overlay.querySelector("[data-user-pin-error]");
       const boxes = overlay.querySelectorAll("[data-pin-box]");
-      const pin = input.value.trim();
+      const pin = input ? input.value.trim() : "";
 
       if (!/^\d{6}$/.test(pin)) {
-        error.textContent = "Vui lòng nhập đủ 6 số PIN.";
+        if (errorEl) errorEl.textContent = "Vui lòng nhập đủ 6 số PIN.";
         overlay.querySelector("[data-pin-box]")?.focus();
         return;
       }
 
-      boxes.forEach(b => b.disabled = true);
-      error.textContent = "Đang kiểm tra mã PIN...";
+      boxes.forEach(b => {
+        b.disabled = true;
+      });
+      if (errorEl) errorEl.textContent = "Đang kiểm tra mã PIN...";
 
       try {
         const response = await fetch(`${apiBase}/auth/pin/verify`, {
@@ -584,8 +594,10 @@ function startFoodHubIdleSessionGuard() {
             redirectToLogin();
             return;
           }
-          error.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
-          input.value = "";
+          if (errorEl) {
+            errorEl.textContent = data.message || `Mã PIN không đúng. Còn ${3 - failedAttempts} lần thử.`;
+          }
+          if (input) input.value = "";
           boxes.forEach(box => {
             box.value = "";
           });
@@ -599,10 +611,12 @@ function startFoodHubIdleSessionGuard() {
         sessionStorage.setItem(activityKey, String(Date.now()));
         resetPinOverlayInputs(overlay);
         overlay.classList.remove("is-visible");
-      } catch (_) {
-        error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
+      } catch (err) {
+        if (errorEl) errorEl.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
       } finally {
-        boxes.forEach(b => b.disabled = false);
+        boxes.forEach(b => {
+          b.disabled = false;
+        });
       }
     });
 
