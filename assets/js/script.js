@@ -2138,6 +2138,38 @@ function renderFoodDetailPerspectives(food) {
   `;
 }
 
+function renderFoodDetailFlashSaleBanner(food) {
+  const sale = getFoodFlashSale(food);
+  if (!sale) return "";
+
+  const basePrice = Number(food?.price || sale.originalPrice || 0);
+  const discountPercent = basePrice > 0 ? Math.max(1, Math.round((1 - sale.salePrice / basePrice) * 100)) : 0;
+  const savings = Math.max(0, basePrice - sale.salePrice);
+  const endAt = sale.endsAt || "";
+
+  return `
+    <div class="food-detail-flash-box" ${endAt ? `data-flash-sale-countdown="${escapeHtml(endAt)}"` : ""}>
+      <div class="flash-box-top">
+        <div class="flash-box-badge-wrap">
+          <span class="flash-box-badge">⚡ FLASH SALE</span>
+          <span class="flash-box-discount">Giảm -${discountPercent}%</span>
+        </div>
+        ${endAt ? `
+          <div class="flash-box-timer">
+            <span class="flash-timer-label">⏰ Kết thúc sau:</span>
+            <strong class="flash-timer-clock" data-flash-sale-timer>--:--:--</strong>
+          </div>
+        ` : ""}
+      </div>
+      <div class="flash-box-bottom">
+        <span>🔥 Ưu đãi số lượng có hạn</span>
+        ${savings > 0 ? `<span>• Tiết kiệm ngay <strong>${formatMoney(savings)}</strong></span>` : ""}
+        ${sale.remaining !== null ? `<span>• Còn lại <strong>${sale.remaining}</strong> suất</span>` : ""}
+      </div>
+    </div>
+  `;
+}
+
 function showFoodDetail(foodId) {
   const food = foods.find(item => String(item.id) === String(foodId));
   if (!food) return;
@@ -2150,6 +2182,7 @@ function showFoodDetail(foodId) {
   const { rating, reviewCount, comments } = getFoodRatingStats(food);
   const category = getFoodDisplayCategory(food);
   const image = food.image || "";
+  const isSale = Boolean(getFoodFlashSale(food));
   const dialog = document.createElement("div");
   dialog.id = "foodDetailDialog";
   dialog.className = "food-detail-dialog";
@@ -2158,11 +2191,17 @@ function showFoodDetail(foodId) {
       <button type="button" class="food-detail-close" aria-label="Đóng">&times;</button>
       <div class="food-detail-main">
         <div class="food-detail-gallery">
-          <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+          <div class="food-detail-image-wrap ${isSale ? "is-flash-sale" : ""}">
+            <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+            ${isSale ? `<span class="food-detail-flash-badge">FLASH SALE</span>` : ""}
+          </div>
           ${renderFoodDetailPerspectives(food)}
         </div>
         <div class="food-detail-info">
-          <span class="food-detail-category">${escapeHtml(category)}</span>
+          <div class="food-detail-tags-row">
+            <span class="food-detail-category">${escapeHtml(category)}</span>
+            ${isSale ? `<span class="food-detail-sale-pill">🔥 Đang Flash Sale</span>` : ""}
+          </div>
           <h2 id="foodDetailTitle">${escapeHtml(food.name)}</h2>
           <div class="food-detail-stats">
             <span class="food-detail-stars">${renderStarText(rating)}</span>
@@ -2171,7 +2210,8 @@ function showFoodDetail(foodId) {
             <span>${reviewCount} đánh giá</span>
           </div>
           <div class="food-detail-stock">${renderStockBadge(stock)}</div>
-          <div class="food-detail-price">${renderFoodPrice(food)}</div>
+          ${renderFoodDetailFlashSaleBanner(food)}
+          <div class="food-detail-price ${isSale ? "has-flash-sale" : ""}">${renderFoodPrice(food, "food-price-stack food-detail-price-stack")}</div>
           ${renderFoodDetailDescription(food)}
           <div class="food-detail-options">
             <h3>Tùy chọn thêm</h3>
@@ -2263,6 +2303,7 @@ function renderFoodDetailPage() {
   const { rating, reviewCount, comments } = getFoodRatingStats(food);
   const category = getFoodDisplayCategory(food);
   const image = food.image || "";
+  const isSale = Boolean(getFoodFlashSale(food));
 
   document.title = `${food.name} - FoodHub`;
   page.innerHTML = `
@@ -2271,11 +2312,17 @@ function renderFoodDetailPage() {
       <div class="food-detail-card food-detail-page-card">
         <div class="food-detail-main">
           <div class="food-detail-gallery">
-            <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+            <div class="food-detail-image-wrap ${isSale ? "is-flash-sale" : ""}">
+              <img class="food-detail-image" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}">
+              ${isSale ? `<span class="food-detail-flash-badge">FLASH SALE</span>` : ""}
+            </div>
             ${renderFoodDetailPerspectives(food)}
           </div>
           <div class="food-detail-info">
-            <span class="food-detail-category">${escapeHtml(category)}</span>
+            <div class="food-detail-tags-row">
+              <span class="food-detail-category">${escapeHtml(category)}</span>
+              ${isSale ? `<span class="food-detail-sale-pill">🔥 Đang Flash Sale</span>` : ""}
+            </div>
             <h1>${escapeHtml(food.name)}</h1>
             <div class="food-detail-stats">
               <span class="food-detail-stars">${renderStarText(rating)}</span>
@@ -2284,7 +2331,8 @@ function renderFoodDetailPage() {
               <span>${reviewCount} đánh giá</span>
             </div>
             <div class="food-detail-stock">${renderStockBadge(stock)}</div>
-            <div class="food-detail-price">${renderFoodPrice(food)}</div>
+            ${renderFoodDetailFlashSaleBanner(food)}
+            <div class="food-detail-price ${isSale ? "has-flash-sale" : ""}">${renderFoodPrice(food, "food-price-stack food-detail-price-stack")}</div>
             ${renderFoodDetailDescription(food)}
             <div class="food-detail-actions">
               <div class="food-detail-qty">
@@ -4679,6 +4727,11 @@ function updateCountdownDisplay(container, remainingMs) {
   const minutesEl = container.querySelector("[data-timer-minutes]");
   const secondsEl = container.querySelector("[data-timer-seconds]");
   const textEl = container.querySelector(".countdown-text");
+  const flashSaleTimer = container.querySelector("[data-flash-sale-timer]");
+
+  if (flashSaleTimer) {
+    flashSaleTimer.textContent = `${hStr}g : ${mStr}p : ${sStr}s`;
+  }
 
   if (hoursEl && minutesEl && secondsEl) {
     if (hoursEl.textContent !== hStr) hoursEl.textContent = hStr;
