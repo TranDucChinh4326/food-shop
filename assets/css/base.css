@@ -562,43 +562,62 @@ header.header-compact .header-tools {
 .search-dropdown-item.is-flash-sale {
   position: relative !important;
   isolation: isolate;
-  background: linear-gradient(135deg, rgba(255, 245, 240, 0.95) 0%, rgba(240, 248, 255, 0.95) 100%) !important;
+  overflow: hidden !important;
   border-radius: 12px;
-  margin: 4px 0;
-  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.22), 0 0 12px rgba(255, 0, 128, 0.2) !important;
+  margin: 5px 0;
+  background: transparent !important;
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.25), 0 0 12px rgba(255, 0, 128, 0.22) !important;
+}
+
+.search-dropdown-item.is-flash-sale::after {
+  content: "";
+  position: absolute;
+  inset: 2.5px;
+  background: linear-gradient(135deg, #fffdfb 0%, #f6faff 100%);
+  border-radius: 9.5px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.search-dropdown-item.is-flash-sale:hover::after,
+.search-dropdown-item.is-flash-sale.is-focused::after {
+  background: linear-gradient(135deg, #fff2eb 0%, #edf6ff 100%);
 }
 
 .search-dropdown-item.is-flash-sale::before {
   content: "";
   position: absolute;
-  inset: -2.5px;
-  border-radius: inherit;
-  padding: 2.5px;
+  top: 50%;
+  left: 50%;
+  width: 250%;
+  height: 500%;
   background: conic-gradient(
-    from var(--flash-beam-angle, 0deg),
+    /* Đốm sáng Neon 1: Xanh Cyan -> Tím -> Hồng -> Trắng chói */
     transparent 0deg,
-    transparent 35deg,
-    rgba(0, 240, 255, 0.3) 70deg,
+    transparent 40deg,
+    rgba(0, 240, 255, 0.25) 75deg,
     #00f0ff 110deg,
     #9d00ff 145deg,
     #ff007f 168deg,
     #ffffff 180deg,
+    /* Đốm sáng Neon 2: Xanh Lime -> Vàng -> Đỏ Hồng -> Trắng chói */
     transparent 180.1deg,
-    transparent 215deg,
-    rgba(0, 255, 128, 0.3) 250deg,
+    transparent 220deg,
+    rgba(0, 255, 128, 0.25) 255deg,
     #00ff88 290deg,
     #ffea00 325deg,
     #ff0055 348deg,
     #ffffff 360deg
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: flashSaleBorderRotate 2s linear infinite;
+  animation: borderNeonBeamSpin 2s linear infinite !important;
   pointer-events: none;
-  z-index: 5;
-  filter: drop-shadow(0 0 6px #00f0ff) drop-shadow(0 0 10px #ff007f);
+  z-index: 0;
+  filter: drop-shadow(0 0 8px #00f0ff) drop-shadow(0 0 14px #ff007f) drop-shadow(0 0 20px #00ff88);
+}
+
+.search-dropdown-item.is-flash-sale > * {
+  position: relative;
+  z-index: 2;
 }
 
 .search-item-thumb-wrap {
@@ -6940,18 +6959,12 @@ footer {
    10. Flash Sale Dual-Beam Chase Effect (2 đốm sáng đối diện rượt đuổi quanh viền)
    ========================================================================== */
 
-@property --flash-beam-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes flashSaleBorderRotate {
+@keyframes borderNeonBeamSpin {
   0% {
-    --flash-beam-angle: 0deg;
+    transform: translate(-50%, -50%) rotate(0deg);
   }
   100% {
-    --flash-beam-angle: 360deg;
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
@@ -6970,29 +6983,43 @@ footer {
 .suggestion-card.is-flash-sale {
   position: relative !important;
   isolation: isolate;
-  overflow: visible !important;
-  border: 1px solid rgba(0, 240, 255, 0.4) !important;
+  overflow: hidden !important;
+  border-radius: 12px;
+  background: transparent !important;
+  border: none !important;
   animation: flashSaleNeonPulse 2s ease-in-out infinite;
 }
 
-.home-food-card.is-flash-sale .food-card-img-wrap,
-.food-card.is-flash-sale .food-card-img-wrap {
-  border-radius: 8px 8px 0 0;
-  overflow: hidden;
+/* Lớp nền bề mặt bên trong thẻ */
+.home-food-card.is-flash-sale::after,
+.food-card.is-flash-sale::after,
+.best-seller-card.is-flash-sale::after,
+.suggestion-card.is-flash-sale::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: #ffffff;
+  border-radius: 9px;
+  z-index: 1;
+  pointer-events: none;
 }
 
-/* 2 đốm sáng Neon Laser siêu rực rỡ (Cyan - Hot Pink - Lime - Vàng) đối xứng 180° rượt đuổi nhau */
+.best-seller-card.is-flash-sale::after {
+  background: transparent;
+}
+
+/* 2 đốm sáng Neon Laser siêu rực rỡ quay vật lý 360 độ liên tục */
 .home-food-card.is-flash-sale::before,
 .food-card.is-flash-sale::before,
 .best-seller-card.is-flash-sale::before,
 .suggestion-card.is-flash-sale::before {
   content: "";
   position: absolute;
-  inset: -3.5px;
-  border-radius: inherit;
-  padding: 3.5px;
+  top: 50%;
+  left: 50%;
+  width: 250%;
+  height: 400%;
   background: conic-gradient(
-    from var(--flash-beam-angle, 0deg),
     /* Đốm sáng Neon 1: Electric Cyan -> Neon Purple -> Hot Pink -> Trắng sáng chói */
     transparent 0deg,
     transparent 35deg,
@@ -7010,14 +7037,18 @@ footer {
     #ff0055 348deg,
     #ffffff 360deg
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: flashSaleBorderRotate 2s linear infinite;
+  animation: borderNeonBeamSpin 2.2s linear infinite !important;
   pointer-events: none;
-  z-index: 10;
-  filter: drop-shadow(0 0 8px #00f0ff) drop-shadow(0 0 14px #ff007f) drop-shadow(0 0 20px #00ff88);
+  z-index: 0;
+  filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 16px #ff007f) drop-shadow(0 0 22px #00ff88);
+}
+
+.home-food-card.is-flash-sale > *,
+.food-card.is-flash-sale > *,
+.best-seller-card.is-flash-sale > *,
+.suggestion-card.is-flash-sale > * {
+  position: relative;
+  z-index: 2;
 }
 
 .is-flash-sale .food-flash-badge {
