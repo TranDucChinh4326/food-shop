@@ -1672,8 +1672,7 @@ function renderBestSellerCard(food) {
       <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
       ${renderFlashSaleBadge(food)}
       <div class="best-seller-overlay">
-        <span>Bán chạy</span>
-        <h3>${escapeHtml(food.name)}</h3>
+        <span class="best-seller-tag"><i class="flame-icon">🔥</i> Bán chạy</span>
         <p>${renderRatingLabel(food.rating, food.reviewCount)} • Đã bán ${Number(food.soldCount || 0)}</p>
       </div>
     </article>
