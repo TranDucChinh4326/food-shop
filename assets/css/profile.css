@@ -1,5 +1,12 @@
 /* Style riêng cho profile.html: tabs hồ sơ, địa chỉ, bảo mật, social account và voucher đã sở hữu. */
 
+[hidden],
+[data-profile-panel][hidden],
+.profile-card[hidden],
+.profile-page [hidden] {
+  display: none !important;
+}
+
 .profile-hero {
   background:
     linear-gradient(90deg, rgba(34, 28, 23, 0.82), rgba(34, 28, 23, 0.14)),
