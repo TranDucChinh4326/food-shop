@@ -2057,12 +2057,32 @@ function formatStatsDateLabel(value) {
   return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+function getNiceChartCeiling(val) {
+  if (!val || val <= 0) return 500000;
+  if (val <= 100000) return 100000;
+  if (val <= 250000) return 250000;
+  if (val <= 500000) return 500000;
+  if (val <= 1000000) return 1000000;
+  if (val <= 2000000) return 2000000;
+  if (val <= 5000000) return 5000000;
+  if (val <= 10000000) return 10000000;
+  if (val <= 20000000) return 20000000;
+  if (val <= 50000000) return 50000000;
+  const order = Math.pow(10, Math.floor(Math.log10(val)));
+  const factor = val / order;
+  if (factor <= 1.25) return Math.round(1.25 * order);
+  if (factor <= 2) return Math.round(2 * order);
+  if (factor <= 2.5) return Math.round(2.5 * order);
+  if (factor <= 5) return Math.round(5 * order);
+  return Math.round(10 * order);
+}
+
 function renderRevenueTrend(rows, trendMode = "day") {
   const limits = { day: 7, custom: 366, month: 12, quarter: 8, year: 6 };
   const ordered = normalizeRevenueTrendRows(rows, trendMode).slice(-(limits[trendMode] || 7));
   if (!ordered.length) return `<p class="empty-note">Chưa có dữ liệu doanh thu.</p>`;
 
-  const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 1);
+  const maxRevenue = Math.max(...ordered.map(item => Number(item.revenue || 0)), 0);
   const totalRevenue = ordered.reduce((sum, item) => sum + Number(item.revenue || 0), 0);
 
   if (totalRevenue === 0) {
@@ -2074,39 +2094,53 @@ function renderRevenueTrend(rows, trendMode = "day") {
     `;
   }
 
+  const ceiling = getNiceChartCeiling(maxRevenue);
+  const midPoint = Math.round(ceiling / 2);
+
   return `
     <div class="revenue-chart-wrap" role="img" aria-label="Biểu đồ cột xu hướng doanh thu">
-      <div class="revenue-chart-grid-bg" aria-hidden="true">
-        <span class="grid-line" style="bottom: 100%"><span>${formatMoney(maxRevenue)}</span></span>
-        <span class="grid-line" style="bottom: 66%"><span>${formatMoney(Math.round(maxRevenue * 0.66))}</span></span>
-        <span class="grid-line" style="bottom: 33%"><span>${formatMoney(Math.round(maxRevenue * 0.33))}</span></span>
-        <span class="grid-line" style="bottom: 0%"><span>0đ</span></span>
-      </div>
-      <div class="revenue-cols-container">
-        ${ordered.map(item => {
-          const revenue = Number(item.revenue || 0);
-          const isZero = revenue === 0;
-          const heightPercent = isZero ? 0 : Math.max(8, Math.min(100, Math.round((revenue / maxRevenue) * 90)));
-          const isPeak = revenue === maxRevenue && maxRevenue > 0;
-          const dateLabel = formatTrendLabel(item, trendMode);
-          return `
-            <div class="revenue-col ${isZero ? "is-zero" : ""} ${isPeak ? "is-peak" : ""}">
-              <div class="revenue-col-plot">
-                <div class="revenue-bar-tooltip">
-                  <strong>${formatMoney(revenue)}</strong>
-                  <small>${escapeHtml(dateLabel)}</small>
+      <div class="revenue-chart-body">
+        <!-- Trục Y riêng biệt không đè chữ -->
+        <div class="revenue-y-axis" aria-hidden="true">
+          <span class="y-label y-top"><span>${formatMoney(ceiling)}</span></span>
+          <span class="y-label y-mid"><span>${formatMoney(midPoint)}</span></span>
+          <span class="y-label y-bot"><span>0đ</span></span>
+        </div>
+
+        <!-- Khung vẽ biểu đồ cột & đường lưới -->
+        <div class="revenue-plot-area">
+          <div class="revenue-grid-lines" aria-hidden="true">
+            <span class="grid-line line-top"></span>
+            <span class="grid-line line-mid"></span>
+            <span class="grid-line line-bot"></span>
+          </div>
+          <div class="revenue-cols-container">
+            ${ordered.map(item => {
+              const revenue = Number(item.revenue || 0);
+              const isZero = revenue === 0;
+              const heightPercent = isZero ? 0 : Math.min(100, Math.max(3, (revenue / ceiling) * 100));
+              const isPeak = revenue === maxRevenue && maxRevenue > 0;
+              const dateLabel = formatTrendLabel(item, trendMode);
+              return `
+                <div class="revenue-col ${isZero ? "is-zero" : ""} ${isPeak ? "is-peak" : ""}">
+                  <div class="revenue-col-plot">
+                    <div class="revenue-bar-tooltip">
+                      <strong>${formatMoney(revenue)}</strong>
+                      <small>${escapeHtml(dateLabel)}</small>
+                    </div>
+                    <div class="revenue-bar-track">
+                      <div class="revenue-bar-fill" style="height: ${heightPercent}%;"></div>
+                    </div>
+                  </div>
+                  <div class="revenue-col-footer">
+                    <strong class="col-amount ${isZero ? "text-muted" : ""}">${formatMoney(revenue)}</strong>
+                    <span class="col-date">${escapeHtml(dateLabel)}</span>
+                  </div>
                 </div>
-                <div class="revenue-bar-track">
-                  <div class="revenue-bar-fill" style="height: ${heightPercent}%;"></div>
-                </div>
-              </div>
-              <div class="revenue-col-footer">
-                <strong class="col-amount ${isZero ? "text-muted" : ""}">${formatMoney(revenue)}</strong>
-                <span class="col-date">${escapeHtml(dateLabel)}</span>
-              </div>
-            </div>
-          `;
-        }).join("")}
+              `;
+            }).join("")}
+          </div>
+        </div>
       </div>
     </div>
   `;
