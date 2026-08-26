@@ -1119,7 +1119,7 @@ button.account-photo-badge {
     border: 1px solid #f0ded4 !important;
     box-shadow: 0 4px 14px rgba(77, 42, 22, 0.05) !important;
     box-sizing: border-box !important;
-    display: none !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .account-nav-item {
@@ -1137,14 +1137,23 @@ button.account-photo-badge {
     transition: transform 0.16s ease, background 0.16s ease !important;
   }
 
+  .account-nav-item.active {
+    background: linear-gradient(135deg, #ff5722, #ff8a3d) !important;
     border-color: #ff5722 !important;
-    color: #ffffff !important;
     color: #ffffff !important;
   }
 
   .account-summary-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
     text-align: center !important;
     gap: 14px !important;
+    padding: 20px 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 
   .account-summary-card > div:not(.account-photo-wrap):not(.summary-social-links) {
     width: 100% !important;
@@ -1168,6 +1177,7 @@ button.account-photo-badge {
     border-left: none !important;
     border-top: 1px dashed #f1d8ca !important;
     padding-top: 14px !important;
+    padding-left: 0 !important;
     flex: none !important;
   }
 
