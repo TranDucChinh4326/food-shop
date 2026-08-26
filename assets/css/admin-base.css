@@ -1628,6 +1628,10 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   padding: 12px;
 }
 
+.food-preview[hidden] {
+  display: none !important;
+}
+
 
 
 .food-preview img {
