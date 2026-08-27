@@ -38,6 +38,12 @@ const foodStatusFilter = document.getElementById("foodStatusFilter");
 const foodPageSize = document.getElementById("foodPageSize");
 const foodCategoryTitle = document.getElementById("foodCategoryTitle");
 const foodCreateLink = document.getElementById("foodCreateLink");
+const stockImportForm = document.getElementById("stockImportForm");
+const stockImportFile = document.getElementById("stockImportFile");
+const stockImportDate = document.getElementById("stockImportDate");
+const stockImportResult = document.getElementById("stockImportResult");
+const stockImportHistory = document.getElementById("stockImportHistory");
+const downloadStockTemplateBtn = document.getElementById("downloadStockTemplateBtn");
 const userSearch = document.getElementById("userSearch");
 const userStatusFilter = document.getElementById("userStatusFilter");
 const userPageSize = document.getElementById("userPageSize");
@@ -3748,6 +3754,149 @@ async function loadFoods() {
   }
 }
 
+function renderStockImportResult(data) {
+  if (!stockImportResult) return;
+
+  stockImportResult.hidden = false;
+  const details = Array.isArray(data.details) ? data.details.slice(0, 8) : [];
+  stockImportResult.innerHTML = `
+    <div class="stock-import-summary">
+      <strong>${escapeHtml(data.message || "Đã nhập số lượng món")}</strong>
+      <span>${Number(data.successRows || 0)} dòng thành công</span>
+      <span>${Number(data.failedRows || 0)} dòng lỗi</span>
+    </div>
+    ${details.length ? `
+      <div class="table-wrap stock-import-preview">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Tên trong file</th>
+              <th>Món khớp</th>
+              <th>Nhập</th>
+              <th>Tồn cũ</th>
+              <th>Tồn mới</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${details.map(item => `
+              <tr>
+                <td>${escapeHtml(item.inputName || "")}</td>
+                <td>${escapeHtml(item.foodName || "-")}</td>
+                <td>${Number(item.quantityAdded || 0).toLocaleString("vi-VN")}</td>
+                <td>${item.oldStock === null || item.oldStock === undefined ? "-" : Number(item.oldStock).toLocaleString("vi-VN")}</td>
+                <td>${item.newStock === null || item.newStock === undefined ? "-" : Number(item.newStock).toLocaleString("vi-VN")}</td>
+                <td><span class="account-status ${item.status === "success" ? "active" : "locked"}">${item.status === "success" ? "Thành công" : escapeHtml(item.errorMessage || "Lỗi")}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    ` : ""}
+  `;
+}
+
+async function loadStockImportHistory() {
+  if (!stockImportHistory) return;
+
+  stockImportHistory.textContent = "Đang tải lịch sử nhập...";
+
+  try {
+    const imports = await requestJson(`${ADMIN_API}/foods/stock-imports?limit=5`);
+    if (!imports.length) {
+      stockImportHistory.textContent = "Chưa có lịch sử nhập số lượng.";
+      return;
+    }
+
+    stockImportHistory.innerHTML = `
+      <div class="stock-import-history-title">
+        <h3>Lịch sử nhập gần nhất</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Ngày nhập</th>
+              <th>File</th>
+              <th>Người nhập</th>
+              <th>Kết quả</th>
+              <th>Chi tiết</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${imports.map(item => `
+              <tr>
+                <td><strong>${formatDateTime(item.import_date || item.created_at)}</strong><small>${formatDateTime(item.created_at)}</small></td>
+                <td>${escapeHtml(item.file_name || "-")}</td>
+                <td>${escapeHtml(item.importer_name || item.importer_email || "-")}</td>
+                <td>${Number(item.success_rows || 0)} thành công / ${Number(item.failed_rows || 0)} lỗi</td>
+                <td>
+                  ${(item.details || []).slice(0, 4).map(detail => `
+                    <small>${escapeHtml(detail.input_name || detail.food_name || "")}: ${detail.status === "success" ? `+${Number(detail.quantity_added || 0)} (${Number(detail.old_stock || 0)} -> ${Number(detail.new_stock || 0)})` : escapeHtml(detail.error_message || "Lỗi")}</small>
+                  `).join("")}
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    stockImportHistory.textContent = error.message;
+  }
+}
+
+async function downloadStockImportTemplate() {
+  try {
+    const response = await fetch(`${ADMIN_API}/foods/stock-import-template`, {
+      headers: authHeaders()
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || "Không thể tải file mẫu.");
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mau-nhap-so-luong-mon.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function submitStockImport(event) {
+  event.preventDefault();
+
+  const file = stockImportFile?.files?.[0];
+  if (!file) {
+    showAdminToast("Vui lòng chọn file CSV.", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  if (stockImportDate?.value) formData.append("importDate", stockImportDate.value);
+
+  try {
+    showAdminToast("Đang nhập số lượng món...");
+    const data = await requestFormData(`${ADMIN_API}/foods/stock-imports`, formData);
+    renderStockImportResult(data);
+    stockImportForm.reset();
+    if (stockImportDate) stockImportDate.value = new Date().toISOString().slice(0, 10);
+    await loadFoods();
+    await loadStockImportHistory();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
 function getFoodType(food) {
   return getFoodRootSlug(food);
 }
@@ -4003,6 +4152,8 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders);
 document.getElementById("refreshCategoriesBtn")?.addEventListener("click", loadCategories);
 document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
+downloadStockTemplateBtn?.addEventListener("click", downloadStockImportTemplate);
+stockImportForm?.addEventListener("submit", submitStockImport);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 document.getElementById("refreshFlashSalesBtn")?.addEventListener("click", loadFlashSales);
@@ -4977,8 +5128,12 @@ async function initAdminPage() {
 
   if (canAccessSection("orders")) loadOrders();
   if (hasAdminPermission("foods.manage")) {
+    if (stockImportDate && !stockImportDate.value) {
+      stockImportDate.value = new Date().toISOString().slice(0, 10);
+    }
     loadCategories();
     loadFoods();
+    loadStockImportHistory();
   }
   if (canAccessSection("accounts")) loadUsers();
   if (hasAdminPermission("announcements.manage")) loadAnnouncements();
