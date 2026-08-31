@@ -3813,7 +3813,7 @@ async function downloadStockImportTemplate() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "mau-nhap-so-luong-mon.csv";
+    link.download = "mau-nhap-so-luong-mon.xlsx";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -3828,7 +3828,7 @@ async function submitStockImport(event) {
 
   const file = stockImportFile?.files?.[0];
   if (!file) {
-    showAdminToast("Vui lòng chọn file CSV.", "error");
+    showAdminToast("Vui lòng chọn file Excel hoặc CSV.", "error");
     return;
   }
 

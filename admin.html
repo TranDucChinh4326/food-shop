@@ -287,11 +287,11 @@
         <div class="stock-import-panel">
           <div>
             <h3>Nhập số lượng từ file</h3>
-            <p>File CSV cần có cột <strong>ten_mon</strong> và <strong>so_luong_nhap</strong>. Hệ thống tự dò tên món và lưu lịch sử nhập để đối chiếu.</p>
+            <p>Tải file mẫu đầy đủ món, nhập số lượng vào cột <strong>so_luong_nhap</strong>, rồi import lại để cập nhật tồn kho.</p>
           </div>
           <form id="stockImportForm" class="stock-import-form">
             <input type="date" id="stockImportDate" aria-label="Ngày nhập">
-            <input type="file" id="stockImportFile" accept=".csv,text/csv" required>
+            <input type="file" id="stockImportFile" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" required>
             <button type="button" id="downloadStockTemplateBtn" class="ghost-btn">Tải file mẫu</button>
             <button type="submit" class="primary-btn">Nhập hàng</button>
           </form>
