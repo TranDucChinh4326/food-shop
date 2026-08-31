@@ -405,6 +405,47 @@
   overflow: auto;
 }
 
+.inventory-tabs {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.inventory-tab {
+  background: #ffffff;
+  border: 1px solid #ead6c8;
+  border-radius: 10px;
+  color: #6b5347;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 40px;
+  padding: 9px 14px;
+}
+
+.inventory-tab.active {
+  background: #ff4b2b;
+  border-color: #ff4b2b;
+  color: #ffffff;
+}
+
+.inventory-pane {
+  display: none;
+}
+
+.inventory-pane.active {
+  display: block;
+}
+
+.inventory-detail-head {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 /* ============================================================
    4. Revenue Column Chart (Grounded, Proportional & Aligned)
    ============================================================ */

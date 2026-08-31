@@ -25,6 +25,7 @@
         </button>
         <div class="admin-subnav" data-admin-food-categories></div>
       </div>
+      <a class="admin-nav-btn" href="admin.html?section=inventory" data-admin-target="inventory"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý kho</span></a>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="accounts-menu" aria-expanded="false">
           <span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tài khoản</span>
@@ -284,22 +285,64 @@
           </select>
         </div>
 
-        <div class="stock-import-panel">
-          <div>
-            <h3>Nhập số lượng từ file</h3>
-            <p>Tải file mẫu đầy đủ món, nhập số lượng vào cột <strong>so_luong_nhap</strong>, rồi import lại để cập nhật tồn kho.</p>
-          </div>
-          <form id="stockImportForm" class="stock-import-form">
-            <input type="date" id="stockImportDate" aria-label="Ngày nhập">
-            <input type="file" id="stockImportFile" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" required>
-            <button type="button" id="downloadStockTemplateBtn" class="ghost-btn">Tải file mẫu</button>
-            <button type="submit" class="primary-btn">Nhập hàng</button>
-          </form>
-          <div id="stockImportResult" class="stock-import-result" hidden></div>
-        </div>
 
         <div id="foodsList" class="accounts-list table-state">Đang tải món ăn...</div>
-        <div id="stockImportHistory" class="stock-import-history table-state">Đang tải lịch sử nhập...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="inventory">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Quản lý kho</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Xuất nhập kho</p>
+          </div>
+          <div class="heading-actions">
+            <button id="refreshInventoryBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div class="inventory-tabs">
+          <button type="button" class="inventory-tab active" data-inventory-tab="overview">Tổng quan kho</button>
+          <button type="button" class="inventory-tab" data-inventory-tab="imports">Nhập kho</button>
+          <button type="button" class="inventory-tab" data-inventory-tab="exports">Xuất kho</button>
+        </div>
+
+        <div class="inventory-pane active" data-inventory-pane="overview">
+          <div id="inventorySummary" class="stats-grid table-state">Đang tải tổng quan kho...</div>
+          <div id="inventoryOverviewList" class="accounts-list table-state">Đang tải tồn kho...</div>
+        </div>
+
+        <div class="inventory-pane" data-inventory-pane="imports">
+          <div class="table-toolbar multi-filter">
+            <input id="inventoryImportFrom" type="date" aria-label="Từ ngày">
+            <input id="inventoryImportTo" type="date" aria-label="Đến ngày">
+            <button id="filterInventoryImportsBtn" type="button" class="ghost-btn">Lọc</button>
+          </div>
+          <div class="stock-import-panel">
+            <div>
+              <h3>Nhập số lượng từ file</h3>
+              <p>Tải file mẫu đầy đủ món, nhập số lượng vào cột <strong>so_luong_nhap</strong>, rồi import lại để cập nhật tồn kho.</p>
+            </div>
+            <form id="stockImportForm" class="stock-import-form">
+              <input type="date" id="stockImportDate" aria-label="Ngày nhập">
+              <input type="file" id="stockImportFile" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" required>
+              <button type="button" id="downloadStockTemplateBtn" class="ghost-btn">Tải file mẫu</button>
+              <button type="submit" class="primary-btn">Nhập hàng</button>
+            </form>
+            <div id="stockImportResult" class="stock-import-result" hidden></div>
+          </div>
+          <div id="stockImportHistory" class="stock-import-history table-state">Đang tải lịch sử nhập...</div>
+        </div>
+
+        <div class="inventory-pane" data-inventory-pane="exports">
+          <div class="table-toolbar multi-filter">
+            <input id="inventoryExportFrom" type="date" aria-label="Từ ngày">
+            <input id="inventoryExportTo" type="date" aria-label="Đến ngày">
+            <button id="filterInventoryExportsBtn" type="button" class="ghost-btn">Lọc</button>
+          </div>
+          <div id="stockExportHistory" class="stock-import-history table-state">Đang tải lịch sử xuất...</div>
+        </div>
       </section>
     </section>
 

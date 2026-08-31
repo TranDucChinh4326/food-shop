@@ -44,6 +44,15 @@ const stockImportDate = document.getElementById("stockImportDate");
 const stockImportResult = document.getElementById("stockImportResult");
 const stockImportHistory = document.getElementById("stockImportHistory");
 const downloadStockTemplateBtn = document.getElementById("downloadStockTemplateBtn");
+const inventorySummary = document.getElementById("inventorySummary");
+const inventoryOverviewList = document.getElementById("inventoryOverviewList");
+const stockExportHistory = document.getElementById("stockExportHistory");
+const inventoryImportFrom = document.getElementById("inventoryImportFrom");
+const inventoryImportTo = document.getElementById("inventoryImportTo");
+const inventoryExportFrom = document.getElementById("inventoryExportFrom");
+const inventoryExportTo = document.getElementById("inventoryExportTo");
+const inventoryTabs = [...document.querySelectorAll("[data-inventory-tab]")];
+const inventoryPanes = [...document.querySelectorAll("[data-inventory-pane]")];
 const userSearch = document.getElementById("userSearch");
 const userStatusFilter = document.getElementById("userStatusFilter");
 const userPageSize = document.getElementById("userPageSize");
@@ -123,6 +132,7 @@ const SECTION_PERMISSIONS = {
   orders: ["orders.manage"],
   categories: ["foods.manage"],
   foods: ["foods.manage"],
+  inventory: ["foods.manage"],
   accounts: ["users.manage", "staff.manage"],
   announcements: ["announcements.manage"],
   advertisements: ["ads.manage"],
@@ -3798,6 +3808,264 @@ async function loadStockImportHistory() {
   }
 }
 
+function renderInventorySummary(summary = {}) {
+  if (!inventorySummary) return;
+
+  const cards = [
+    ["Tổng món", summary.totalFoods || 0, "Món đang quản lý tồn kho"],
+    ["Tổng tồn", summary.totalStock || 0, "Số lượng hiện còn"],
+    ["Sắp hết", summary.lowStock || 0, "Món còn từ 1 đến 10"],
+    ["Hết hàng", summary.outOfStock || 0, "Món tồn bằng 0"],
+    ["Đã nhập", summary.totalIn || 0, "Tổng số lượng từng nhập"],
+    ["Đã bán", summary.totalOut || 0, "Tổng số lượng từng xuất"]
+  ];
+
+  inventorySummary.innerHTML = cards.map(([label, value, hint]) => `
+    <article class="stats-card">
+      <div>
+        <span>${escapeHtml(label)}</span>
+        <strong>${Number(value || 0).toLocaleString("vi-VN")}</strong>
+        <small class="stats-card-hint">${escapeHtml(hint)}</small>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderInventoryOverviewTable(foods = []) {
+  if (!inventoryOverviewList) return;
+
+  if (!foods.length) {
+    inventoryOverviewList.textContent = "Chưa có món trong kho.";
+    return;
+  }
+
+  inventoryOverviewList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Mã món</th>
+            <th>Tên món</th>
+            <th>Danh mục</th>
+            <th>Tồn hiện tại</th>
+            <th>Đã nhập</th>
+            <th>Đã bán</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${foods.map(food => {
+            const stock = Number(food.stock_quantity || 0);
+            const label = stock <= 0 ? "Hết hàng" : stock <= 10 ? "Sắp hết" : "Còn hàng";
+            const tone = stock <= 0 ? "locked" : "active";
+            return `
+              <tr>
+                <td>#${Number(food.id)}</td>
+                <td><strong>${escapeHtml(food.name || "")}</strong></td>
+                <td>${escapeHtml(food.category_name || "-")}</td>
+                <td>${stock.toLocaleString("vi-VN")}</td>
+                <td>${Number(food.total_in || 0).toLocaleString("vi-VN")}</td>
+                <td>${Number(food.total_out || 0).toLocaleString("vi-VN")}</td>
+                <td><span class="account-status ${tone}">${label}</span></td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function loadInventoryOverview() {
+  if (!inventorySummary || !inventoryOverviewList) return;
+
+  inventoryOverviewList.textContent = "Đang tải tồn kho...";
+  try {
+    const data = await requestJson(`${ADMIN_API}/inventory/overview`);
+    renderInventorySummary(data.summary || {});
+    renderInventoryOverviewTable(data.foods || []);
+  } catch (error) {
+    inventoryOverviewList.textContent = error.message;
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function loadInventoryImports() {
+  if (!stockImportHistory) return;
+
+  const params = new URLSearchParams();
+  if (inventoryImportFrom?.value) params.set("from", inventoryImportFrom.value);
+  if (inventoryImportTo?.value) params.set("to", inventoryImportTo.value);
+
+  stockImportHistory.textContent = "Đang tải lịch sử nhập...";
+  try {
+    const imports = await requestJson(`${ADMIN_API}/inventory/imports?${params.toString()}`);
+    if (!imports.length) {
+      stockImportHistory.textContent = "Chưa có phiếu nhập kho.";
+      return;
+    }
+
+    stockImportHistory.innerHTML = `
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mã phiếu</th>
+              <th>Ngày giờ nhập</th>
+              <th>Người nhập</th>
+              <th>Tổng dòng</th>
+              <th>Tổng số lượng</th>
+              <th>Lỗi</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${imports.map(item => `
+              <tr>
+                <td><strong>PN${String(item.id).padStart(4, "0")}</strong></td>
+                <td>${formatDateTime(item.created_at)}</td>
+                <td>${escapeHtml(item.importer_name || item.importer_email || "-")}</td>
+                <td>${Number(item.total_rows || 0)}</td>
+                <td>${Number(item.total_quantity || 0).toLocaleString("vi-VN")}</td>
+                <td>${Number(item.failed_rows || 0)}</td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="ghost-btn" data-inventory-import-detail="${item.id}">Chi tiết</button>
+                    <button type="button" class="ghost-btn" data-inventory-import-export="${item.id}">Xuất Excel</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    stockImportHistory.textContent = error.message;
+  }
+}
+
+async function loadInventoryExports() {
+  if (!stockExportHistory) return;
+
+  const params = new URLSearchParams();
+  if (inventoryExportFrom?.value) params.set("from", inventoryExportFrom.value);
+  if (inventoryExportTo?.value) params.set("to", inventoryExportTo.value);
+
+  stockExportHistory.textContent = "Đang tải lịch sử xuất...";
+  try {
+    const exports = await requestJson(`${ADMIN_API}/inventory/exports?${params.toString()}`);
+    if (!exports.length) {
+      stockExportHistory.textContent = "Chưa có phiếu xuất trong khoảng thời gian này.";
+      return;
+    }
+
+    stockExportHistory.innerHTML = `
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Ngày giờ bán</th>
+              <th>Khách hàng</th>
+              <th>Số món</th>
+              <th>Số lượng xuất</th>
+              <th>Doanh thu</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${exports.map(item => `
+              <tr>
+                <td><strong>DH${String(item.id).padStart(4, "0")}</strong></td>
+                <td>${formatDateTime(item.created_at)}</td>
+                <td>${escapeHtml(item.customer_name || "-")}</td>
+                <td>${Number(item.total_items || 0)}</td>
+                <td>${Number(item.total_quantity || 0).toLocaleString("vi-VN")}</td>
+                <td>${formatMoney(item.revenue || 0)}</td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="ghost-btn" data-inventory-export-detail="${item.id}">Chi tiết</button>
+                    <button type="button" class="ghost-btn" data-inventory-export-excel="${item.id}">Xuất Excel</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    stockExportHistory.textContent = error.message;
+  }
+}
+
+async function showInventoryImportDetail(importId) {
+  try {
+    const data = await requestJson(`${ADMIN_API}/inventory/imports/${importId}`);
+    const details = data.details || [];
+    stockImportHistory.innerHTML = `
+      <div class="inventory-detail-head">
+        <button type="button" class="ghost-btn" data-back-inventory-imports>Về danh sách</button>
+        <button type="button" class="primary-btn" data-inventory-import-export="${importId}">Xuất Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Mã món</th><th>Tên món</th><th>Tên trong file</th><th>Số lượng nhập</th><th>Tồn trước</th><th>Tồn sau</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            ${details.map(item => `
+              <tr>
+                <td>${item.food_id ? `#${Number(item.food_id)}` : "-"}</td>
+                <td>${escapeHtml(item.food_name || "-")}</td>
+                <td>${escapeHtml(item.input_name || "")}</td>
+                <td>${Number(item.quantity_added || 0).toLocaleString("vi-VN")}</td>
+                <td>${item.old_stock === null || item.old_stock === undefined ? "-" : Number(item.old_stock).toLocaleString("vi-VN")}</td>
+                <td>${item.new_stock === null || item.new_stock === undefined ? "-" : Number(item.new_stock).toLocaleString("vi-VN")}</td>
+                <td><span class="account-status ${item.status === "success" ? "active" : "locked"}">${item.status === "success" ? "Thành công" : escapeHtml(item.error_message || "Lỗi")}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
+async function showInventoryExportDetail(orderId) {
+  try {
+    const data = await requestJson(`${ADMIN_API}/inventory/exports/${orderId}`);
+    const details = data.details || [];
+    stockExportHistory.innerHTML = `
+      <div class="inventory-detail-head">
+        <button type="button" class="ghost-btn" data-back-inventory-exports>Về danh sách</button>
+        <button type="button" class="primary-btn" data-inventory-export-excel="${orderId}">Xuất Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Mã món</th><th>Tên món</th><th>Số lượng bán</th><th>Tồn trước</th><th>Tồn sau</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+          <tbody>
+            ${details.map(item => `
+              <tr>
+                <td>#${Number(item.food_id || 0)}</td>
+                <td>${escapeHtml(item.food_name || "")}</td>
+                <td>${Number(item.quantity || 0).toLocaleString("vi-VN")}</td>
+                <td>${item.stock_before === null || item.stock_before === undefined ? "-" : Number(item.stock_before).toLocaleString("vi-VN")}</td>
+                <td>${item.stock_after === null || item.stock_after === undefined ? "-" : Number(item.stock_after).toLocaleString("vi-VN")}</td>
+                <td>${formatMoney(item.price || 0)}</td>
+                <td>${formatMoney(item.subtotal || 0)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
 async function downloadStockImportTemplate() {
   try {
     const response = await fetch(`${ADMIN_API}/foods/stock-import-template`, {
@@ -3823,6 +4091,28 @@ async function downloadStockImportTemplate() {
   }
 }
 
+async function downloadAdminWorkbook(url, filename) {
+  try {
+    const response = await fetch(url, { headers: authHeaders() });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || "Không thể xuất file Excel.");
+    }
+
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+}
+
 async function submitStockImport(event) {
   event.preventDefault();
 
@@ -3843,7 +4133,8 @@ async function submitStockImport(event) {
     stockImportForm.reset();
     if (stockImportDate) stockImportDate.value = new Date().toISOString().slice(0, 10);
     await loadFoods();
-    await loadStockImportHistory();
+    await loadInventoryOverview();
+    await loadInventoryImports();
   } catch (error) {
     showAdminToast(error.message, "error");
   }
@@ -4104,6 +4395,13 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 document.getElementById("refreshOrdersBtn").addEventListener("click", loadOrders);
 document.getElementById("refreshCategoriesBtn")?.addEventListener("click", loadCategories);
 document.getElementById("refreshFoodsBtn")?.addEventListener("click", loadFoods);
+document.getElementById("refreshInventoryBtn")?.addEventListener("click", () => {
+  loadInventoryOverview();
+  loadInventoryImports();
+  loadInventoryExports();
+});
+document.getElementById("filterInventoryImportsBtn")?.addEventListener("click", loadInventoryImports);
+document.getElementById("filterInventoryExportsBtn")?.addEventListener("click", loadInventoryExports);
 downloadStockTemplateBtn?.addEventListener("click", downloadStockImportTemplate);
 stockImportForm?.addEventListener("submit", submitStockImport);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
@@ -4361,6 +4659,48 @@ foodSearch?.addEventListener("input", () => {
   clearTimeout(foodSearchTimer);
   foodsPage = 1;
   foodSearchTimer = setTimeout(renderFoodsTable, 250);
+});
+inventoryTabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.inventoryTab;
+    inventoryTabs.forEach(item => item.classList.toggle("active", item === tab));
+    inventoryPanes.forEach(pane => pane.classList.toggle("active", pane.dataset.inventoryPane === target));
+    if (target === "overview") loadInventoryOverview();
+    if (target === "imports") loadInventoryImports();
+    if (target === "exports") loadInventoryExports();
+  });
+});
+stockImportHistory?.addEventListener("click", event => {
+  const detailButton = event.target.closest("[data-inventory-import-detail]");
+  const exportButton = event.target.closest("[data-inventory-import-export]");
+  const backButton = event.target.closest("[data-back-inventory-imports]");
+
+  if (detailButton) {
+    showInventoryImportDetail(detailButton.dataset.inventoryImportDetail);
+  } else if (exportButton) {
+    downloadAdminWorkbook(
+      `${ADMIN_API}/inventory/imports/${exportButton.dataset.inventoryImportExport}/export`,
+      `phieu-nhap-kho-${exportButton.dataset.inventoryImportExport}.xlsx`
+    );
+  } else if (backButton) {
+    loadInventoryImports();
+  }
+});
+stockExportHistory?.addEventListener("click", event => {
+  const detailButton = event.target.closest("[data-inventory-export-detail]");
+  const exportButton = event.target.closest("[data-inventory-export-excel]");
+  const backButton = event.target.closest("[data-back-inventory-exports]");
+
+  if (detailButton) {
+    showInventoryExportDetail(detailButton.dataset.inventoryExportDetail);
+  } else if (exportButton) {
+    downloadAdminWorkbook(
+      `${ADMIN_API}/inventory/exports/${exportButton.dataset.inventoryExportExcel}/export`,
+      `phieu-xuat-kho-${exportButton.dataset.inventoryExportExcel}.xlsx`
+    );
+  } else if (backButton) {
+    loadInventoryExports();
+  }
 });
 userPageSize?.addEventListener("change", () => {
   usersPerPage = Number(userPageSize.value || 5);
@@ -5085,7 +5425,9 @@ async function initAdminPage() {
     }
     loadCategories();
     loadFoods();
-    loadStockImportHistory();
+    loadInventoryOverview();
+    loadInventoryImports();
+    loadInventoryExports();
   }
   if (canAccessSection("accounts")) loadUsers();
   if (hasAdminPermission("announcements.manage")) loadAnnouncements();
