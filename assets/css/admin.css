@@ -1389,28 +1389,26 @@
 .cust-name-row {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
+  flex-wrap: nowrap;
+  gap: 8px;
+.cust-name-row strong {
   color: #1e130c;
-  font-size: 14.5px;
   font-weight: 800;
   white-space: nowrap;
 }
 
+.cust-tier-badge {
   border-radius: 20px;
-  font-size: 10.5px;
-  font-weight: 800;
+  align-items: center;
   padding: 2px 8px;
   white-space: nowrap;
   line-height: 1.2;
+  flex-shrink: 0;
 }
-
 .tier-diamond {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
   border: 1px solid #93c5fd;
 }
-
 .tier-gold {
   background: linear-gradient(135deg, #fffbeb, #fef3c7);
   border: 1px solid #fde047;
