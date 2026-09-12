@@ -403,7 +403,7 @@
   background: linear-gradient(90deg, #ff4b1f, #ff9b2f, #ffd166);
   border-radius: 999px;
   box-shadow: 0 0 16px rgba(255, 120, 50, 0.9);
-  animation: introLiquidProgress 5s linear forwards;
+  animation: introLiquidProgress 10s linear forwards;
 }
 
 @keyframes introLiquidProgress {

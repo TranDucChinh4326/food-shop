@@ -223,7 +223,7 @@
             <div class="intro-timeline-track">
               <div class="intro-timeline-fill"></div>
             </div>
-            <span class="intro-timer-badge" id="introTimerBadge">5s</span>
+            <span class="intro-timer-badge" id="introTimerBadge">10s</span>
           </div>
         </div>
       </div>
@@ -366,8 +366,8 @@
     ctaBtn.addEventListener("click", () => exitIntro());
     skipBtn.addEventListener("click", () => exitIntro());
 
-    // 5. Đếm ngược 5s
-    let secondsLeft = 5;
+    // 5. Đếm ngược 10s
+    let secondsLeft = 10;
     const interval = setInterval(() => {
       secondsLeft -= 1;
       if (timerBadge) {
