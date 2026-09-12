@@ -1,5 +1,5 @@
 /* ============================================================
-   BẾP 1979 - CINEMATIC BRAND INTRO (5-SECOND SPLASH EXPERIENCE)
+   BẾP 1979 - HIGH-ENERGY INTERACTIVE INTRO EXPERIENCE
    ============================================================ */
 
 .fh-intro-overlay {
@@ -9,250 +9,340 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #24140e 0%, #120905 60%, #080302 100%);
+  background: radial-gradient(circle at 50% 40%, #200d05 0%, #130501 60%, #080200 100%);
   color: #fff;
   overflow: hidden;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.85s cubic-bezier(0.4, 0, 0.2, 1);
-  perspective: 1000px;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
-  -webkit-font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .fh-intro-overlay.fh-intro-hiding {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transform: scale(1.06);
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Background Atmosphere & Ambient Lights */
-.fh-intro-bg-glow {
+/* Background Atmosphere & Interactive Cursor Spotlight */
+.fh-intro-spotlight {
   position: absolute;
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(255, 107, 43, 0.35) 0%, rgba(255, 170, 0, 0.15) 45%, transparent 70%);
-  filter: blur(50px);
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
-  animation: introGlowPulse 3.5s ease-in-out infinite alternate;
+  background: radial-gradient(circle, rgba(255, 94, 0, 0.35) 0%, rgba(255, 179, 0, 0.12) 45%, transparent 70%);
+  filter: blur(40px);
   pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+  z-index: 1;
 }
 
-@keyframes introGlowPulse {
-  0% { transform: scale(0.85); opacity: 0.6; }
-  100% { transform: scale(1.25); opacity: 1; }
-}
-
-.fh-intro-steam-wrap {
+/* Floating Fire Sparks and Embers */
+.fh-intro-sparks-wrap {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: 1;
 }
 
-.fh-intro-steam-particle {
+.fh-intro-spark {
   position: absolute;
-  bottom: -40px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 180, 80, 0.5) 0%, rgba(255, 87, 34, 0) 70%);
-  filter: blur(8px);
-  animation: introRiseFloat 4.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  filter: blur(1px);
+  pointer-events: none;
+  animation: introSparkFly linear infinite;
 }
 
-@keyframes introRiseFloat {
+@keyframes introSparkFly {
   0% {
-    transform: translateY(0) scale(0.6);
+    transform: translateY(0) scale(1) rotate(0deg);
     opacity: 0;
   }
-  25% {
-    opacity: 0.7;
+  20% {
+    opacity: 0.9;
   }
   80% {
-    opacity: 0.3;
+    opacity: 0.7;
   }
   100% {
-    transform: translateY(-110vh) scale(1.6);
+    transform: translateY(-100vh) scale(0.2) rotate(360deg);
     opacity: 0;
   }
 }
 
-/* Main Content Center Container */
-.fh-intro-container {
+/* Central Stage Container */
+.fh-intro-stage {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  z-index: 2;
+  max-width: 720px;
   padding: 20px;
-  max-width: 600px;
 }
 
-/* Cloche / Food Dome Icon Animation */
-.fh-intro-cloche {
-  width: 120px;
-  height: 120px;
-  margin-bottom: 24px;
+/* Dynamic Energy Badge */
+.fh-intro-energy-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 87, 34, 0.16);
+  border: 1px solid rgba(255, 120, 60, 0.4);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff9d66;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.25);
+  animation: introTagPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes introTagPulse {
+  0% { transform: scale(0.98); box-shadow: 0 0 15px rgba(255, 87, 34, 0.2); }
+  100% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 87, 34, 0.4); }
+}
+
+/* Sizzling Wok / Fire Cooking Centerpiece */
+.fh-intro-hero-visual {
   position: relative;
-  animation: introDomeEntrance 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  width: 170px;
+  height: 170px;
+  margin-bottom: 18px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.fh-intro-cloche svg {
+.fh-intro-hero-visual:hover {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.fh-intro-hero-visual:active {
+  transform: scale(0.95);
+}
+
+.fh-intro-hero-visual svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 14px 28px rgba(255, 87, 34, 0.45));
+  filter: drop-shadow(0 15px 30px rgba(255, 87, 34, 0.5));
 }
 
-@keyframes introDomeEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(-50px) scale(0.65) rotate(-10deg);
-  }
-  60% {
-    transform: translateY(8px) scale(1.08) rotate(3deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-}
-
-/* Brand Badge 79 */
-.fh-intro-brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 14px;
-  opacity: 0;
-  animation: introFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
-}
-
-.fh-intro-badge {
-  width: 62px;
-  height: 62px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: 950;
-  color: #fff;
-  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-  position: relative;
-  transform: rotate(-3deg);
-  animation: introBadgeFloat 3s ease-in-out infinite alternate 1.4s;
-}
-
-@keyframes introBadgeFloat {
-  0% { transform: rotate(-3deg) translateY(0); }
-  100% { transform: rotate(3deg) translateY(-5px); }
-}
-
-.fh-intro-badge::before {
-  content: "";
+/* Ripple click effect for hero visual */
+.fh-intro-click-hint {
   position: absolute;
-  top: 8px;
-  left: 10px;
-  right: 10px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.3);
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 3px 10px;
   border-radius: 999px;
+  color: #fff;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  animation: hintBounce 1.5s ease-in-out infinite;
 }
 
-.fh-intro-title {
-  font-size: 42px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #ffffff 30%, #ffc09f 100%);
+@keyframes hintBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* Title & Brand Slogan */
+.fh-intro-title-wrap {
+  margin-bottom: 20px;
+}
+
+.fh-intro-main-title {
+  font-size: 46px;
+  font-weight: 950;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 10%, #ffd080 60%, #ff5722 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 4px 20px rgba(255, 75, 31, 0.3);
+  filter: drop-shadow(0 4px 18px rgba(255, 75, 31, 0.45));
 }
 
-.fh-intro-tagline {
-  font-size: 17px;
+.fh-intro-subtitle {
+  font-size: 16px;
   font-weight: 600;
-  color: #ff9b6a;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: introFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+  color: #ffaa7d;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
 }
 
-@keyframes introFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Interactive Food Choice / Craving Badges */
+.fh-intro-interactive-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 26px;
+  max-width: 580px;
 }
 
-/* 5s Progress Bar & Countdown Indicator */
-.fh-intro-progress-wrap {
+.fh-intro-interactive-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.fh-intro-interactive-btn .food-emoji {
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.fh-intro-interactive-btn:hover {
+  background: linear-gradient(135deg, #ff5722, #ff9800);
+  border-color: #ffaa40;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.45);
+}
+
+.fh-intro-interactive-btn:hover .food-emoji {
+  transform: scale(1.35) rotate(12deg);
+}
+
+.fh-intro-interactive-btn:active {
+  transform: scale(0.96);
+}
+
+/* Bottom Progress and Direct Action Buttons */
+.fh-intro-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.fh-intro-cta-btn {
+  background: linear-gradient(135deg, #ff4b1f, #ff851b);
+  color: #fff;
+  border: none;
+  padding: 13px 32px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 28px rgba(255, 75, 31, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fh-intro-cta-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.fh-intro-cta-btn:hover::before {
+  left: 100%;
+}
+
+.fh-intro-cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 34px rgba(255, 75, 31, 0.65);
+}
+
+.fh-intro-cta-btn:active {
+  transform: scale(0.97);
+}
+
+/* 5s Auto-Countdown Bar */
+.fh-intro-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fh-intro-progress-bar-bg {
   width: 220px;
-  height: 5px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   overflow: hidden;
-  position: relative;
-  opacity: 0;
-  animation: introFadeIn 0.6s ease 1.1s forwards;
 }
 
-.fh-intro-progress-bar {
+.fh-intro-progress-bar-fill {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #ff4b1f, #ff9b2f, #ffd166);
   border-radius: 999px;
   box-shadow: 0 0 12px rgba(255, 120, 50, 0.8);
-  /* Animation 4.5s width matching the 5s timer */
-  animation: introProgressFill 4.4s linear 0.6s forwards;
+  animation: introFillProgress 5s linear forwards;
 }
 
-@keyframes introProgressFill {
+@keyframes introFillProgress {
   0% { width: 0%; }
   100% { width: 100%; }
 }
 
-@keyframes introFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.fh-intro-timer-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff9b6a;
 }
 
-/* Skip Button */
+/* Top Floating Skip Button */
 .fh-intro-skip-btn {
   position: absolute;
   top: 24px;
   right: 24px;
   z-index: 10;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 8px 18px;
   border-radius: 999px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.5px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   backdrop-filter: blur(12px);
   transition: all 0.25s ease;
-  opacity: 0;
-  animation: introFadeIn 0.5s ease 0.6s forwards;
 }
 
 .fh-intro-skip-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
 .fh-intro-skip-btn svg {
@@ -261,34 +351,57 @@
   fill: currentColor;
 }
 
-/* Responsive for Mobile */
+/* Burst Particle FX on Click */
+.fh-intro-burst-particle {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 10000000;
+  animation: introBurstAnim 0.65s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+}
+
+@keyframes introBurstAnim {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Mobile Responsive */
 @media (max-width: 600px) {
-  .fh-intro-cloche {
-    width: 95px;
-    height: 95px;
-    margin-bottom: 18px;
+  .fh-intro-hero-visual {
+    width: 130px;
+    height: 130px;
+    margin-bottom: 14px;
   }
-  .fh-intro-badge {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    border-radius: 16px;
+  .fh-intro-main-title {
+    font-size: 32px;
   }
-  .fh-intro-title {
-    font-size: 30px;
-  }
-  .fh-intro-tagline {
+  .fh-intro-subtitle {
     font-size: 14px;
-    margin-bottom: 22px;
   }
-  .fh-intro-progress-wrap {
-    width: 180px;
+  .fh-intro-interactive-row {
+    gap: 8px;
+  }
+  .fh-intro-interactive-btn {
+    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+  .fh-intro-cta-btn {
+    padding: 11px 24px;
+    font-size: 14.5px;
+  }
+  .fh-intro-progress-bar-bg {
+    width: 160px;
   }
   .fh-intro-skip-btn {
     top: 16px;
     right: 16px;
     padding: 6px 14px;
-    font-size: 12.5px;
+    font-size: 12px;
   }
 }
-
