@@ -251,9 +251,13 @@ function startAdminIdleSessionGuard() {
     window.location.href = "login.html?reason=session-timeout";
   };
 
+  let lastMarkActivityAt = 0;
   const markActivity = () => {
     if (isLocked) return;
-    sessionStorage.setItem(activityKey, String(Date.now()));
+    const now = Date.now();
+    if (now - lastMarkActivityAt < 10000) return;
+    lastMarkActivityAt = now;
+    sessionStorage.setItem(activityKey, String(now));
   };
 
   const initPinBoxes = container => {
@@ -393,7 +397,7 @@ function startAdminIdleSessionGuard() {
 
   if (now - lastActivity > idleLimitMs) lockScreen();
 
-  ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(eventName => {
+  ["click", "keydown", "pointerdown"].forEach(eventName => {
     window.addEventListener(eventName, markActivity, { passive: true });
   });
   if (!isLocked) markActivity();

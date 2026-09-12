@@ -710,11 +710,15 @@ function startFoodHubIdleSessionGuard() {
     return;
   }
 
+  let lastMarkActivityAt = 0;
   const markActivity = () => {
     if (isLocked) return;
-    sessionStorage.setItem(activityKey, String(Date.now()));
+    const now = Date.now();
+    if (now - lastMarkActivityAt < 10000) return;
+    lastMarkActivityAt = now;
+    sessionStorage.setItem(activityKey, String(now));
   };
-  ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach(eventName => {
+  ["click", "keydown", "pointerdown"].forEach(eventName => {
     window.addEventListener(eventName, markActivity, { passive: true });
   });
   markActivity();
@@ -770,14 +774,18 @@ function loadFoodHubTranslateScript() {
   });
 }
 
+let lastSyncedLang = "";
 function syncLanguageUI(lang) {
   const currentLang = (lang || getFoodHubCurrentLanguage()).toLowerCase();
+  if (currentLang === lastSyncedLang) return;
+  lastSyncedLang = currentLang;
+
   const currentCode = currentLang === "en" ? "EN" : "VI";
   const currentTitle = currentLang === "en" ? "Language: English" : "Ngôn ngữ: Tiếng Việt";
 
   document.querySelectorAll("[data-language-menu]").forEach(menu => {
     const codeEl = menu.querySelector("[data-language-current]");
-    if (codeEl) codeEl.textContent = currentCode;
+    if (codeEl && codeEl.textContent !== currentCode) codeEl.textContent = currentCode;
 
     const toggle = menu.querySelector(".language-toggle");
     if (toggle) {
