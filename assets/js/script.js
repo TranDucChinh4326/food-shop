@@ -660,7 +660,7 @@ function renderMenuCategoryOptions() {
 
   let label = "";
   if (categoryValue === "all" || !categoryValue) {
-    label = "Thực đơn Ẩm Thực 1979";
+    label = "Thực đơn Bếp 1979";
   } else if (category?.name) {
     label = category.name;
   } else if (KNOWN_LABELS[categoryValue]) {
@@ -686,7 +686,7 @@ function renderMenuCategoryOptions() {
   }
 
   if (heading && window.location.pathname.includes("menu.html")) {
-    document.title = `${label} - Ẩm Thực 1979`;
+    document.title = `${label} - Bếp 1979`;
   }
 
   if (chipsBox) {
@@ -1474,7 +1474,7 @@ function getReviewFood(review) {
 }
 
 function getReviewCustomerName(review) {
-  return review.customerName || "Khách hàng Ẩm Thực 1979";
+  return review.customerName || "Khách hàng Bếp 1979";
 }
 
 function getReviewInitials(name) {
@@ -1805,7 +1805,7 @@ function renderReviewListCard(review, options = {}) {
         <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
         ${review.adminReply ? `
           <div class="review-admin-reply">
-            <strong>Ẩm Thực 1979 phản hồi</strong>
+            <strong>Bếp 1979 phản hồi</strong>
             <p>${escapeHtml(review.adminReply)}</p>
           </div>
         ` : ""}
@@ -2110,7 +2110,7 @@ function renderFoodDetailBreadcrumb(food) {
 function getFoodDetailDescriptionLines(food) {
   const category = getFoodDisplayCategory(food).toLowerCase();
   const description = String(food.desc || "").trim();
-  const baseDescription = description || `${food.name} được Ẩm Thực 1979 chọn để phục vụ nhanh, dễ ăn và hợp khẩu vị hằng ngày.`;
+  const baseDescription = description || `${food.name} được Bếp 1979 chọn để phục vụ nhanh, dễ ăn và hợp khẩu vị hằng ngày.`;
   const isDrink = isDrinkFood(food);
 
   return [
@@ -2119,7 +2119,7 @@ function getFoodDetailDescriptionLines(food) {
       ? "Hương vị được cân bằng để uống riêng vẫn ngon, dùng kèm món chính cũng không bị gắt."
       : "Khẩu phần được cân chỉnh vừa đủ no, hợp cho bữa trưa, bữa tối hoặc gọi thêm khi đi nhóm.",
     `Món thuộc nhóm ${category}, được ưu tiên giữ màu sắc và kết cấu hấp dẫn khi giao đến tay bạn.`,
-    "Ẩm Thực 1979 khuyến khích dùng ngay sau khi nhận để cảm nhận rõ hương vị, độ nóng/lạnh và phần topping.",
+    "Bếp 1979 khuyến khích dùng ngay sau khi nhận để cảm nhận rõ hương vị, độ nóng/lạnh và phần topping.",
     isDrink
       ? "Có thể kết hợp cùng món mặn, món chiên hoặc cơm/phở để bữa ăn đỡ ngấy hơn."
       : "Có thể gọi kèm nước uống hoặc món phụ để bữa ăn trọn vị hơn."
@@ -2331,7 +2331,7 @@ function renderFoodDetailPage() {
   const image = food.image || "";
   const isSale = Boolean(getFoodFlashSale(food));
 
-  document.title = `${food.name} - Ẩm Thực 1979`;
+  document.title = `${food.name} - Bếp 1979`;
   page.innerHTML = `
     <section class="food-detail-page-shell">
       ${renderFoodDetailBreadcrumb(food)}
@@ -2474,7 +2474,7 @@ function getFloatingAdvertisementsShell() {
 
 function renderFloatingAdItem(slot, advertisement) {
   const linkUrl = advertisement.link_url || advertisement.linkUrl || "";
-  const title = advertisement.title || "Ưu đãi Ẩm Thực 1979";
+  const title = advertisement.title || "Ưu đãi Bếp 1979";
 
   if (linkUrl) {
     slot.href = linkUrl;
@@ -2486,7 +2486,7 @@ function renderFloatingAdItem(slot, advertisement) {
     slot.removeAttribute("rel");
   }
 
-  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo Ẩm Thực 1979")}">`;
+  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo Bếp 1979")}">`;
   slot.innerHTML = `
     <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}">
     <span class="floating-ad-content">
@@ -4242,7 +4242,7 @@ function renderUser() {
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
     const avatarSource = String(user.avatar || "").trim() || getDefaultAvatarDataUrl();
-    const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "Ẩm Thực 1979 User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
+    const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "Bếp 1979 User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
 
     userArea.innerHTML = `
       <div class="account-menu">
@@ -4841,7 +4841,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kênh hỗ trợ Ẩm Thực 1979">
+    <div class="support-panel" aria-label="Kênh hỗ trợ Bếp 1979">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -4860,10 +4860,10 @@ function initSupportWidget() {
       </a>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>Ẩm Thực 1979 đây!</strong>
+      <strong>Bếp 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Ẩm Thực 1979">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Bếp 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotIcon}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>
@@ -5028,14 +5028,14 @@ function initChatSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ Ẩm Thực 1979">
+    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ Bếp 1979">
       <div class="chat-header">
         <div class="chat-agent">
           <span class="chat-avatar" aria-hidden="true">
             ${robotIcon}
           </span>
           <div>
-            <strong>Ẩm Thực 1979 Assistant</strong>
+            <strong>Bếp 1979 Assistant</strong>
             <small><span class="chat-live-status-dot"></span>Trực tuyến • Sẵn sàng hỗ trợ</small>
           </div>
         </div>
@@ -5049,10 +5049,10 @@ function initChatSupportWidget() {
       <div class="chat-quick-menu" hidden>
         <a href="menu.html">Xem thực đơn</a>
         <a href="track.html">Lịch sử đơn hàng</a>
-        <a href="contact.html">Liên hệ Ẩm Thực 1979</a>
+        <a href="contact.html">Liên hệ Bếp 1979</a>
       </div>
       <div class="chat-messages" aria-live="polite">
-        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Ẩm Thực 1979 có thể hỗ trợ gì cho bạn?</div>
+        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Bếp 1979 có thể hỗ trợ gì cho bạn?</div>
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, giá, khuyến mãi, giao hàng, giỏ hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
@@ -5101,10 +5101,10 @@ function initChatSupportWidget() {
       </form>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>Ẩm Thực 1979 đây!</strong>
+      <strong>Bếp 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Ẩm Thực 1979">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Bếp 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotLogo}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>
@@ -5164,7 +5164,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user file-message">Đã đính kèm: ${escapeHtml(file.name)}</div>
-      <div class="chat-message bot muted">Ẩm Thực 1979 đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
+      <div class="chat-message bot muted">Bếp 1979 đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
     `);
     chatFile.value = "";
     hideChatPopovers();
@@ -5192,7 +5192,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, Ẩm Thực 1979 đã nhận tin nhắn của bạn.</div>
+      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, Bếp 1979 đã nhận tin nhắn của bạn.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -5214,7 +5214,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">Ẩm Thực 1979 đang xử lý câu hỏi của bạn...</div>
+      <div class="chat-message bot muted">Bếp 1979 đang xử lý câu hỏi của bạn...</div>
     `);
     chatInput.value = "";
     hideChatPopovers();

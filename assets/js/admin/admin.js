@@ -3202,7 +3202,7 @@ function buildOrderPrintHtml(order) {
   <main class="invoice">
     <section class="header">
       <div>
-        <h1>Ẩm Thực 1979</h1>
+        <h1>Bếp 1979</h1>
         <p class="muted">Hóa đơn bán hàng</p>
       </div>
       <div>

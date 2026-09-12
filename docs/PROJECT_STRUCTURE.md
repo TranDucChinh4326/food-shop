@@ -1,4 +1,4 @@
-# Cấu trúc frontend Ẩm Thực 1979
+# Cấu trúc frontend Bếp 1979
 
 Repo này chứa frontend tĩnh để deploy lên Cloudflare Pages.
 

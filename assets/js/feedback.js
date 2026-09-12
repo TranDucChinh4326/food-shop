@@ -127,7 +127,7 @@ async function loadMyFeedback() {
             <div class="feedback-reply-box">
               <div class="reply-box-head">
                 <span class="reply-badge-icon">👑</span>
-                <strong>Quản trị viên Ẩm Thực 1979 phản hồi:</strong>
+                <strong>Quản trị viên Bếp 1979 phản hồi:</strong>
               </div>
               <p>${feedbackEscapeHtml(item.admin_reply)}</p>
               <small class="reply-time">${item.replied_at ? new Date(item.replied_at).toLocaleString("vi-VN") : ""}</small>

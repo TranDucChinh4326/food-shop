@@ -1,6 +1,6 @@
-# Ẩm Thực 1979 Frontend
+# Bếp 1979 Frontend
 
-Frontend HTML/CSS/JavaScript tinh cho Ẩm Thực 1979.
+Frontend HTML/CSS/JavaScript tinh cho Bếp 1979.
 
 ## Cau truc file
 

@@ -431,7 +431,7 @@ function renderAccountSummary(user) {
     .map(part => part.charAt(0).toUpperCase())
     .join("") || "79";
 
-  if (name) name.textContent = user?.fullname || "Ẩm Thực 1979 User";
+  if (name) name.textContent = user?.fullname || "Bếp 1979 User";
   if (email) email.textContent = user?.email || "";
 
   const avatarSource = selectedAvatarData || user?.avatar || (typeof getDefaultAvatarDataUrl === "function" ? getDefaultAvatarDataUrl() : "");
@@ -441,7 +441,7 @@ function renderAccountSummary(user) {
       avatar.textContent = "";
       const image = document.createElement("img");
       image.src = avatarSource;
-      image.alt = user?.fullname || "Ẩm Thực 1979 User";
+      image.alt = user?.fullname || "Bếp 1979 User";
       image.addEventListener("error", () => {
         console.warn("Avatar image failed to load:", avatarSource);
         avatar.textContent = initials;
@@ -798,7 +798,7 @@ function editAddress(addressId) {
 }
 
 async function postSocialLink(provider, accessToken) {
-  // Gửi accessToken mạng xã hội lên backend để liên kết với tài khoản Ẩm Thực 1979 hiện tại.
+  // Gửi accessToken mạng xã hội lên backend để liên kết với tài khoản Bếp 1979 hiện tại.
   // Frontend không tự lưu token social, chỉ dùng một lần để backend xác thực provider.
   const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/link/${provider}`, {
     method: "POST",

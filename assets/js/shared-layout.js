@@ -16,13 +16,13 @@ function renderSharedHeader() {
     slot.outerHTML = `
   <header>
     <div class="header-top">
-      <a class="logo brand-logo" href="index.html" aria-label="Ẩm Thực 1979">
+      <a class="logo brand-logo" href="index.html" aria-label="Bếp 1979">
         <span class="brand-mark" aria-hidden="true">
           <span>79</span>
         </span>
         <span class="brand-copy">
-          <strong>Ẩm Thực 1979</strong>
-          <small>Fresh delivery</small>
+          <strong>Bếp 1979</strong>
+          <small>Món ngon mỗi ngày</small>
         </span>
       </a>
 
@@ -77,7 +77,7 @@ function renderSharedHeader() {
       </div>
     </div>
 
-    <section class="site-announcements" aria-label="Thông báo Ẩm Thực 1979">
+    <section class="site-announcements" aria-label="Thông báo Bếp 1979">
       <div class="announcement-shell">
         <div id="publicAnnouncements" class="public-announcements">
           Đang tải thông báo...
@@ -121,13 +121,13 @@ function renderSharedFooter() {
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <a class="footer-logo brand-logo" href="index.html" aria-label="Ẩm Thực 1979">
+        <a class="footer-logo brand-logo" href="index.html" aria-label="Bếp 1979">
           <span class="brand-mark" aria-hidden="true">
             <span>79</span>
           </span>
           <span class="brand-copy">
-            <strong>Ẩm Thực 1979</strong>
-            <small>Fresh delivery</small>
+            <strong>Bếp 1979</strong>
+            <small>Món ngon mỗi ngày</small>
           </span>
         </a>
         <p>Nền tảng giao đồ ăn hiện đại, kết nối khách hàng với thực đơn tươi ngon, thanh toán linh hoạt và theo dõi đơn hàng minh bạch.</p>
@@ -136,10 +136,10 @@ function renderSharedFooter() {
           <span>Email: <a href="mailto:amthuc1979@gmail.com">amthuc1979@gmail.com</a></span>
           <span>Giờ phục vụ: 08:00 - 22:00 hằng ngày</span>
         </div>
-        <div class="footer-socials" aria-label="Kênh liên hệ Ẩm Thực 1979">
-          <a href="index.html" aria-label="Website Ẩm Thực 1979" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z"/></svg></a>
-          <a href="mailto:amthuc1979@gmail.com" aria-label="Email Ẩm Thực 1979" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
-          <a href="tel:0123456789" aria-label="Hotline Ẩm Thực 1979" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
+        <div class="footer-socials" aria-label="Kênh liên hệ Bếp 1979">
+          <a href="index.html" aria-label="Website Bếp 1979" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z"/></svg></a>
+          <a href="mailto:amthuc1979@gmail.com" aria-label="Email Bếp 1979" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
+          <a href="tel:0123456789" aria-label="Hotline Bếp 1979" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
         </div>
       </div>
       <div class="footer-links">
@@ -163,7 +163,7 @@ function renderSharedFooter() {
           <a href="contact.html">Trung tâm hỗ trợ</a>
           <a href="feedback.html">Gửi phản hồi</a>
           <a href="contact.html">Hợp tác cửa hàng</a>
-          <a href="contact.html">Liên hệ Ẩm Thực 1979</a>
+          <a href="contact.html">Liên hệ Bếp 1979</a>
         </div>
         <div>
           <h3>Cam kết</h3>
@@ -175,18 +175,18 @@ function renderSharedFooter() {
       </div>
       <div class="footer-map">
         <div class="footer-map-info">
-          <strong>Ẩm Thực 1979 Store</strong>
+          <strong>Bếp 1979 Store</strong>
           <a href="https://www.google.com/maps/search/?api=1&query=10.100528,105.686583" target="_blank" rel="noopener">Mở bản đồ lớn</a>
         </div>
         <iframe
-          title="Bản đồ Ẩm Thực 1979"
+          title="Bản đồ Bếp 1979"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           src="https://www.google.com/maps?q=10.100528,105.686583&z=16&output=embed">
         </iframe>
       </div>
       <div class="footer-bottom">
-        <p>© 2026 Ẩm Thực 1979 Delivery. All rights reserved.</p>
+        <p>© 2026 Bếp 1979. All rights reserved.</p>
         <p>Designed by Tran Duc Chinh IT</p>
       </div>
     </div>
