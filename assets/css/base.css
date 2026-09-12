@@ -429,54 +429,41 @@ header.header-compact .header-tools {
 }
 
 .top-icon.language-toggle {
-  border-radius: 999px;
+  align-items: center;
+  border-radius: 50%;
   cursor: pointer;
   display: inline-flex;
-  font-size: 13px;
-  font-weight: 800;
-  gap: 5px;
   height: 44px;
-  min-width: 68px;
-  padding: 0 10px 0 9px;
+  justify-content: center;
+  padding: 0;
   user-select: none;
-  width: auto;
-}
-
-.language-svg {
-  flex-shrink: 0;
-  height: 20px;
-  width: 20px;
-  filter: drop-shadow(0 2px 4px rgba(230, 62, 0, 0.18));
+  width: 44px;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              background-color 0.2s ease,
+              border-color 0.2s ease;
 }
 
 .language-current-code {
-  color: #c2410c;
+  color: #ff5722;
   display: inline-block;
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: 13.5px;
+  font-weight: 900;
   letter-spacing: 0.5px;
   line-height: 1;
+  text-align: center;
   text-transform: uppercase;
-}
-
-.language-chevron {
-  color: #a88170;
-  display: inline-block;
-  flex-shrink: 0;
-  height: 6px;
-  transition: transform 0.22s ease, color 0.2s ease;
-  width: 8px;
-}
-
-.language-menu.open .language-chevron {
-  color: #ea580c;
-  transform: rotate(180deg);
 }
 
 .language-menu.open .language-toggle {
   background: #fff5ee;
-  border-color: #ffbfa3;
-  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.18);
+  border-color: #ffd4c0;
+  box-shadow: 0 8px 20px rgba(255, 87, 34, 0.18);
+  transform: translateY(-2px) scale(1.06);
+}
+
+.language-menu.open .language-toggle .language-current-code {
+  color: #e52d00;
 }
 
 .language-dropdown {
@@ -5064,27 +5051,8 @@ footer {
     transform: scale(0.94);
   }
 
-  .header-actions-group .top-icon.language-toggle {
-    border-radius: 999px !important;
-    gap: 4px !important;
-    height: 38px !important;
-    min-width: 56px !important;
-    padding: 0 8px 0 7px !important;
-    width: auto !important;
-  }
-
-  .header-actions-group .top-icon.language-toggle .language-svg {
-    height: 17px !important;
-    width: 17px !important;
-  }
-
   .header-actions-group .top-icon.language-toggle .language-current-code {
-    font-size: 11.5px !important;
-  }
-
-  .header-actions-group .top-icon.language-toggle .language-chevron {
-    height: 5px !important;
-    width: 7px !important;
+    font-size: 12px !important;
   }
 
   .header-actions-group .cart-btn {
@@ -5910,10 +5878,8 @@ footer {
     width: 36px;
   }
 
-  .header-actions-group .top-icon.language-toggle {
-    height: 36px !important;
-    min-width: 52px !important;
-    padding: 0 7px 0 6px !important;
+  .header-actions-group .top-icon.language-toggle .language-current-code {
+    font-size: 11px !important;
   }
 
   .header-actions-group .header-action-svg {

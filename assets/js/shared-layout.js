@@ -57,14 +57,7 @@ function renderSharedHeader() {
         <div class="header-actions-group">
           <div class="language-menu notranslate" data-language-menu translate="no">
             <button type="button" class="top-icon language-toggle notranslate" title="${currentTitle}" aria-label="${currentTitle}" aria-expanded="false" translate="no">
-              <svg class="header-action-svg language-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" fill="#fff7ed" stroke="#ff7a28" stroke-width="1.8"/>
-                <path d="M3.5 12h17M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
               <span class="language-current-code" data-language-current>${currentCode}</span>
-              <svg class="language-chevron" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-                <path d="M1 1.25L5 4.75L9 1.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
             </button>
             <div class="language-dropdown notranslate" role="menu" translate="no">
               <button type="button" data-lang-code="vi" role="menuitem" class="${currentLang === "vi" ? "active" : ""}">
