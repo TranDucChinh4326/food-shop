@@ -35,6 +35,18 @@ function renderSharedHeader() {
           <div id="headerSearchDropdown" class="header-search-dropdown" hidden role="listbox" aria-label="Gợi ý món ăn"></div>
         </form>
         <div class="header-actions-group">
+          <div class="language-menu" data-language-menu>
+            <button type="button" class="top-icon language-toggle" title="Ngôn ngữ" aria-label="Đổi ngôn ngữ" aria-expanded="false">
+              <svg class="header-action-svg language-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" fill="#fff7ed" stroke="#ff7a28" stroke-width="1.8"/>
+                <path d="M3.5 12h17M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="language-dropdown" role="menu">
+              <button type="button" data-lang-code="vi" role="menuitem">Tiếng Việt</button>
+              <button type="button" data-lang-code="en" role="menuitem">English</button>
+            </div>
+          </div>
           <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher khuyến mãi" aria-label="Voucher khuyến mãi" data-voucher-link>
             <svg class="header-action-svg voucher-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <defs>
@@ -693,9 +705,74 @@ function startFoodHubIdleSessionGuard() {
   }, 60000);
 }
 
+function setFoodHubTranslateCookie(lang) {
+  const value = lang && lang !== "vi" ? `/vi/${lang}` : "";
+  const expires = value ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  const hostParts = window.location.hostname.split(".");
+  document.cookie = `googtrans=${value}; path=/${expires}`;
+  if (hostParts.length > 1) {
+    document.cookie = `googtrans=${value}; path=/; domain=.${hostParts.slice(-2).join(".")}${expires}`;
+  }
+}
+
+function loadFoodHubTranslateScript() {
+  if (document.querySelector("script[data-google-translate]")) return;
+  window.googleTranslateElementInit = function googleTranslateElementInit() {
+    if (!window.google?.translate?.TranslateElement) return;
+    new window.google.translate.TranslateElement({
+      pageLanguage: "vi",
+      includedLanguages: "vi,en",
+      autoDisplay: false
+    }, "google_translate_element");
+  };
+  const holder = document.createElement("div");
+  holder.id = "google_translate_element";
+  holder.hidden = true;
+  document.body.appendChild(holder);
+  const script = document.createElement("script");
+  script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  script.async = true;
+  script.dataset.googleTranslate = "true";
+  document.head.appendChild(script);
+}
+
+function initLanguageMenu() {
+  const menu = document.querySelector("[data-language-menu]");
+  if (!menu) return;
+
+  const toggle = menu.querySelector(".language-toggle");
+  const closeMenu = () => {
+    menu.classList.remove("open");
+    toggle?.setAttribute("aria-expanded", "false");
+  };
+
+  loadFoodHubTranslateScript();
+
+  toggle?.addEventListener("click", event => {
+    event.stopPropagation();
+    const isOpen = menu.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  menu.querySelectorAll("[data-lang-code]").forEach(button => {
+    button.addEventListener("click", () => {
+      const lang = button.dataset.langCode || "vi";
+      localStorage.setItem("foodhub_language", lang);
+      setFoodHubTranslateCookie(lang);
+      closeMenu();
+      window.location.reload();
+    });
+  });
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest("[data-language-menu]")) closeMenu();
+  });
+}
+
 renderSharedHeader();
 renderSharedFooter();
 syncSharedNavActive();
+initLanguageMenu();
 startFoodHubNotificationBadges();
 startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
