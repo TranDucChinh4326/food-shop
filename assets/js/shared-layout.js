@@ -11,7 +11,27 @@ function getWindowFunction(name) {
   return typeof fn === "function" ? fn : null;
 }
 
+function getFoodHubCurrentLanguage() {
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+  if (cookieMatch) {
+    const val = decodeURIComponent(cookieMatch[1]).toLowerCase();
+    if (val.endsWith("/en")) return "en";
+    if (val.endsWith("/vi")) return "vi";
+  }
+  const saved = localStorage.getItem("foodhub_language");
+  if (saved === "en" || saved === "vi") return saved;
+
+  const htmlLang = (document.documentElement.lang || "").toLowerCase();
+  if (htmlLang.startsWith("en")) return "en";
+
+  return "vi";
+}
+
 function renderSharedHeader() {
+  const currentLang = getFoodHubCurrentLanguage();
+  const currentCode = currentLang === "en" ? "EN" : "VI";
+  const currentTitle = currentLang === "en" ? "Language: English" : "Ngôn ngữ: Tiếng Việt";
+
   document.querySelectorAll("[data-shared-header]").forEach(slot => {
     slot.outerHTML = `
   <header>
@@ -35,16 +55,26 @@ function renderSharedHeader() {
           <div id="headerSearchDropdown" class="header-search-dropdown" hidden role="listbox" aria-label="Gợi ý món ăn"></div>
         </form>
         <div class="header-actions-group">
-          <div class="language-menu" data-language-menu>
-            <button type="button" class="top-icon language-toggle" title="Ngôn ngữ" aria-label="Đổi ngôn ngữ" aria-expanded="false">
+          <div class="language-menu notranslate" data-language-menu translate="no">
+            <button type="button" class="top-icon language-toggle notranslate" title="${currentTitle}" aria-label="${currentTitle}" aria-expanded="false" translate="no">
               <svg class="header-action-svg language-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="12" cy="12" r="9" fill="#fff7ed" stroke="#ff7a28" stroke-width="1.8"/>
                 <path d="M3.5 12h17M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z" stroke="#ea580c" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
+              <span class="language-current-code" data-language-current>${currentCode}</span>
+              <svg class="language-chevron" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+                <path d="M1 1.25L5 4.75L9 1.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </button>
-            <div class="language-dropdown" role="menu">
-              <button type="button" data-lang-code="vi" role="menuitem">Tiếng Việt</button>
-              <button type="button" data-lang-code="en" role="menuitem">English</button>
+            <div class="language-dropdown notranslate" role="menu" translate="no">
+              <button type="button" data-lang-code="vi" role="menuitem" class="${currentLang === "vi" ? "active" : ""}">
+                <span class="lang-name">Tiếng Việt</span>
+                <span class="lang-badge">VI</span>
+              </button>
+              <button type="button" data-lang-code="en" role="menuitem" class="${currentLang === "en" ? "active" : ""}">
+                <span class="lang-name">English</span>
+                <span class="lang-badge">EN</span>
+              </button>
             </div>
           </div>
           <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher khuyến mãi" aria-label="Voucher khuyến mãi" data-voucher-link>
@@ -736,6 +766,29 @@ function loadFoodHubTranslateScript() {
   document.head.appendChild(script);
 }
 
+function syncLanguageUI(lang) {
+  const currentLang = (lang || getFoodHubCurrentLanguage()).toLowerCase();
+  const currentCode = currentLang === "en" ? "EN" : "VI";
+  const currentTitle = currentLang === "en" ? "Language: English" : "Ngôn ngữ: Tiếng Việt";
+
+  document.querySelectorAll("[data-language-menu]").forEach(menu => {
+    const codeEl = menu.querySelector("[data-language-current]");
+    if (codeEl) codeEl.textContent = currentCode;
+
+    const toggle = menu.querySelector(".language-toggle");
+    if (toggle) {
+      toggle.title = currentTitle;
+      toggle.setAttribute("aria-label", currentTitle);
+    }
+
+    menu.querySelectorAll("[data-lang-code]").forEach(btn => {
+      const isMatch = btn.dataset.langCode === currentLang;
+      btn.classList.toggle("active", isMatch);
+      btn.setAttribute("aria-selected", String(isMatch));
+    });
+  });
+}
+
 function initLanguageMenu() {
   const menu = document.querySelector("[data-language-menu]");
   if (!menu) return;
@@ -746,6 +799,7 @@ function initLanguageMenu() {
     toggle?.setAttribute("aria-expanded", "false");
   };
 
+  syncLanguageUI();
   loadFoodHubTranslateScript();
 
   toggle?.addEventListener("click", event => {
@@ -759,14 +813,31 @@ function initLanguageMenu() {
       const lang = button.dataset.langCode || "vi";
       localStorage.setItem("foodhub_language", lang);
       setFoodHubTranslateCookie(lang);
+      syncLanguageUI(lang);
       closeMenu();
-      window.location.reload();
+
+      const teCombo = document.querySelector(".goog-te-combo");
+      if (teCombo) {
+        teCombo.value = lang;
+        teCombo.dispatchEvent(new Event("change"));
+      }
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     });
   });
 
   document.addEventListener("click", event => {
     if (!event.target.closest("[data-language-menu]")) closeMenu();
   });
+
+  if (window.MutationObserver) {
+    const observer = new MutationObserver(() => {
+      syncLanguageUI();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["lang", "class"] });
+  }
 }
 
 renderSharedHeader();
