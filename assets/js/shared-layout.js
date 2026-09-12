@@ -16,7 +16,7 @@ function renderSharedHeader() {
     slot.outerHTML = `
   <header>
     <div class="header-top">
-      <a class="logo brand-logo" href="index.html" aria-label="Bếp 1979">
+      <a class="logo brand-logo notranslate" href="index.html" aria-label="Bếp 1979" translate="no">
         <span class="brand-mark" aria-hidden="true">
           <span>79</span>
         </span>
@@ -133,7 +133,7 @@ function renderSharedFooter() {
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <a class="footer-logo brand-logo" href="index.html" aria-label="Bếp 1979">
+        <a class="footer-logo brand-logo notranslate" href="index.html" aria-label="Bếp 1979" translate="no">
           <span class="brand-mark" aria-hidden="true">
             <span>79</span>
           </span>

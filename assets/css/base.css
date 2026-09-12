@@ -34,6 +34,20 @@ body {
     radial-gradient(circle at 100% 16%, rgba(38, 56, 79, 0.08), transparent 28%),
     #fff8f3;
   color: var(--fh-ink);
+  top: 0 !important;
+}
+
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+body > .skiptranslate,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 
