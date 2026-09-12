@@ -739,24 +739,35 @@ function setFoodHubTranslateCookie(lang) {
 }
 
 function loadFoodHubTranslateScript() {
-  if (document.querySelector("script[data-google-translate]")) return;
-  window.googleTranslateElementInit = function googleTranslateElementInit() {
-    if (!window.google?.translate?.TranslateElement) return;
-    new window.google.translate.TranslateElement({
-      pageLanguage: "vi",
-      includedLanguages: "vi,en",
-      autoDisplay: false
-    }, "google_translate_element");
-  };
-  const holder = document.createElement("div");
-  holder.id = "google_translate_element";
-  holder.hidden = true;
-  document.body.appendChild(holder);
-  const script = document.createElement("script");
-  script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  script.async = true;
-  script.dataset.googleTranslate = "true";
-  document.head.appendChild(script);
+  if (document.querySelector("script[data-google-translate]")) return Promise.resolve();
+  if (window.google?.translate?.TranslateElement) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const holder = document.createElement("div");
+    holder.id = "google_translate_element";
+    holder.hidden = true;
+    document.body.appendChild(holder);
+
+    window.googleTranslateElementInit = function googleTranslateElementInit() {
+      if (!window.google?.translate?.TranslateElement) {
+        reject(new Error("Google Translate is unavailable"));
+        return;
+      }
+      new window.google.translate.TranslateElement({
+        pageLanguage: "vi",
+        includedLanguages: "vi,en",
+        autoDisplay: false
+      }, "google_translate_element");
+      resolve();
+    };
+
+    const script = document.createElement("script");
+    script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    script.dataset.googleTranslate = "true";
+    script.onerror = () => reject(new Error("Cannot load Google Translate"));
+    document.head.appendChild(script);
+  });
 }
 
 function syncLanguageUI(lang) {
@@ -793,7 +804,9 @@ function initLanguageMenu() {
   };
 
   syncLanguageUI();
-  loadFoodHubTranslateScript();
+  if (getFoodHubCurrentLanguage() !== "vi") {
+    loadFoodHubTranslateScript().catch(err => console.warn("Translate load skipped:", err.message));
+  }
 
   toggle?.addEventListener("click", event => {
     event.stopPropagation();
@@ -802,12 +815,16 @@ function initLanguageMenu() {
   });
 
   menu.querySelectorAll("[data-lang-code]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const lang = button.dataset.langCode || "vi";
       localStorage.setItem("foodhub_language", lang);
       setFoodHubTranslateCookie(lang);
       syncLanguageUI(lang);
       closeMenu();
+
+      if (lang !== "vi") {
+        await loadFoodHubTranslateScript().catch(err => console.warn("Translate load skipped:", err.message));
+      }
 
       const teCombo = document.querySelector(".goog-te-combo");
       if (teCombo) {
@@ -824,13 +841,6 @@ function initLanguageMenu() {
   document.addEventListener("click", event => {
     if (!event.target.closest("[data-language-menu]")) closeMenu();
   });
-
-  if (window.MutationObserver) {
-    const observer = new MutationObserver(() => {
-      syncLanguageUI();
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["lang", "class"] });
-  }
 }
 
 renderSharedHeader();
