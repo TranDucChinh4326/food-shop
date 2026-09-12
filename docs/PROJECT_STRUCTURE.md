@@ -1,4 +1,4 @@
-# Cấu trúc frontend FoodHub
+# Cấu trúc frontend Ẩm Thực 1979
 
 Repo này chứa frontend tĩnh để deploy lên Cloudflare Pages.
 

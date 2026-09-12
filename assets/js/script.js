@@ -660,7 +660,7 @@ function renderMenuCategoryOptions() {
 
   let label = "";
   if (categoryValue === "all" || !categoryValue) {
-    label = "Thực đơn FoodHub";
+    label = "Thực đơn Ẩm Thực 1979";
   } else if (category?.name) {
     label = category.name;
   } else if (KNOWN_LABELS[categoryValue]) {
@@ -686,7 +686,7 @@ function renderMenuCategoryOptions() {
   }
 
   if (heading && window.location.pathname.includes("menu.html")) {
-    document.title = `${label} - FoodHub`;
+    document.title = `${label} - Ẩm Thực 1979`;
   }
 
   if (chipsBox) {
@@ -1474,7 +1474,7 @@ function getReviewFood(review) {
 }
 
 function getReviewCustomerName(review) {
-  return review.customerName || "Khách hàng FoodHub";
+  return review.customerName || "Khách hàng Ẩm Thực 1979";
 }
 
 function getReviewInitials(name) {
@@ -1643,7 +1643,7 @@ function renderRecommendationCard(food, context = "cart") {
   const stock = Number(food.stockQuantity || 0);
   const image = food.image
     ? `<img src="${escapeHtml(food.image)}" alt="${escapeHtml(food.name)}">`
-    : `<span aria-hidden="true">FH</span>`;
+    : `<span aria-hidden="true">79</span>`;
   const detailUrl = getFoodDetailUrl(food.id, { from: context === "cart" ? "cart" : "home" });
   const isSale = Boolean(getFoodFlashSale(food));
   const rating = Number(food.rating || 5);
@@ -1805,7 +1805,7 @@ function renderReviewListCard(review, options = {}) {
         <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
         ${review.adminReply ? `
           <div class="review-admin-reply">
-            <strong>FoodHub phản hồi</strong>
+            <strong>Ẩm Thực 1979 phản hồi</strong>
             <p>${escapeHtml(review.adminReply)}</p>
           </div>
         ` : ""}
@@ -2110,7 +2110,7 @@ function renderFoodDetailBreadcrumb(food) {
 function getFoodDetailDescriptionLines(food) {
   const category = getFoodDisplayCategory(food).toLowerCase();
   const description = String(food.desc || "").trim();
-  const baseDescription = description || `${food.name} được FoodHub chọn để phục vụ nhanh, dễ ăn và hợp khẩu vị hằng ngày.`;
+  const baseDescription = description || `${food.name} được Ẩm Thực 1979 chọn để phục vụ nhanh, dễ ăn và hợp khẩu vị hằng ngày.`;
   const isDrink = isDrinkFood(food);
 
   return [
@@ -2119,7 +2119,7 @@ function getFoodDetailDescriptionLines(food) {
       ? "Hương vị được cân bằng để uống riêng vẫn ngon, dùng kèm món chính cũng không bị gắt."
       : "Khẩu phần được cân chỉnh vừa đủ no, hợp cho bữa trưa, bữa tối hoặc gọi thêm khi đi nhóm.",
     `Món thuộc nhóm ${category}, được ưu tiên giữ màu sắc và kết cấu hấp dẫn khi giao đến tay bạn.`,
-    "FoodHub khuyến khích dùng ngay sau khi nhận để cảm nhận rõ hương vị, độ nóng/lạnh và phần topping.",
+    "Ẩm Thực 1979 khuyến khích dùng ngay sau khi nhận để cảm nhận rõ hương vị, độ nóng/lạnh và phần topping.",
     isDrink
       ? "Có thể kết hợp cùng món mặn, món chiên hoặc cơm/phở để bữa ăn đỡ ngấy hơn."
       : "Có thể gọi kèm nước uống hoặc món phụ để bữa ăn trọn vị hơn."
@@ -2331,7 +2331,7 @@ function renderFoodDetailPage() {
   const image = food.image || "";
   const isSale = Boolean(getFoodFlashSale(food));
 
-  document.title = `${food.name} - FoodHub`;
+  document.title = `${food.name} - Ẩm Thực 1979`;
   page.innerHTML = `
     <section class="food-detail-page-shell">
       ${renderFoodDetailBreadcrumb(food)}
@@ -2474,7 +2474,7 @@ function getFloatingAdvertisementsShell() {
 
 function renderFloatingAdItem(slot, advertisement) {
   const linkUrl = advertisement.link_url || advertisement.linkUrl || "";
-  const title = advertisement.title || "Ưu đãi FoodHub";
+  const title = advertisement.title || "Ưu đãi Ẩm Thực 1979";
 
   if (linkUrl) {
     slot.href = linkUrl;
@@ -2486,7 +2486,7 @@ function renderFloatingAdItem(slot, advertisement) {
     slot.removeAttribute("rel");
   }
 
-  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo FoodHub")}">`;
+  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo Ẩm Thực 1979")}">`;
   slot.innerHTML = `
     <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}">
     <span class="floating-ad-content">
@@ -3582,7 +3582,7 @@ function renderCart() {
     const image = item.image || food?.image || "";
     const imageMarkup = image
       ? `<img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">`
-      : `<span class="cart-item-image cart-item-image-placeholder" aria-hidden="true">FH</span>`;
+      : `<span class="cart-item-image cart-item-image-placeholder" aria-hidden="true">79</span>`;
     total += itemTotal;
     totalQuantity += Number(item.quantity);
 
@@ -4242,7 +4242,7 @@ function renderUser() {
       : `<a href="profile.html" class="account-menu-link">Hồ sơ cá nhân</a>`;
     const initial = escapeHtml(String(user.fullname || "U").trim().charAt(0).toUpperCase() || "U");
     const avatarSource = String(user.avatar || "").trim() || getDefaultAvatarDataUrl();
-    const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "FoodHub User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
+    const avatarContent = `<img src="${escapeHtml(avatarSource)}" alt="${escapeHtml(user.fullname || "Ẩm Thực 1979 User")}" onerror="this.remove(); this.parentElement.textContent='${initial}';">`;
 
     userArea.innerHTML = `
       <div class="account-menu">
@@ -4467,7 +4467,7 @@ function renderHeaderLiveSearchDropdown(query, matchingFoods = [], totalMatches 
       <li role="option" id="searchItem-${food.id}" aria-selected="false">
         <a class="search-dropdown-item ${isSale ? "is-flash-sale" : ""}" href="${getFoodDetailUrl(food.id, { from: "search" })}" data-food-id="${food.id}" data-search-index="${index}">
           <div class="search-item-thumb-wrap">
-            <img class="search-item-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%23ffd8c7\\'><rect width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'18\\' fill=\\'%23ff5722\\'>FH</text></svg>'">
+            <img class="search-item-thumb" src="${escapeHtml(image)}" alt="${escapeHtml(food.name)}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' fill=\\'%23ffd8c7\\'><rect width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-size=\\'18\\' fill=\\'%23ff5722\\'>79</text></svg>'">
             ${isSale ? `<span class="search-item-flash-tag">SALE</span>` : ""}
           </div>
           <div class="search-item-info">
@@ -4841,7 +4841,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kênh hỗ trợ FoodHub">
+    <div class="support-panel" aria-label="Kênh hỗ trợ Ẩm Thực 1979">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -4854,16 +4854,16 @@ function initSupportWidget() {
         <span>☎</span>
         <strong>Hotline</strong>
       </a>
-      <a href="mailto:foodhub@gmail.com" class="support-link email">
+      <a href="mailto:amthuc1979@gmail.com" class="support-link email">
         <span>@</span>
         <strong>Email</strong>
       </a>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>FoodHub đây!</strong>
+      <strong>Ẩm Thực 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý FoodHub">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Ẩm Thực 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotIcon}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>
@@ -5028,14 +5028,14 @@ function initChatSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ FoodHub">
+    <div class="support-panel chat-panel" aria-label="Hop chat hỗ trợ Ẩm Thực 1979">
       <div class="chat-header">
         <div class="chat-agent">
           <span class="chat-avatar" aria-hidden="true">
             ${robotIcon}
           </span>
           <div>
-            <strong>FoodHub Assistant</strong>
+            <strong>Ẩm Thực 1979 Assistant</strong>
             <small><span class="chat-live-status-dot"></span>Trực tuyến • Sẵn sàng hỗ trợ</small>
           </div>
         </div>
@@ -5049,10 +5049,10 @@ function initChatSupportWidget() {
       <div class="chat-quick-menu" hidden>
         <a href="menu.html">Xem thực đơn</a>
         <a href="track.html">Lịch sử đơn hàng</a>
-        <a href="contact.html">Liên hệ FoodHub</a>
+        <a href="contact.html">Liên hệ Ẩm Thực 1979</a>
       </div>
       <div class="chat-messages" aria-live="polite">
-        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, FoodHub có thể hỗ trợ gì cho bạn?</div>
+        <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Ẩm Thực 1979 có thể hỗ trợ gì cho bạn?</div>
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, giá, khuyến mãi, giao hàng, giỏ hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
@@ -5101,10 +5101,10 @@ function initChatSupportWidget() {
       </form>
     </div>
     <div class="chat-bubble-tip" hidden>
-      <strong>FoodHub đây!</strong>
+      <strong>Ẩm Thực 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý FoodHub">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Ẩm Thực 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotLogo}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>
@@ -5164,7 +5164,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user file-message">Đã đính kèm: ${escapeHtml(file.name)}</div>
-      <div class="chat-message bot muted">FoodHub đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
+      <div class="chat-message bot muted">Ẩm Thực 1979 đã nhận thông tin tệp. Tính năng gửi tệp thật sẽ được kết nối sau.</div>
     `);
     chatFile.value = "";
     hideChatPopovers();
@@ -5192,7 +5192,7 @@ function initChatSupportWidget() {
     hideChatPopovers();
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">&#128077;</div>
-      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, FoodHub đã nhận tin nhắn của bạn.</div>
+      <div class="chat-message bot muted">Cảm ơn ${escapeHtml(displayName)}, Ẩm Thực 1979 đã nhận tin nhắn của bạn.</div>
     `);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -5214,7 +5214,7 @@ function initChatSupportWidget() {
 
     chatMessages.insertAdjacentHTML("beforeend", `
       <div class="chat-message user">${escapeHtml(message)}</div>
-      <div class="chat-message bot muted">FoodHub đang xử lý câu hỏi của bạn...</div>
+      <div class="chat-message bot muted">Ẩm Thực 1979 đang xử lý câu hỏi của bạn...</div>
     `);
     chatInput.value = "";
     hideChatPopovers();

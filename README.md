@@ -1,6 +1,6 @@
-# FoodHub Frontend
+# Ẩm Thực 1979 Frontend
 
-Frontend HTML/CSS/JavaScript tinh cho FoodHub.
+Frontend HTML/CSS/JavaScript tinh cho Ẩm Thực 1979.
 
 ## Cau truc file
 

@@ -424,14 +424,14 @@ function renderAccountSummary(user) {
   const name = document.getElementById("profileDisplayName");
   const email = document.getElementById("profileDisplayEmail");
   const avatar = document.getElementById("profileAvatar");
-  const initials = String(user?.fullname || user?.email || "FH")
+  const initials = String(user?.fullname || user?.email || "79")
     .trim()
     .split(/\s+/)
     .slice(0, 2)
     .map(part => part.charAt(0).toUpperCase())
-    .join("") || "FH";
+    .join("") || "79";
 
-  if (name) name.textContent = user?.fullname || "FoodHub User";
+  if (name) name.textContent = user?.fullname || "Ẩm Thực 1979 User";
   if (email) email.textContent = user?.email || "";
 
   const avatarSource = selectedAvatarData || user?.avatar || (typeof getDefaultAvatarDataUrl === "function" ? getDefaultAvatarDataUrl() : "");
@@ -441,7 +441,7 @@ function renderAccountSummary(user) {
       avatar.textContent = "";
       const image = document.createElement("img");
       image.src = avatarSource;
-      image.alt = user?.fullname || "FoodHub User";
+      image.alt = user?.fullname || "Ẩm Thực 1979 User";
       image.addEventListener("error", () => {
         console.warn("Avatar image failed to load:", avatarSource);
         avatar.textContent = initials;
@@ -602,7 +602,7 @@ function renderProfileFavoriteFoods(favoriteFoods = []) {
     const stock = Number(food.stockQuantity ?? food.stock_quantity ?? 0);
     const image = food.image
       ? `<img src="${escapeHtml(food.image)}" alt="${escapeHtml(food.name)}">`
-      : `<span class="profile-favorite-placeholder">FH</span>`;
+      : `<span class="profile-favorite-placeholder">79</span>`;
     return `
       <article class="profile-favorite-food-card" data-profile-favorite-food="${food.id}">
         <a class="profile-favorite-image" href="food-detail.html?id=${encodeURIComponent(food.id)}&from=profile">
@@ -798,7 +798,7 @@ function editAddress(addressId) {
 }
 
 async function postSocialLink(provider, accessToken) {
-  // Gửi accessToken mạng xã hội lên backend để liên kết với tài khoản FoodHub hiện tại.
+  // Gửi accessToken mạng xã hội lên backend để liên kết với tài khoản Ẩm Thực 1979 hiện tại.
   // Frontend không tự lưu token social, chỉ dùng một lần để backend xác thực provider.
   const data = await requestProfileJson(`${PROFILE_AUTH_API}/social/link/${provider}`, {
     method: "POST",

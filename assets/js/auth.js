@@ -87,14 +87,14 @@ function getAuthLoadingOverlay() {
     <div class="auth-loading-card">
       <span class="auth-loading-spinner" aria-hidden="true"></span>
       <strong>Đang xử lý</strong>
-      <small>FoodHub đang kiểm tra thông tin đăng nhập...</small>
+      <small>Ẩm Thực 1979 đang kiểm tra thông tin đăng nhập...</small>
     </div>
   `;
   document.body.appendChild(overlay);
   return overlay;
 }
 
-function showAuthLoading(message = "FoodHub đang kiểm tra thông tin đăng nhập...") {
+function showAuthLoading(message = "Ẩm Thực 1979 đang kiểm tra thông tin đăng nhập...") {
   const overlay = getAuthLoadingOverlay();
   const text = overlay.querySelector("small");
   if (text) text.textContent = message;
@@ -161,8 +161,8 @@ function finishLogin(data) {
   sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
   sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
   sessionStorage.setItem("foodhub_show_chat_bubble", "1");
-  showAuthLoading("Đăng nhập thành công. Đang chuyển vào FoodHub...");
-  showToast("Đăng nhập thành công. Đang vào FoodHub...", "success");
+  showAuthLoading("Đăng nhập thành công. Đang chuyển vào Ẩm Thực 1979...");
+  showToast("Đăng nhập thành công. Đang vào Ẩm Thực 1979...", "success");
 
   setTimeout(() => {
     const redirectUrl = data.requiresAccountSetup || data.user?.requiresAccountSetup
@@ -508,7 +508,7 @@ async function forgotPassword(event) {
       return;
     }
 
-    showToast(data.message || "Nếu email tồn tại, FoodHub đã gửi hướng dẫn đặt lại mật khẩu.", "success");
+    showToast(data.message || "Nếu email tồn tại, Ẩm Thực 1979 đã gửi hướng dẫn đặt lại mật khẩu.", "success");
     sessionStorage.setItem("foodhub_reset_email", email);
     setTimeout(() => {
       window.location.href = "reset-password.html";
@@ -640,7 +640,7 @@ function initAuthSlider() {
     }
 
     const target = isRegister ? "register.html" : "login.html";
-    const title = isRegister ? "\u0110\u0103ng k\u00fd - FoodHub" : "\u0110\u0103ng nh\u1eadp - FoodHub";
+    const title = isRegister ? "\u0110\u0103ng k\u00fd - Ẩm Thực 1979" : "\u0110\u0103ng nh\u1eadp - Ẩm Thực 1979";
     if (!window.location.pathname.endsWith(target)) {
       window.history.replaceState(null, title, target);
       document.title = title;
@@ -723,7 +723,7 @@ function initSupportWidget() {
   widget.id = "support-widget";
   widget.className = "support-widget";
   widget.innerHTML = `
-    <div class="support-panel" aria-label="Kênh hỗ trợ FoodHub">
+    <div class="support-panel" aria-label="Kênh hỗ trợ Ẩm Thực 1979">
       <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
@@ -736,12 +736,12 @@ function initSupportWidget() {
         <span>☎</span>
         <strong>Hotline</strong>
       </a>
-      <a href="mailto:foodhub@gmail.com" class="support-link email">
+      <a href="mailto:amthuc1979@gmail.com" class="support-link email">
         <span>@</span>
         <strong>Email</strong>
       </a>
     </div>
-    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ" aria-expanded="false" title="Liên hệ hỗ trợ FoodHub">
+    <button type="button" class="support-toggle" aria-label="Mở hỗ trợ" aria-expanded="false" title="Liên hệ hỗ trợ Ẩm Thực 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotIcon}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>
     </button>

@@ -1,4 +1,4 @@
-// Cấu hình runtime cho frontend FoodHub.
+// Cấu hình runtime cho frontend Ẩm Thực 1979.
 // Các file JS đọc FOODHUB_CONFIG để biết backend API và ID đăng nhập mạng xã hội đang dùng.
 window.FOODHUB_CONFIG = {
   API_BASE_URL: "https://food-backend-xrb9.onrender.com/api",
