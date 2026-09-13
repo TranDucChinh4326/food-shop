@@ -412,7 +412,7 @@ function hideSiteLoading() {
   document.getElementById("siteLoadingOverlay")?.classList.remove("show");
 }
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = 25000) {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
@@ -421,6 +421,13 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
       ...options,
       signal: controller.signal
     });
+  } catch (err) {
+    // Nếu máy chủ Render đang ngủ đông (Cold Start) dẫn tới quá 25s, thử lại 1 lần cuối
+    if (err.name === "AbortError" && (!options.method || options.method === "GET")) {
+      console.warn(`[API] Máy chủ phản hồi chậm hoặc đang khởi động (Render cold-start). Đang kết nối lại: ${url}`);
+      return await fetch(url, options);
+    }
+    throw err;
   } finally {
     window.clearTimeout(timeoutId);
   }
