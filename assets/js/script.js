@@ -1550,6 +1550,15 @@ function renderHomeCombos() {
       }).join("")}
     </div>
     ${homeCombos.length > 1 ? `
+      <div class="combo-timer-bar-wrap">
+        <div class="combo-timer-bar" data-combo-timer-bar></div>
+      </div>
+      <button type="button" class="combo-arrow-btn combo-arrow-prev" data-combo-prev aria-label="Combo trước">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button type="button" class="combo-arrow-btn combo-arrow-next" data-combo-next aria-label="Combo sau">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
       <div class="combo-banner-controls" aria-label="Chuyển combo">
         ${homeCombos.map((combo, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-combo-dot="${index}" aria-label="Xem combo ${index + 1}"></button>`).join("")}
       </div>
@@ -1611,23 +1620,92 @@ window.orderHomeCombo = orderHomeCombo;
 
 function startHomeComboSlider() {
   const box = document.getElementById("homeComboBanners");
+  const track = box?.querySelector("[data-combo-track]");
   const slides = [...box?.querySelectorAll("[data-combo-slide]") || []];
   const dots = [...box?.querySelectorAll("[data-combo-dot]") || []];
-  if (slides.length <= 1) return;
+  const prevBtn = box?.querySelector("[data-combo-prev]");
+  const nextBtn = box?.querySelector("[data-combo-next]");
+  const timerBar = box?.querySelector("[data-combo-timer-bar]");
+  if (slides.length <= 1 || !track) return;
 
   let activeIndex = 0;
-  const show = index => {
+  let isHovered = false;
+  const slideDuration = 6000;
+  let elapsed = 0;
+  const tickStep = 50;
+
+  const updateSlide = (index, resetProgress = true) => {
     activeIndex = (index + slides.length) % slides.length;
-    slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === activeIndex));
-    dots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === activeIndex));
+    track.style.transform = `translateX(-${activeIndex * 100}%)`;
+
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("active", slideIndex === activeIndex);
+    });
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("active", dotIndex === activeIndex);
+    });
+
+    if (resetProgress) {
+      elapsed = 0;
+      if (timerBar) timerBar.style.width = "0%";
+    }
   };
 
-  dots.forEach(dot => {
-    dot.addEventListener("click", () => show(Number(dot.dataset.comboDot || 0)));
+  updateSlide(0, true);
+
+  prevBtn?.addEventListener("click", e => {
+    e.stopPropagation();
+    updateSlide(activeIndex - 1);
   });
 
+  nextBtn?.addEventListener("click", e => {
+    e.stopPropagation();
+    updateSlide(activeIndex + 1);
+  });
+
+  dots.forEach(dot => {
+    dot.addEventListener("click", e => {
+      e.stopPropagation();
+      updateSlide(Number(dot.dataset.comboDot || 0));
+    });
+  });
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  box.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  box.addEventListener("touchend", e => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX - touchEndX;
+    const diffY = touchStartY - touchEndY;
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 0) {
+        updateSlide(activeIndex + 1);
+      } else {
+        updateSlide(activeIndex - 1);
+      }
+    }
+  }, { passive: true });
+
+  box.addEventListener("mouseenter", () => { isHovered = true; });
+  box.addEventListener("mouseleave", () => { isHovered = false; });
+
   window.clearInterval(window.__homeComboSliderTimer);
-  window.__homeComboSliderTimer = window.setInterval(() => show(activeIndex + 1), 5500);
+  window.__homeComboSliderTimer = window.setInterval(() => {
+    if (isHovered) return;
+    elapsed += tickStep;
+    if (timerBar) {
+      const progress = Math.min(100, (elapsed / slideDuration) * 100);
+      timerBar.style.width = `${progress}%`;
+    }
+    if (elapsed >= slideDuration) {
+      updateSlide(activeIndex + 1);
+    }
+  }, tickStep);
 }
 function getFoodDisplayCategory(food) {
   return food.parentCategoryName || food.categoryName || "Món ăn";
