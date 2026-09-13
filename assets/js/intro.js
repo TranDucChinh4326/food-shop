@@ -1,35 +1,35 @@
 /**
- * BẾP 1979 - MODERN RETRO F&B INTRO SPLASH
- * Phong cách: Retro Việt Nam hiện đại, sang trọng, tinh tế.
- * - Thời lượng nhẹ nhàng: Tự động chuyển trang sau ~2.8 giây.
- * - Người dùng có thể click "Khám phá thực đơn" hoặc "Vào ngay" để chuyển trang lập tức.
- * - Hiệu ứng chuyển cảnh: Smooth Zoom-Fade mượt mà, không giật lag.
- * - Bảng màu: Nâu cà phê (#1d120c), Đỏ gạch (#b8381e), Cam ấm (#e65100), Kem (#fef7ee).
+ * BẾP 1979 - LUXURY MODERN RETRO F&B INTRO
+ * Tông màu: Nâu Espresso (#140b07), Đỏ gạch (#b8381e), Cam cháy (#d9531e), Kem yến mạch (#fdf8f4).
+ * Tính năng:
+ * - Đĩa món ăn cao cấp chụp thật (lấy từ cache món ngon của Bếp 1979 hoặc hình sườn nướng mật ong chuẩn vị).
+ * - Làn hơi nóng (Steam) bốc lên nhẹ nhàng, chân thực.
+ * - Trạng thái nhỏ: "● Đang mở cửa phục vụ".
+ * - Nút "Khám phá thực đơn" hoặc tự động chuyển mượt vào trang sau ~2.8 giây.
  */
 
-(function initRetroFBIntro() {
+(function initLuxuryRetroIntro() {
   if (window.location.pathname.includes("admin.html")) return;
 
   const urlParams = new URLSearchParams(window.location.search);
   const forceIntro = urlParams.get("intro") === "1";
-  const hasSeenIntro = sessionStorage.getItem("foodhub_retro_intro_seen_v6");
+  const hasSeenIntro = sessionStorage.getItem("foodhub_luxury_retro_seen_v7");
 
   if (hasSeenIntro && !forceIntro) {
     return;
   }
 
-  sessionStorage.setItem("foodhub_retro_intro_seen_v6", "true");
+  sessionStorage.setItem("foodhub_luxury_retro_seen_v7", "true");
 
-  // Subtle web audio sound on interaction
   let audioCtx = null;
   let isMuted = false;
 
   function playSoftChime() {
     if (isMuted) return;
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      if (!audioCtx) audioCtx = new AudioContext();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!audioCtx) audioCtx = new AudioCtx();
       if (audioCtx.state === "suspended") audioCtx.resume();
 
       const now = audioCtx.currentTime;
@@ -38,18 +38,30 @@
 
       osc.type = "sine";
       osc.frequency.setValueAtTime(880, now);
-      osc.frequency.exponentialRampToValueAtTime(520, now + 0.25);
+      osc.frequency.exponentialRampToValueAtTime(540, now + 0.28);
 
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start(now);
-      osc.stop(now + 0.25);
-    } catch (e) {
-      // Audio autoplay policy fallback
-    }
+      osc.stop(now + 0.28);
+    } catch (e) {}
+  }
+
+  // Lấy hình ảnh món ăn thực tế từ database cache của Bếp 1979
+  function getHeroFoodImageUrl() {
+    try {
+      const cache = JSON.parse(localStorage.getItem("foodhub_foods_cache_v1") || "null");
+      if (cache && Array.isArray(cache.items) && cache.items.length) {
+        const foundWithImage = cache.items.find(item => item.image && item.image.startsWith("http"));
+        if (foundWithImage) return foundWithImage.image;
+      }
+    } catch (e) {}
+
+    // Fallback ảnh ẩm thực chụp nghệ thuật chất lượng cao (Unsplash Culinary Food)
+    return "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80";
   }
 
   function createIntroElement() {
@@ -59,11 +71,13 @@
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-label", "Chào mừng đến với Bếp 1979");
 
+    const heroImgUrl = getHeroFoodImageUrl();
+
     overlay.innerHTML = `
       <div class="intro-retro-pattern"></div>
 
-      <!-- Top Status & Actions -->
-      <header class="intro-retro-header">
+      <!-- 1. Top Bar (Dùng thẻ div riêng để không bị ảnh hưởng style header trang chủ) -->
+      <div class="intro-top-bar">
         <div class="intro-open-status">
           <span class="intro-status-pulse"></span>
           <span>Đang mở cửa phục vụ</span>
@@ -80,57 +94,23 @@
             </svg>
           </button>
         </div>
-      </header>
+      </div>
 
-      <!-- Center Brand & Culinary Hero -->
-      <main class="intro-retro-hero">
+      <!-- 2. Main Center Hero Stage -->
+      <div class="intro-retro-hero">
         <div class="intro-food-spotlight">
           <div class="intro-food-halo"></div>
-          <div class="intro-food-plate" title="Món ăn nóng hổi tại Bếp 1979">
-            <!-- Professional SVG: Tô đồ ăn nóng bốc khói hơi nóng thanh lịch -->
-            <svg class="intro-food-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="bowlGrad" x1="20" y1="40" x2="80" y2="85" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#b8381e"/>
-                  <stop offset="60%" stop-color="#8c2511"/>
-                  <stop offset="100%" stop-color="#5a1508"/>
-                </linearGradient>
-                <linearGradient id="rimGrad" x1="12" y1="42" x2="88" y2="42" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#e65100"/>
-                  <stop offset="50%" stop-color="#ffcc80"/>
-                  <stop offset="100%" stop-color="#e65100"/>
-                </linearGradient>
-                <linearGradient id="brothGrad" x1="20" y1="48" x2="80" y2="48" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#ff9800"/>
-                  <stop offset="100%" stop-color="#f57c00"/>
-                </linearGradient>
-              </defs>
+          
+          <div class="intro-food-plate" title="Món ngon nóng hổi tại Bếp 1979">
+            <img class="intro-food-img" id="introHeroFoodImg" src="${heroImgUrl}" alt="Món ăn đặc sản Bếp 1979" onerror="this.src='https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'">
+          </div>
 
-              <!-- Làn hơi nóng (Steam) bốc nhẹ tự nhiên -->
-              <path class="intro-steam-path s1" d="M38 32 C38 24 34 20 40 14 C44 9 40 5 42 2" stroke="#ffcc80" stroke-width="2.2" stroke-linecap="round"/>
-              <path class="intro-steam-path s2" d="M50 30 C52 23 48 18 53 12 C57 7 53 3 55 1" stroke="#ffe0b2" stroke-width="2.5" stroke-linecap="round"/>
-              <path class="intro-steam-path s3" d="M62 33 C62 25 66 21 60 15 C56 10 60 6 58 2" stroke="#ffcc80" stroke-width="2.2" stroke-linecap="round"/>
-
-              <!-- Vành tô sứ retro -->
-              <ellipse cx="50" cy="45" rx="38" ry="11" fill="url(#rimGrad)"/>
-              <!-- Nước dùng/Món ăn bên trong tô -->
-              <ellipse cx="50" cy="46" rx="34" ry="9" fill="url(#brothGrad)"/>
-
-              <!-- Topping món ăn: Trứng lòng đào, hành hoa, thịt sườn -->
-              <circle cx="42" cy="46" r="5" fill="#fff9c4"/>
-              <circle cx="42" cy="46" r="3.2" fill="#ff9800"/>
-              <circle cx="56" cy="45" r="3" fill="#43a047"/>
-              <circle cx="63" cy="47" r="2.5" fill="#2e7d32"/>
-              <rect x="48" y="47" width="8" height="3" rx="1.5" fill="#8d6e63" transform="rotate(-15 48 47)"/>
-
-              <!-- Thân tô gốm mộc màu đỏ gạch truyền thống -->
-              <path d="M12 45 C14 68, 30 82, 50 82 C70 82, 86 68, 88 45 Z" fill="url(#bowlGrad)"/>
-
-              <!-- Đường chỉ viền retro mạ vàng -->
-              <path d="M20 54 C30 62, 70 62, 80 54" stroke="rgba(255, 204, 128, 0.5)" stroke-width="1.8" stroke-linecap="round"/>
-
-              <!-- Chân đế tô -->
-              <ellipse cx="50" cy="83" rx="18" ry="4" fill="#3e140b"/>
+          <!-- Làn hơi nóng (Steam) bốc lên tự nhiên từ đĩa món ăn -->
+          <div class="intro-steam-overlay" aria-hidden="true">
+            <svg class="intro-steam-svg" viewBox="0 0 100 80">
+              <path class="intro-steam-line s1" d="M35 70 C35 50 28 40 38 25 C44 14 38 6 40 0"/>
+              <path class="intro-steam-line s2" d="M50 72 C52 52 46 38 54 22 C60 12 52 4 54 0"/>
+              <path class="intro-steam-line s3" d="M65 70 C65 52 72 42 62 26 C56 16 62 8 60 0"/>
             </svg>
           </div>
         </div>
@@ -150,15 +130,15 @@
             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
           </svg>
         </button>
-      </main>
+      </div>
 
-      <!-- Bottom Minimal Progress Bar (~2.8s) -->
-      <footer class="intro-retro-footer">
+      <!-- 3. Bottom Minimal Timeline Bar -->
+      <div class="intro-bottom-footer">
         <div class="intro-progress-track">
           <div class="intro-progress-fill"></div>
         </div>
         <span class="intro-footer-hint">Tự động vào trang sau giây lát</span>
-      </footer>
+      </div>
     `;
 
     return overlay;
@@ -192,24 +172,15 @@
       }, 650);
     }
 
-    // 1. Click CTA "Khám phá thực đơn" -> vào thẳng menu hoặc trang chủ mượt mà
-    ctaBtn.addEventListener("click", () => {
-      dismissIntro();
-    });
+    ctaBtn.addEventListener("click", () => dismissIntro());
+    skipBtn.addEventListener("click", () => dismissIntro());
 
-    // 2. Click "Vào ngay"
-    skipBtn.addEventListener("click", () => {
-      dismissIntro();
-    });
-
-    // 3. Sound button
     soundBtn.addEventListener("click", () => {
       isMuted = !isMuted;
       soundIcon.textContent = isMuted ? "🔇" : "🔊";
       soundBtn.style.opacity = isMuted ? "0.6" : "1";
     });
 
-    // 4. Thoát bằng phím Escape hoặc Enter
     const onKeyDown = (e) => {
       if (e.key === "Escape" || e.key === "Enter") {
         dismissIntro();
@@ -218,7 +189,7 @@
     };
     window.addEventListener("keydown", onKeyDown);
 
-    // 5. Tự động chuyển mượt vào homepage sau 2.8 giây (không bắt người dùng chờ lâu)
+    // Tự động chuyển trang sau 2.8 giây
     setTimeout(() => {
       dismissIntro();
     }, 2800);

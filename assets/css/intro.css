@@ -1,7 +1,7 @@
 /* ==========================================================================
-   BẾP 1979 - MODERN RETRO F&B INTRO SPLASH (COMMERCIAL LUXURY EDITION)
-   Phong cách: Retro Việt Nam hiện đại, sang trọng, tinh tế.
-   Bảng màu: Nâu cà phê (#1d120c), Đỏ gạch (#b8381e), Cam ấm (#e65100), Kem (#fef7ee).
+   BẾP 1979 - LUXURY MODERN RETRO F&B INTRO (COMMERCIAL PREMIUM EDITION)
+   Phong cách: Nhà hàng ẩm thực cao cấp, phong vị truyền thống Việt Nam.
+   Bảng màu: Nâu Espresso (#140b07), Đỏ gạch nung (#b8381e), Cam cháy (#d9531e), Kem yến mạch (#fdf8f4).
    ========================================================================== */
 
 .fh-retro-intro {
@@ -12,47 +12,52 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  background-color: #1a0f0a;
-  background-image:
-    radial-gradient(circle at 50% 35%, rgba(184, 56, 30, 0.22) 0%, rgba(29, 18, 12, 0.94) 60%, #120905 100%),
-    radial-gradient(circle at 10% 10%, rgba(230, 81, 0, 0.08) 0%, transparent 40%);
-  color: #fef7ee;
+  background-color: #120905;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(184, 56, 30, 0.28) 0%, rgba(20, 11, 7, 0.95) 55%, #0b0503 100%),
+    radial-gradient(circle at 85% 15%, rgba(217, 83, 30, 0.12) 0%, transparent 45%);
+  color: #fdf8f4;
   overflow: hidden;
   user-select: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.65s;
-  padding: 28px 36px 32px;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s;
+  padding: 30px 48px 36px;
   box-sizing: border-box;
 }
 
 .fh-retro-intro.intro-dismissed {
   opacity: 0;
-  transform: scale(1.03);
+  transform: scale(1.04);
   visibility: hidden;
   pointer-events: none;
 }
 
-/* Subtle Warm Vignette & Background Atmosphere */
+/* Subtle Warm Vignette Pattern */
 .intro-retro-pattern {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(254, 247, 238, 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: radial-gradient(rgba(253, 248, 244, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-/* 1. Top Header Bar */
-.intro-retro-header {
+/* 1. Top Bar: Trạng thái & Nút vào ngay (Sử dụng div riêng, không bị dính CSS thẻ header của trang chủ) */
+.intro-top-bar {
   position: relative;
   z-index: 5;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1120px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-height: auto !important;
 }
 
 .intro-open-status {
@@ -61,21 +66,21 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #ecdacf;
-  background: rgba(254, 247, 238, 0.06);
-  border: 1px solid rgba(254, 247, 238, 0.12);
-  padding: 6px 14px;
+  letter-spacing: 0.4px;
+  color: #ebdcd2;
+  background: rgba(253, 248, 244, 0.07);
+  border: 1px solid rgba(253, 248, 244, 0.14);
+  padding: 7px 16px;
   border-radius: 999px;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 
 .intro-status-pulse {
-  width: 7px;
-  height: 7px;
+  width: 7.5px;
+  height: 7.5px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  box-shadow: 0 0 10px #10b981;
   animation: introStatusBlink 2.2s infinite ease-in-out;
 }
 
@@ -91,10 +96,10 @@
 }
 
 .intro-action-btn {
-  background: rgba(254, 247, 238, 0.08);
-  border: 1px solid rgba(254, 247, 238, 0.15);
-  color: #fef7ee;
-  padding: 7px 16px;
+  background: rgba(253, 248, 244, 0.08);
+  border: 1px solid rgba(253, 248, 244, 0.16);
+  color: #fdf8f4;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
@@ -102,15 +107,16 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
+  gap: 8px;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
 }
 
 .intro-action-btn:hover {
-  background: rgba(254, 247, 238, 0.16);
-  border-color: rgba(254, 247, 238, 0.3);
+  background: rgba(253, 248, 244, 0.18);
+  border-color: rgba(253, 248, 244, 0.32);
   color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .intro-action-btn svg {
@@ -127,23 +133,23 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 620px;
+  max-width: 680px;
   margin: auto 0;
   padding: 10px 0;
-  animation: introHeroEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: introHeroEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes introHeroEnter {
-  0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Signature Food Visual Illustration */
+/* Luxury Realistic Food Plate Showcase */
 .intro-food-spotlight {
   position: relative;
-  width: 148px;
-  height: 148px;
-  margin-bottom: 22px;
+  width: 220px;
+  height: 220px;
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,11 +157,17 @@
 
 .intro-food-halo {
   position: absolute;
-  inset: -16px;
+  inset: -25px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(230, 81, 0, 0.3) 0%, rgba(184, 56, 30, 0.1) 50%, transparent 70%);
-  filter: blur(14px);
+  background: radial-gradient(circle, rgba(217, 83, 30, 0.36) 0%, rgba(184, 56, 30, 0.15) 50%, transparent 72%);
+  filter: blur(24px);
   pointer-events: none;
+  animation: introHaloBreathe 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes introHaloBreathe {
+  0% { transform: scale(0.92); opacity: 0.75; }
+  100% { transform: scale(1.1); opacity: 1; }
 }
 
 .intro-food-plate {
@@ -163,57 +175,82 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(145deg, rgba(254, 247, 238, 0.1) 0%, rgba(30, 18, 12, 0.6) 100%);
-  border: 1px solid rgba(254, 247, 238, 0.18);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(254, 247, 238, 0.15);
+  padding: 8px;
+  background: linear-gradient(145deg, rgba(253, 248, 244, 0.18) 0%, rgba(18, 9, 5, 0.9) 100%);
+  border: 1px solid rgba(253, 248, 244, 0.22);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), inset 0 2px 4px rgba(253, 248, 244, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .intro-food-plate:hover {
-  transform: translateY(-4px) scale(1.03);
+  transform: translateY(-4px) scale(1.04);
 }
 
-.intro-food-svg {
-  width: 88px;
-  height: 88px;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+.intro-food-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  filter: saturate(1.08) contrast(1.06);
 }
 
-/* Subtle Natural Steam rising */
-.intro-steam-path {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-  animation: introSteamRise 2.8s ease-in-out infinite;
-  opacity: 0.75;
+/* Subtle Realistic Steam Rising */
+.intro-steam-overlay {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 80px;
+  pointer-events: none;
 }
 
-.intro-steam-path.s2 {
-  animation-delay: 0.9s;
+.intro-steam-svg {
+  width: 100%;
+  height: 100%;
 }
 
-.intro-steam-path.s3 {
-  animation-delay: 1.6s;
+.intro-steam-line {
+  stroke: rgba(255, 230, 200, 0.75);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: introSteamLoop 2.6s ease-in-out infinite;
 }
 
-@keyframes introSteamRise {
+.intro-steam-line.s2 {
+  animation-delay: 0.8s;
+  stroke: rgba(255, 240, 220, 0.85);
+  stroke-width: 2.5;
+}
+
+.intro-steam-line.s3 {
+  animation-delay: 1.5s;
+}
+
+@keyframes introSteamLoop {
   0% {
-    stroke-dashoffset: 24;
+    stroke-dashoffset: 20;
     opacity: 0;
-    transform: translateY(2px);
+    transform: translateY(4px);
   }
-  30% {
-    opacity: 0.8;
+  35% {
+    opacity: 0.75;
   }
   80% {
-    opacity: 0.4;
+    opacity: 0.3;
   }
   100% {
     stroke-dashoffset: 0;
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-12px);
   }
 }
 
@@ -226,66 +263,70 @@
 }
 
 .intro-badge-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #c0392b, #e65100);
-  color: #fef7ee;
-  font-weight: 900;
-  font-size: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #b8381e, #d9531e);
+  color: #fdf8f4;
+  font-weight: 950;
+  font-size: 20px;
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 18px rgba(192, 57, 43, 0.35);
-  border: 1px solid rgba(254, 247, 238, 0.2);
+  box-shadow: 0 8px 24px rgba(184, 56, 30, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(253, 248, 244, 0.25);
 }
 
 .intro-brand-name {
-  font-size: 38px;
-  font-weight: 900;
-  letter-spacing: -0.8px;
+  font-size: 46px;
+  font-weight: 950;
+  letter-spacing: -1px;
   line-height: 1;
-  color: #fef7ee;
+  color: #fdf8f4;
   text-transform: uppercase;
+  background: linear-gradient(135deg, #ffffff 30%, #ffd8c4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(184, 56, 30, 0.35));
 }
 
 .intro-slogan {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 500;
-  color: #dfcac0;
-  letter-spacing: 0.2px;
-  margin-bottom: 24px;
+  color: #e5d1c5;
+  letter-spacing: 0.3px;
+  margin-bottom: 26px;
 }
 
 .intro-slogan strong {
-  color: #ffaa7d;
-  font-weight: 700;
+  color: #ff9b6a;
+  font-weight: 800;
 }
 
 /* Main Call to Action Button */
 .intro-cta-button {
-  background: linear-gradient(135deg, #b8381e 0%, #e65100 100%);
-  color: #fef7ee;
-  border: 1px solid rgba(254, 247, 238, 0.25);
-  padding: 13px 36px;
+  background: linear-gradient(135deg, #b8381e 0%, #d9531e 100%);
+  color: #fdf8f4;
+  border: 1px solid rgba(253, 248, 244, 0.3);
+  padding: 14px 40px;
   border-radius: 999px;
-  font-size: 15.5px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 28px rgba(184, 56, 30, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  gap: 12px;
+  box-shadow: 0 12px 32px rgba(184, 56, 30, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
 .intro-cta-button:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #c53e22 0%, #f05a00 100%);
-  box-shadow: 0 14px 34px rgba(184, 56, 30, 0.55);
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #c73e22 0%, #e85e26 100%);
+  box-shadow: 0 16px 40px rgba(184, 56, 30, 0.65);
 }
 
 .intro-cta-button:active {
@@ -293,31 +334,31 @@
 }
 
 .intro-cta-arrow {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   transition: transform 0.2s ease;
 }
 
 .intro-cta-button:hover .intro-cta-arrow {
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 
 /* 3. Bottom Minimal Progress Indicator (2.8s) */
-.intro-retro-footer {
+.intro-bottom-footer {
   position: relative;
   z-index: 5;
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .intro-progress-track {
   width: 100%;
   height: 3px;
-  background: rgba(254, 247, 238, 0.12);
+  background: rgba(253, 248, 244, 0.12);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -325,7 +366,7 @@
 .intro-progress-fill {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #b8381e, #e65100, #ffaa7d);
+  background: linear-gradient(90deg, #b8381e, #d9531e, #ffaa7d);
   border-radius: 999px;
   animation: intro2sProgress 2.8s linear forwards;
 }
@@ -336,40 +377,36 @@
 }
 
 .intro-footer-hint {
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
-  color: #9a8479;
+  color: #9d887e;
   letter-spacing: 0.3px;
 }
 
 /* Mobile Responsive */
 @media (max-width: 640px) {
   .fh-retro-intro {
-    padding: 20px 20px 24px;
+    padding: 22px 20px 26px;
   }
   .intro-food-spotlight {
-    width: 124px;
-    height: 124px;
-    margin-bottom: 18px;
-  }
-  .intro-food-svg {
-    width: 72px;
-    height: 72px;
-  }
-  .intro-brand-name {
-    font-size: 29px;
-  }
-  .intro-badge-mark {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
-  }
-  .intro-slogan {
-    font-size: 15px;
+    width: 170px;
+    height: 170px;
     margin-bottom: 20px;
   }
+  .intro-brand-name {
+    font-size: 34px;
+  }
+  .intro-badge-mark {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+  }
+  .intro-slogan {
+    font-size: 16px;
+    margin-bottom: 22px;
+  }
   .intro-cta-button {
-    padding: 12px 28px;
-    font-size: 14.5px;
+    padding: 12px 32px;
+    font-size: 15px;
   }
 }
