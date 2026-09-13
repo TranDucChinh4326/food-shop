@@ -74,6 +74,13 @@ const flashSaleFoodSelect = document.getElementById("flashSaleFoodSelect");
 const flashSaleItemsList = document.getElementById("flashSaleItemsList");
 const flashSaleItemNotice = document.getElementById("flashSaleItemNotice");
 const saveFlashSaleItemBtn = document.getElementById("saveFlashSaleItemBtn");
+const combosList = document.getElementById("combosList");
+const comboForm = document.getElementById("comboForm");
+const comboSearch = document.getElementById("comboSearch");
+const comboStatusFilter = document.getElementById("comboStatusFilter");
+const comboPageSize = document.getElementById("comboPageSize");
+const comboFoodSelect = document.getElementById("comboFoodSelect");
+const comboItemsList = document.getElementById("comboItemsList");
 const discountForm = document.getElementById("discountForm");
 const discountListView = document.getElementById("discountListView");
 const discountFormView = document.getElementById("discountFormView");
@@ -132,6 +139,7 @@ const SECTION_PERMISSIONS = {
   orders: ["orders.manage"],
   categories: ["foods.manage"],
   foods: ["foods.manage"],
+  combos: ["foods.manage"],
   inventory: ["foods.manage"],
   accounts: ["users.manage", "staff.manage"],
   announcements: ["announcements.manage"],
@@ -186,6 +194,11 @@ let cachedFlashSales = [];
 let flashSalesPage = 1;
 let flashSalesPerPage = 5;
 let flashSaleFoodOptions = [];
+let cachedCombos = [];
+let comboDraftItems = [];
+let comboSearchTimer;
+let combosPage = 1;
+let combosPerPage = 5;
 let cachedDiscounts = [];
 let discountsPage = 1;
 let discountsPerPage = 5;
@@ -256,7 +269,7 @@ function canAccessSection(sectionId) {
 }
 
 function getFirstAllowedSection() {
-  const preferred = ["overview", "orders", "foods", "categories", "accounts", "announcements", "advertisements", "flash-sales", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
+  const preferred = ["overview", "orders", "foods", "combos", "categories", "inventory", "accounts", "announcements", "advertisements", "flash-sales", "discounts", "shipping", "feedback", "food-reviews", "audit-logs"];
   return preferred.find(canAccessSection) || "overview";
 }
 
@@ -1237,6 +1250,201 @@ function getFilteredFlashSales() {
     const matchesStatus = status === "all" || sale.status === status;
     return matchesSearch && matchesStatus;
   });
+}
+
+function syncComboFoodOptions() {
+  if (!comboFoodSelect) return;
+  const activeFoods = cachedFoods.filter(food => Number(food.is_active ?? food.isActive ?? 1) === 1);
+  comboFoodSelect.innerHTML = `<option value="">Chọn món</option>${activeFoods.map(food => `
+    <option value="${food.id}">${escapeHtml(food.name)} - ${formatMoney(food.price || 0)}</option>
+  `).join("")}`;
+}
+
+function resetComboForm() {
+  comboForm?.reset();
+  const id = document.getElementById("comboId");
+  if (id) id.value = "";
+  comboDraftItems = [];
+  renderComboDraftItems();
+  const saveBtn = document.getElementById("saveComboBtn");
+  if (saveBtn) saveBtn.textContent = "Lưu combo";
+}
+
+function renderComboDraftItems() {
+  if (!comboItemsList) return;
+  if (!comboDraftItems.length) {
+    comboItemsList.innerHTML = `<p class="form-inline-note">Chưa có món trong combo.</p>`;
+    return;
+  }
+
+  comboItemsList.innerHTML = `
+    <div class="mini-list-table">
+      ${comboDraftItems.map(item => `
+        <div class="mini-list-row">
+          <span><strong>${escapeHtml(item.name)}</strong><small>${formatMoney(item.price || 0)} x ${Number(item.quantity || 1)}</small></span>
+          <button type="button" class="icon-btn delete" data-remove-combo-item="${item.foodId}" aria-label="Xóa món khỏi combo">${trashIcon()}</button>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function addComboDraftItem() {
+  const foodId = Number(comboFoodSelect?.value || 0);
+  const quantity = Number(document.getElementById("comboFoodQuantity")?.value || 1);
+  const food = cachedFoods.find(item => Number(item.id) === foodId);
+  if (!food || !Number.isInteger(quantity) || quantity <= 0) {
+    showAdminToast("Vui lòng chọn món và số lượng hợp lệ.", "error");
+    return;
+  }
+
+  const existing = comboDraftItems.find(item => Number(item.foodId) === foodId);
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    comboDraftItems.push({
+      foodId,
+      name: food.name,
+      price: Number(food.price || 0),
+      image: food.image || "",
+      quantity
+    });
+  }
+  renderComboDraftItems();
+}
+
+function getFilteredCombos() {
+  const q = String(comboSearch?.value || "").trim().toLowerCase();
+  const status = comboStatusFilter?.value || "all";
+  return cachedCombos.filter(combo => {
+    const matchesSearch = !q || String(combo.name || "").toLowerCase().includes(q);
+    const isActive = Number(combo.is_active ?? combo.isActive ?? 0) === 1;
+    const matchesStatus = status === "all" || (status === "active" ? isActive : !isActive);
+    return matchesSearch && matchesStatus;
+  });
+}
+
+async function loadCombos() {
+  if (!combosList) return;
+  combosList.textContent = "Đang tải combo...";
+  try {
+    cachedCombos = await requestJson(`${ADMIN_API}/combos`);
+    combosPage = Math.min(combosPage, Math.ceil(cachedCombos.length / combosPerPage)) || 1;
+    renderCombosTable();
+  } catch (error) {
+    combosList.textContent = error.message;
+  }
+}
+
+function renderCombosTable() {
+  if (!combosList) return;
+  combosPerPage = Number(comboPageSize?.value || combosPerPage || 5);
+  if (![5, 10, 20].includes(combosPerPage)) combosPerPage = 5;
+  const rows = getFilteredCombos();
+  const total = rows.length;
+  const totalPages = Math.max(1, Math.ceil(total / combosPerPage));
+  combosPage = Math.min(Math.max(combosPage, 1), totalPages);
+  const startIndex = (combosPage - 1) * combosPerPage;
+  const pageItems = rows.slice(startIndex, startIndex + combosPerPage);
+
+  if (!pageItems.length) {
+    combosList.textContent = "Chưa có combo phù hợp.";
+    return;
+  }
+
+  combosList.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Combo</th>
+            <th>Giá</th>
+            <th>Số món</th>
+            <th>Trạng thái</th>
+            <th>Chức năng</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pageItems.map(combo => {
+            const isActive = Number(combo.is_active ?? combo.isActive ?? 0) === 1;
+            return `
+              <tr>
+                <td><strong>${escapeHtml(combo.name || "")}</strong><small>${escapeHtml(combo.description || "")}</small></td>
+                <td class="table-number">${formatMoney(combo.price || 0)}</td>
+                <td class="table-number">${Number(combo.item_count || 0).toLocaleString("vi-VN")}</td>
+                <td><span class="status-pill ${isActive ? "success" : "danger"}">${isActive ? "Đang bán" : "Đã ẩn"}</span></td>
+                <td>
+                  <div class="table-actions">
+                    <button type="button" class="icon-btn edit" title="Sửa" data-edit-combo="${combo.id}">${editIcon()}</button>
+                    <button type="button" class="icon-btn delete" title="Xóa" data-delete-combo="${combo.id}">${trashIcon()}</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <span>Hiển thị ${startIndex + 1}-${Math.min(startIndex + combosPerPage, total)} / ${total}</span>
+      <div class="pager">
+        <button type="button" data-combos-page="prev" ${combosPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${getCompactPaginationItems(totalPages, combosPage).map(page => renderAdminPaginationButton(page, combosPage, "combos")).join("")}
+        <button type="button" data-combos-page="next" ${combosPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function editCombo(comboId) {
+  const combo = await requestJson(`${ADMIN_API}/combos/${comboId}`);
+  document.getElementById("comboId").value = combo.id;
+  document.getElementById("comboName").value = combo.name || "";
+  document.getElementById("comboPrice").value = combo.price || "";
+  document.getElementById("comboImage").value = combo.image || "";
+  document.getElementById("comboIsActive").value = Number(combo.is_active ?? combo.isActive ?? 1) === 1 ? "1" : "0";
+  document.getElementById("comboDescription").value = combo.description || "";
+  comboDraftItems = (combo.items || []).map(item => ({
+    foodId: Number(item.food_id || item.foodId),
+    name: item.food_name || item.name,
+    price: Number(item.food_price || item.price || 0),
+    image: item.food_image || item.image || "",
+    quantity: Number(item.quantity || 1)
+  }));
+  renderComboDraftItems();
+  const saveBtn = document.getElementById("saveComboBtn");
+  if (saveBtn) saveBtn.textContent = "Cập nhật combo";
+  showAdminSection("combos");
+}
+
+async function saveCombo(event) {
+  event.preventDefault();
+  if (!comboDraftItems.length) {
+    showAdminToast("Vui lòng thêm món vào combo.", "error");
+    return;
+  }
+
+  const comboId = document.getElementById("comboId").value;
+  const payload = {
+    name: document.getElementById("comboName").value.trim(),
+    price: Number(document.getElementById("comboPrice").value || 0),
+    image: document.getElementById("comboImage").value.trim(),
+    isActive: Number(document.getElementById("comboIsActive").value || 1),
+    description: document.getElementById("comboDescription").value.trim(),
+    items: comboDraftItems.map((item, index) => ({ foodId: item.foodId, quantity: item.quantity, sortOrder: index }))
+  };
+
+  try {
+    await requestJson(`${ADMIN_API}/combos${comboId ? `/${comboId}` : ""}`, {
+      method: comboId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
+    });
+    showAdminToast(comboId ? "Đã cập nhật combo." : "Đã tạo combo.");
+    resetComboForm();
+    await loadCombos();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
 }
 
 async function loadFlashSales() {
@@ -3709,6 +3917,7 @@ async function loadFoods() {
     cachedFoods = foods;
     if (foodsCount) foodsCount.textContent = foods.length;
     renderAdvertisementFoodLinkOptions();
+    syncComboFoodOptions();
     renderFoodsTable();
   } catch (error) {
     foodsList.textContent = error.message;
@@ -4407,6 +4616,7 @@ stockImportForm?.addEventListener("submit", submitStockImport);
 document.getElementById("refreshUsersBtn")?.addEventListener("click", loadUsers);
 document.getElementById("refreshAnnouncementsBtn")?.addEventListener("click", loadAnnouncements);
 document.getElementById("refreshFlashSalesBtn")?.addEventListener("click", loadFlashSales);
+document.getElementById("refreshCombosBtn")?.addEventListener("click", loadCombos);
 document.getElementById("refreshDiscountsBtn")?.addEventListener("click", loadDiscounts);
 document.getElementById("refreshAdvertisementsBtn")?.addEventListener("click", loadAdvertisements);
 document.getElementById("refreshStatsBtn")?.addEventListener("click", loadStats);
@@ -4502,6 +4712,62 @@ flashSaleItemsList?.addEventListener("click", async event => {
   }
 });
 closeFlashSaleForm();
+comboForm?.addEventListener("submit", saveCombo);
+comboForm?.querySelector("[data-reset-combo]")?.addEventListener("click", resetComboForm);
+document.getElementById("resetComboFormBtn")?.addEventListener("click", resetComboForm);
+document.getElementById("addComboItemBtn")?.addEventListener("click", addComboDraftItem);
+comboItemsList?.addEventListener("click", event => {
+  const button = event.target.closest("[data-remove-combo-item]");
+  if (!button) return;
+  comboDraftItems = comboDraftItems.filter(item => String(item.foodId) !== String(button.dataset.removeComboItem));
+  renderComboDraftItems();
+});
+comboSearch?.addEventListener("input", () => {
+  clearTimeout(comboSearchTimer);
+  combosPage = 1;
+  comboSearchTimer = setTimeout(renderCombosTable, 250);
+});
+comboStatusFilter?.addEventListener("change", () => {
+  combosPage = 1;
+  renderCombosTable();
+});
+comboPageSize?.addEventListener("change", () => {
+  combosPerPage = Number(comboPageSize.value || 5);
+  combosPage = 1;
+  renderCombosTable();
+});
+combosList?.addEventListener("click", async event => {
+  const pageButton = event.target.closest("[data-combos-page]");
+  const editButton = event.target.closest("[data-edit-combo]");
+  const deleteButton = event.target.closest("[data-delete-combo]");
+
+  try {
+    if (pageButton) {
+      const pageAction = pageButton.dataset.combosPage;
+      const totalPages = Math.max(1, Math.ceil(getFilteredCombos().length / combosPerPage));
+      if (pageAction === "prev") combosPage -= 1;
+      else if (pageAction === "next") combosPage += 1;
+      else combosPage = Number(pageAction);
+      combosPage = Math.min(Math.max(combosPage, 1), totalPages);
+      renderCombosTable();
+      return;
+    }
+
+    if (editButton) {
+      await editCombo(editButton.dataset.editCombo);
+      return;
+    }
+
+    if (deleteButton) {
+      if (!confirm("Xóa combo này?")) return;
+      await requestJson(`${ADMIN_API}/combos/${deleteButton.dataset.deleteCombo}`, { method: "DELETE" });
+      showAdminToast("Đã xóa combo.");
+      await loadCombos();
+    }
+  } catch (error) {
+    showAdminToast(error.message, "error");
+  }
+});
 discountForm?.addEventListener("submit", saveDiscount);
 discountForm?.querySelector("[data-reset-discount]")?.addEventListener("click", () => {
   resetDiscountForm();
@@ -5425,6 +5691,7 @@ async function initAdminPage() {
     }
     loadCategories();
     loadFoods();
+    loadCombos();
     loadInventoryOverview();
     loadInventoryImports();
     loadInventoryExports();

@@ -29,6 +29,148 @@ body::after {
   padding: 44px 8%;
 }
 
+.home-combo-section {
+  padding: 42px 8% 0;
+}
+
+.combo-banner-shell {
+  position: relative;
+}
+
+.combo-banner-track {
+  position: relative;
+  min-height: 330px;
+}
+
+.combo-banner-slide {
+  align-items: stretch;
+  background:
+    linear-gradient(135deg, rgba(36, 24, 18, 0.94), rgba(111, 49, 22, 0.9)),
+    #241812;
+  border: 1px solid rgba(255, 188, 120, 0.35);
+  border-radius: 8px;
+  box-shadow: 0 28px 70px rgba(70, 34, 14, 0.2);
+  color: #fff;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  inset: 0;
+  min-height: 330px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(16px);
+  transition: opacity 0.42s ease, transform 0.42s ease;
+}
+
+.combo-banner-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+  transform: translateX(0);
+}
+
+.combo-banner-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 5vw, 62px);
+}
+
+.combo-banner-copy .section-kicker {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffd8bf;
+  margin-bottom: 16px;
+}
+
+.combo-banner-copy h2 {
+  font-size: clamp(32px, 5vw, 58px);
+  line-height: 1;
+  margin: 0 0 16px;
+}
+
+.combo-banner-copy p {
+  color: rgba(255, 244, 235, 0.9);
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  max-width: 680px;
+}
+
+.combo-banner-copy small {
+  color: #ffc49e;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.combo-banner-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.combo-banner-actions strong {
+  color: #ffd166;
+  font-size: 30px;
+}
+
+.combo-banner-media {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 122, 40, 0.18), rgba(255, 255, 255, 0.08));
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.combo-banner-media img {
+  height: 100%;
+  min-height: 330px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.combo-banner-media span {
+  align-items: center;
+  background: linear-gradient(135deg, #ff5722, #ff9b2f);
+  border-radius: 28px;
+  box-shadow: 0 22px 54px rgba(255, 87, 34, 0.38);
+  display: inline-flex;
+  font-size: 64px;
+  font-weight: 950;
+  height: 150px;
+  justify-content: center;
+  width: 150px;
+}
+
+.combo-banner-controls {
+  bottom: 20px;
+  display: flex;
+  gap: 8px;
+  left: clamp(28px, 5vw, 62px);
+  position: absolute;
+  z-index: 3;
+}
+
+.combo-banner-controls button {
+  background: rgba(255, 255, 255, 0.32);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  height: 9px;
+  transition: width 0.2s ease, background 0.2s ease;
+  width: 9px;
+}
+
+.combo-banner-controls button.active {
+  background: #ffd166;
+  width: 30px;
+}
+
 .home-section-heading,
 .home-category-heading {
   align-items: end;
@@ -829,3 +971,44 @@ body::after {
 }
 
 /* Style cho trang chủ: hero, món nổi bật, danh mục, thông báo, quảng cáo và các khối giới thiệu. */
+@media (max-width: 900px) {
+  .home-combo-section {
+    padding: 28px 5% 0;
+  }
+
+  .combo-banner-slide {
+    grid-template-columns: 1fr;
+  }
+
+  .combo-banner-media {
+    min-height: 220px;
+    order: -1;
+  }
+
+  .combo-banner-media img {
+    min-height: 220px;
+  }
+
+  .combo-banner-copy {
+    padding: 26px;
+  }
+}
+
+@media (max-width: 560px) {
+  .combo-banner-copy h2 {
+    font-size: 30px;
+  }
+
+  .combo-banner-copy p {
+    font-size: 15px;
+  }
+
+  .combo-banner-actions strong {
+    font-size: 24px;
+  }
+
+  .combo-banner-controls {
+    bottom: 14px;
+    left: 26px;
+  }
+}

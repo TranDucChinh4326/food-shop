@@ -25,6 +25,7 @@
         </button>
         <div class="admin-subnav" data-admin-food-categories></div>
       </div>
+      <a class="admin-nav-btn" href="admin.html?section=combos" data-admin-target="combos"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Combo món ăn</span></a>
       <a class="admin-nav-btn" href="admin.html?section=inventory" data-admin-target="inventory"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý kho</span></a>
       <div class="admin-nav-group">
         <button class="admin-nav-btn admin-nav-toggle" type="button" data-admin-toggle="accounts-menu" aria-expanded="false">
@@ -287,6 +288,89 @@
 
 
         <div id="foodsList" class="accounts-list table-state">Đang tải món ăn...</div>
+      </section>
+    </section>
+
+    <section class="admin-section" data-admin-section="combos">
+      <section class="panel accounts-panel admin-table-page">
+        <div class="page-heading">
+          <div>
+            <h2>Combo món ăn</h2>
+            <p><a href="index.html">Trang chủ</a> <span>/</span> Quản lý món ăn <span>/</span> Combo món ăn</p>
+          </div>
+          <div class="heading-actions">
+            <button id="resetComboFormBtn" type="button" class="primary-btn">+ Thêm mới</button>
+            <button id="refreshCombosBtn" type="button" class="ghost-btn">Tải lại</button>
+          </div>
+        </div>
+
+        <div class="admin-form-view">
+          <form id="comboForm" class="announcement-page-form discount-form">
+            <input type="hidden" id="comboId">
+            <div class="announcement-date-grid">
+              <label>
+                Tên combo
+                <input id="comboName" type="text" maxlength="150" placeholder="VD: Combo cơm trưa 1979" required>
+              </label>
+              <label>
+                Giá combo
+                <input id="comboPrice" type="number" min="1000" step="1000" placeholder="VD: 99000" required>
+              </label>
+            </div>
+            <div class="announcement-date-grid">
+              <label>
+                Ảnh banner combo
+                <input id="comboImage" type="url" placeholder="Dán URL ảnh banner">
+              </label>
+              <label>
+                Trạng thái
+                <select id="comboIsActive">
+                  <option value="1">Đang bán</option>
+                  <option value="0">Ẩn</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Mô tả combo
+              <textarea id="comboDescription" rows="3" maxlength="1000" placeholder="Mô tả ưu đãi, khẩu phần hoặc dịp dùng combo"></textarea>
+            </label>
+            <div class="announcement-date-grid">
+              <label>
+                Chọn món có sẵn
+                <select id="comboFoodSelect">
+                  <option value="">Chọn món</option>
+                </select>
+              </label>
+              <label>
+                Số lượng trong combo
+                <input id="comboFoodQuantity" type="number" min="1" step="1" value="1">
+              </label>
+            </div>
+            <div class="account-form-actions form-actions">
+              <button id="addComboItemBtn" type="button" class="ghost-btn">Thêm món vào combo</button>
+              <button id="saveComboBtn" type="submit" class="primary-btn">Lưu combo</button>
+              <button type="button" class="ghost-btn" data-reset-combo>Nhập lại</button>
+            </div>
+            <div id="comboItemsList" class="mini-list"></div>
+          </form>
+        </div>
+
+        <div class="admin-list-view">
+          <div class="table-toolbar multi-filter">
+            <input type="search" id="comboSearch" placeholder="Tìm kiếm combo">
+            <select id="comboStatusFilter">
+              <option value="all">Tất cả</option>
+              <option value="active">Đang bán</option>
+              <option value="hidden">Đã ẩn</option>
+            </select>
+            <select id="comboPageSize" aria-label="Số dòng combo mỗi trang">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div id="combosList" class="accounts-list table-state">Đang tải combo...</div>
+        </div>
       </section>
     </section>
 

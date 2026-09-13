@@ -9,6 +9,7 @@ const ADVERTISEMENTS_API = `${API_BASE_URL}/advertisements`;
 const FOOD_REVIEWS_API = `${API_BASE_URL}/food-reviews`;
 const CHAT_API = `${API_BASE_URL}/chat`;
 const FOOD_FAVORITES_API = `${API_URL}/favorites`;
+const COMBOS_API = `${API_URL}/combos`;
 const FLASH_SALES_API = `${API_BASE_URL}/flash-sales/active`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -18,6 +19,7 @@ const FOODS_CACHE_KEY = "foodhub_foods_cache_v1";
 const FOODS_CACHE_TTL = 2 * 60 * 1000;
 
 let foods = [];
+let homeCombos = [];
 let activeFlashSales = [];
 let activeFlashSaleItems = new Map();
 // State phía trình duyệt: lưu dữ liệu đã tải, giỏ hàng session và trạng thái thanh toán/voucher đang thao tác.
@@ -1378,12 +1380,14 @@ function animateCartAddButton(source) {
 
 async function loadFoods() {
   const foodList = document.getElementById("food-list");
+  const comboBox = document.getElementById("homeComboBanners");
   const bestSellerBox = document.getElementById("homeBestSellers");
   const homeSectionBox = document.getElementById("homeFoodSections");
   const foodDetailPage = document.getElementById("foodDetailPage");
   const cartItems = document.getElementById("cart-items");
 
-  if (!foodList && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems) return;
+  if (!foodList && !comboBox && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems) return;
+  if (comboBox) loadHomeCombos();
 
   const cachedFoods = readFoodsCache();
   if (cachedFoods?.items.length) {
@@ -1438,6 +1442,87 @@ async function loadActiveFlashSales() {
   normalizeFlashSaleData(data);
   renderFlashSaleBanner();
   return activeFlashSales;
+}
+
+async function loadHomeCombos() {
+  const box = document.getElementById("homeComboBanners");
+  if (!box) return;
+
+  try {
+    const response = await fetchWithTimeout(COMBOS_API);
+    if (!response.ok) throw new Error(`Combos API returned ${response.status}`);
+    homeCombos = await response.json();
+  } catch (error) {
+    console.error("Lỗi tải combo:", error);
+    homeCombos = [];
+  }
+
+  renderHomeCombos();
+}
+
+function renderHomeCombos() {
+  const box = document.getElementById("homeComboBanners");
+  if (!box) return;
+
+  if (!homeCombos.length) {
+    box.closest(".home-combo-section")?.setAttribute("hidden", "hidden");
+    return;
+  }
+
+  box.closest(".home-combo-section")?.removeAttribute("hidden");
+  box.innerHTML = `
+    <div class="combo-banner-track" data-combo-track>
+      ${homeCombos.map((combo, index) => {
+        const itemNames = (combo.items || []).slice(0, 4).map(item => `${item.quantity}x ${item.name}`).join(" • ");
+        const image = combo.image || combo.items?.find(item => item.image)?.image || "";
+        const soldOut = Number(combo.maxAvailable || 0) <= 0;
+        return `
+          <article class="combo-banner-slide ${index === 0 ? "active" : ""}" data-combo-slide="${index}">
+            <div class="combo-banner-copy">
+              <span class="section-kicker">Combo món ăn</span>
+              <h2>${escapeHtml(combo.name)}</h2>
+              <p>${escapeHtml(combo.description || itemNames || "Combo được chọn từ các món có sẵn trong thực đơn.")}</p>
+              <small>${escapeHtml(itemNames)}</small>
+              <div class="combo-banner-actions">
+                <strong>${formatMoney(combo.price || 0)}</strong>
+                <span class="status-pill ${soldOut ? "danger" : "success"}">${soldOut ? "Tạm hết" : `Còn ${Number(combo.maxAvailable || 0)}`}</span>
+              </div>
+            </div>
+            <div class="combo-banner-media">
+              ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(combo.name)}">` : `<span>79</span>`}
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </div>
+    ${homeCombos.length > 1 ? `
+      <div class="combo-banner-controls" aria-label="Chuyển combo">
+        ${homeCombos.map((combo, index) => `<button type="button" class="${index === 0 ? "active" : ""}" data-combo-dot="${index}" aria-label="Xem combo ${index + 1}"></button>`).join("")}
+      </div>
+    ` : ""}
+  `;
+  startHomeComboSlider();
+}
+
+function startHomeComboSlider() {
+  const box = document.getElementById("homeComboBanners");
+  const slides = [...box?.querySelectorAll("[data-combo-slide]") || []];
+  const dots = [...box?.querySelectorAll("[data-combo-dot]") || []];
+  if (slides.length <= 1) return;
+
+  let activeIndex = 0;
+  const show = index => {
+    activeIndex = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === activeIndex));
+    dots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === activeIndex));
+  };
+
+  dots.forEach(dot => {
+    dot.addEventListener("click", () => show(Number(dot.dataset.comboDot || 0)));
+  });
+
+  window.clearInterval(window.__homeComboSliderTimer);
+  window.__homeComboSliderTimer = window.setInterval(() => show(activeIndex + 1), 5500);
 }
 function getFoodDisplayCategory(food) {
   return food.parentCategoryName || food.categoryName || "Món ăn";
