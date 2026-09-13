@@ -708,7 +708,7 @@ body::after {
   min-height: 290px;
   overflow: hidden;
   position: relative;
-  transition: flex 0.32s ease, box-shadow 0.24s ease, transform 0.24s ease;
+  transition: flex 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.24s ease, transform 0.24s ease;
 }
 
 .best-seller-card:hover {
@@ -719,6 +719,7 @@ body::after {
 
 .best-seller-track:hover .best-seller-card:not(:hover) {
   flex: 0.72 1 0;
+  transition: flex 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.24s ease, transform 0.24s ease;
 }
 
 .best-seller-card img {
@@ -984,13 +985,27 @@ body::after {
 }
 
 .home-food-card.home-reveal,
-.best-seller-card.home-reveal,
 .home-review-card.home-reveal {
   transition:
     opacity 0.32s ease,
     transform 0.32s ease,
     border-color 0.18s ease,
     box-shadow 0.18s ease;
+}
+
+.best-seller-card.home-reveal {
+  transition:
+    opacity 0.35s ease,
+    transform 0.24s ease,
+    flex 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s ease;
+}
+
+.best-seller-card.home-reveal.is-visible {
+  transition:
+    flex 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s ease,
+    transform 0.24s ease;
 }
 
 .home-food-card:hover img,
