@@ -107,7 +107,26 @@ function renderSharedHeader() {
             <a href="login.html" class="header-action primary">Đăng nhập</a>
             <a href="register.html" class="header-action secondary">Đăng ký</a>
           </div>
-          <a href="cart.html" class="cart-btn" aria-label="Giỏ hàng">🛒 <span>Giỏ hàng</span> <strong id="cart-count">0</strong></a>
+          <a href="cart.html" class="cart-btn" aria-label="Giỏ hàng" data-cart-btn>
+            <span class="cart-icon-shell" aria-hidden="true">
+              <svg class="cart-custom-icon" viewBox="0 0 24 24" fill="none">
+                <g class="cart-steam-group">
+                  <path class="steam-line steam-1" d="M8.5 2.5C8.5 2.5 9.2 3.8 8 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path class="steam-line steam-2" d="M12 1.5C12 1.5 12.8 3 11.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  <path class="steam-line steam-3" d="M15.5 2.5C15.5 2.5 16.2 3.8 15 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </g>
+                <path class="cart-basket-body" d="M2.5 3.5H5.2L7.6 15.2C7.75 16 8.45 16.6 9.3 16.6H18.8C19.65 16.6 20.35 16 20.5 15.2L22 8H5.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="cart-food-spark" d="M13.5 8L14.2 9.8L16 10.5L14.2 11.2L13.5 13L12.8 11.2L11 10.5L12.8 9.8L13.5 8Z"/>
+                <circle class="cart-wheel-node" cx="9.5" cy="19.8" r="1.6" fill="currentColor"/>
+                <circle class="cart-wheel-node" cx="18" cy="19.8" r="1.6" fill="currentColor"/>
+              </svg>
+            </span>
+            <span class="cart-btn-label">Giỏ hàng</span>
+            <span class="cart-count-badge-wrap">
+              <strong id="cart-count">0</strong>
+              <span class="cart-ambient-pulse" aria-hidden="true"></span>
+            </span>
+          </a>
         </div>
       </div>
     </div>
@@ -851,11 +870,32 @@ function initLanguageMenu() {
   });
 }
 
+function initSharedCartButtonState() {
+  try {
+    const raw = sessionStorage.getItem("foodhub_cart");
+    const cartItems = raw ? JSON.parse(raw) : [];
+    const count = Array.isArray(cartItems)
+      ? cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+      : 0;
+
+    const countEl = document.getElementById("cart-count");
+    const cartBtn = document.querySelector(".cart-btn");
+    if (countEl) countEl.textContent = String(count);
+    if (cartBtn) {
+      cartBtn.classList.toggle("has-items", count > 0);
+    }
+  } catch (e) {
+    // Ignore parse error
+  }
+}
+
 renderSharedHeader();
 renderSharedFooter();
 syncSharedNavActive();
 initLanguageMenu();
+initSharedCartButtonState();
 startFoodHubNotificationBadges();
 startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
+

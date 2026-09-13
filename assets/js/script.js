@@ -1090,10 +1090,15 @@ function applySavedCheckoutAddress(address) {
 
 function updateCartCount() {
   const cartCount = document.getElementById("cart-count");
+  const cartBtn = document.querySelector(".cart-btn");
 
   if (!cartCount) return;
 
-  cartCount.textContent = cart.reduce((sum, item) => sum + Number(item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  cartCount.textContent = String(total);
+  if (cartBtn) {
+    cartBtn.classList.toggle("has-items", total > 0);
+  }
 }
 
 function normalizeFoodData(rawFoods = []) {
