@@ -1377,7 +1377,7 @@ function renderCombosTable() {
 
   combosList.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table">
+      <table class="admin-table combo-admin-table">
         <thead>
           <tr>
             <th>Combo</th>
@@ -1390,9 +1390,20 @@ function renderCombosTable() {
         <tbody>
           ${pageItems.map(combo => {
             const isActive = Number(combo.is_active ?? combo.isActive ?? 0) === 1;
+            const image = combo.image || "";
             return `
               <tr>
-                <td><strong>${escapeHtml(combo.name || "")}</strong><small>${escapeHtml(combo.description || "")}</small></td>
+                <td>
+                  <div class="combo-admin-summary">
+                    <div class="combo-admin-thumb">
+                      ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(combo.name || "Combo")}">` : `<span>79</span>`}
+                    </div>
+                    <div class="combo-admin-copy">
+                      <strong>${escapeHtml(combo.name || "")}</strong>
+                      <small>${escapeHtml(combo.description || "Chưa có mô tả")}</small>
+                    </div>
+                  </div>
+                </td>
                 <td class="table-number">${formatMoney(combo.price || 0)}</td>
                 <td class="table-number">${Number(combo.item_count || 0).toLocaleString("vi-VN")}</td>
                 <td><span class="status-pill ${isActive ? "success" : "danger"}">${isActive ? "Đang bán" : "Đã ẩn"}</span></td>
