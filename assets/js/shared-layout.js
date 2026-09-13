@@ -186,14 +186,14 @@ function renderSharedFooter() {
         </a>
         <p>Nền tảng giao đồ ăn hiện đại, kết nối khách hàng với thực đơn tươi ngon, thanh toán linh hoạt và theo dõi đơn hàng minh bạch.</p>
         <div class="footer-contact-list">
-          <span>Hotline: <a href="tel:0123456789">0123 456 789</a></span>
-          <span>Email: <a href="mailto:amthuc1979@gmail.com">amthuc1979@gmail.com</a></span>
+          <span>Hotline: <a href="tel:03877005477">0387 700 5477</a></span>
+          <span>Email: <a href="mailto:tdchinh04@gmail.com">tdchinh04@gmail.com</a></span>
           <span>Giờ phục vụ: 08:00 - 22:00 hằng ngày</span>
         </div>
         <div class="footer-socials" aria-label="Kênh liên hệ Bếp 1979">
           <a href="index.html" aria-label="Website Bếp 1979" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.2 2.5 3.4 5.5 3.4 9S14.2 18.5 12 21c-2.2-2.5-3.4-5.5-3.4-9S9.8 5.5 12 3Z"/></svg></a>
-          <a href="mailto:amthuc1979@gmail.com" aria-label="Email Bếp 1979" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
-          <a href="tel:0123456789" aria-label="Hotline Bếp 1979" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
+          <a href="mailto:tdchinh04@gmail.com" aria-label="Email Bếp 1979" title="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
+          <a href="tel:03877005477" aria-label="Hotline Bếp 1979" title="Hotline"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5 6 6.8c-.7.7-.7 1.8-.2 2.7a25 25 0 0 0 8.7 8.7c.9.5 2 .5 2.7-.2l2.3-2.5-3.7-3-1.8 1.8c-1.9-.9-3.4-2.4-4.3-4.3l1.8-1.8-3-3.7Z"/></svg></a>
         </div>
       </div>
       <div class="footer-links">

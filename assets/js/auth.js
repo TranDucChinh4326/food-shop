@@ -732,11 +732,11 @@ function initSupportWidget() {
         <span>f</span>
         <strong>Messenger</strong>
       </a>
-      <a href="tel:0123456789" class="support-link phone">
+      <a href="tel:03877005477" class="support-link phone">
         <span>☎</span>
         <strong>Hotline</strong>
       </a>
-      <a href="mailto:amthuc1979@gmail.com" class="support-link email">
+      <a href="mailto:tdchinh04@gmail.com" class="support-link email">
         <span>@</span>
         <strong>Email</strong>
       </a>
