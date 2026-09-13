@@ -1,700 +1,375 @@
 /* ==========================================================================
-   BẾP 1979 - GRAND COMMERCIAL INTRO SHOWCASE (10-SECOND AD TRAILER)
-   Thiết kế dạng Trailer Quảng Cáo Toàn Diện Website:
-   1. Dynamic Stage Navigation (4 Cảnh Quảng Cáo chạy cuốn theo Timeline 10s)
-   2. Scene 1: Brand & Hương Vị Độc Bản
-   3. Scene 2: Thực Đơn Trực Tuyến & Món Nóng Giao 20 Phút
-   4. Scene 3: Flash Sale Khủng & Voucher Giờ Vàng
-   5. Scene 4: Đánh Giá 5 Sao & Đặt Bàn / Đặt Món Tiện Lợi
-   6. Fullscreen Cinematic Atmosphere, Glassmorphism, Interactive Controls
+   BẾP 1979 - MODERN RETRO F&B INTRO SPLASH (COMMERCIAL LUXURY EDITION)
+   Phong cách: Retro Việt Nam hiện đại, sang trọng, tinh tế.
+   Bảng màu: Nâu cà phê (#1d120c), Đỏ gạch (#b8381e), Cam ấm (#e65100), Kem (#fef7ee).
    ========================================================================== */
 
-:root {
-  --ad-orange: #ff4b1f;
-  --ad-gold: #ffb830;
-  --ad-amber: #ff8c00;
-  --ad-dark: #090403;
-}
-
-.fh-ad-intro {
+.fh-retro-intro {
   position: fixed;
   inset: 0;
   z-index: 99999999;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: var(--ad-dark);
-  background: 
-    radial-gradient(circle at 50% 20%, rgba(75, 25, 7, 0.96) 0%, rgba(24, 8, 2, 0.98) 50%, #060201 100%);
-  color: #fff;
+  align-items: center;
+  background-color: #1a0f0a;
+  background-image:
+    radial-gradient(circle at 50% 35%, rgba(184, 56, 30, 0.22) 0%, rgba(29, 18, 12, 0.94) 60%, #120905 100%),
+    radial-gradient(circle at 10% 10%, rgba(230, 81, 0, 0.08) 0%, transparent 40%);
+  color: #fef7ee;
   overflow: hidden;
   user-select: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s;
-  padding: 24px 36px 28px;
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.65s;
+  padding: 28px 36px 32px;
   box-sizing: border-box;
 }
 
-.fh-ad-intro.intro-exit {
+.fh-retro-intro.intro-dismissed {
   opacity: 0;
-  transform: scale(1.05);
+  transform: scale(1.03);
   visibility: hidden;
   pointer-events: none;
 }
 
-/* Background Atmospheric Elements */
-.intro-canvas-bg {
+/* Subtle Warm Vignette & Background Atmosphere */
+.intro-retro-pattern {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  background-image: radial-gradient(rgba(254, 247, 238, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
-  z-index: 1;
+  opacity: 0.6;
 }
 
-.intro-ambient-glow {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(255, 94, 0, 0.28) 0%, rgba(255, 179, 0, 0.1) 45%, transparent 70%);
-  filter: blur(70px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  animation: ambientBreathe 5s ease-in-out infinite alternate;
-}
-
-@keyframes ambientBreathe {
-  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
-  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-}
-
-/* 1. Header Bar: Brand Indicator, Progress Steps, Sound & Skip */
-.intro-top-header {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.intro-brand-badge {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  padding: 8px 18px;
-  border-radius: 999px;
-  backdrop-filter: blur(16px);
-}
-
-.intro-brand-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
-  color: #fff;
-  font-weight: 950;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(255, 75, 31, 0.4);
-}
-
-.intro-brand-text strong {
-  display: block;
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: -0.2px;
-  color: #fff;
-  line-height: 1.1;
-}
-
-.intro-brand-text small {
-  font-size: 11px;
-  color: #ff9d66;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-}
-
-/* Scene Step Indicator Pills */
-.intro-scene-stepper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 6px 12px;
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-}
-
-.intro-step-pill {
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.intro-step-pill:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.intro-step-pill.active {
-  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.45);
-}
-
-.intro-nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.intro-glass-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(14px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.intro-glass-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-/* 2. Main Stage (Trailer Viewport) */
-.intro-stage-container {
+/* 1. Top Header Bar */
+.intro-retro-header {
   position: relative;
   z-index: 5;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0;
-}
-
-.intro-scene-slide {
-  display: none;
-  width: 100%;
-  animation: sceneSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.intro-scene-slide.active {
+  max-width: 1100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 40px;
 }
 
-@keyframes sceneSlideIn {
-  0% { opacity: 0; transform: translateY(20px) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.intro-slide-text {
-  flex: 1;
-  max-width: 580px;
-}
-
-.intro-tag-eyebrow {
+.intro-open-status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 87, 34, 0.2);
-  border: 1px solid rgba(255, 120, 60, 0.45);
-  color: #ffab7a;
   font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ecdacf;
+  background: rgba(254, 247, 238, 0.06);
+  border: 1px solid rgba(254, 247, 238, 0.12);
   padding: 6px 14px;
   border-radius: 999px;
-  margin-bottom: 16px;
-  box-shadow: 0 0 16px rgba(255, 87, 34, 0.3);
+  backdrop-filter: blur(8px);
 }
 
-.intro-headline {
-  font-size: 48px;
-  font-weight: 950;
-  line-height: 1.12;
-  letter-spacing: -1.2px;
-  background: linear-gradient(135deg, #ffffff 20%, #ffe0b2 60%, #ff7043 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 14px;
-  filter: drop-shadow(0 4px 20px rgba(255, 87, 34, 0.3));
+.intro-status-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: introStatusBlink 2.2s infinite ease-in-out;
 }
 
-.intro-description {
-  font-size: 17px;
-  color: #edd5c8;
-  line-height: 1.55;
-  margin-bottom: 24px;
+@keyframes introStatusBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
 }
 
-.intro-feature-chips {
+.intro-header-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 28px;
+  align-items: center;
+  gap: 12px;
 }
 
-.intro-feature-chip {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  padding: 7px 14px;
-  border-radius: 12px;
-  font-size: 13.5px;
-  font-weight: 700;
+.intro-action-btn {
+  background: rgba(254, 247, 238, 0.08);
+  border: 1px solid rgba(254, 247, 238, 0.15);
+  color: #fef7ee;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #fff;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
 }
 
-.intro-cta-action {
-  display: inline-flex;
+.intro-action-btn:hover {
+  background: rgba(254, 247, 238, 0.16);
+  border-color: rgba(254, 247, 238, 0.3);
+  color: #ffffff;
+}
+
+.intro-action-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* 2. Main Center Hero Stage */
+.intro-retro-hero {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
-  color: #fff;
-  border: none;
-  padding: 13px 32px;
-  border-radius: 999px;
-  font-size: 15.5px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
-  transition: all 0.25s ease;
-  text-decoration: none;
+  text-align: center;
+  max-width: 620px;
+  margin: auto 0;
+  padding: 10px 0;
+  animation: introHeroEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.intro-cta-action:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 14px 36px rgba(255, 75, 31, 0.7);
+@keyframes introHeroEnter {
+  0% { opacity: 0; transform: translateY(16px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Visual Mockup Displays (Right Side of Slide) */
-.intro-slide-visual {
-  flex: 1;
-  max-width: 520px;
+/* Signature Food Visual Illustration */
+.intro-food-spotlight {
+  position: relative;
+  width: 148px;
+  height: 148px;
+  margin-bottom: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Scene 1: Brand Cloche Showcase */
-.intro-visual-cloche {
+.intro-food-halo {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 81, 0, 0.3) 0%, rgba(184, 56, 30, 0.1) 50%, transparent 70%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.intro-food-plate {
   position: relative;
-  width: 280px;
-  height: 280px;
-  cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.intro-visual-cloche:hover {
-  transform: scale(1.08) rotateX(10deg);
-}
-
-.intro-visual-cloche svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 20px 45px rgba(255, 87, 34, 0.6));
-}
-
-.cloche-interactive-hint {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 5px 14px;
-  border-radius: 999px;
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.5);
-  animation: hintFloat 2s ease-in-out infinite alternate;
-}
-
-@keyframes hintFloat {
-  0% { transform: translateX(-50%) translateY(0); }
-  100% { transform: translateX(-50%) translateY(-6px); }
-}
-
-/* Scene 2: Grid of 4 Signature Foods */
-.intro-visual-food-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  width: 100%;
-}
-
-.intro-food-card-interactive {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 18px;
-  padding: 14px;
-  cursor: pointer;
-  backdrop-filter: blur(14px);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  text-align: left;
-}
-
-.intro-food-card-interactive:hover {
-  transform: translateY(-6px) scale(1.04);
-  border-color: #ff9b2f;
-  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.45);
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.intro-food-emoji-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(254, 247, 238, 0.1) 0%, rgba(30, 18, 12, 0.6) 100%);
+  border: 1px solid rgba(254, 247, 238, 0.18);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(254, 247, 238, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  margin-bottom: 10px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.intro-food-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 2px;
+.intro-food-plate:hover {
+  transform: translateY(-4px) scale(1.03);
 }
 
-.intro-food-desc {
-  font-size: 12px;
-  color: #ffaa7d;
-  font-weight: 600;
+.intro-food-svg {
+  width: 88px;
+  height: 88px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
 }
 
-/* Scene 3: Flash Sale & Voucher Card */
-.intro-visual-promo-box {
-  width: 100%;
-  background: linear-gradient(145deg, rgba(255, 75, 31, 0.18) 0%, rgba(255, 140, 0, 0.08) 100%);
-  border: 1.5px solid rgba(255, 120, 60, 0.5);
-  border-radius: 24px;
-  padding: 24px;
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 50px rgba(255, 75, 31, 0.28);
+/* Subtle Natural Steam rising */
+.intro-steam-path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: introSteamRise 2.8s ease-in-out infinite;
+  opacity: 0.75;
 }
 
-.intro-promo-header {
+.intro-steam-path.s2 {
+  animation-delay: 0.9s;
+}
+
+.intro-steam-path.s3 {
+  animation-delay: 1.6s;
+}
+
+@keyframes introSteamRise {
+  0% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  30% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Brand Identity Typography */
+.intro-brand-lockup {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-
-.intro-flash-tag {
-  background: linear-gradient(135deg, #ff0055, #ff5500);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  padding: 6px 14px;
-  border-radius: 8px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  animation: flashPulse 1.5s infinite alternate;
-}
-
-@keyframes flashPulse {
-  0% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 0, 85, 0.6); }
-  100% { transform: scale(1.05); box-shadow: 0 0 24px rgba(255, 85, 0, 0.9); }
-}
-
-.intro-promo-timer {
-  font-size: 14px;
-  font-weight: 800;
-  color: #ffd166;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.intro-voucher-ticket {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  border-radius: 16px;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 14px;
   margin-bottom: 12px;
 }
 
-.intro-ticket-left strong {
-  display: block;
+.intro-badge-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #c0392b, #e65100);
+  color: #fef7ee;
+  font-weight: 900;
   font-size: 18px;
-  font-weight: 900;
-  color: #fff;
-}
-
-.intro-ticket-left small {
-  font-size: 12px;
-  color: #ffbe9b;
-}
-
-.intro-ticket-btn {
-  background: #fff;
-  color: #d9480f;
-  font-size: 13px;
-  font-weight: 900;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.intro-ticket-btn:hover {
-  transform: scale(1.08);
-}
-
-/* Scene 4: Trust, Reviews & Order Tracking */
-.intro-visual-trust-box {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.intro-trust-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 18px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  backdrop-filter: blur(14px);
-}
-
-.intro-trust-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  letter-spacing: -0.5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(192, 57, 43, 0.35);
+  border: 1px solid rgba(254, 247, 238, 0.2);
 }
 
-.intro-trust-info strong {
-  display: block;
-  font-size: 15px;
-  font-weight: 800;
-  color: #fff;
+.intro-brand-name {
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  line-height: 1;
+  color: #fef7ee;
+  text-transform: uppercase;
 }
 
-.intro-trust-info p {
-  font-size: 12.5px;
-  color: #e0beaf;
-  margin-top: 2px;
+.intro-slogan {
+  font-size: 18px;
+  font-weight: 500;
+  color: #dfcac0;
+  letter-spacing: 0.2px;
+  margin-bottom: 24px;
 }
 
-/* 3. Bottom Timeline Bar (10 Seconds Auto-Scroll) */
-.intro-bottom-bar {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 12px 24px;
-  backdrop-filter: blur(16px);
-}
-
-.intro-timeline-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.intro-timeline-label {
-  font-size: 13px;
+.intro-slogan strong {
+  color: #ffaa7d;
   font-weight: 700;
-  color: #ff9b6a;
-  white-space: nowrap;
+}
+
+/* Main Call to Action Button */
+.intro-cta-button {
+  background: linear-gradient(135deg, #b8381e 0%, #e65100 100%);
+  color: #fef7ee;
+  border: 1px solid rgba(254, 247, 238, 0.25);
+  padding: 13px 36px;
+  border-radius: 999px;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 28px rgba(184, 56, 30, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.intro-cta-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #c53e22 0%, #f05a00 100%);
+  box-shadow: 0 14px 34px rgba(184, 56, 30, 0.55);
+}
+
+.intro-cta-button:active {
+  transform: scale(0.98);
+}
+
+.intro-cta-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.intro-cta-button:hover .intro-cta-arrow {
+  transform: translateX(3px);
+}
+
+/* 3. Bottom Minimal Progress Indicator (2.8s) */
+.intro-retro-footer {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .intro-progress-track {
-  flex: 1;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.14);
+  width: 100%;
+  height: 3px;
+  background: rgba(254, 247, 238, 0.12);
   border-radius: 999px;
   overflow: hidden;
-  position: relative;
 }
 
-.intro-progress-bar {
-  height: 100%;
+.intro-progress-fill {
   width: 0%;
-  background: linear-gradient(90deg, #ff4b1f, #ff9b2f, #ffd166);
+  height: 100%;
+  background: linear-gradient(90deg, #b8381e, #e65100, #ffaa7d);
   border-radius: 999px;
-  box-shadow: 0 0 14px rgba(255, 120, 50, 0.9);
-  animation: intro10sFill 10s linear forwards;
+  animation: intro2sProgress 2.8s linear forwards;
 }
 
-@keyframes intro10sFill {
+@keyframes intro2sProgress {
   0% { width: 0%; }
   100% { width: 100%; }
 }
 
-.intro-timer-display {
-  font-size: 14px;
-  font-weight: 900;
-  color: #fff;
-  min-width: 32px;
-  text-align: right;
+.intro-footer-hint {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #9a8479;
+  letter-spacing: 0.3px;
 }
 
-.intro-bottom-cta {
-  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
-  color: #fff;
-  border: none;
-  padding: 10px 26px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 6px 20px rgba(255, 75, 31, 0.45);
-  transition: all 0.25s ease;
-}
-
-.intro-bottom-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.65);
-}
-
-/* Particle Explosion Burst on Click */
-.intro-burst-fx {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999999999;
-  animation: burstParticle 0.65s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
-}
-
-@keyframes burstParticle {
-  0% { transform: translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-}
-
-/* Responsive Styles for Tablet & Mobile */
-@media (max-width: 992px) {
-  .fh-ad-intro {
-    padding: 18px 20px 20px;
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .fh-retro-intro {
+    padding: 20px 20px 24px;
   }
-  .intro-scene-slide.active {
-    flex-direction: column;
-    gap: 20px;
-    text-align: center;
+  .intro-food-spotlight {
+    width: 124px;
+    height: 124px;
+    margin-bottom: 18px;
   }
-  .intro-slide-text {
-    max-width: 100%;
+  .intro-food-svg {
+    width: 72px;
+    height: 72px;
   }
-  .intro-headline {
-    font-size: 34px;
+  .intro-brand-name {
+    font-size: 29px;
   }
-  .intro-description {
+  .intro-badge-mark {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+  .intro-slogan {
     font-size: 15px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
   }
-  .intro-feature-chips {
-    justify-content: center;
-    margin-bottom: 18px;
-  }
-  .intro-slide-visual {
-    max-width: 100%;
-    width: 100%;
-  }
-  .intro-visual-cloche {
-    width: 200px;
-    height: 200px;
-  }
-}
-
-@media (max-width: 650px) {
-  .intro-top-header {
-    flex-wrap: wrap;
-  }
-  .intro-scene-stepper {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    overflow-x: auto;
-  }
-  .intro-step-pill {
-    padding: 4px 10px;
-    font-size: 11.5px;
-  }
-  .intro-headline {
-    font-size: 28px;
-  }
-  .intro-bottom-bar {
-    flex-direction: column;
-    gap: 12px;
-    padding: 10px 16px;
-  }
-  .intro-timeline-wrapper {
-    width: 100%;
-  }
-  .intro-bottom-cta {
-    width: 100%;
-    justify-content: center;
+  .intro-cta-button {
+    padding: 12px 28px;
+    font-size: 14.5px;
   }
 }
