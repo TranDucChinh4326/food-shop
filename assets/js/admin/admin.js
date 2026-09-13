@@ -1277,11 +1277,13 @@ function resetComboForm() {
 function openComboForm(mode = "create") {
   if (comboListView) comboListView.hidden = true;
   if (comboFormView) comboFormView.hidden = false;
+  comboForm?.classList.add("is-open");
   if (comboFormTitle) comboFormTitle.textContent = mode === "edit" ? "Cập nhật combo" : "Thêm mới combo";
   document.getElementById("comboName")?.focus();
 }
 
 function closeComboForm() {
+  comboForm?.classList.remove("is-open");
   if (comboFormView) comboFormView.hidden = true;
   if (comboListView) comboListView.hidden = false;
 }
