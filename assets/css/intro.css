@@ -1,42 +1,50 @@
 /* ==========================================================================
-   BẾP 1979 - LUXURY CINEMATIC 3D CULINARY INTRO EXPERIENCE (PREMIUM EDITION)
+   BẾP 1979 - GRAND COMMERCIAL INTRO SHOWCASE (10-SECOND AD TRAILER)
+   Thiết kế dạng Trailer Quảng Cáo Toàn Diện Website:
+   1. Dynamic Stage Navigation (4 Cảnh Quảng Cáo chạy cuốn theo Timeline 10s)
+   2. Scene 1: Brand & Hương Vị Độc Bản
+   3. Scene 2: Thực Đơn Trực Tuyến & Món Nóng Giao 20 Phút
+   4. Scene 3: Flash Sale Khủng & Voucher Giờ Vàng
+   5. Scene 4: Đánh Giá 5 Sao & Đặt Bàn / Đặt Món Tiện Lợi
+   6. Fullscreen Cinematic Atmosphere, Glassmorphism, Interactive Controls
    ========================================================================== */
 
 :root {
-  --intro-orange: #ff4b1f;
-  --intro-gold: #ffb830;
-  --intro-amber: #ff8c00;
-  --intro-dark: #070302;
+  --ad-orange: #ff4b1f;
+  --ad-gold: #ffb830;
+  --ad-amber: #ff8c00;
+  --ad-dark: #090403;
 }
 
-.fh-cinematic-intro {
+.fh-ad-intro {
   position: fixed;
   inset: 0;
   z-index: 99999999;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--intro-dark);
-  background-image: 
-    radial-gradient(circle at 50% 38%, rgba(68, 24, 7, 0.95) 0%, rgba(20, 7, 2, 0.98) 55%, #050201 100%);
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--ad-dark);
+  background: 
+    radial-gradient(circle at 50% 20%, rgba(75, 25, 7, 0.96) 0%, rgba(24, 8, 2, 0.98) 50%, #060201 100%);
   color: #fff;
   overflow: hidden;
   user-select: none;
-  perspective: 1200px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s;
+  padding: 24px 36px 28px;
+  box-sizing: border-box;
 }
 
-.fh-cinematic-intro.intro-exit {
+.fh-ad-intro.intro-exit {
   opacity: 0;
-  transform: scale(1.08) translateY(-10px);
+  transform: scale(1.05);
   visibility: hidden;
   pointer-events: none;
 }
 
-/* 1. Ambient Background FX */
+/* Background Atmospheric Elements */
 .intro-canvas-bg {
   position: absolute;
   inset: 0;
@@ -46,70 +54,120 @@
   z-index: 1;
 }
 
-.intro-light-core {
+.intro-ambient-glow {
   position: absolute;
-  top: 38%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 107, 26, 0.32) 0%, rgba(255, 184, 48, 0.12) 40%, transparent 70%);
-  filter: blur(60px);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(255, 94, 0, 0.28) 0%, rgba(255, 179, 0, 0.1) 45%, transparent 70%);
+  filter: blur(70px);
   border-radius: 50%;
   pointer-events: none;
-  animation: introCoreBreathe 4s ease-in-out infinite alternate;
   z-index: 1;
+  animation: ambientBreathe 5s ease-in-out infinite alternate;
 }
 
-@keyframes introCoreBreathe {
-  0% { transform: translate(-50%, -50%) scale(0.88); opacity: 0.7; }
-  100% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
+@keyframes ambientBreathe {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
 }
 
-/* 2. Top Bar Navigation (Sound Toggle & Skip) */
-.intro-top-bar {
-  position: absolute;
-  top: 24px;
-  left: 32px;
-  right: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* 1. Header Bar: Brand Indicator, Progress Steps, Sound & Skip */
+.intro-top-header {
+  position: relative;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.intro-brand-mini {
-  display: inline-flex;
+.intro-brand-badge {
+  display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 6px 14px;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 8px 18px;
   border-radius: 999px;
   backdrop-filter: blur(16px);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #ff9d66;
 }
 
-.intro-mini-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #00e676;
-  box-shadow: 0 0 10px #00e676;
-  animation: introDotPulse 1.5s infinite;
-}
-
-@keyframes introDotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
-}
-
-.intro-top-actions {
+.intro-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  color: #fff;
+  font-weight: 950;
+  font-size: 14px;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 75, 31, 0.4);
+}
+
+.intro-brand-text strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.intro-brand-text small {
+  font-size: 11px;
+  color: #ff9d66;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* Scene Step Indicator Pills */
+.intro-scene-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+}
+
+.intro-step-pill {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intro-step-pill:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.intro-step-pill.active {
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.45);
+}
+
+.intro-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .intro-glass-btn {
@@ -119,8 +177,8 @@
   padding: 8px 18px;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -133,354 +191,510 @@
   background: rgba(255, 255, 255, 0.22);
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-.intro-glass-btn:active {
-  transform: scale(0.96);
-}
-
-/* 3. Center Showcase Area */
-.intro-center-stage {
+/* 2. Main Stage (Trailer Viewport) */
+.intro-stage-container {
   position: relative;
   z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: 820px;
-  padding: 0 20px;
-}
-
-/* Luxury 3D Cloche Dome Animation */
-.intro-cloche-visual {
-  position: relative;
-  width: 190px;
-  height: 190px;
-  margin-bottom: 24px;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.intro-cloche-visual:hover {
-  transform: scale(1.08) rotateX(8deg) rotateY(-8deg);
-}
-
-.intro-cloche-visual svg {
   width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 20px 40px rgba(255, 87, 34, 0.55));
-}
-
-.intro-cloche-tip {
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(255, 75, 31, 0.9), rgba(255, 140, 0, 0.9));
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 4px 14px;
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: #fff;
-  white-space: nowrap;
-  box-shadow: 0 6px 20px rgba(255, 75, 31, 0.45);
-  pointer-events: none;
-  animation: clocheTipFloat 2s ease-in-out infinite alternate;
-}
-
-@keyframes clocheTipFloat {
-  0% { transform: translateX(-50%) translateY(0); }
-  100% { transform: translateX(-50%) translateY(-5px); }
-}
-
-/* Typography & Slogan */
-.intro-title-area {
-  margin-bottom: 24px;
-}
-
-.intro-badge-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.intro-year-badge {
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
-  color: #fff;
-  font-weight: 950;
-  font-size: 16px;
-  padding: 4px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(255, 75, 31, 0.4);
-  letter-spacing: 0.5px;
-}
-
-.intro-status-text {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #ffb188;
-  text-transform: uppercase;
-}
-
-.intro-hero-title {
-  font-size: 56px;
-  font-weight: 950;
-  letter-spacing: -1.5px;
-  line-height: 1.05;
-  background: linear-gradient(135deg, #ffffff 15%, #ffd494 55%, #ff5722 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 8px 30px rgba(255, 75, 31, 0.45));
-}
-
-.intro-hero-subtitle {
-  font-size: 18px;
-  font-weight: 500;
-  color: #f1bda1;
-  margin-top: 10px;
-  letter-spacing: 0.5px;
-}
-
-/* 4. Interactive Dish Showcase Cards (4 Golden Choices) */
-.intro-cards-carousel {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  width: 100%;
-  margin-bottom: 30px;
-}
-
-.intro-dish-card {
-  position: relative;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 16px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  backdrop-filter: blur(16px);
-  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.intro-dish-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-  background: radial-gradient(circle at 50% 0%, rgba(255, 140, 0, 0.35), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.intro-dish-card:hover {
-  transform: translateY(-8px) scale(1.05);
-  border-color: rgba(255, 140, 0, 0.7);
-  box-shadow: 0 18px 45px rgba(255, 87, 34, 0.45);
-}
-
-.intro-dish-card:hover::before {
-  opacity: 1;
-}
-
-.intro-dish-card:active {
-  transform: scale(0.97);
-}
-
-.intro-card-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  margin-bottom: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 10px 0;
 }
 
-.intro-dish-card:hover .intro-card-icon {
-  transform: scale(1.2) rotate(10deg);
-}
-
-.intro-card-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 4px;
-  letter-spacing: 0.2px;
-}
-
-.intro-card-tag {
-  font-size: 12px;
-  font-weight: 600;
-  color: #ff9b6a;
-}
-
-/* 5. Bottom Controls & 5-Second Liquid Progress Bar */
-.intro-bottom-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
+.intro-scene-slide {
+  display: none;
   width: 100%;
+  animation: sceneSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.intro-main-cta {
-  background: linear-gradient(135deg, #ff4b1f 0%, #ff8c00 100%);
-  color: #fff;
-  border: none;
-  padding: 14px 42px;
-  border-radius: 999px;
-  font-size: 16px;
+.intro-scene-slide.active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+@keyframes sceneSlideIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.intro-slide-text {
+  flex: 1;
+  max-width: 580px;
+}
+
+.intro-tag-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 87, 34, 0.2);
+  border: 1px solid rgba(255, 120, 60, 0.45);
+  color: #ffab7a;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.5px;
-  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 16px rgba(255, 87, 34, 0.3);
+}
+
+.intro-headline {
+  font-size: 48px;
+  font-weight: 950;
+  line-height: 1.12;
+  letter-spacing: -1.2px;
+  background: linear-gradient(135deg, #ffffff 20%, #ffe0b2 60%, #ff7043 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 4px 20px rgba(255, 87, 34, 0.3));
+}
+
+.intro-description {
+  font-size: 17px;
+  color: #edd5c8;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.intro-feature-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.intro-feature-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.intro-cta-action {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 12px 34px rgba(255, 75, 31, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  border: none;
+  padding: 13px 32px;
+  border-radius: 999px;
+  font-size: 15.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
   transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
+  text-decoration: none;
 }
 
-.intro-main-cta::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
+.intro-cta-action:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 36px rgba(255, 75, 31, 0.7);
+}
+
+/* Visual Mockup Displays (Right Side of Slide) */
+.intro-slide-visual {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scene 1: Brand Cloche Showcase */
+.intro-visual-cloche {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.intro-visual-cloche:hover {
+  transform: scale(1.08) rotateX(10deg);
+}
+
+.intro-visual-cloche svg {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: ctaShine 3s infinite;
+  filter: drop-shadow(0 20px 45px rgba(255, 87, 34, 0.6));
 }
 
-@keyframes ctaShine {
-  0% { left: -100%; }
-  35%, 100% { left: 100%; }
+.cloche-interactive-hint {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.5);
+  animation: hintFloat 2s ease-in-out infinite alternate;
 }
 
-.intro-main-cta:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 16px 42px rgba(255, 75, 31, 0.7);
+@keyframes hintFloat {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-6px); }
 }
 
-.intro-main-cta:active {
-  transform: scale(0.97);
+/* Scene 2: Grid of 4 Signature Foods */
+.intro-visual-food-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
 }
 
-.intro-progress-status {
+.intro-food-card-interactive {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+.intro-food-card-interactive:hover {
+  transform: translateY(-6px) scale(1.04);
+  border-color: #ff9b2f;
+  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.intro-food-emoji-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 10px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.intro-food-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.intro-food-desc {
+  font-size: 12px;
+  color: #ffaa7d;
+  font-weight: 600;
+}
+
+/* Scene 3: Flash Sale & Voucher Card */
+.intro-visual-promo-box {
+  width: 100%;
+  background: linear-gradient(145deg, rgba(255, 75, 31, 0.18) 0%, rgba(255, 140, 0, 0.08) 100%);
+  border: 1.5px solid rgba(255, 120, 60, 0.5);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px rgba(255, 75, 31, 0.28);
+}
+
+.intro-promo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.intro-flash-tag {
+  background: linear-gradient(135deg, #ff0055, #ff5500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 6px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  animation: flashPulse 1.5s infinite alternate;
+}
+
+@keyframes flashPulse {
+  0% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 0, 85, 0.6); }
+  100% { transform: scale(1.05); box-shadow: 0 0 24px rgba(255, 85, 0, 0.9); }
+}
+
+.intro-promo-timer {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffd166;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intro-voucher-ticket {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.intro-ticket-left strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.intro-ticket-left small {
+  font-size: 12px;
+  color: #ffbe9b;
+}
+
+.intro-ticket-btn {
+  background: #fff;
+  color: #d9480f;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.intro-ticket-btn:hover {
+  transform: scale(1.08);
+}
+
+/* Scene 4: Trust, Reviews & Order Tracking */
+.intro-visual-trust-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.intro-trust-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 16px;
   display: flex;
   align-items: center;
   gap: 14px;
+  backdrop-filter: blur(14px);
 }
 
-.intro-timeline-track {
-  width: 260px;
+.intro-trust-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.intro-trust-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.intro-trust-info p {
+  font-size: 12.5px;
+  color: #e0beaf;
+  margin-top: 2px;
+}
+
+/* 3. Bottom Timeline Bar (10 Seconds Auto-Scroll) */
+.intro-bottom-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 12px 24px;
+  backdrop-filter: blur(16px);
+}
+
+.intro-timeline-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.intro-timeline-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff9b6a;
+  white-space: nowrap;
+}
+
+.intro-progress-track {
+  flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   overflow: hidden;
   position: relative;
 }
 
-.intro-timeline-fill {
+.intro-progress-bar {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #ff4b1f, #ff9b2f, #ffd166);
   border-radius: 999px;
-  box-shadow: 0 0 16px rgba(255, 120, 50, 0.9);
-  animation: introLiquidProgress 10s linear forwards;
+  box-shadow: 0 0 14px rgba(255, 120, 50, 0.9);
+  animation: intro10sFill 10s linear forwards;
 }
 
-@keyframes introLiquidProgress {
+@keyframes intro10sFill {
   0% { width: 0%; }
   100% { width: 100%; }
 }
 
-.intro-timer-badge {
-  font-size: 13px;
-  font-weight: 800;
-  color: #ff9b6a;
-  letter-spacing: 0.5px;
+.intro-timer-display {
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  min-width: 32px;
+  text-align: right;
 }
 
-/* 6. Click Burst Particles */
-.intro-particle-burst {
+.intro-bottom-cta {
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(255, 75, 31, 0.45);
+  transition: all 0.25s ease;
+}
+
+.intro-bottom-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.65);
+}
+
+/* Particle Explosion Burst on Click */
+.intro-burst-fx {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
   z-index: 999999999;
-  animation: particleExplode 0.7s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+  animation: burstParticle 0.65s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
 }
 
-@keyframes particleExplode {
+@keyframes burstParticle {
   0% { transform: translate(0, 0) scale(1); opacity: 1; }
   100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
 }
 
-/* Responsive Mobile Layout */
-@media (max-width: 768px) {
-  .intro-top-bar {
-    top: 16px;
-    left: 18px;
-    right: 18px;
+/* Responsive Styles for Tablet & Mobile */
+@media (max-width: 992px) {
+  .fh-ad-intro {
+    padding: 18px 20px 20px;
   }
-  .intro-brand-mini {
+  .intro-scene-slide.active {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  .intro-slide-text {
+    max-width: 100%;
+  }
+  .intro-headline {
+    font-size: 34px;
+  }
+  .intro-description {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+  .intro-feature-chips {
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .intro-slide-visual {
+    max-width: 100%;
+    width: 100%;
+  }
+  .intro-visual-cloche {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 650px) {
+  .intro-top-header {
+    flex-wrap: wrap;
+  }
+  .intro-scene-stepper {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+  }
+  .intro-step-pill {
     padding: 4px 10px;
-    font-size: 12px;
+    font-size: 11.5px;
   }
-  .intro-glass-btn {
-    padding: 6px 14px;
-    font-size: 12px;
+  .intro-headline {
+    font-size: 28px;
   }
-  .intro-cloche-visual {
-    width: 140px;
-    height: 140px;
-    margin-bottom: 16px;
+  .intro-bottom-bar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 16px;
   }
-  .intro-hero-title {
-    font-size: 36px;
-    letter-spacing: -0.5px;
+  .intro-timeline-wrapper {
+    width: 100%;
   }
-  .intro-hero-subtitle {
-    font-size: 14.5px;
-  }
-  .intro-cards-carousel {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .intro-dish-card {
-    padding: 12px 10px;
-  }
-  .intro-card-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 26px;
-    margin-bottom: 8px;
-  }
-  .intro-card-name {
-    font-size: 13.5px;
-  }
-  .intro-main-cta {
-    padding: 12px 30px;
-    font-size: 14.5px;
-  }
-  .intro-timeline-track {
-    width: 170px;
+  .intro-bottom-cta {
+    width: 100%;
+    justify-content: center;
   }
 }
