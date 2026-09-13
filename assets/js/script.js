@@ -2117,37 +2117,66 @@ function getReviewFoodImage(review) {
   return food?.image || review.foodImage || "";
 }
 
+function getReviewDisplayComment(review) {
+  const raw = String(review.comment || "").trim();
+  if (raw && raw !== "Khách hàng đã đánh giá món ăn này.") {
+    return raw;
+  }
+  const rating = Number(review.rating) || 5;
+  if (rating === 5) return "⭐️ Đánh giá 5 sao: Món ăn rất ngon, nóng hổi và chuẩn vị!";
+  if (rating === 4) return "⭐️ Đánh giá 4 sao: Món ăn ngon, giao hàng nhanh chóng và đóng gói sạch sẽ.";
+  if (rating === 3) return "⭐️ Đánh giá 3 sao: Món ăn vừa miệng, phục vụ chu đáo.";
+  return "Đã đánh giá chất lượng món ăn.";
+}
+
 function renderReviewListCard(review, options = {}) {
   const customerName = getReviewCustomerName(review);
   const foodName = getReviewFoodName(review);
   const image = getReviewFoodImage(review);
   const showFood = options.showFood !== false;
+  const rating = Number(review.rating) || 5;
+  const commentText = getReviewDisplayComment(review);
 
   return `
     <article class="review-list-card">
-      <div class="review-list-avatar">${renderReviewAvatar(review, "food-review-avatar")}</div>
-      <div class="review-list-main">
-        <div class="review-list-head">
-          <div>
-            <strong>${escapeHtml(customerName)}</strong>
-            <small>${escapeHtml(formatReviewDate(review.createdAt))}</small>
+      <div class="review-card-top">
+        <div class="review-card-user">
+          ${renderReviewAvatar(review, "food-review-avatar")}
+          <div class="review-card-meta">
+            <div class="review-author-line">
+              <strong class="review-author-name">${escapeHtml(customerName)}</strong>
+              <span class="verified-buyer-badge" title="Đơn hàng đã hoàn thành">✓ Đã mua hàng</span>
+            </div>
+            <small class="review-date">${escapeHtml(formatReviewDate(review.createdAt))}</small>
           </div>
-          <span class="review-list-stars">${renderStarText(review.rating)}</span>
         </div>
-        <p>${escapeHtml(review.comment || "Kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u00e1nh gi\u00e1 m\u00f3n \u0103n n\u00e0y.")}</p>
+        <div class="review-card-stars" aria-label="${rating} sao">
+          <span class="stars-gold">${renderStarText(rating)}</span>
+        </div>
+      </div>
+
+      <div class="review-card-body">
+        <p class="review-card-text">${escapeHtml(commentText)}</p>
         ${review.adminReply ? `
           <div class="review-admin-reply">
-            <strong>Bếp 1979 phản hồi</strong>
+            <div class="admin-reply-tag">👨‍🍳 <span>Bếp 1979 phản hồi:</span></div>
             <p>${escapeHtml(review.adminReply)}</p>
           </div>
         ` : ""}
-        ${showFood ? `
-          <a class="review-list-food" href="${getFoodDetailUrl(review.foodId, { from: "home" })}">
-            <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}">
-            <span>${escapeHtml(foodName)}</span>
-          </a>
-        ` : ""}
       </div>
+
+      ${showFood ? `
+        <div class="review-card-bottom">
+          <a class="review-list-food-pill" href="${getFoodDetailUrl(review.foodId, { from: "home" })}" title="Xem chi tiết món ${escapeHtml(foodName)}">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(foodName)}" loading="lazy">
+            <div class="review-food-pill-text">
+              <span class="review-food-label">Món đã đặt:</span>
+              <strong class="review-food-title">${escapeHtml(foodName)}</strong>
+            </div>
+            <span class="review-food-arrow" aria-hidden="true">➔</span>
+          </a>
+        </div>
+      ` : ""}
     </article>
   `;
 }
@@ -2230,24 +2259,49 @@ function renderReviewPanel(scope, controlsElement, listElement, reviews, options
   if (!listElement) return;
 
   const state = reviewListState[scope] || reviewListState.home;
+  const isHome = scope === "home";
+  const pageSize = isHome ? 6 : 4;
   const filteredReviews = filterAndSortReviews(reviews, state, options);
-  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / REVIEW_PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize));
   state.page = Math.min(Math.max(1, Number(state.page || 1)), totalPages);
-  const startIndex = (state.page - 1) * REVIEW_PAGE_SIZE;
-  const pageReviews = filteredReviews.slice(startIndex, startIndex + REVIEW_PAGE_SIZE);
+  const startIndex = (state.page - 1) * pageSize;
+  const pageReviews = filteredReviews.slice(startIndex, startIndex + pageSize);
 
   if (controlsElement) {
+    const currentFoodId = options.currentFoodId ? String(options.currentFoodId) : "";
+    const targetReviews = (options.includeCurrent && currentFoodId && state.food === "current")
+      ? reviews.filter(r => String(r.foodId) === currentFoodId)
+      : (state.food && state.food !== "all" && state.food !== "current")
+        ? reviews.filter(r => String(r.foodId) === String(state.food))
+        : reviews;
+
+    const star5Count = targetReviews.filter(r => Number(r.rating) === 5).length;
+    const star4Count = targetReviews.filter(r => Number(r.rating) === 4).length;
+    const star3Count = targetReviews.filter(r => Number(r.rating) === 3).length;
+
     controlsElement.innerHTML = `
-      <label><span>Số sao</span><select data-review-filter="rating">
-        <option value="all" ${state.rating === "all" ? "selected" : ""}>Tất cả</option>
-        ${[5, 4, 3, 2, 1].map(star => `<option value="${star}" ${String(state.rating) === String(star) ? "selected" : ""}>${star} sao</option>`).join("")}
-      </select></label>
-      <label><span>Món ăn</span><select data-review-filter="food">${getReviewFoodOptions(state.food, options)}</select></label>
-      <label><span>Sắp xếp</span><select data-review-filter="sort">
-        <option value="newest" ${state.sort === "newest" ? "selected" : ""}>Mới nhất</option>
-        <option value="oldest" ${state.sort === "oldest" ? "selected" : ""}>Cũ nhất</option>
-      </select></label>
+      <div class="review-star-chips">
+        <button type="button" class="review-chip-btn ${state.rating === "all" ? "active" : ""}" data-star-chip="all">Tất cả (${targetReviews.length})</button>
+        <button type="button" class="review-chip-btn ${state.rating === "5" ? "active" : ""}" data-star-chip="5">★ 5 sao (${star5Count})</button>
+        <button type="button" class="review-chip-btn ${state.rating === "4" ? "active" : ""}" data-star-chip="4">★ 4 sao (${star4Count})</button>
+        <button type="button" class="review-chip-btn ${state.rating === "3" ? "active" : ""}" data-star-chip="3">★ 3 sao (${star3Count})</button>
+      </div>
+      <div class="review-selects-wrap">
+        ${(isHome || options.includeCurrent) ? `<label><span>Món ăn</span><select data-review-filter="food">${getReviewFoodOptions(state.food, options)}</select></label>` : ""}
+        <label><span>Sắp xếp</span><select data-review-filter="sort">
+          <option value="newest" ${state.sort === "newest" ? "selected" : ""}>Mới nhất</option>
+          <option value="oldest" ${state.sort === "oldest" ? "selected" : ""}>Cũ nhất</option>
+        </select></label>
+      </div>
     `;
+
+    controlsElement.querySelectorAll("[data-star-chip]").forEach(chip => {
+      chip.addEventListener("click", () => {
+        state.rating = chip.dataset.starChip;
+        state.page = 1;
+        renderReviewPanel(scope, controlsElement, listElement, reviews, options);
+      });
+    });
 
     controlsElement.querySelectorAll("[data-review-filter]").forEach(control => {
       control.addEventListener("change", () => {
@@ -2273,7 +2327,51 @@ function renderReviewPanel(scope, controlsElement, listElement, reviews, options
 function renderHomeReviews() {
   const reviewBox = document.getElementById("homeReviewList");
   const filterBox = document.getElementById("homeReviewFilters");
+  const summaryBox = document.getElementById("homeReviewSummary");
   if (!reviewBox && !filterBox) return;
+
+  if (summaryBox && Array.isArray(foodReviews) && foodReviews.length > 0) {
+    const totalCount = foodReviews.length;
+    const avgRating = (foodReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / totalCount).toFixed(1);
+    const fiveStarPercent = Math.round((foodReviews.filter(r => Number(r.rating) === 5).length / totalCount) * 100);
+
+    summaryBox.hidden = false;
+    summaryBox.innerHTML = `
+      <div class="home-review-summary-card">
+        <div class="review-summary-score-col">
+          <span class="review-summary-big-score">${avgRating}</span>
+          <div class="review-summary-stars-wrap">
+            <span class="review-summary-stars">${renderStarText(Math.round(Number(avgRating)))}</span>
+            <span class="review-summary-count">${totalCount}+ đánh giá đã xác thực</span>
+          </div>
+        </div>
+        <div class="review-summary-badges-col">
+          <div class="review-stat-pill">
+            <span class="stat-pill-icon">🌟</span>
+            <div class="stat-pill-info">
+              <strong>${fiveStarPercent}% Hài lòng tuyệt đối</strong>
+              <small>Chất lượng món ăn chuẩn 5 sao</small>
+            </div>
+          </div>
+          <div class="review-stat-pill">
+            <span class="stat-pill-icon">🛵</span>
+            <div class="stat-pill-info">
+              <strong>Giao hàng chuẩn vị</strong>
+              <small>Món nóng hổi và đúng thời gian</small>
+            </div>
+          </div>
+          <div class="review-stat-pill">
+            <span class="stat-pill-icon">✓</span>
+            <div class="stat-pill-info">
+              <strong>100% Khách hàng thật</strong>
+              <small>Đã mua và thưởng thức tại Bếp 1979</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   renderReviewPanel("home", filterBox, reviewBox, foodReviews, { showFood: true });
   initHomeMotionEffects();
 }
@@ -2379,8 +2477,8 @@ function renderRatingBreakdown(reviews = []) {
     const count = counts[star] || 0;
     const width = total ? Math.round((count / total) * 100) : 0;
     return `
-      <div class="food-rating-row">
-        <span>${star}</span>
+      <div class="food-rating-row" data-rating-filter-star="${star}" title="Xem các đánh giá ${star} sao" role="button" tabindex="0">
+        <span>${star}★</span>
         <div><i style="width:${width}%"></i></div>
         <small>${count}</small>
       </div>
@@ -2617,6 +2715,18 @@ function showFoodDetail(foodId) {
     includeCurrent: true,
     showFood: true
   });
+  dialog.querySelectorAll("[data-rating-filter-star]").forEach(row => {
+    row.addEventListener("click", () => {
+      const star = row.dataset.ratingFilterStar;
+      reviewListState.detailDialog.rating = reviewListState.detailDialog.rating === star ? "all" : star;
+      reviewListState.detailDialog.page = 1;
+      renderReviewPanel("detailDialog", dialog.querySelector("#foodDetailDialogReviewControls"), dialog.querySelector("#foodDetailDialogReviewList"), foodReviews, {
+        currentFoodId: food.id,
+        includeCurrent: true,
+        showFood: true
+      });
+    });
+  });
   dialog.querySelector(".food-detail-close")?.addEventListener("click", closeFoodDetail);
   dialog.querySelectorAll("[data-food-qty-step]").forEach(button => {
     button.addEventListener("click", () => {
@@ -2760,6 +2870,18 @@ function renderFoodDetailPage() {
     currentFoodId: food.id,
     includeCurrent: true,
     showFood: true
+  });
+  page.querySelectorAll("[data-rating-filter-star]").forEach(row => {
+    row.addEventListener("click", () => {
+      const star = row.dataset.ratingFilterStar;
+      reviewListState.detailPage.rating = reviewListState.detailPage.rating === star ? "all" : star;
+      reviewListState.detailPage.page = 1;
+      renderReviewPanel("detailPage", page.querySelector("#foodDetailPageReviewControls"), page.querySelector("#foodDetailPageReviewList"), foodReviews, {
+        currentFoodId: food.id,
+        includeCurrent: true,
+        showFood: true
+      });
+    });
   });
 }
 

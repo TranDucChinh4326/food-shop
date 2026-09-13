@@ -1864,44 +1864,84 @@ nav a.is-active,
 
 
 .review-filter-bar {
-  align-items: end;
+  align-items: center;
   border-top: 1px solid #f2ded2;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
+  justify-content: space-between;
   margin-top: 16px;
   padding-top: 16px;
 }
 
-
-
-.review-filter-bar label {
-  align-items: center;
-  color: #ff6b1a;
-  display: inline-flex;
-  font-size: 14px;
+.review-star-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
+.review-chip-btn {
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #f0d8cb;
+  border-radius: 999px;
+  color: #5c453b;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 4px;
+  padding: 6px 14px;
+  transition: all 0.18s ease;
+}
 
+.review-chip-btn:hover {
+  background: #fff8f3;
+  border-color: #ff7a28;
+  color: #d9480f;
+}
 
+.review-chip-btn.active {
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.28);
+  color: #ffffff;
+}
+
+.review-selects-wrap {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.review-selects-wrap label,
+.review-filter-bar label {
+  align-items: center;
+  color: #6f584d;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+}
+
+.review-selects-wrap label span,
 .review-filter-bar label span {
   white-space: nowrap;
 }
 
-
-
+.review-selects-wrap select,
 .review-filter-bar select {
   appearance: none;
-  background: #fffaf6;
-  border: 1px solid #f0c9b4;
+  background: #ffffff;
+  border: 1px solid #f0d8cb;
   border-radius: 8px;
-  color: #2b1b14;
+  color: #201814;
   cursor: pointer;
   font: inherit;
-  min-height: 34px;
-  min-width: 128px;
-  padding: 7px 30px 7px 10px;
+  font-size: 13px;
+  min-height: 36px;
+  padding: 6px 30px 6px 12px;
   background-image:
     linear-gradient(45deg, transparent 50%, #ff6b1a 50%),
     linear-gradient(135deg, #ff6b1a 50%, transparent 50%);
@@ -1912,155 +1952,225 @@ nav a.is-active,
   background-size: 5px 5px, 5px 5px;
 }
 
-
-
+.review-selects-wrap select:focus,
 .review-filter-bar select:focus {
   border-color: #ff5722;
   box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.12);
   outline: none;
 }
 
-
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
 
 .review-list-card {
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid #ead9cf;
-  border-radius: 0;
-  box-shadow: none;
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 46px minmax(0, 1fr);
-  padding: 18px 0;
+  background: #ffffff;
+  border: 1px solid rgba(234, 217, 207, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(78, 45, 25, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 20px;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.2, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-
-
-.review-list-card:first-child {
-  padding-top: 0;
+.review-list-card:hover {
+  border-color: #ff9b66;
+  box-shadow: 0 10px 28px rgba(78, 45, 25, 0.09);
+  transform: translateY(-2px);
 }
 
-
-
-.review-list-card:last-child {
-  border-bottom: 0;
-}
-
-
-
-.review-list-avatar {
-  padding-top: 3px;
-}
-
-
-
-.review-list-main {
-  display: grid;
+.review-card-top {
+  align-items: flex-start;
+  display: flex;
   gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.review-card-user {
+  align-items: center;
+  display: flex;
+  gap: 10px;
   min-width: 0;
 }
 
-
-
-.review-list-head {
+.food-review-avatar {
   align-items: center;
-  background: transparent;
-  box-shadow: none;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 0;
-  padding: 0;
-  position: static;
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);
+  color: #ffffff;
+  display: flex;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  height: 42px;
+  justify-content: center;
+  overflow: hidden;
+  width: 42px;
+}
+
+.food-review-avatar img {
+  height: 100%;
+  object-fit: cover;
   width: 100%;
 }
 
-
-
-.review-list-head strong {
-  color: #201814;
-  display: block;
+.review-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-
-
-.review-list-head small {
-  color: #7e6a60;
+.review-author-line {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-
-
-.review-list-stars {
-  color: #ffb000;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
+.review-author-name {
+  color: #241812;
+  font-size: 14.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.verified-buyer-badge {
+  align-items: center;
+  background: rgba(15, 143, 97, 0.1);
+  border: 1px solid rgba(15, 143, 97, 0.25);
+  border-radius: 999px;
+  color: #0f8f61;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
 
+.review-date {
+  color: #8c766b;
+  font-size: 12px;
+}
 
-.review-list-card p {
-  color: #2d2420;
-  font-size: 16px;
+.review-card-stars {
+  flex-shrink: 0;
+}
+
+.review-card-stars .stars-gold {
+  color: #ffaa00;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+}
+
+.review-card-body {
+  flex: 1 1 auto;
+  margin-bottom: 14px;
+}
+
+.review-card-text {
+  color: #3b2a22;
+  font-size: 14px;
   line-height: 1.55;
   margin: 0;
-  max-width: 780px;
+  word-break: break-word;
 }
-
-
 
 .review-admin-reply {
-  background: #fff7f0;
-  border: 1px solid #f5d2bf;
-  border-radius: 8px;
-  color: #4a2b1e;
-  display: grid;
-  gap: 6px;
-  max-width: 780px;
-  padding: 12px 14px;
+  background: #fff8f3;
+  border-left: 3px solid #ff7a28;
+  border-radius: 0 8px 8px 0;
+  margin-top: 10px;
+  padding: 8px 12px;
 }
 
-
-
-.review-admin-reply strong {
-  color: #ff4f24;
-  font-size: 13px;
+.admin-reply-tag {
+  color: #d9480f;
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 3px;
 }
-
-
 
 .review-admin-reply p {
-  font-size: 15px;
+  color: #523e35;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
 }
 
+.review-card-bottom {
+  border-top: 1px dashed rgba(234, 217, 207, 0.8);
+  margin-top: auto;
+  padding-top: 12px;
+}
 
-
-.review-list-food {
+.review-list-food-pill {
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  color: #201814;
-  display: inline-grid;
-  font-size: 14px;
-  font-weight: 800;
-  gap: 9px;
-  grid-template-columns: 42px minmax(0, 1fr);
-  max-width: 280px;
-  padding: 0;
+  background: #fdf6f0;
+  border: 1px solid rgba(240, 216, 203, 0.8);
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  padding: 8px 12px;
   text-decoration: none;
-  width: fit-content;
+  transition: all 0.2s ease;
 }
 
+.review-list-food-pill:hover {
+  background: #fff0e5;
+  border-color: #ff9b66;
+  transform: translateX(3px);
+}
 
-
-.review-list-food img {
-  aspect-ratio: 1;
-  background: #fff1e8;
+.review-list-food-pill img {
   border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  height: 40px;
   object-fit: cover;
-  width: 42px;
+  width: 40px;
+}
+
+.review-food-pill-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.review-food-label {
+  color: #947e73;
+  font-size: 11px;
+}
+
+.review-food-title {
+  color: #241812;
+  font-size: 13.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-food-arrow {
+  color: #ff6b1a;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+
+.review-list-food-pill:hover .review-food-arrow {
+  transform: translateX(3px);
 }
 
 
@@ -2070,38 +2180,43 @@ nav a.is-active,
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  padding-top: 8px;
+  padding-top: 14px;
 }
-
-
 
 .review-pagination button {
-  background: #fff;
-  border: 1px solid #f0d8cb;
-  border-radius: 8px;
-  color: #5d4b43;
-  font-weight: 800;
-  min-height: 38px;
-  min-width: 38px;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #ebd6c9;
+  border-radius: 10px;
+  color: #4a3830;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13.5px;
+  font-weight: 700;
+  height: 36px;
+  justify-content: center;
+  min-width: 36px;
   padding: 0 10px;
+  transition: all 0.18s ease;
 }
 
-
+.review-pagination button:hover:not(:disabled) {
+  background: #fff8f3;
+  border-color: #ff7a28;
+  color: #ff5722;
+}
 
 .review-pagination button.active {
-  background: #ff5722;
-  border-color: #ff5722;
-  color: #fff;
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);
+  color: #ffffff;
 }
-
-
 
 .review-pagination button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
-
-
 
 .food-review-summary {
   align-items: stretch;
@@ -2109,8 +2224,6 @@ nav a.is-active,
   gap: 20px;
   grid-template-columns: 230px minmax(0, 1fr);
 }
-
-
 
 .food-review-score {
   align-content: center;
@@ -2122,21 +2235,15 @@ nav a.is-active,
   padding: 20px;
 }
 
-
-
 .food-review-score strong {
   color: #201814;
   font-size: 42px;
   line-height: 1;
 }
 
-
-
 .food-review-score small {
   color: #7d6255;
 }
-
-
 
 .food-rating-bars {
   align-content: center;
@@ -2144,16 +2251,20 @@ nav a.is-active,
   gap: 10px;
 }
 
-
-
 .food-rating-row {
   align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
   display: grid;
   gap: 10px;
-  grid-template-columns: 18px minmax(0, 1fr) 28px;
+  grid-template-columns: 24px minmax(0, 1fr) 28px;
+  padding: 4px 8px;
+  transition: background-color 0.15s ease;
 }
 
-
+.food-rating-row:hover {
+  background-color: #fff2e9;
+}
 
 .food-rating-row span {
   color: #ff8a00;

@@ -1251,141 +1251,477 @@ body::after {
   padding-top: 18px;
 }
 
+/* =========================================================================
+   GIAO DIỆN BÌNH LUẬN & ĐÁNH GIÁ TRANG CHỦ HIỆN ĐẠI
+   ========================================================================= */
+.home-reviews-section {
+  padding-top: 24px;
+}
+
+/* Khối tổng quan điểm số (Rating Summary Banner) */
+.home-review-summary-shell {
+  margin-top: 18px;
+  margin-bottom: 22px;
+}
+
+.home-review-summary-card {
+  align-items: center;
+  background: linear-gradient(135deg, #fff9f5 0%, #fff2eb 100%);
+  border: 1px solid #f8decb;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(94, 48, 24, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 20px 28px;
+}
+
+.review-summary-score-col {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+.review-summary-big-score {
+  color: #ff5722;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.review-summary-stars-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-summary-stars {
+  color: #ffaa00;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.review-summary-count {
+  color: #7a6358;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.review-summary-badges-col {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.review-stat-pill {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #f2ded2;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(80, 42, 20, 0.04);
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+}
+
+.stat-pill-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.stat-pill-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-pill-info strong {
+  color: #241812;
+  font-size: 13px;
+}
+
+.stat-pill-info small {
+  color: #8a7368;
+  font-size: 11.5px;
+}
+
+/* Bộ lọc bình luận (Chips + Selects) */
 .home-review-filters {
-  align-items: end;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: space-between;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.review-star-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.review-chip-btn {
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #f0d8cb;
+  border-radius: 999px;
+  color: #5c453b;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 4px;
+  padding: 6px 14px;
+  transition: all 0.18s ease;
+}
+
+.review-chip-btn:hover {
+  background: #fff8f3;
+  border-color: #ff7a28;
+  color: #d9480f;
+}
+
+.review-chip-btn.active {
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.28);
+}
+
+.review-selects-wrap {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: flex-end;
 }
 
-.home-review-filters label,
-.review-filter-bar label {
+.review-selects-wrap label {
+  align-items: center;
   color: #6f584d;
-  display: grid;
-  font-size: 12px;
+  display: inline-flex;
+  font-size: 12.5px;
   font-weight: 700;
-  gap: 5px;
+  gap: 6px;
 }
 
-.home-review-filters select,
-.review-filter-bar select {
-  background: #fff;
+.review-selects-wrap select {
+  appearance: none;
+  background: #ffffff;
   border: 1px solid #f0d8cb;
   border-radius: 8px;
   color: #201814;
-  min-height: 40px;
-  min-width: 150px;
-  padding: 0 34px 0 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  min-height: 36px;
+  padding: 6px 30px 6px 12px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ff6b1a 50%),
+    linear-gradient(135deg, #ff6b1a 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
 }
 
-.home-review-grid,
-.review-list {
+.review-selects-wrap select:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.12);
+  outline: none;
+}
+
+/* Lưới hiển thị các thẻ bình luận 3 cột */
+.home-review-grid {
   display: grid;
-  gap: 14px;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
 }
 
-.home-review-card {
-  background: #fff;
-  border: 1px solid #f1d9cc;
-  border-radius: 10px;
-  box-shadow: 0 12px 30px rgba(94, 48, 24, 0.08);
-  display: grid;
-  flex: 0 0 min(360px, calc((100% - 32px) / 3));
-  gap: 16px;
-  min-height: 210px;
-  padding: 18px;
-  scroll-snap-align: start;
+@media (max-width: 1080px) {
+  .home-review-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
 }
 
-.home-review-food {
+@media (max-width: 680px) {
+  .home-review-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .home-review-summary-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .review-selects-wrap {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Thẻ bình luận hiện đại */
+.review-list-card {
+  background: #ffffff;
+  border: 1px solid rgba(234, 217, 207, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(78, 45, 25, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.2, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.review-list-card:hover {
+  border-color: #ff9b66;
+  box-shadow: 0 16px 36px rgba(78, 45, 25, 0.12);
+  transform: translateY(-4px);
+}
+
+.review-card-top {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.review-card-user {
   align-items: center;
-  align-self: end;
-  background: #fff8f3;
-  border: 1px solid #f2ded2;
-  border-radius: 8px;
-  color: #201814;
-  display: grid;
-  font-size: 14px;
-  font-weight: 800;
+  display: flex;
   gap: 10px;
-  grid-template-columns: 44px minmax(0, 1fr);
-  padding: 8px;
-  text-decoration: none;
+  min-width: 0;
 }
 
-.home-review-food img {
-  aspect-ratio: 1;
-  background: #fff1e8;
-  border-radius: 6px;
-  object-fit: cover;
-  width: 44px;
-}
-
-.home-review-body {
-  display: grid;
-  gap: 14px;
-}
-
-.home-review-author {
+.food-review-avatar {
   align-items: center;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-}
-
-.home-review-avatar {
-  align-items: center;
-  background: #ffe4d2;
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
   border-radius: 50%;
-  color: #a64008;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 700;
-  height: 34px;
+  color: #fff;
+  display: flex;
+  font-size: 13px;
+  font-weight: 800;
+  height: 42px;
   justify-content: center;
+  width: 42px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(255, 87, 34, 0.2);
   overflow: hidden;
-  width: 34px;
 }
 
-.home-review-avatar img {
+.food-review-avatar img {
   height: 100%;
   object-fit: cover;
   width: 100%;
 }
 
-.home-review-author strong {
-  color: #201814;
-  display: block;
-  font-size: 14px;
+.review-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.home-review-author small {
-  color: #8a6f62;
+.review-author-line {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.home-review-stars {
-  color: #ff8a00;
+.review-author-name {
+  color: #241812;
+  font-size: 14.5px;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.home-review-card p,
-.home-review-empty,
-.food-review-empty {
-  color: #5f4a3f;
-  line-height: 1.6;
+.verified-buyer-badge {
+  align-items: center;
+  background: rgba(15, 143, 97, 0.1);
+  border: 1px solid rgba(15, 143, 97, 0.25);
+  border-radius: 999px;
+  color: #0f8f61;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.review-date {
+  color: #8c766b;
+  font-size: 12px;
+}
+
+.review-card-stars {
+  flex-shrink: 0;
+}
+
+.review-card-stars .stars-gold {
+  color: #ffaa00;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+}
+
+.review-card-body {
+  flex: 1 1 auto;
+  margin-bottom: 14px;
+}
+
+.review-card-text {
+  color: #3b2a22;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+  word-break: break-word;
+}
+
+.review-admin-reply {
+  background: #fff8f3;
+  border-left: 3px solid #ff7a28;
+  border-radius: 0 8px 8px 0;
+  margin-top: 10px;
+  padding: 8px 12px;
+}
+
+.admin-reply-tag {
+  color: #d9480f;
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.review-admin-reply p {
+  color: #523e35;
+  font-size: 13px;
+  line-height: 1.45;
   margin: 0;
 }
 
-.home-review-card p {
-  display: -webkit-box;
-  font-size: 16px;
-  min-height: 52px;
+.review-card-bottom {
+  border-top: 1px dashed rgba(234, 217, 207, 0.8);
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.review-list-food-pill {
+  align-items: center;
+  background: #fdf6f0;
+  border: 1px solid rgba(240, 216, 203, 0.8);
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  padding: 8px 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.review-list-food-pill:hover {
+  background: #fff0e5;
+  border-color: #ff9b66;
+  transform: translateX(3px);
+}
+
+.review-list-food-pill img {
+  border-radius: 8px;
+  height: 40px;
+  object-fit: cover;
+  width: 40px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.review-food-pill-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.review-food-label {
+  color: #947e73;
+  font-size: 11px;
+}
+
+.review-food-title {
+  color: #241812;
+  font-size: 13.5px;
+  font-weight: 700;
   overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-food-arrow {
+  color: #ff7a28;
+  font-size: 13px;
+  transition: transform 0.2s ease;
+}
+
+.review-list-food-pill:hover .review-food-arrow {
+  transform: translateX(3px);
+}
+
+.review-pagination {
+  display: flex;
+  gap: 8px;
+  grid-column: 1 / -1;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.review-pagination button {
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #ebd6c9;
+  border-radius: 10px;
+  color: #4a3830;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  height: 38px;
+  justify-content: center;
+  min-width: 38px;
+  padding: 0 12px;
+  transition: all 0.18s ease;
+}
+
+.review-pagination button:hover:not(:disabled) {
+  background: #fff8f3;
+  border-color: #ff7a28;
+  color: #ff5722;
+}
+
+.review-pagination button.active {
+  background: linear-gradient(135deg, #ff7a28, #ff5722);
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);
+  color: #ffffff;
+}
+
+.review-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.home-review-empty,
+.food-review-empty {
+  color: #765f54;
+  font-size: 15px;
+  grid-column: 1 / -1;
+  line-height: 1.6;
+  margin: 20px 0;
+  text-align: center;
 }
 
 .home-review-nav {
