@@ -7831,3 +7831,59 @@ footer {
     opacity: 0 !important;
   }
 }
+
+/* =========================================================================
+   HIỆU ỨNG ICON ĐỒ ĂN RƠI NHẸ NHÀNG (THƯA THỚT, KHÔNG GÂY PHIỀN)
+   ========================================================================= */
+.fh-gentle-food-rain {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  overflow: hidden;
+  z-index: 9995;
+}
+
+.fh-falling-food-item {
+  position: absolute;
+  top: -55px;
+  left: var(--food-left, 50%);
+  font-size: var(--food-size, 24px);
+  line-height: 1;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+  animation: fhGentleFoodFall var(--food-duration, 7s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes fhGentleFoodFall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(var(--food-rot-start, 0deg));
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--food-max-opacity, 0.8);
+  }
+  50% {
+    transform: translate3d(var(--food-sway-x, 20px), 50vh, 0) rotate(calc((var(--food-rot-start, 0deg) + var(--food-rot-end, 0deg)) / 2));
+  }
+  85% {
+    opacity: var(--food-max-opacity, 0.8);
+  }
+  100% {
+    transform: translate3d(calc(var(--food-sway-x, 20px) * -0.5), 105vh, 0) rotate(var(--food-rot-end, 20deg));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-gentle-food-rain {
+    display: none !important;
+  }
+}
+

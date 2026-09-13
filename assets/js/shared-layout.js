@@ -889,6 +889,169 @@ function initSharedCartButtonState() {
   }
 }
 
+function initGentleFoodRain() {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+
+  // Tôn trọng thiết lập giảm chuyển động của hệ điều hành
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+
+  // Danh sách emoji món ăn hấp dẫn, quen thuộc
+  const FOOD_ICONS = [
+    "🍕", "🍔", "🍟", "🍜", "🍣", "🍱", "🥟", "🍗",
+    "🥪", "🌮", "🍩", "🍰", "🧋", "🥤", "🍦", "🥑",
+    "🍓", "🍳", "🍙", "🍤", "🧁", "🥐", "🥞"
+  ];
+
+  // Đảm bảo có thẻ style hỗ trợ dự phòng nếu CSS chưa kịp nạp
+  if (!document.getElementById("fh-gentle-food-rain-style")) {
+    const styleEl = document.createElement("style");
+    styleEl.id = "fh-gentle-food-rain-style";
+    styleEl.textContent = `
+      .fh-gentle-food-rain {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        overflow: hidden;
+        z-index: 9995;
+      }
+      .fh-falling-food-item {
+        position: absolute;
+        top: -55px;
+        left: var(--food-left, 50%);
+        font-size: var(--food-size, 24px);
+        line-height: 1;
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        will-change: transform, opacity;
+        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+        animation: fhGentleFoodFall var(--food-duration, 7s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      }
+      @keyframes fhGentleFoodFall {
+        0% {
+          transform: translate3d(0, 0, 0) rotate(var(--food-rot-start, 0deg));
+          opacity: 0;
+        }
+        12% {
+          opacity: var(--food-max-opacity, 0.8);
+        }
+        50% {
+          transform: translate3d(var(--food-sway-x, 20px), 50vh, 0) rotate(calc((var(--food-rot-start, 0deg) + var(--food-rot-end, 0deg)) / 2));
+        }
+        85% {
+          opacity: var(--food-max-opacity, 0.8);
+        }
+        100% {
+          transform: translate3d(calc(var(--food-sway-x, 20px) * -0.5), 105vh, 0) rotate(var(--food-rot-end, 20deg));
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fh-gentle-food-rain {
+          display: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(styleEl);
+  }
+
+  function getRainContainer() {
+    let container = document.querySelector(".fh-gentle-food-rain");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "fh-gentle-food-rain";
+      container.setAttribute("aria-hidden", "true");
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  // Thả 1 icon đồ ăn riêng lẻ
+  function spawnFoodItem() {
+    if (document.hidden) return; // Không thả khi người dùng chuyển tab
+    const container = getRainContainer();
+    if (!container) return;
+
+    const item = document.createElement("span");
+    item.className = "fh-falling-food-item";
+
+    const randomIcon = FOOD_ICONS[Math.floor(Math.random() * FOOD_ICONS.length)];
+    item.textContent = randomIcon;
+
+    // Phân bổ toạ độ ngang ngẫu nhiên trên màn hình (5% - 93%)
+    const leftPos = (Math.random() * 88 + 5).toFixed(2);
+    // Tốc độ rơi: 5.5s đến 8.5s (chậm rãi, bay bổng êm ái)
+    const duration = (Math.random() * 3 + 5.5).toFixed(2);
+    // Độ đung đưa ngang do gió (-35px đến +35px)
+    const swayX = ((Math.random() - 0.5) * 70).toFixed(0);
+    // Góc xoay ngẫu nhiên
+    const rotStart = ((Math.random() - 0.5) * 40).toFixed(0);
+    const rotEnd = ((Math.random() - 0.5) * 80).toFixed(0);
+    // Kích cỡ nhẹ nhàng vừa phải (20px - 28px)
+    const size = (Math.random() * 8 + 20).toFixed(0);
+    // Độ trong suốt nhẹ (0.7 - 0.85) để không che khuất chữ/nội dung
+    const maxOpacity = (Math.random() * 0.15 + 0.7).toFixed(2);
+
+    item.style.setProperty("--food-left", `${leftPos}%`);
+    item.style.setProperty("--food-duration", `${duration}s`);
+    item.style.setProperty("--food-sway-x", `${swayX}px`);
+    item.style.setProperty("--food-rot-start", `${rotStart}deg`);
+    item.style.setProperty("--food-rot-end", `${rotEnd}deg`);
+    item.style.setProperty("--food-size", `${size}px`);
+    item.style.setProperty("--food-max-opacity", maxOpacity);
+
+    // Tự xoá phần tử khỏi DOM ngay khi hoàn thành animation
+    const handleEnd = () => {
+      item.removeEventListener("animationend", handleEnd);
+      if (item.parentNode) {
+        item.parentNode.removeChild(item);
+      }
+    };
+    item.addEventListener("animationend", handleEnd);
+
+    // Backup dọn dẹp phòng trường hợp animationend bị gián đoạn
+    setTimeout(handleEnd, (parseFloat(duration) + 1.5) * 1000);
+
+    container.appendChild(item);
+  }
+
+  // Mỗi đợt chỉ rơi 1 đến 3 cái thưa thớt, không rơi liên tục dồn dập
+  function triggerGentleDrop() {
+    if (document.hidden) return;
+
+    // 1 đến 3 icon: 20% rơi 1 cái, 65% rơi 2 cái, 15% rơi 3 cái
+    const rand = Math.random();
+    const count = rand < 0.2 ? 1 : rand < 0.85 ? 2 : 3;
+
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        spawnFoodItem();
+      }, i * (Math.random() * 900 + 400));
+    }
+  }
+
+  // Lên lịch đợt rơi tiếp theo: 20s đến 38s (thời gian cách nhau dài, lâu lâu mới có)
+  function scheduleNextDrop() {
+    const nextInterval = Math.floor(Math.random() * 18000) + 20000; // 20s - 38s
+    setTimeout(() => {
+      triggerGentleDrop();
+      scheduleNextDrop();
+    }, nextInterval);
+  }
+
+  // Đợt đầu tiên xuất hiện sau khoảng 5s khi vào trang
+  setTimeout(() => {
+    triggerGentleDrop();
+    scheduleNextDrop();
+  }, 5000);
+}
+
 renderSharedHeader();
 renderSharedFooter();
 syncSharedNavActive();
@@ -898,4 +1061,6 @@ startFoodHubNotificationBadges();
 startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
+initGentleFoodRain();
+
 
