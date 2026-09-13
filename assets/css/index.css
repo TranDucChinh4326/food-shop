@@ -918,68 +918,56 @@ body::after {
 
 .home-add-btn {
   align-items: center;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 44%),
-    linear-gradient(135deg, #ff4f1f 0%, #ff8a1d 100%);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: linear-gradient(135deg, #ff5722 0%, #ff7a28 100%);
+  border: none;
   border-radius: 50%;
-  box-shadow:
-    0 12px 24px rgba(255, 87, 34, 0.28),
-    inset 0 -2px 0 rgba(139, 45, 9, 0.18);
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.32);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font-size: 0;
-  font-weight: 800;
-  height: 44px;
+  height: 40px;
   justify-content: center;
-  min-height: 44px;
+  min-height: 40px;
+  outline: none;
   padding: 0;
   position: relative;
-  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.2s ease;
-  width: 44px;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, background 0.22s ease;
+  width: 40px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.home-add-btn::before {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  border-radius: 50%;
-  content: "+";
-  display: inline-flex;
-  font-size: 25px;
-  font-weight: 900;
-  height: 30px;
-  justify-content: center;
-  line-height: 1;
-  padding-bottom: 2px;
-  width: 30px;
+.home-add-btn svg {
+  display: block;
+  height: 18px;
+  stroke: #ffffff;
+  stroke-width: 2.6;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 18px;
 }
 
 .home-add-btn:hover:not(:disabled) {
-  box-shadow:
-    0 16px 30px rgba(255, 87, 34, 0.34),
-    inset 0 -2px 0 rgba(139, 45, 9, 0.2);
-  filter: saturate(1.08);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f04812 0%, #ff6808 100%);
+  box-shadow: 0 6px 18px rgba(255, 87, 34, 0.46);
+  transform: scale(1.1) translateY(-1px);
+}
+
+.home-add-btn:hover:not(:disabled) svg {
+  transform: rotate(90deg);
 }
 
 .home-add-btn:active:not(:disabled) {
-  box-shadow: 0 8px 18px rgba(255, 87, 34, 0.24);
-  transform: translateY(0) scale(0.96);
+  box-shadow: 0 2px 6px rgba(255, 87, 34, 0.24);
+  transform: scale(0.92);
 }
 
 .home-add-btn:disabled {
   background: #cbd5e1;
-  border-color: rgba(255, 255, 255, 0.6);
   box-shadow: none;
+  color: #94a3b8;
   cursor: not-allowed;
-  opacity: 0.78;
-}
-
-.home-add-btn:disabled::before {
-  background: rgba(255, 255, 255, 0.18);
+  opacity: 0.65;
+  transform: none !important;
 }
 
 .home-reveal {
@@ -1198,19 +1186,17 @@ body::after {
   }
 
   .home-food-bottom .home-add-btn {
-    align-self: flex-start;
+    align-self: center;
     border-radius: 50%;
-    font-size: 0;
-    height: 40px;
-    min-height: 40px;
+    height: 36px;
+    min-height: 36px;
     padding: 0;
-    width: 40px;
+    width: 36px;
   }
 
-  .home-food-bottom .home-add-btn::before {
-    font-size: 23px;
-    height: 28px;
-    width: 28px;
+  .home-food-bottom .home-add-btn svg {
+    height: 16px;
+    width: 16px;
   }
 }
 
