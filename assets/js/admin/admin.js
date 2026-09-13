@@ -84,6 +84,8 @@ const comboStatusFilter = document.getElementById("comboStatusFilter");
 const comboPageSize = document.getElementById("comboPageSize");
 const comboFoodSelect = document.getElementById("comboFoodSelect");
 const comboItemsList = document.getElementById("comboItemsList");
+const comboImageFile = document.getElementById("comboImage");
+const comboImageUrl = document.getElementById("comboImageUrl");
 const discountForm = document.getElementById("discountForm");
 const discountListView = document.getElementById("discountListView");
 const discountFormView = document.getElementById("discountFormView");
@@ -1267,6 +1269,9 @@ function resetComboForm() {
   comboForm?.reset();
   const id = document.getElementById("comboId");
   if (id) id.value = "";
+  if (comboImageUrl) comboImageUrl.value = "";
+  const hint = document.getElementById("comboImageHint");
+  if (hint) hint.textContent = "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
   comboDraftItems = [];
   renderComboDraftItems();
   const saveBtn = document.getElementById("saveComboBtn");
@@ -1419,7 +1424,10 @@ async function editCombo(comboId) {
   document.getElementById("comboId").value = combo.id;
   document.getElementById("comboName").value = combo.name || "";
   document.getElementById("comboPrice").value = combo.price || "";
-  document.getElementById("comboImage").value = combo.image || "";
+  if (comboImageFile) comboImageFile.value = "";
+  if (comboImageUrl) comboImageUrl.value = combo.image || "";
+  const hint = document.getElementById("comboImageHint");
+  if (hint) hint.textContent = combo.image ? "Đang dùng ảnh combo đã tải lên. Chọn ảnh mới nếu muốn thay đổi." : "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
   document.getElementById("comboIsActive").value = Number(combo.is_active ?? combo.isActive ?? 1) === 1 ? "1" : "0";
   document.getElementById("comboDescription").value = combo.description || "";
   comboDraftItems = (combo.items || []).map(item => ({
@@ -1436,6 +1444,26 @@ async function editCombo(comboId) {
   showAdminSection("combos");
 }
 
+async function uploadComboImageFile() {
+  const file = comboImageFile?.files?.[0];
+  if (!file) return comboImageUrl?.value || "";
+
+  const validTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!validTypes.includes(file.type)) {
+    throw new Error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.");
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error("Ảnh combo tối đa 2MB.");
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+  const data = await requestFormData(`${ADMIN_API}/combos/image`, formData);
+  if (comboImageUrl) comboImageUrl.value = data.image || "";
+  return data.image || "";
+}
+
 async function saveCombo(event) {
   event.preventDefault();
   if (!comboDraftItems.length) {
@@ -1444,10 +1472,18 @@ async function saveCombo(event) {
   }
 
   const comboId = document.getElementById("comboId").value;
+  let image = "";
+  try {
+    image = await uploadComboImageFile();
+  } catch (error) {
+    showAdminToast(error.message, "error");
+    return;
+  }
+
   const payload = {
     name: document.getElementById("comboName").value.trim(),
     price: Number(document.getElementById("comboPrice").value || 0),
-    image: document.getElementById("comboImage").value.trim(),
+    image,
     isActive: Number(document.getElementById("comboIsActive").value || 1),
     description: document.getElementById("comboDescription").value.trim(),
     items: comboDraftItems.map((item, index) => ({ foodId: item.foodId, quantity: item.quantity, sortOrder: index }))
@@ -4743,6 +4779,11 @@ document.querySelector("[data-back-combo-list]")?.addEventListener("click", () =
   closeComboForm();
 });
 document.getElementById("addComboItemBtn")?.addEventListener("click", addComboDraftItem);
+comboImageFile?.addEventListener("change", () => {
+  const hint = document.getElementById("comboImageHint");
+  const file = comboImageFile.files?.[0];
+  if (hint) hint.textContent = file ? `Đã chọn: ${file.name}` : "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
+});
 comboItemsList?.addEventListener("click", event => {
   const button = event.target.closest("[data-remove-combo-item]");
   if (!button) return;

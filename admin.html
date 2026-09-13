@@ -327,7 +327,9 @@
             <div class="announcement-date-grid">
               <label>
                 Ảnh banner combo
-                <input id="comboImage" type="url" placeholder="Dán URL ảnh banner">
+                <input id="comboImage" type="file" accept="image/jpeg,image/png,image/webp">
+                <input id="comboImageUrl" type="hidden">
+                <small id="comboImageHint">Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.</small>
               </label>
               <label>
                 Trạng thái
