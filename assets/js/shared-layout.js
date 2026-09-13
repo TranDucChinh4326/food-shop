@@ -33,7 +33,8 @@ function renderSharedHeader() {
   const currentTitle = currentLang === "en" ? "Language: English" : "Ngôn ngữ: Tiếng Việt";
 
   document.querySelectorAll("[data-shared-header]").forEach(slot => {
-    slot.outerHTML = `
+    slot.className = "site-header-wrapper";
+    slot.innerHTML = `
   <header>
     <div class="header-top">
       <a class="logo brand-logo notranslate" href="index.html" aria-label="Bếp 1979" translate="no">
@@ -167,6 +168,19 @@ function renderSharedHeader() {
     </nav>
   </header>`;
   });
+
+  const syncHeaderWrapperHeight = () => {
+    const wrapper = document.querySelector(".site-header-wrapper");
+    const headerEl = document.querySelector("header");
+    if (wrapper && headerEl && window.innerWidth > 900 && !headerEl.classList.contains("header-compact")) {
+      const h = headerEl.offsetHeight;
+      if (h > 60) {
+        wrapper.style.minHeight = `${h}px`;
+      }
+    }
+  };
+  requestAnimationFrame(syncHeaderWrapperHeight);
+  window.addEventListener("resize", syncHeaderWrapperHeight, { passive: true });
 }
 
 function renderSharedFooter() {
@@ -918,7 +932,7 @@ function initGentleFoodRain() {
         user-select: none !important;
         -webkit-user-select: none !important;
         overflow: hidden;
-        z-index: 9995;
+        z-index: 99;
         contain: strict;
         transform: translateZ(0);
       }
