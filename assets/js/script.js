@@ -483,6 +483,26 @@ function saveCart() {
   sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
+function getCartItemKey(item) {
+  return item?.type === "combo" ? `combo-${item.comboId || item.id}` : `food-${item?.id}`;
+}
+
+function getCartItemPayload(item) {
+  if (item?.type === "combo") {
+    return {
+      type: "combo",
+      comboId: item.comboId || item.id,
+      quantity: item.quantity
+    };
+  }
+
+  return {
+    type: "food",
+    foodId: item.id,
+    quantity: item.quantity
+  };
+}
+
 function getAuthToken() {
   return sessionStorage.getItem(AUTH_TOKEN_KEY);
 }
@@ -1596,24 +1616,32 @@ function orderHomeCombo(comboId, event) {
     return;
   }
 
-  items.forEach(item => {
-    const foodId = item.foodId;
-    const qty = Math.max(1, Number(item.quantity || 1));
-    const food = foods.find(f => String(f.id) === String(foodId));
-    const itemInCart = cart.find(c => String(c.id) === String(foodId));
+  const existingCombo = cart.find(item => item.type === "combo" && String(item.comboId || item.id) === String(combo.id));
+  const comboCartItem = {
+    type: "combo",
+    id: `combo-${combo.id}`,
+    comboId: combo.id,
+    name: combo.name || "Combo món ăn",
+    price: Number(combo.price || 0),
+    quantity: 1,
+    image: combo.image || items.find(item => item.image)?.image || "",
+    items: items.map(item => ({
+      foodId: item.foodId,
+      name: item.name,
+      quantity: Number(item.quantity || 1)
+    })),
+    maxAvailable
+  };
 
-    if (itemInCart) {
-      itemInCart.quantity = (itemInCart.quantity || 0) + qty;
-    } else {
-      cart.push({
-        id: foodId,
-        name: item.name || food?.name || "Món combo",
-        price: food ? getFoodSalePrice(food) : Number(item.price || 0),
-        quantity: qty,
-        image: item.image || food?.image || ""
-      });
-    }
-  });
+  if (existingCombo) {
+    existingCombo.quantity = Number(existingCombo.quantity || 0) + 1;
+    existingCombo.price = comboCartItem.price;
+    existingCombo.image = comboCartItem.image;
+    existingCombo.items = comboCartItem.items;
+    existingCombo.maxAvailable = maxAvailable;
+  } else {
+    cart.push(comboCartItem);
+  }
 
   saveCart();
   renderCart();
@@ -2520,10 +2548,10 @@ function showFoodDetail(foodId) {
           </div>
           <div class="food-detail-actions">
             <div class="food-detail-qty">
-              <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
+              <button type="button" data-food-qty-step="-1" title="Giảm số lượng" disabled>-</button>
               <span data-food-qty-display="${food.id}">1</span>
               <input type="hidden" value="1" data-food-qty="${food.id}">
-              <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
+              <button type="button" data-food-qty-step="1" title="Tăng số lượng" ${stock <= 1 ? "disabled" : ""}>+</button>
             </div>
             <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
           </div>
@@ -2567,7 +2595,16 @@ function showFoodDetail(foodId) {
       const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
       input.value = String(nextValue);
       const display = dialog.querySelector(`[data-food-qty-display="${food.id}"]`);
-      if (display) display.textContent = String(nextValue);
+      if (display) {
+        display.textContent = String(nextValue);
+        display.classList.remove("qty-pop");
+        void display.offsetWidth;
+        display.classList.add("qty-pop");
+      }
+      const minusBtn = dialog.querySelector('[data-food-qty-step="-1"]');
+      if (minusBtn) minusBtn.disabled = nextValue <= 1 || stock <= 0;
+      const plusBtn = dialog.querySelector('[data-food-qty-step="1"]');
+      if (plusBtn) plusBtn.disabled = nextValue >= stock || stock <= 0;
     });
   });
   dialog.addEventListener("click", event => {
@@ -2636,10 +2673,10 @@ function renderFoodDetailPage() {
             ${renderFoodDetailDescription(food)}
             <div class="food-detail-actions">
               <div class="food-detail-qty">
-                <button type="button" data-food-qty-step="-1" ${stock <= 0 ? "disabled" : ""}>-</button>
+                <button type="button" data-food-qty-step="-1" title="Giảm số lượng" disabled>-</button>
                 <span data-food-qty-display="${food.id}">1</span>
                 <input type="hidden" value="1" data-food-qty="${food.id}">
-                <button type="button" data-food-qty-step="1" ${stock <= 0 ? "disabled" : ""}>+</button>
+                <button type="button" data-food-qty-step="1" title="Tăng số lượng" ${stock <= 1 ? "disabled" : ""}>+</button>
               </div>
               <button type="button" class="btn food-detail-add" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${stock > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}</button>
             </div>
@@ -2676,7 +2713,16 @@ function renderFoodDetailPage() {
       const nextValue = Math.max(1, Math.min(Math.max(stock, 1), Number(input.value || 1) + step));
       input.value = String(nextValue);
       const display = page.querySelector(`[data-food-qty-display="${food.id}"]`);
-      if (display) display.textContent = String(nextValue);
+      if (display) {
+        display.textContent = String(nextValue);
+        display.classList.remove("qty-pop");
+        void display.offsetWidth;
+        display.classList.add("qty-pop");
+      }
+      const minusBtn = page.querySelector('[data-food-qty-step="-1"]');
+      if (minusBtn) minusBtn.disabled = nextValue <= 1 || stock <= 0;
+      const plusBtn = page.querySelector('[data-food-qty-step="1"]');
+      if (plusBtn) plusBtn.disabled = nextValue >= stock || stock <= 0;
     });
   });
   renderReviewPanel("detailPage", page.querySelector("#foodDetailPageReviewControls"), page.querySelector("#foodDetailPageReviewList"), foodReviews, {
@@ -3849,10 +3895,15 @@ function renderCart() {
   let totalQuantity = 0;
 
   cartItems.innerHTML = cart.map(item => {
-    const food = foods.find(entry => String(entry.id) === String(item.id));
+    const isCombo = item.type === "combo";
+    const food = isCombo ? null : foods.find(entry => String(entry.id) === String(item.id));
     if (food) item.price = getFoodSalePrice(food);
     const itemTotal = Number(item.price) * Number(item.quantity);
     const image = item.image || food?.image || "";
+    const itemKey = getCartItemKey(item);
+    const comboItemsText = isCombo && Array.isArray(item.items) && item.items.length
+      ? item.items.map(comboItem => `${Number(comboItem.quantity || 1)}x ${comboItem.name || "Món"}`).join(", ")
+      : "";
     const imageMarkup = image
       ? `<img class="cart-item-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}">`
       : `<span class="cart-item-image cart-item-image-placeholder" aria-hidden="true">79</span>`;
@@ -3860,23 +3911,24 @@ function renderCart() {
     totalQuantity += Number(item.quantity);
 
     return `
-      <div class="cart-item" data-open-food-detail="${item.id}" data-detail-from="cart">
-        <a class="cart-item-image-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="Xem chi tiết ${escapeHtml(item.name)}">
+      <div class="cart-item" ${isCombo ? "" : `data-open-food-detail="${item.id}" data-detail-from="cart"`}>
+        <a class="cart-item-image-link" href="${isCombo ? "#" : getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="${isCombo ? "Combo món ăn" : `Xem chi tiết ${escapeHtml(item.name)}`}">
           ${imageMarkup}
         </a>
         <div class="cart-item-info">
-          <h4><a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a></h4>
-          <p>${food ? renderFoodPrice(food) : formatMoney(item.price)}</p>
+          <h4>${isCombo ? `<span class="cart-item-detail-link">${escapeHtml(item.name)}</span>` : `<a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a>`}</h4>
+          <p>${isCombo ? formatMoney(item.price) : (food ? renderFoodPrice(food) : formatMoney(item.price))}</p>
+          ${comboItemsText ? `<small>${escapeHtml(comboItemsText)}</small>` : ""}
         </div>
 
         <div class="qty-box">
-          <button class="qty-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
+          <button class="qty-btn" onclick="changeQuantity('${itemKey}', -1)">-</button>
           <strong>${item.quantity}</strong>
-          <button class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+          <button class="qty-btn" onclick="changeQuantity('${itemKey}', 1)">+</button>
         </div>
 
         <strong class="cart-item-total">${formatMoney(itemTotal)}</strong>
-        <button class="remove-btn cart-remove-btn" type="button" onclick="removeItem(${item.id})">Xóa</button>
+        <button class="remove-btn cart-remove-btn" type="button" onclick="removeItem('${itemKey}')">Xóa</button>
       </div>
     `;
   }).join("");
@@ -3885,6 +3937,7 @@ function renderCart() {
   if (cartRecommendations) {
     const recommendedFoods = getRecommendedFoods({ limit: 4 });
     const hasMealInCart = cart.some(item => {
+      if (item.type === "combo") return true;
       const food = foods.find(entry => String(entry.id) === String(item.id));
       return food ? isMealFood(food) : true;
     });
@@ -3916,32 +3969,34 @@ function renderCart() {
   renderCheckoutReviewInfo();
 }
 
-function changeQuantity(foodId, amount) {
-  const item = cart.find(item => item.id === foodId);
+function changeQuantity(itemKey, amount) {
+  const item = cart.find(item => getCartItemKey(item) === String(itemKey));
 
   if (!item) return;
 
-  const food = foods.find(entry => entry.id === foodId);
-  const stock = Number(food?.stockQuantity ?? Number.MAX_SAFE_INTEGER);
+  const food = item.type === "combo" ? null : foods.find(entry => String(entry.id) === String(item.id));
+  const stock = item.type === "combo"
+    ? Number(item.maxAvailable ?? Number.MAX_SAFE_INTEGER)
+    : Number(food?.stockQuantity ?? Number.MAX_SAFE_INTEGER);
   const nextQuantity = item.quantity + amount;
 
   if (nextQuantity > stock) {
-    showSiteToast(`Số lượng tối đa còn lại cho món này là ${stock}.`, "error");
+    showSiteToast(`Số lượng tối đa còn lại là ${stock}.`, "error");
     return;
   }
 
   item.quantity = nextQuantity;
 
   if (item.quantity <= 0) {
-    cart = cart.filter(cartItem => cartItem.id !== foodId);
+    cart = cart.filter(cartItem => getCartItemKey(cartItem) !== String(itemKey));
   }
 
   saveCart();
   renderCart();
 }
 
-function removeItem(foodId) {
-  cart = cart.filter(item => item.id !== foodId);
+function removeItem(itemKey) {
+  cart = cart.filter(item => getCartItemKey(item) !== String(itemKey));
   saveCart();
   renderCart();
 }
@@ -4121,6 +4176,9 @@ async function submitOrder(event) {
 
   const stockIssue = foods.length
     ? cart.some(item => {
+        if (item.type === "combo") {
+          return Number(item.maxAvailable ?? Number.MAX_SAFE_INTEGER) < Number(item.quantity);
+        }
         const food = foods.find(entry => entry.id === item.id);
         return !food || Number(food.stockQuantity || 0) < Number(item.quantity);
       })
@@ -4174,10 +4232,7 @@ async function submitOrder(event) {
         shippingMethodId: selectedShippingMethodId,
         discountCode: appliedDiscount?.userDiscountId ? "" : (appliedDiscount?.code || document.getElementById("discountCodeInput")?.value.trim() || ""),
         userDiscountId: appliedDiscount?.userDiscountId || document.getElementById("ownedVoucherSelect")?.value || null,
-        items: cart.map(item => ({
-          foodId: item.id,
-          quantity: item.quantity
-        }))
+        items: cart.map(getCartItemPayload)
       })
     });
     const data = await response.json();
