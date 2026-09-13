@@ -304,7 +304,14 @@
           </div>
         </div>
 
-        <div class="admin-form-view">
+        <div id="comboFormView" class="admin-form-view" hidden>
+          <div class="form-subheading">
+            <div>
+              <h3 id="comboFormTitle">Thêm mới combo</h3>
+              <p>Chọn các món có sẵn trong thực đơn để tạo combo hiển thị trên banner trang chủ.</p>
+            </div>
+            <button type="button" class="ghost-btn" data-back-combo-list>Quay về danh sách</button>
+          </div>
           <form id="comboForm" class="announcement-page-form discount-form">
             <input type="hidden" id="comboId">
             <div class="announcement-date-grid">
@@ -355,7 +362,7 @@
           </form>
         </div>
 
-        <div class="admin-list-view">
+        <div id="comboListView" class="admin-list-view">
           <div class="table-toolbar multi-filter">
             <input type="search" id="comboSearch" placeholder="Tìm kiếm combo">
             <select id="comboStatusFilter">

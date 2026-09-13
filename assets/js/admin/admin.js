@@ -76,6 +76,9 @@ const flashSaleItemNotice = document.getElementById("flashSaleItemNotice");
 const saveFlashSaleItemBtn = document.getElementById("saveFlashSaleItemBtn");
 const combosList = document.getElementById("combosList");
 const comboForm = document.getElementById("comboForm");
+const comboFormView = document.getElementById("comboFormView");
+const comboListView = document.getElementById("comboListView");
+const comboFormTitle = document.getElementById("comboFormTitle");
 const comboSearch = document.getElementById("comboSearch");
 const comboStatusFilter = document.getElementById("comboStatusFilter");
 const comboPageSize = document.getElementById("comboPageSize");
@@ -1268,6 +1271,19 @@ function resetComboForm() {
   renderComboDraftItems();
   const saveBtn = document.getElementById("saveComboBtn");
   if (saveBtn) saveBtn.textContent = "Lưu combo";
+  if (comboFormTitle) comboFormTitle.textContent = "Thêm mới combo";
+}
+
+function openComboForm(mode = "create") {
+  if (comboListView) comboListView.hidden = true;
+  if (comboFormView) comboFormView.hidden = false;
+  if (comboFormTitle) comboFormTitle.textContent = mode === "edit" ? "Cập nhật combo" : "Thêm mới combo";
+  document.getElementById("comboName")?.focus();
+}
+
+function closeComboForm() {
+  if (comboFormView) comboFormView.hidden = true;
+  if (comboListView) comboListView.hidden = false;
 }
 
 function renderComboDraftItems() {
@@ -1414,6 +1430,7 @@ async function editCombo(comboId) {
   renderComboDraftItems();
   const saveBtn = document.getElementById("saveComboBtn");
   if (saveBtn) saveBtn.textContent = "Cập nhật combo";
+  openComboForm("edit");
   showAdminSection("combos");
 }
 
@@ -1441,6 +1458,7 @@ async function saveCombo(event) {
     });
     showAdminToast(comboId ? "Đã cập nhật combo." : "Đã tạo combo.");
     resetComboForm();
+    closeComboForm();
     await loadCombos();
   } catch (error) {
     showAdminToast(error.message, "error");
@@ -4714,7 +4732,14 @@ flashSaleItemsList?.addEventListener("click", async event => {
 closeFlashSaleForm();
 comboForm?.addEventListener("submit", saveCombo);
 comboForm?.querySelector("[data-reset-combo]")?.addEventListener("click", resetComboForm);
-document.getElementById("resetComboFormBtn")?.addEventListener("click", resetComboForm);
+document.getElementById("resetComboFormBtn")?.addEventListener("click", () => {
+  resetComboForm();
+  openComboForm("create");
+});
+document.querySelector("[data-back-combo-list]")?.addEventListener("click", () => {
+  resetComboForm();
+  closeComboForm();
+});
 document.getElementById("addComboItemBtn")?.addEventListener("click", addComboDraftItem);
 comboItemsList?.addEventListener("click", event => {
   const button = event.target.closest("[data-remove-combo-item]");
