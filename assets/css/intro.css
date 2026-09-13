@@ -1,412 +1,700 @@
 /* ==========================================================================
-   BẾP 1979 - LUXURY MODERN RETRO F&B INTRO (COMMERCIAL PREMIUM EDITION)
-   Phong cách: Nhà hàng ẩm thực cao cấp, phong vị truyền thống Việt Nam.
-   Bảng màu: Nâu Espresso (#140b07), Đỏ gạch nung (#b8381e), Cam cháy (#d9531e), Kem yến mạch (#fdf8f4).
+   BẾP 1979 - GRAND COMMERCIAL INTRO SHOWCASE (10-SECOND AD TRAILER)
+   Thiết kế dạng Trailer Quảng Cáo Toàn Diện Website:
+   1. Dynamic Stage Navigation (4 Cảnh Quảng Cáo chạy cuốn theo Timeline 10s)
+   2. Scene 1: Brand & Hương Vị Độc Bản
+   3. Scene 2: Thực Đơn Trực Tuyến & Món Nóng Giao 20 Phút
+   4. Scene 3: Flash Sale Khủng & Voucher Giờ Vàng
+   5. Scene 4: Đánh Giá 5 Sao & Đặt Bàn / Đặt Món Tiện Lợi
+   6. Fullscreen Cinematic Atmosphere, Glassmorphism, Interactive Controls
    ========================================================================== */
 
-.fh-retro-intro {
+:root {
+  --ad-orange: #ff4b1f;
+  --ad-gold: #ffb830;
+  --ad-amber: #ff8c00;
+  --ad-dark: #090403;
+}
+
+.fh-ad-intro {
   position: fixed;
   inset: 0;
   z-index: 99999999;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  background-color: #120905;
-  background-image: 
-    radial-gradient(circle at 50% 30%, rgba(184, 56, 30, 0.28) 0%, rgba(20, 11, 7, 0.95) 55%, #0b0503 100%),
-    radial-gradient(circle at 85% 15%, rgba(217, 83, 30, 0.12) 0%, transparent 45%);
-  color: #fdf8f4;
+  background-color: var(--ad-dark);
+  background: 
+    radial-gradient(circle at 50% 20%, rgba(75, 25, 7, 0.96) 0%, rgba(24, 8, 2, 0.98) 50%, #060201 100%);
+  color: #fff;
   overflow: hidden;
   user-select: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s;
-  padding: 30px 48px 36px;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s;
+  padding: 24px 36px 28px;
   box-sizing: border-box;
 }
 
-.fh-retro-intro.intro-dismissed {
+.fh-ad-intro.intro-exit {
   opacity: 0;
-  transform: scale(1.04);
+  transform: scale(1.05);
   visibility: hidden;
   pointer-events: none;
 }
 
-/* Subtle Warm Vignette Pattern */
-.intro-retro-pattern {
+/* Background Atmospheric Elements */
+.intro-canvas-bg {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(253, 248, 244, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  opacity: 0.5;
+  z-index: 1;
 }
 
-/* 1. Top Bar: Trạng thái & Nút vào ngay (Sử dụng div riêng, không bị dính CSS thẻ header của trang chủ) */
-.intro-top-bar {
+.intro-ambient-glow {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(255, 94, 0, 0.28) 0%, rgba(255, 179, 0, 0.1) 45%, transparent 70%);
+  filter: blur(70px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: ambientBreathe 5s ease-in-out infinite alternate;
+}
+
+@keyframes ambientBreathe {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+/* 1. Header Bar: Brand Indicator, Progress Steps, Sound & Skip */
+.intro-top-header {
   position: relative;
-  z-index: 5;
-  width: 100%;
-  max-width: 1120px;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  min-height: auto !important;
+  gap: 16px;
 }
 
-.intro-open-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  color: #ebdcd2;
-  background: rgba(253, 248, 244, 0.07);
-  border: 1px solid rgba(253, 248, 244, 0.14);
-  padding: 7px 16px;
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-}
-
-.intro-status-pulse {
-  width: 7.5px;
-  height: 7.5px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 10px #10b981;
-  animation: introStatusBlink 2.2s infinite ease-in-out;
-}
-
-@keyframes introStatusBlink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.85); }
-}
-
-.intro-header-actions {
+.intro-brand-badge {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.intro-action-btn {
-  background: rgba(253, 248, 244, 0.08);
-  border: 1px solid rgba(253, 248, 244, 0.16);
-  color: #fdf8f4;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   padding: 8px 18px;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  display: inline-flex;
+  backdrop-filter: blur(16px);
+}
+
+.intro-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  color: #fff;
+  font-weight: 950;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 75, 31, 0.4);
+}
+
+.intro-brand-text strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.intro-brand-text small {
+  font-size: 11px;
+  color: #ff9d66;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* Scene Step Indicator Pills */
+.intro-scene-stepper {
+  display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.25s ease;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 12px;
+  border-radius: 999px;
   backdrop-filter: blur(12px);
 }
 
-.intro-action-btn:hover {
-  background: rgba(253, 248, 244, 0.18);
-  border-color: rgba(253, 248, 244, 0.32);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.intro-action-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
-}
-
-/* 2. Main Center Hero Stage */
-.intro-retro-hero {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: 680px;
-  margin: auto 0;
-  padding: 10px 0;
-  animation: introHeroEnter 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes introHeroEnter {
-  0% { opacity: 0; transform: translateY(20px) scale(0.96); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Luxury Realistic Food Plate Showcase */
-.intro-food-spotlight {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.intro-food-halo {
-  position: absolute;
-  inset: -25px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(217, 83, 30, 0.36) 0%, rgba(184, 56, 30, 0.15) 50%, transparent 72%);
-  filter: blur(24px);
-  pointer-events: none;
-  animation: introHaloBreathe 3.5s ease-in-out infinite alternate;
-}
-
-@keyframes introHaloBreathe {
-  0% { transform: scale(0.92); opacity: 0.75; }
-  100% { transform: scale(1.1); opacity: 1; }
-}
-
-.intro-food-plate {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  padding: 8px;
-  background: linear-gradient(145deg, rgba(253, 248, 244, 0.18) 0%, rgba(18, 9, 5, 0.9) 100%);
-  border: 1px solid rgba(253, 248, 244, 0.22);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), inset 0 2px 4px rgba(253, 248, 244, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.intro-food-plate:hover {
-  transform: translateY(-4px) scale(1.04);
-}
-
-.intro-food-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
-  filter: saturate(1.08) contrast(1.06);
-}
-
-/* Subtle Realistic Steam Rising */
-.intro-steam-overlay {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 80px;
-  pointer-events: none;
-}
-
-.intro-steam-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.intro-steam-line {
-  stroke: rgba(255, 230, 200, 0.75);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  fill: none;
-  stroke-dasharray: 20;
-  stroke-dashoffset: 20;
-  animation: introSteamLoop 2.6s ease-in-out infinite;
-}
-
-.intro-steam-line.s2 {
-  animation-delay: 0.8s;
-  stroke: rgba(255, 240, 220, 0.85);
-  stroke-width: 2.5;
-}
-
-.intro-steam-line.s3 {
-  animation-delay: 1.5s;
-}
-
-@keyframes introSteamLoop {
-  0% {
-    stroke-dashoffset: 20;
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  35% {
-    opacity: 0.75;
-  }
-  80% {
-    opacity: 0.3;
-  }
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-}
-
-/* Brand Identity Typography */
-.intro-brand-lockup {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 12px;
-}
-
-.intro-badge-mark {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #b8381e, #d9531e);
-  color: #fdf8f4;
-  font-weight: 950;
-  font-size: 20px;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 24px rgba(184, 56, 30, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(253, 248, 244, 0.25);
-}
-
-.intro-brand-name {
-  font-size: 46px;
-  font-weight: 950;
-  letter-spacing: -1px;
-  line-height: 1;
-  color: #fdf8f4;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #ffffff 30%, #ffd8c4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 18px rgba(184, 56, 30, 0.35));
-}
-
-.intro-slogan {
-  font-size: 19px;
-  font-weight: 500;
-  color: #e5d1c5;
-  letter-spacing: 0.3px;
-  margin-bottom: 26px;
-}
-
-.intro-slogan strong {
-  color: #ff9b6a;
-  font-weight: 800;
-}
-
-/* Main Call to Action Button */
-.intro-cta-button {
-  background: linear-gradient(135deg, #b8381e 0%, #d9531e 100%);
-  color: #fdf8f4;
-  border: 1px solid rgba(253, 248, 244, 0.3);
-  padding: 14px 40px;
+.intro-step-pill {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
   border-radius: 999px;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
   cursor: pointer;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  box-shadow: 0 12px 32px rgba(184, 56, 30, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  text-decoration: none;
+  gap: 6px;
 }
 
-.intro-cta-button:hover {
-  transform: translateY(-2px) scale(1.02);
-  background: linear-gradient(135deg, #c73e22 0%, #e85e26 100%);
-  box-shadow: 0 16px 40px rgba(184, 56, 30, 0.65);
+.intro-step-pill:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.intro-cta-button:active {
-  transform: scale(0.98);
+.intro-step-pill.active {
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.45);
 }
 
-.intro-cta-arrow {
-  width: 17px;
-  height: 17px;
-  transition: transform 0.2s ease;
-}
-
-.intro-cta-button:hover .intro-cta-arrow {
-  transform: translateX(4px);
-}
-
-/* 3. Bottom Minimal Progress Indicator (2.8s) */
-.intro-bottom-footer {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  max-width: 340px;
+.intro-nav-controls {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 10px;
 }
 
-.intro-progress-track {
+.intro-glass-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(14px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-glass-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 2. Main Stage (Trailer Viewport) */
+.intro-stage-container {
+  position: relative;
+  z-index: 5;
   width: 100%;
-  height: 3px;
-  background: rgba(253, 248, 244, 0.12);
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.intro-scene-slide {
+  display: none;
+  width: 100%;
+  animation: sceneSlideIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-scene-slide.active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+@keyframes sceneSlideIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.intro-slide-text {
+  flex: 1;
+  max-width: 580px;
+}
+
+.intro-tag-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 87, 34, 0.2);
+  border: 1px solid rgba(255, 120, 60, 0.45);
+  color: #ffab7a;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 16px rgba(255, 87, 34, 0.3);
+}
+
+.intro-headline {
+  font-size: 48px;
+  font-weight: 950;
+  line-height: 1.12;
+  letter-spacing: -1.2px;
+  background: linear-gradient(135deg, #ffffff 20%, #ffe0b2 60%, #ff7043 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 4px 20px rgba(255, 87, 34, 0.3));
+}
+
+.intro-description {
+  font-size: 17px;
+  color: #edd5c8;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.intro-feature-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.intro-feature-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.intro-cta-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  border: none;
+  padding: 13px 32px;
+  border-radius: 999px;
+  font-size: 15.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.intro-cta-action:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 36px rgba(255, 75, 31, 0.7);
+}
+
+/* Visual Mockup Displays (Right Side of Slide) */
+.intro-slide-visual {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scene 1: Brand Cloche Showcase */
+.intro-visual-cloche {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.intro-visual-cloche:hover {
+  transform: scale(1.08) rotateX(10deg);
+}
+
+.intro-visual-cloche svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 20px 45px rgba(255, 87, 34, 0.6));
+}
+
+.cloche-interactive-hint {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(255, 75, 31, 0.5);
+  animation: hintFloat 2s ease-in-out infinite alternate;
+}
+
+@keyframes hintFloat {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* Scene 2: Grid of 4 Signature Foods */
+.intro-visual-food-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.intro-food-card-interactive {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  padding: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+
+.intro-food-card-interactive:hover {
+  transform: translateY(-6px) scale(1.04);
+  border-color: #ff9b2f;
+  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.intro-food-emoji-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 10px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.intro-food-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.intro-food-desc {
+  font-size: 12px;
+  color: #ffaa7d;
+  font-weight: 600;
+}
+
+/* Scene 3: Flash Sale & Voucher Card */
+.intro-visual-promo-box {
+  width: 100%;
+  background: linear-gradient(145deg, rgba(255, 75, 31, 0.18) 0%, rgba(255, 140, 0, 0.08) 100%);
+  border: 1.5px solid rgba(255, 120, 60, 0.5);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px rgba(255, 75, 31, 0.28);
+}
+
+.intro-promo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.intro-flash-tag {
+  background: linear-gradient(135deg, #ff0055, #ff5500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 6px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  animation: flashPulse 1.5s infinite alternate;
+}
+
+@keyframes flashPulse {
+  0% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 0, 85, 0.6); }
+  100% { transform: scale(1.05); box-shadow: 0 0 24px rgba(255, 85, 0, 0.9); }
+}
+
+.intro-promo-timer {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffd166;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intro-voucher-ticket {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.intro-ticket-left strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.intro-ticket-left small {
+  font-size: 12px;
+  color: #ffbe9b;
+}
+
+.intro-ticket-btn {
+  background: #fff;
+  color: #d9480f;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.intro-ticket-btn:hover {
+  transform: scale(1.08);
+}
+
+/* Scene 4: Trust, Reviews & Order Tracking */
+.intro-visual-trust-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.intro-trust-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  backdrop-filter: blur(14px);
+}
+
+.intro-trust-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.intro-trust-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.intro-trust-info p {
+  font-size: 12.5px;
+  color: #e0beaf;
+  margin-top: 2px;
+}
+
+/* 3. Bottom Timeline Bar (10 Seconds Auto-Scroll) */
+.intro-bottom-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 12px 24px;
+  backdrop-filter: blur(16px);
+}
+
+.intro-timeline-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.intro-timeline-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff9b6a;
+  white-space: nowrap;
+}
+
+.intro-progress-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   overflow: hidden;
+  position: relative;
 }
 
-.intro-progress-fill {
-  width: 0%;
+.intro-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #b8381e, #d9531e, #ffaa7d);
+  width: 0%;
+  background: linear-gradient(90deg, #ff4b1f, #ff9b2f, #ffd166);
   border-radius: 999px;
-  animation: intro2sProgress 2.8s linear forwards;
+  box-shadow: 0 0 14px rgba(255, 120, 50, 0.9);
+  animation: intro10sFill 10s linear forwards;
 }
 
-@keyframes intro2sProgress {
+@keyframes intro10sFill {
   0% { width: 0%; }
   100% { width: 100%; }
 }
 
-.intro-footer-hint {
-  font-size: 12px;
-  font-weight: 500;
-  color: #9d887e;
-  letter-spacing: 0.3px;
+.intro-timer-display {
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  min-width: 32px;
+  text-align: right;
 }
 
-/* Mobile Responsive */
-@media (max-width: 640px) {
-  .fh-retro-intro {
-    padding: 22px 20px 26px;
+.intro-bottom-cta {
+  background: linear-gradient(135deg, #ff4b1f, #ff8c00);
+  color: #fff;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(255, 75, 31, 0.45);
+  transition: all 0.25s ease;
+}
+
+.intro-bottom-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 75, 31, 0.65);
+}
+
+/* Particle Explosion Burst on Click */
+.intro-burst-fx {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999999;
+  animation: burstParticle 0.65s cubic-bezier(0.12, 0.8, 0.32, 1) forwards;
+}
+
+@keyframes burstParticle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Responsive Styles for Tablet & Mobile */
+@media (max-width: 992px) {
+  .fh-ad-intro {
+    padding: 18px 20px 20px;
   }
-  .intro-food-spotlight {
-    width: 170px;
-    height: 170px;
-    margin-bottom: 20px;
+  .intro-scene-slide.active {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
   }
-  .intro-brand-name {
+  .intro-slide-text {
+    max-width: 100%;
+  }
+  .intro-headline {
     font-size: 34px;
   }
-  .intro-badge-mark {
-    width: 40px;
-    height: 40px;
-    font-size: 17px;
-  }
-  .intro-slogan {
-    font-size: 16px;
-    margin-bottom: 22px;
-  }
-  .intro-cta-button {
-    padding: 12px 32px;
+  .intro-description {
     font-size: 15px;
+    margin-bottom: 18px;
+  }
+  .intro-feature-chips {
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .intro-slide-visual {
+    max-width: 100%;
+    width: 100%;
+  }
+  .intro-visual-cloche {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 650px) {
+  .intro-top-header {
+    flex-wrap: wrap;
+  }
+  .intro-scene-stepper {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+  }
+  .intro-step-pill {
+    padding: 4px 10px;
+    font-size: 11.5px;
+  }
+  .intro-headline {
+    font-size: 28px;
+  }
+  .intro-bottom-bar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 16px;
+  }
+  .intro-timeline-wrapper {
+    width: 100%;
+  }
+  .intro-bottom-cta {
+    width: 100%;
+    justify-content: center;
   }
 }
