@@ -57,12 +57,14 @@ header {
     linear-gradient(90deg, rgba(255, 250, 246, 0.94), rgba(255, 240, 230, 0.9)),
     rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid rgba(230, 198, 181, 0.58);
   box-shadow: 0 16px 42px rgba(61, 32, 18, 0.08);
   position: sticky;
   top: 0;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
   z-index: 100;
+  transform: translateZ(0);
 }
 
 
@@ -4633,6 +4635,102 @@ footer {
   color: #5c473c;
 }
 
+.chat-product-list {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.chat-product-card {
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid #f0ddd2;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  overflow: hidden;
+  padding: 8px;
+}
+
+.chat-product-image {
+  align-items: center;
+  aspect-ratio: 1;
+  background: #fff3ec;
+  border-radius: 6px;
+  color: #ff5722;
+  display: flex;
+  font-size: 20px;
+  font-weight: 800;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.chat-product-image img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.chat-product-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-product-info > strong {
+  color: #2b1c15;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.chat-product-info > small {
+  color: #796359;
+  display: -webkit-box;
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: 3px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.chat-product-bottom {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+.chat-product-bottom > span {
+  color: #e74b17;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chat-add-cart {
+  background: #ff5722;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  min-height: 30px;
+  padding: 6px 12px;
+}
+
+.chat-add-cart:hover:not(:disabled) {
+  background: #df4314;
+}
+
+.chat-add-cart:disabled {
+  background: #c9bdb6;
+  cursor: not-allowed;
+}
+
 .chat-quick-suggestions {
   display: flex;
   flex-wrap: wrap;
@@ -7845,6 +7943,8 @@ footer {
   -webkit-user-select: none !important;
   overflow: hidden;
   z-index: 9995;
+  contain: strict;
+  transform: translateZ(0);
 }
 
 .fh-falling-food-item {
@@ -7857,7 +7957,7 @@ footer {
   user-select: none !important;
   -webkit-user-select: none !important;
   will-change: transform, opacity;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
   animation: fhGentleFoodFall var(--food-duration, 7s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 

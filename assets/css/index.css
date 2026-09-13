@@ -972,24 +972,25 @@ body::after {
 
 .home-reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.46s ease, transform 0.46s ease;
+  transform: translateY(16px);
+  transition: opacity 0.32s ease, transform 0.32s ease;
+  will-change: opacity, transform;
 }
 
 .home-reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
+  will-change: auto;
 }
 
 .home-food-card.home-reveal,
 .best-seller-card.home-reveal,
 .home-review-card.home-reveal {
   transition:
-    opacity 0.46s ease,
-    transform 0.46s ease,
+    opacity 0.32s ease,
+    transform 0.32s ease,
     border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    flex 0.32s ease;
+    box-shadow 0.18s ease;
 }
 
 .home-food-card:hover img,

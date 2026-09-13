@@ -919,6 +919,8 @@ function initGentleFoodRain() {
         -webkit-user-select: none !important;
         overflow: hidden;
         z-index: 9995;
+        contain: strict;
+        transform: translateZ(0);
       }
       .fh-falling-food-item {
         position: absolute;
@@ -930,7 +932,7 @@ function initGentleFoodRain() {
         user-select: none !important;
         -webkit-user-select: none !important;
         will-change: transform, opacity;
-        filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
         animation: fhGentleFoodFall var(--food-duration, 7s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
       }
       @keyframes fhGentleFoodFall {
@@ -972,9 +974,19 @@ function initGentleFoodRain() {
     return container;
   }
 
+  let isScrollingNow = false;
+  let scrollTimeout = null;
+  window.addEventListener("scroll", () => {
+    isScrollingNow = true;
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrollingNow = false;
+    }, 280);
+  }, { passive: true });
+
   // Thả 1 icon đồ ăn riêng lẻ
   function spawnFoodItem() {
-    if (document.hidden) return; // Không thả khi người dùng chuyển tab
+    if (document.hidden || isScrollingNow) return; // Không thả khi chuyển tab hoặc đang cuộn trang
     const container = getRainContainer();
     if (!container) return;
 

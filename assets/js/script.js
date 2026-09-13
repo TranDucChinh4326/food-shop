@@ -4681,29 +4681,42 @@ function initCompactHeader() {
   if (!header) return;
 
   let isCompact = false;
+  let headerTicking = false;
 
   const updateHeaderState = () => {
-    if (window.innerWidth <= 900) {
-      isCompact = false;
-      header.classList.remove("header-compact");
+    headerTicking = false;
+    const isMobile = window.innerWidth <= 900;
+    if (isMobile) {
+      if (isCompact) {
+        isCompact = false;
+        header.classList.remove("header-compact");
+      }
       return;
     }
 
-    if (!isCompact && window.scrollY > 170) {
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    if (!isCompact && scrollY > 170) {
       isCompact = true;
       header.classList.add("header-compact");
       return;
     }
 
-    if (isCompact && window.scrollY < 48) {
+    if (isCompact && scrollY < 48) {
       isCompact = false;
       header.classList.remove("header-compact");
     }
   };
 
+  const scheduleHeaderUpdate = () => {
+    if (!headerTicking) {
+      headerTicking = true;
+      window.requestAnimationFrame(updateHeaderState);
+    }
+  };
+
   updateHeaderState();
-  window.addEventListener("scroll", updateHeaderState, { passive: true });
-  window.addEventListener("resize", updateHeaderState);
+  window.addEventListener("scroll", scheduleHeaderUpdate, { passive: true });
+  window.addEventListener("resize", scheduleHeaderUpdate, { passive: true });
 }
 
 function removeVietnameseTones(str) {
@@ -5007,30 +5020,36 @@ function initBackToTopButton() {
   circle.style.strokeDashoffset = `${circumference}`;
 
   let isTicking = false;
+  let isBtnVisible = false;
+  let cachedMaxScroll = 1;
+
+  function recalculateMaxScroll() {
+    cachedMaxScroll = Math.max(1, (document.documentElement.scrollHeight || document.body.scrollHeight || 0) - window.innerHeight);
+  }
+  recalculateMaxScroll();
+  window.addEventListener("resize", recalculateMaxScroll, { passive: true });
 
   function updateScrollProgress() {
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-    if (scrollHeight > 0) {
-      const progress = Math.min(Math.max(scrollY / scrollHeight, 0), 1);
-      const offset = circumference - progress * circumference;
-      circle.style.strokeDashoffset = `${offset}`;
-    }
-
-    if (scrollY > 350) {
-      btn.classList.add("visible");
-    } else {
-      btn.classList.remove("visible");
-    }
-
     isTicking = false;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+
+    if (cachedMaxScroll > 0) {
+      const progress = Math.min(Math.max(scrollY / cachedMaxScroll, 0), 1);
+      const offset = circumference - progress * circumference;
+      circle.style.strokeDashoffset = `${offset.toFixed(1)}`;
+    }
+
+    const shouldShow = scrollY > 350;
+    if (shouldShow !== isBtnVisible) {
+      isBtnVisible = shouldShow;
+      btn.classList.toggle("visible", shouldShow);
+    }
   }
 
   window.addEventListener("scroll", () => {
     if (!isTicking) {
-      window.requestAnimationFrame(updateScrollProgress);
       isTicking = true;
+      window.requestAnimationFrame(updateScrollProgress);
     }
   }, { passive: true });
 
@@ -5311,7 +5330,10 @@ async function requestChatReply(message) {
     throw new Error(data.message || "Không thể kết nối chatbot.");
   }
 
-  return data.message || "Xin lỗi, mình chưa có câu trả lời phù hợp.";
+  return {
+    message: data.message || "Xin lỗi, mình chưa có câu trả lời phù hợp.",
+    recommendations: Array.isArray(data.recommendations) ? data.recommendations : []
+  };
 }
 
 function renderChatMessage(container, sender, message) {
@@ -5321,6 +5343,97 @@ function renderChatMessage(container, sender, message) {
   container.insertAdjacentHTML("beforeend", `
     <div class="chat-message ${senderClass}">${escapeHtml(message).replace(/\n/g, "<br>")}</div>
   `);
+}
+
+function renderChatRecommendations(container, recommendations) {
+  if (!container || !Array.isArray(recommendations) || !recommendations.length) return;
+
+  const cards = recommendations.map(item => {
+    const isCombo = item.type === "combo";
+    const available = Number(isCombo ? item.maxAvailable : item.stockQuantity) > 0;
+    const detail = isCombo
+      ? (item.items || []).map(food => `${Number(food.quantity || 1)}x ${food.name}`).join(" • ")
+      : (item.categoryName || item.description || "Món ngon tại Bếp 1979");
+    const matchedFood = !isCombo ? foods.find(food => String(food.id) === String(item.id)) : null;
+    const displayPrice = matchedFood ? getFoodSalePrice(matchedFood) : Number(item.price || 0);
+
+    return `
+      <article class="chat-product-card">
+        <div class="chat-product-image">
+          ${item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy">` : `<span>79</span>`}
+        </div>
+        <div class="chat-product-info">
+          <strong>${escapeHtml(item.name)}</strong>
+          <small>${escapeHtml(detail)}</small>
+          <div class="chat-product-bottom">
+            <span>${formatMoney(displayPrice)}</span>
+            <button type="button" class="chat-add-cart" data-chat-item="${encodeURIComponent(JSON.stringify(item))}" ${available ? "" : "disabled"}>
+              ${available ? "Thêm" : "Hết hàng"}
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  container.insertAdjacentHTML("beforeend", `<div class="chat-product-list">${cards}</div>`);
+}
+
+function addChatRecommendationToCart(item, button) {
+  if (!isLoggedIn()) {
+    requireLogin("Vui lòng đăng nhập để thêm món vào giỏ hàng.", window.location.href);
+    return;
+  }
+
+  const isCombo = item.type === "combo";
+  const limit = Number(isCombo ? item.maxAvailable : item.stockQuantity || 0);
+  if (limit <= 0) {
+    showSiteToast(isCombo ? "Combo này đã hết suất." : "Món này đã hết hàng.", "error");
+    return;
+  }
+
+  const existing = cart.find(cartItem => isCombo
+    ? cartItem.type === "combo" && String(cartItem.comboId || cartItem.id) === String(item.id)
+    : cartItem.type !== "combo" && String(cartItem.id) === String(item.id));
+  if (Number(existing?.quantity || 0) >= limit) {
+    showSiteToast(`Bạn đang đặt tối đa ${limit} ${isCombo ? "suất" : "phần"}.`, "warning");
+    return;
+  }
+
+  if (existing) {
+    existing.quantity = Number(existing.quantity || 0) + 1;
+  } else if (isCombo) {
+    cart.push({
+      type: "combo",
+      id: `combo-${item.id}`,
+      comboId: Number(item.id),
+      name: item.name,
+      price: Number(item.price || 0),
+      quantity: 1,
+      image: item.image || "",
+      items: (item.items || []).map(food => ({
+        foodId: Number(food.foodId),
+        name: food.name,
+        quantity: Number(food.quantity || 1)
+      })),
+      maxAvailable: limit
+    });
+  } else {
+    const matchedFood = foods.find(food => String(food.id) === String(item.id));
+    cart.push({
+      id: Number(item.id),
+      name: item.name,
+      price: matchedFood ? getFoodSalePrice(matchedFood) : Number(item.price || 0),
+      quantity: 1,
+      image: item.image || ""
+    });
+  }
+
+  saveCart();
+  renderCart();
+  updateCartCount();
+  animateCartAddButton(button);
+  showSiteToast(`Đã thêm ${item.name} vào giỏ hàng.`, "success");
 }
 
 async function loadChatHistory(container) {
@@ -5383,9 +5496,10 @@ function initChatSupportWidget() {
       </div>
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Bếp 1979 có thể hỗ trợ gì cho bạn?</div>
-        <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, giá, khuyến mãi, giao hàng, giỏ hàng hoặc trạng thái đơn.</div>
+        <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, combo, giá, khuyến mãi, giao hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
+          <button type="button" class="chat-suggestion-chip" data-chat-prompt="Gợi ý combo còn hàng cho tôi">🍱 Combo món ăn</button>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Có những mã giảm giá nào?">🎟️ Voucher ưu đãi</button>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Phí và thời gian giao hàng như thế nào?">🛵 Phí & giao hàng</button>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Kiểm tra trạng thái đơn hàng của tôi">📦 Tra cứu đơn hàng</button>
@@ -5528,6 +5642,16 @@ function initChatSupportWidget() {
   });
 
   chatMessages.addEventListener("click", event => {
+    const addButton = event.target.closest(".chat-add-cart");
+    if (addButton) {
+      try {
+        addChatRecommendationToCart(JSON.parse(decodeURIComponent(addButton.dataset.chatItem)), addButton);
+      } catch (error) {
+        showSiteToast("Không đọc được thông tin món. Vui lòng thử lại.", "error");
+      }
+      return;
+    }
+
     const chip = event.target.closest(".chat-suggestion-chip");
     if (!chip) return;
     const prompt = chip.dataset.chatPrompt;
@@ -5555,8 +5679,9 @@ function initChatSupportWidget() {
     try {
       const reply = await requestChatReply(message);
       if (lastBotMessage) {
-        lastBotMessage.innerHTML = escapeHtml(reply).replace(/\n/g, "<br>");
+        lastBotMessage.innerHTML = escapeHtml(reply.message).replace(/\n/g, "<br>");
       }
+      renderChatRecommendations(chatMessages, reply.recommendations);
     } catch (error) {
       if (lastBotMessage) {
         lastBotMessage.textContent = error.message || "Xin lỗi, chatbot đang gặp lỗi. Bạn thử lại sau nhé.";
