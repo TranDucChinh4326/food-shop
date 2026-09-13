@@ -718,6 +718,60 @@ async function requestFormData(url, formData, options = {}) {
   return data;
 }
 
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error("Không thể nén ảnh."));
+    }, type, quality);
+  });
+}
+
+async function compressImageFile(file, options = {}) {
+  const maxWidth = options.maxWidth || 1600;
+  const maxHeight = options.maxHeight || 900;
+  const targetBytes = options.targetBytes || 900 * 1024;
+  const outputType = options.type || "image/webp";
+
+  if (!file || !file.type?.startsWith("image/")) {
+    throw new Error("Vui lòng chọn tệp hình ảnh hợp lệ.");
+  }
+
+  const sourceUrl = URL.createObjectURL(file);
+  const image = new Image();
+  image.decoding = "async";
+
+  try {
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error("Không thể đọc ảnh đã chọn."));
+      image.src = sourceUrl;
+    });
+
+    const ratio = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight, 1);
+    const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+    const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    ctx.drawImage(image, 0, 0, width, height);
+
+    let quality = 0.86;
+    let blob = await canvasToBlob(canvas, outputType, quality);
+    while (blob.size > targetBytes && quality > 0.52) {
+      quality -= 0.08;
+      blob = await canvasToBlob(canvas, outputType, quality);
+    }
+
+    const extension = outputType === "image/webp" ? "webp" : "jpg";
+    const basename = String(file.name || "image").replace(/\.[^.]+$/, "") || "image";
+    return new File([blob], `${basename}-compressed.${extension}`, { type: outputType });
+  } finally {
+    URL.revokeObjectURL(sourceUrl);
+  }
+}
+
 function renderPermissionChecks(container, selected = [], name = "permissions") {
   if (!container) return;
 
@@ -1271,7 +1325,7 @@ function resetComboForm() {
   if (id) id.value = "";
   if (comboImageUrl) comboImageUrl.value = "";
   const hint = document.getElementById("comboImageHint");
-  if (hint) hint.textContent = "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
+  if (hint) hint.textContent = "Chọn ảnh JPG, PNG hoặc WebP. Hệ thống sẽ tự nén trước khi tải lên.";
   comboDraftItems = [];
   renderComboDraftItems();
   const saveBtn = document.getElementById("saveComboBtn");
@@ -1438,7 +1492,7 @@ async function editCombo(comboId) {
   if (comboImageFile) comboImageFile.value = "";
   if (comboImageUrl) comboImageUrl.value = combo.image || "";
   const hint = document.getElementById("comboImageHint");
-  if (hint) hint.textContent = combo.image ? "Đang dùng ảnh combo đã tải lên. Chọn ảnh mới nếu muốn thay đổi." : "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
+  if (hint) hint.textContent = combo.image ? "Đang dùng ảnh combo đã tải lên. Chọn ảnh mới nếu muốn thay đổi, hệ thống sẽ tự nén." : "Chọn ảnh JPG, PNG hoặc WebP. Hệ thống sẽ tự nén trước khi tải lên.";
   document.getElementById("comboIsActive").value = Number(combo.is_active ?? combo.isActive ?? 1) === 1 ? "1" : "0";
   document.getElementById("comboDescription").value = combo.description || "";
   comboDraftItems = (combo.items || []).map(item => ({
@@ -1464,12 +1518,15 @@ async function uploadComboImageFile() {
     throw new Error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.");
   }
 
-  if (file.size > 2 * 1024 * 1024) {
-    throw new Error("Ảnh combo tối đa 2MB.");
-  }
+  const uploadFile = await compressImageFile(file, {
+    maxWidth: 1800,
+    maxHeight: 720,
+    targetBytes: 950 * 1024,
+    type: "image/webp"
+  });
 
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("image", uploadFile);
   const data = await requestFormData(`${ADMIN_API}/combos/image`, formData);
   if (comboImageUrl) comboImageUrl.value = data.image || "";
   return data.image || "";
@@ -4793,7 +4850,12 @@ document.getElementById("addComboItemBtn")?.addEventListener("click", addComboDr
 comboImageFile?.addEventListener("change", () => {
   const hint = document.getElementById("comboImageHint");
   const file = comboImageFile.files?.[0];
-  if (hint) hint.textContent = file ? `Đã chọn: ${file.name}` : "Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.";
+  if (hint) {
+    const sizeMb = file ? (file.size / (1024 * 1024)).toFixed(1) : "";
+    hint.textContent = file
+      ? `Đã chọn: ${file.name} (${sizeMb}MB). Hệ thống sẽ tự nén trước khi tải lên.`
+      : "Chọn ảnh JPG, PNG hoặc WebP. Hệ thống sẽ tự nén trước khi tải lên.";
+  }
 });
 comboItemsList?.addEventListener("click", event => {
   const button = event.target.closest("[data-remove-combo-item]");
