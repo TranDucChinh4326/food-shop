@@ -30,7 +30,11 @@ body::after {
 }
 
 .home-combo-section {
-  padding: 42px 8% 0;
+  padding: 26px 8% 0;
+}
+
+.home-combo-section[hidden] {
+  display: none !important;
 }
 
 .combo-banner-shell {
@@ -38,29 +42,30 @@ body::after {
 }
 
 .combo-banner-track {
+  min-height: 380px;
   position: relative;
-  min-height: 330px;
 }
 
 .combo-banner-slide {
-  align-items: stretch;
+  align-items: center;
   background:
-    linear-gradient(135deg, rgba(36, 24, 18, 0.94), rgba(111, 49, 22, 0.9)),
-    #241812;
-  border: 1px solid rgba(255, 188, 120, 0.35);
-  border-radius: 8px;
-  box-shadow: 0 28px 70px rgba(70, 34, 14, 0.2);
+    radial-gradient(circle at 85% 25%, rgba(255, 122, 40, 0.28) 0%, transparent 46%),
+    radial-gradient(circle at 15% 85%, rgba(217, 72, 15, 0.18) 0%, transparent 42%),
+    linear-gradient(135deg, #24140e 0%, #341a10 40%, #461f12 100%);
+  border: 1.5px solid rgba(255, 185, 130, 0.28);
+  border-radius: 20px;
+  box-shadow: 0 20px 48px rgba(45, 18, 9, 0.16), 0 4px 16px rgba(255, 87, 34, 0.08);
   color: #fff;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   inset: 0;
-  min-height: 330px;
+  min-height: 380px;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
-  transform: translateX(16px);
-  transition: opacity 0.42s ease, transform 0.42s ease;
+  transform: translateX(20px);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .combo-banner-slide.active {
@@ -74,101 +79,398 @@ body::after {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(28px, 5vw, 62px);
+  padding: clamp(28px, 4.5vw, 56px);
+  position: relative;
+  z-index: 2;
 }
 
-.combo-banner-copy .section-kicker {
+.combo-kicker-tag {
+  align-items: center;
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffd8bf;
-  margin-bottom: 16px;
-}
-
-.combo-banner-copy h2 {
-  font-size: clamp(32px, 5vw, 58px);
+  animation: fireFlameGradient 3.5s ease infinite;
+  background: linear-gradient(135deg, #ff4500 0%, #ff6222 50%, #ff8a1f 100%);
+  background-size: 200% 200%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(255, 69, 0, 0.32);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 11.5px;
+  font-weight: 800;
+  gap: 6px;
+  letter-spacing: 0.5px;
   line-height: 1;
-  margin: 0 0 16px;
+  margin-bottom: 14px;
+  padding: 6px 14px;
+  text-transform: uppercase;
 }
 
-.combo-banner-copy p {
-  color: rgba(255, 244, 235, 0.9);
-  font-size: 17px;
-  line-height: 1.6;
+.combo-kicker-tag .combo-fire-icon {
+  animation: flameDance 1.4s ease-in-out infinite;
+  display: inline-block;
+  font-size: 13px;
+}
+
+.combo-banner-title {
+  color: #ffffff;
+  font-size: clamp(28px, 3.6vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
   margin: 0 0 10px;
-  max-width: 680px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
-.combo-banner-copy small {
-  color: #ffc49e;
+.combo-banner-desc {
+  color: rgba(255, 238, 226, 0.88);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 16px;
+  max-width: 580px;
+}
+
+.combo-dishes-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.combo-dishes-heading {
+  color: #ffd8bf;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.5;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
-.combo-banner-actions {
+.combo-dishes-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.combo-dish-badge {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #fff2e8;
+  display: inline-flex;
+  font-size: 13px;
+  gap: 6px;
+  padding: 5px 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.combo-dish-badge:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 185, 130, 0.4);
+}
+
+.combo-dish-badge .dish-qty {
+  background: rgba(255, 138, 31, 0.25);
+  border-radius: 999px;
+  color: #ffd166;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 1px 6px;
+}
+
+.combo-dish-badge .dish-name {
+  font-weight: 600;
+}
+
+.combo-banner-bottom {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 28px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+.combo-price-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.combo-price-hint {
+  color: #ffc29b;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.combo-price-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.combo-price-val {
+  color: #ffca3a;
+  font-size: clamp(26px, 3.2vw, 34px);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(255, 202, 58, 0.28);
+}
+
+.combo-stock-chip {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+  padding: 4px 10px;
+}
+
+.combo-stock-chip.is-available {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: #6ee7b7;
+}
+
+.combo-stock-chip.is-soldout {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #fca5a5;
+}
+
+.combo-stock-dot {
+  border-radius: 50%;
+  height: 6px;
+  width: 6px;
+}
+
+.combo-stock-chip.is-available .combo-stock-dot {
+  animation: stockPulseGreen 1.8s infinite;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.combo-stock-chip.is-soldout .combo-stock-dot {
+  background: #ef4444;
+}
+
+@keyframes stockPulseGreen {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.combo-actions-wrap {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 24px;
 }
 
-.combo-banner-actions strong {
-  color: #ffd166;
-  font-size: 30px;
+.combo-primary-buy-btn {
+  align-items: center;
+  background: linear-gradient(135deg, #ff5722 0%, #ff7a28 100%);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.38);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14.5px;
+  font-weight: 800;
+  gap: 8px;
+  letter-spacing: 0.2px;
+  min-height: 44px;
+  padding: 0 22px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.combo-primary-buy-btn:hover:not(:disabled) {
+  box-shadow: 0 12px 30px rgba(255, 87, 34, 0.5);
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.combo-primary-buy-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.combo-primary-buy-btn:disabled {
+  background: #624b42;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+
+.combo-secondary-btn {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 13.5px;
+  font-weight: 700;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.combo-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 185, 130, 0.5);
+  color: #ffd8bf;
 }
 
 .combo-banner-media {
   align-items: center;
-  background: linear-gradient(135deg, rgba(255, 122, 40, 0.18), rgba(255, 255, 255, 0.08));
   display: flex;
   justify-content: center;
-  min-height: 100%;
-  overflow: hidden;
+  padding: clamp(20px, 3.5vw, 42px);
+  position: relative;
 }
 
-.combo-banner-media img {
-  height: 100%;
-  min-height: 330px;
-  object-fit: cover;
+.combo-media-showcase {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  max-width: 440px;
+  position: relative;
   width: 100%;
 }
 
-.combo-banner-media span {
-  align-items: center;
-  background: linear-gradient(135deg, #ff5722, #ff9b2f);
-  border-radius: 28px;
-  box-shadow: 0 22px 54px rgba(255, 87, 34, 0.38);
-  display: inline-flex;
-  font-size: 64px;
-  font-weight: 950;
-  height: 150px;
-  justify-content: center;
-  width: 150px;
+.combo-stage-halo {
+  animation: comboHaloBreathe 4.5s ease-in-out infinite alternate;
+  background: radial-gradient(circle, rgba(255, 138, 31, 0.38) 0%, rgba(255, 87, 34, 0.14) 50%, transparent 72%);
+  border-radius: 50%;
+  filter: blur(28px);
+  height: 105%;
+  pointer-events: none;
+  position: absolute;
+  width: 105%;
+  z-index: 1;
 }
 
-.combo-banner-controls {
-  bottom: 20px;
+@keyframes comboHaloBreathe {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.combo-stage-frame {
+  aspect-ratio: 1.15 / 1;
+  background: #ffffff;
+  border: 2.5px solid rgba(255, 220, 190, 0.35);
+  border-radius: 20px;
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.35),
+    0 4px 14px rgba(255, 87, 34, 0.12);
   display: flex;
-  gap: 8px;
-  left: clamp(28px, 5vw, 62px);
+  justify-content: center;
+  max-width: 420px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.38s ease, box-shadow 0.38s ease;
+  width: 100%;
+  z-index: 2;
+}
+
+.combo-banner-slide:hover .combo-stage-frame {
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.42),
+    0 8px 20px rgba(255, 87, 34, 0.2);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.combo-stage-frame img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+  width: 100%;
+}
+
+.combo-banner-slide:hover .combo-stage-frame img {
+  transform: scale(1.05);
+}
+
+.combo-media-fallback {
+  align-items: center;
+  background: linear-gradient(135deg, #ff5722 0%, #ff8a1f 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  width: 100%;
+}
+
+.combo-media-fallback .fallback-monogram {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.combo-media-fallback small {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.combo-stage-badge {
+  background: linear-gradient(135deg, #ff4500 0%, #ff7a28 100%);
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 5px 12px;
   position: absolute;
+  right: 14px;
+  text-transform: uppercase;
+  top: 14px;
   z-index: 3;
 }
 
+.combo-banner-controls {
+  bottom: 18px;
+  display: flex;
+  gap: 8px;
+  left: clamp(28px, 4.5vw, 56px);
+  position: absolute;
+  z-index: 4;
+}
+
 .combo-banner-controls button {
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.3);
   border: 0;
   border-radius: 999px;
   cursor: pointer;
-  height: 9px;
-  transition: width 0.2s ease, background 0.2s ease;
-  width: 9px;
+  height: 8px;
+  transition: width 0.25s ease, background 0.25s ease;
+  width: 8px;
 }
 
 .combo-banner-controls button.active {
-  background: #ffd166;
-  width: 30px;
+  background: linear-gradient(90deg, #ffd166, #ff8a1f);
+  box-shadow: 0 0 10px rgba(255, 209, 102, 0.5);
+  width: 26px;
 }
 
 .home-section-heading,
@@ -970,45 +1272,73 @@ body::after {
   color: #d94412;
 }
 
-/* Style cho trang chủ: hero, món nổi bật, danh mục, thông báo, quảng cáo và các khối giới thiệu. */
-@media (max-width: 900px) {
+/* Responsive styles cho banner combo trang chu */
+@media (max-width: 960px) {
   .home-combo-section {
-    padding: 28px 5% 0;
+    padding: 20px 5% 0;
+  }
+
+  .combo-banner-track {
+    min-height: auto;
   }
 
   .combo-banner-slide {
     grid-template-columns: 1fr;
+    min-height: auto;
+    position: relative;
+    transform: none;
+  }
+
+  .combo-banner-slide:not(.active) {
+    display: none;
   }
 
   .combo-banner-media {
-    min-height: 220px;
     order: -1;
+    padding: 24px 24px 8px;
   }
 
-  .combo-banner-media img {
-    min-height: 220px;
+  .combo-stage-frame {
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
   }
 
   .combo-banner-copy {
-    padding: 26px;
-  }
-}
-
-@media (max-width: 560px) {
-  .combo-banner-copy h2 {
-    font-size: 30px;
-  }
-
-  .combo-banner-copy p {
-    font-size: 15px;
-  }
-
-  .combo-banner-actions strong {
-    font-size: 24px;
+    padding: 20px 24px 32px;
   }
 
   .combo-banner-controls {
-    bottom: 14px;
-    left: 26px;
+    bottom: 12px;
+    left: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .combo-banner-title {
+    font-size: 24px;
+  }
+
+  .combo-banner-desc {
+    font-size: 14px;
+  }
+
+  .combo-banner-bottom {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .combo-price-val {
+    font-size: 24px;
+  }
+
+  .combo-actions-wrap {
+    width: 100%;
+  }
+
+  .combo-primary-buy-btn,
+  .combo-secondary-btn {
+    flex: 1;
+    justify-content: center;
   }
 }

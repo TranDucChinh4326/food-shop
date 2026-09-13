@@ -1473,23 +1473,77 @@ function renderHomeCombos() {
   box.innerHTML = `
     <div class="combo-banner-track" data-combo-track>
       ${homeCombos.map((combo, index) => {
-        const itemNames = (combo.items || []).slice(0, 4).map(item => `${item.quantity}x ${item.name}`).join(" • ");
-        const image = combo.image || combo.items?.find(item => item.image)?.image || "";
+        const items = combo.items || [];
+        const image = combo.image || items.find(item => item.image)?.image || "";
         const soldOut = Number(combo.maxAvailable || 0) <= 0;
         return `
           <article class="combo-banner-slide ${index === 0 ? "active" : ""}" data-combo-slide="${index}">
             <div class="combo-banner-copy">
-              <span class="section-kicker">Combo món ăn</span>
-              <h2>${escapeHtml(combo.name)}</h2>
-              <p>${escapeHtml(combo.description || itemNames || "Combo được chọn từ các món có sẵn trong thực đơn.")}</p>
-              <small>${escapeHtml(itemNames)}</small>
-              <div class="combo-banner-actions">
-                <strong>${formatMoney(combo.price || 0)}</strong>
-                <span class="status-pill ${soldOut ? "danger" : "success"}">${soldOut ? "Tạm hết" : `Còn ${Number(combo.maxAvailable || 0)}`}</span>
+              <div class="combo-kicker-tag">
+                <span class="combo-fire-icon">🔥</span>
+                <span>COMBO ĐẶC SẮC • BẾP 1979</span>
+              </div>
+              <h2 class="combo-banner-title">${escapeHtml(combo.name)}</h2>
+              <p class="combo-banner-desc">${escapeHtml(combo.description || "Combo món ngon trọn vị đậm đà Bếp 1979, tiết kiệm và tiện lợi.")}</p>
+
+              ${items.length ? `
+                <div class="combo-dishes-wrap">
+                  <span class="combo-dishes-heading">Món gồm có:</span>
+                  <div class="combo-dishes-tags">
+                    ${items.map(item => `
+                      <span class="combo-dish-badge" title="${escapeHtml(item.name)}">
+                        <span class="dish-qty">${item.quantity}x</span>
+                        <span class="dish-name">${escapeHtml(item.name)}</span>
+                      </span>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+
+              <div class="combo-banner-bottom">
+                <div class="combo-price-card">
+                  <span class="combo-price-hint">Giá trọn gói</span>
+                  <div class="combo-price-row">
+                    <strong class="combo-price-val">${formatMoney(combo.price || 0)}</strong>
+                    <span class="combo-stock-chip ${soldOut ? "is-soldout" : "is-available"}">
+                      <span class="combo-stock-dot"></span>
+                      ${soldOut ? "Tạm hết" : `Còn ${Number(combo.maxAvailable || 0)} suất`}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="combo-actions-wrap">
+                  <button type="button" class="combo-primary-buy-btn" onclick="orderHomeCombo(${combo.id}, event)" ${soldOut ? "disabled" : ""}>
+                    <svg class="cart-svg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span>${soldOut ? "Tạm hết suất" : "Đặt combo ngay"}</span>
+                  </button>
+                  <a href="#homeFoodSections" class="combo-secondary-btn">
+                    <span>Xem thực đơn</span>
+                    <span class="arrow-right">➔</span>
+                  </a>
+                </div>
               </div>
             </div>
+
             <div class="combo-banner-media">
-              ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(combo.name)}">` : `<span>79</span>`}
+              <div class="combo-media-showcase">
+                <div class="combo-stage-halo"></div>
+                <div class="combo-stage-frame">
+                  ${image ? `
+                    <img src="${escapeHtml(image)}" alt="${escapeHtml(combo.name)}" loading="lazy">
+                  ` : `
+                    <div class="combo-media-fallback">
+                      <span class="fallback-monogram">BẾP 1979</span>
+                      <small>Đậm vị truyền thống</small>
+                    </div>
+                  `}
+                  <span class="combo-stage-badge">TIẾT KIỆM</span>
+                </div>
+              </div>
             </div>
           </article>
         `;
@@ -1503,6 +1557,57 @@ function renderHomeCombos() {
   `;
   startHomeComboSlider();
 }
+
+function orderHomeCombo(comboId, event) {
+  if (!isLoggedIn()) {
+    requireLogin("Vui lòng đăng nhập để đặt combo món ăn.", window.location.href);
+    return;
+  }
+
+  const combo = homeCombos.find(c => String(c.id) === String(comboId));
+  if (!combo) {
+    showSiteToast("Không tìm thấy thông tin combo.", "error");
+    return;
+  }
+
+  const maxAvailable = Number(combo.maxAvailable || 0);
+  if (maxAvailable <= 0) {
+    showSiteToast("Combo này hiện đã tạm hết món.", "warning");
+    return;
+  }
+
+  const items = combo.items || [];
+  if (!items.length) {
+    showSiteToast("Combo chưa có món ăn khả dụng.", "warning");
+    return;
+  }
+
+  items.forEach(item => {
+    const foodId = item.foodId;
+    const qty = Math.max(1, Number(item.quantity || 1));
+    const food = foods.find(f => String(f.id) === String(foodId));
+    const itemInCart = cart.find(c => String(c.id) === String(foodId));
+
+    if (itemInCart) {
+      itemInCart.quantity = (itemInCart.quantity || 0) + qty;
+    } else {
+      cart.push({
+        id: foodId,
+        name: item.name || food?.name || "Món combo",
+        price: food ? getFoodSalePrice(food) : Number(item.price || 0),
+        quantity: qty,
+        image: item.image || food?.image || ""
+      });
+    }
+  });
+
+  saveCart();
+  renderCart();
+  updateCartCount();
+  animateCartAddButton(event?.currentTarget);
+  showSiteToast(`Đã thêm combo "${combo.name}" vào giỏ hàng!`, "success");
+}
+window.orderHomeCombo = orderHomeCombo;
 
 function startHomeComboSlider() {
   const box = document.getElementById("homeComboBanners");
