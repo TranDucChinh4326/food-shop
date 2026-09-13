@@ -372,16 +372,8 @@
 
       </div>
 
-      <!-- 3. Bottom Timeline Bar (10s Auto-Scroll Progress) -->
+      <!-- 3. Bottom CTA Bar (Bo thanh tien trinh, giu nut Vao Website) -->
       <div class="intro-bottom-bar">
-        <div class="intro-timeline-wrapper">
-          <span class="intro-timeline-label" id="introTimelineLabel">Cảnh 1/4: Giới thiệu Bếp 1979</span>
-          <div class="intro-progress-track">
-            <div class="intro-progress-bar" id="introProgressBar"></div>
-          </div>
-          <span class="intro-timer-display" id="introTimerDisplay">10s</span>
-        </div>
-
         <button type="button" class="intro-bottom-cta" id="introBottomCta">
           <span>Vào Website Bếp 1979</span>
           <span>➔</span>
@@ -510,6 +502,7 @@
     // Step pill click interactions
     stepPills.forEach(pill => {
       pill.addEventListener("click", () => {
+        clearInterval(interval);
         const scene = Number(pill.dataset.scene || 0);
         switchScene(scene, true);
       });
@@ -518,6 +511,7 @@
     function exitIntro(targetUrl) {
       if (isDismissed) return;
       isDismissed = true;
+      clearInterval(interval);
 
       playSound("bell");
       overlay.classList.add("intro-exit");

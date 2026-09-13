@@ -3914,9 +3914,9 @@ function renderCart() {
 
     return `
       <div class="cart-item" ${isCombo ? "" : `data-open-food-detail="${item.id}" data-detail-from="cart"`}>
-        <a class="cart-item-image-link" href="${isCombo ? "#" : getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="${isCombo ? "Combo món ăn" : `Xem chi tiết ${escapeHtml(item.name)}`}">
-          ${imageMarkup}
-        </a>
+        ${isCombo
+          ? `<span class="cart-item-image-link" aria-label="Combo món ăn">${imageMarkup}</span>`
+          : `<a class="cart-item-image-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}" aria-label="Xem chi tiết ${escapeHtml(item.name)}">${imageMarkup}</a>`}
         <div class="cart-item-info">
           <h4>${isCombo ? `<span class="cart-item-detail-link">${escapeHtml(item.name)}</span>` : `<a class="cart-item-detail-link" href="${getFoodDetailUrl(item.id, { from: "cart" })}">${escapeHtml(item.name)}</a>`}</h4>
           <p>${isCombo ? formatMoney(item.price) : (food ? renderFoodPrice(food) : formatMoney(item.price))}</p>
