@@ -514,8 +514,18 @@ body::after {
   background: linear-gradient(90deg, #ff5722, #ffd166);
   box-shadow: 0 0 8px rgba(255, 209, 102, 0.6);
   height: 100%;
-  transition: width 0.05s linear;
-  width: 0%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.1s linear;
+  width: 100%;
+  will-change: transform;
+}
+
+.combo-banner-shell.combo-paused .combo-kicker-tag,
+.combo-banner-shell.combo-paused .combo-fire-icon,
+.combo-banner-shell.combo-paused .combo-stock-dot,
+.combo-banner-shell.combo-paused .combo-stage-halo {
+  animation-play-state: paused;
 }
 
 .combo-arrow-btn {
@@ -984,6 +994,12 @@ body::after {
   will-change: auto;
 }
 
+.home-catalog-section,
+.home-reviews-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
 .home-food-card.home-reveal,
 .home-review-card.home-reveal {
   transition:
@@ -1409,8 +1425,8 @@ body::after {
   }
 
   .combo-banner-media {
-    order: -1;
-    padding: 24px 24px 8px;
+    order: 2;
+    padding: 8px 24px 36px;
   }
 
   .combo-stage-frame {
@@ -1419,7 +1435,7 @@ body::after {
   }
 
   .combo-banner-copy {
-    padding: 20px 24px 36px;
+    padding: 28px 24px 14px;
   }
 
   .combo-arrow-btn {
@@ -1442,6 +1458,23 @@ body::after {
 }
 
 @media (max-width: 600px) {
+  .home-combo-section {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .combo-banner-shell {
+    border-radius: 14px;
+  }
+
+  .combo-banner-copy {
+    padding: 22px 18px 12px;
+  }
+
+  .combo-banner-media {
+    padding: 8px 18px 32px;
+  }
+
   .combo-banner-title {
     font-size: 24px;
   }

@@ -1663,9 +1663,31 @@ function startHomeComboSlider() {
 
   let activeIndex = 0;
   let isHovered = false;
+  let isInViewport = true;
   const slideDuration = 6000;
   let elapsed = 0;
-  const tickStep = 50;
+  const tickStep = 100;
+
+  const syncComboActivity = () => {
+    const shouldPause = !isInViewport || document.hidden;
+    box.classList.toggle("combo-paused", shouldPause);
+  };
+
+  window.__homeComboVisibilityObserver?.disconnect();
+  if ("IntersectionObserver" in window) {
+    window.__homeComboVisibilityObserver = new IntersectionObserver(entries => {
+      isInViewport = entries[0]?.isIntersecting !== false;
+      syncComboActivity();
+    }, { rootMargin: "120px 0px", threshold: 0.01 });
+    window.__homeComboVisibilityObserver.observe(box);
+  }
+
+  if (window.__homeComboVisibilityHandler) {
+    document.removeEventListener("visibilitychange", window.__homeComboVisibilityHandler);
+  }
+  window.__homeComboVisibilityHandler = syncComboActivity;
+  document.addEventListener("visibilitychange", window.__homeComboVisibilityHandler);
+  syncComboActivity();
 
   const updateSlide = (index, resetProgress = true) => {
     activeIndex = (index + slides.length) % slides.length;
@@ -1680,7 +1702,7 @@ function startHomeComboSlider() {
 
     if (resetProgress) {
       elapsed = 0;
-      if (timerBar) timerBar.style.width = "0%";
+      if (timerBar) timerBar.style.transform = "scaleX(0)";
     }
   };
 
@@ -1729,11 +1751,11 @@ function startHomeComboSlider() {
 
   window.clearInterval(window.__homeComboSliderTimer);
   window.__homeComboSliderTimer = window.setInterval(() => {
-    if (isHovered) return;
+    if (isHovered || !isInViewport || document.hidden) return;
     elapsed += tickStep;
     if (timerBar) {
       const progress = Math.min(100, (elapsed / slideDuration) * 100);
-      timerBar.style.width = `${progress}%`;
+      timerBar.style.transform = `scaleX(${progress / 100})`;
     }
     if (elapsed >= slideDuration) {
       updateSlide(activeIndex + 1);
@@ -2807,9 +2829,8 @@ function renderFloatingAdItem(slot, advertisement) {
     slot.removeAttribute("rel");
   }
 
-  slot.innerHTML = `<img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(advertisement.title || "Quảng cáo Bếp 1979")}">`;
   slot.innerHTML = `
-    <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}">
+    <img src="${escapeHtml(advertisement.image)}" alt="${escapeHtml(title)}" decoding="async">
     <span class="floating-ad-content">
       <span class="floating-ad-badge">Ưu đãi</span>
       <strong>${escapeHtml(title)}</strong>
