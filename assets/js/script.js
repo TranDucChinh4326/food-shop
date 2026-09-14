@@ -1789,7 +1789,10 @@ async function loadFoodReviews() {
     const response = await fetchWithTimeout(`${FOOD_REVIEWS_API}?limit=40`);
     if (!response.ok) throw new Error(`Reviews API returned ${response.status}`);
 
-    foodReviews = await response.json();
+    const reviewData = await response.json();
+    foodReviews = Array.isArray(reviewData)
+      ? reviewData.filter(review => normalizeReviewRating(review.rating) > 0)
+      : [];
   } catch (error) {
     console.error("Lỗi tải đánh giá món ăn:", error);
     foodReviews = [];
@@ -1836,13 +1839,18 @@ function formatReviewDate(value) {
   return date.toLocaleDateString("vi-VN");
 }
 
-function renderStarText(rating = 5) {
-  const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+function normalizeReviewRating(rating) {
+  const value = Number(rating);
+  return Number.isInteger(value) && value >= 1 && value <= 5 ? value : 0;
+}
+
+function renderStarText(rating = 0) {
+  const value = normalizeReviewRating(Math.round(Number(rating)));
   return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
-function renderStarHtml(rating = 5) {
-  const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+function renderStarHtml(rating = 0) {
+  const value = normalizeReviewRating(Math.round(Number(rating)));
   const filled = '<span class="star-gold">★</span>'.repeat(value);
   const empty = '<span class="star-muted">★</span>'.repeat(5 - value);
   return filled + empty;
@@ -1855,12 +1863,14 @@ function renderRatingLabel(rating, reviewCount = 0) {
 
 function getFoodRatingStats(food) {
   const comments = getFoodComments(food);
-  const reviewCount = comments.length || Number(food.reviewCount || 0);
-  const rating = reviewCount
-    ? (comments.length
-      ? comments.reduce((sum, review) => sum + Number(review.rating || 0), 0) / comments.length
-      : Number(food.rating || 0))
-    : 0;
+  const storedReviewCount = Math.max(0, Number(food.reviewCount || 0));
+  const storedRating = Math.max(0, Math.min(5, Number(food.rating || 0)));
+  const reviewCount = storedReviewCount || comments.length;
+  const rating = storedReviewCount > 0
+    ? storedRating
+    : (comments.length
+      ? comments.reduce((sum, review) => sum + normalizeReviewRating(review.rating), 0) / comments.length
+      : 0);
 
   return {
     rating: Math.max(0, Math.min(5, Number(rating) || 0)),
@@ -1985,7 +1995,7 @@ function renderRecommendationCard(food, context = "cart") {
     : `<span aria-hidden="true">79</span>`;
   const detailUrl = getFoodDetailUrl(food.id, { from: context === "cart" ? "cart" : "home" });
   const isSale = Boolean(getFoodFlashSale(food));
-  const rating = Number(food.rating || 5);
+  const rating = Math.max(0, Math.min(5, Number(food.rating || 0)));
 
   return `
     <article class="suggestion-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}" data-detail-from="${context === "cart" ? "cart" : "home"}">
@@ -1997,7 +2007,7 @@ function renderRecommendationCard(food, context = "cart") {
         <small class="suggestion-category">${escapeHtml(getFoodDisplayCategory(food))}</small>
         <h4><a href="${detailUrl}">${escapeHtml(food.name)}</a></h4>
         <p class="suggestion-meta">
-          <span class="suggestion-stars">★ ${rating.toFixed(1)}</span>
+          <span class="suggestion-stars">${Number(food.reviewCount || 0) > 0 ? `★ ${rating.toFixed(1)}` : "Chưa có đánh giá"}</span>
           <span class="suggestion-stock">${stock > 0 ? `Còn ${stock}` : "Hết"}</span>
         </p>
       </div>
@@ -2129,11 +2139,7 @@ function getReviewDisplayComment(review) {
   if (raw && raw !== "Khách hàng đã đánh giá món ăn này.") {
     return raw;
   }
-  const rating = Number(review.rating) || 5;
-  if (rating === 5) return "⭐️ Đánh giá 5 sao: Món ăn rất ngon, nóng hổi và chuẩn vị!";
-  if (rating === 4) return "⭐️ Đánh giá 4 sao: Món ăn ngon, giao hàng nhanh chóng và đóng gói sạch sẽ.";
-  if (rating === 3) return "⭐️ Đánh giá 3 sao: Món ăn vừa miệng, phục vụ chu đáo.";
-  return "Đã đánh giá chất lượng món ăn.";
+  return "Khách hàng đã chấm điểm và không để lại bình luận.";
 }
 
 function renderReviewListCard(review, options = {}) {
@@ -2141,7 +2147,7 @@ function renderReviewListCard(review, options = {}) {
   const foodName = getReviewFoodName(review);
   const image = getReviewFoodImage(review);
   const showFood = options.showFood !== false;
-  const rating = Number(review.rating) || 5;
+  const rating = normalizeReviewRating(review.rating);
   const commentText = getReviewDisplayComment(review);
 
   return `
@@ -2344,7 +2350,7 @@ function renderHomeReviews() {
 
   if (summaryBox && Array.isArray(foodReviews) && foodReviews.length > 0) {
     const totalCount = foodReviews.length;
-    const avgRating = (foodReviews.reduce((sum, r) => sum + Number(r.rating || 5), 0) / totalCount).toFixed(1);
+    const avgRating = (foodReviews.reduce((sum, review) => sum + normalizeReviewRating(review.rating), 0) / totalCount).toFixed(1);
     const fiveStarPercent = Math.round((foodReviews.filter(r => Number(r.rating) === 5).length / totalCount) * 100);
 
     summaryBox.hidden = false;
@@ -2362,7 +2368,7 @@ function renderHomeReviews() {
             <span class="stat-pill-icon">🌟</span>
             <div class="stat-pill-info">
               <strong>${fiveStarPercent}% Hài lòng tuyệt đối</strong>
-              <small>Chất lượng món ăn chuẩn 5 sao</small>
+              <small>Tỷ lệ đánh giá đúng 5 sao</small>
             </div>
           </div>
           <div class="review-stat-pill">
