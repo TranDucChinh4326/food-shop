@@ -3278,7 +3278,9 @@ async function loadAnnouncementArchive() {
   list.innerHTML = `<p>Đang tải thông báo...</p>`;
 
   try {
-    const response = await fetch(`${ANNOUNCEMENTS_API}/archive`);
+    const token = sessionStorage.getItem("foodhub_token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`${ANNOUNCEMENTS_API}/archive`, { headers });
     const announcements = await response.json();
 
     if (!response.ok) {
@@ -3288,6 +3290,27 @@ async function loadAnnouncementArchive() {
     announcementArchive = announcements;
     announcementArchivePage = 1;
     renderAnnouncementArchive();
+
+    const unreadIds = token
+      ? announcements.filter(item => !Number(item.is_read)).map(item => Number(item.id)).filter(Boolean)
+      : [];
+    if (unreadIds.length > 0) {
+      const readResponse = await fetch(`${ANNOUNCEMENTS_API}/read`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ids: unreadIds })
+      });
+
+      if (readResponse.ok) {
+        announcementArchive.forEach(item => {
+          if (unreadIds.includes(Number(item.id))) item.is_read = 1;
+        });
+        window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
+      }
+    }
   } catch (error) {
     list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
   }

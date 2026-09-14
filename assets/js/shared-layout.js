@@ -407,7 +407,6 @@ function startFoodHubNotificationBadges() {
     userId = "guest";
   }
 
-  const readKey = `foodhub_read_announcements_${userId}`;
   const seenVoucherKey = `foodhub_seen_vouchers_${userId}`;
 
   const readIds = key => {
@@ -458,21 +457,15 @@ function startFoodHubNotificationBadges() {
     }
 
     try {
-      const response = await fetch(`${apiBase}/announcements?limit=20`);
-      const announcements = await response.json();
-      if (!response.ok || !Array.isArray(announcements)) return;
+      const response = await fetch(`${apiBase}/announcements/unread-count`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const result = await response.json();
+      if (!response.ok) return;
 
-      const ids = announcements.map(item => String(item.id)).filter(Boolean);
-      if (isAnnouncementPage) {
-        writeIds(readKey, ids);
-        setBadge("[data-announcement-unread]", 0);
-        return;
-      }
-
-      const read = new Set(readIds(readKey));
-      const unreadCount = ids.filter(id => !read.has(id)).length;
+      const unreadCount = Math.max(0, Number(result.unreadCount || 0));
       setBadge("[data-announcement-unread]", unreadCount);
-      if (token && unreadCount > 0) {
+      if (!isAnnouncementPage && unreadCount > 0) {
         notifyOnce("foodhub_new_announcements", `Bạn có ${unreadCount} thông báo mới.`);
       }
     } catch (err) {
@@ -521,6 +514,7 @@ function startFoodHubNotificationBadges() {
 
   loadAnnouncementBadge();
   loadVoucherBadge();
+  window.addEventListener("foodhub:announcements-read", loadAnnouncementBadge);
 }
 
 function startFoodHubIdleSessionGuard() {
@@ -1088,5 +1082,4 @@ startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
 initGentleFoodRain();
-
 
