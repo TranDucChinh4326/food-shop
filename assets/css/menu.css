@@ -1,10 +1,7 @@
 /* Page-specific styles for menu.html. Shared styles live in base.css. */
 
 .menu-page {
-  background:
-    radial-gradient(circle at 8% 6%, rgba(255, 104, 49, 0.14), transparent 28%),
-    radial-gradient(circle at 92% 10%, rgba(67, 42, 28, 0.1), transparent 30%),
-    linear-gradient(180deg, #fffaf6 0%, #fff2eb 100%);
+  background: linear-gradient(180deg, #fffaf6 0%, #fff2eb 100%);
   padding: 24px clamp(16px, 5vw, 96px) 68px;
 }
 
@@ -215,18 +212,20 @@
   background: #ffffff;
   border: 1px solid #ebdcd3;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(78, 45, 25, 0.05);
+  box-shadow: 0 4px 16px rgba(78, 45, 25, 0.05);
+  contain: content;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transform: translateZ(0);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .menu-page .food-card:hover {
   border-color: #ffbca0;
-  box-shadow: 0 16px 36px rgba(78, 45, 25, 0.11);
-  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(78, 45, 25, 0.1);
+  transform: translateY(-2px);
 }
 
 /* Image section */
@@ -242,19 +241,19 @@
   display: block;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition: transform 0.25s ease;
   width: 100%;
 }
 
 .menu-page .food-card:hover .food-card-img-wrap img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 /* Badges on image */
 .menu-page .food-flash-badge {
   background: linear-gradient(135deg, #ff3838, #ff6b3d);
   border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(255, 56, 56, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 56, 56, 0.25);
   color: #ffffff;
   font-size: 11px;
   font-weight: 800;
@@ -268,11 +267,10 @@
 }
 
 .menu-page .food-card .fav-heart-btn {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(4px);
+  background: #ffffff;
   border: 1px solid #eedcd1;
   border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   height: 32px;
   position: absolute;
   right: 10px;

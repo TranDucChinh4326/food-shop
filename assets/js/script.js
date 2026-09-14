@@ -724,16 +724,25 @@ function renderMenuCategoryOptions() {
   }
 }
 
+let menuSearchDebounceTimer = null;
 function handleMenuSearchInput() {
   const searchInput = document.getElementById("searchInput");
   const clearBtn = document.getElementById("menuSearchClearBtn");
   if (clearBtn && searchInput) {
     clearBtn.style.display = searchInput.value.trim() ? "flex" : "none";
   }
-  renderFoods();
+  if (menuSearchDebounceTimer) {
+    clearTimeout(menuSearchDebounceTimer);
+  }
+  menuSearchDebounceTimer = setTimeout(() => {
+    renderFoods();
+  }, 120);
 }
 
 function clearMenuSearch() {
+  if (menuSearchDebounceTimer) {
+    clearTimeout(menuSearchDebounceTimer);
+  }
   const searchInput = document.getElementById("searchInput");
   const clearBtn = document.getElementById("menuSearchClearBtn");
   if (searchInput) {
@@ -1852,8 +1861,23 @@ function getFoodDisplayCategory(food) {
   return food.parentCategoryName || food.categoryName || "Món ăn";
 }
 
+let foodCommentsCache = new Map();
+let foodRatingStatsCache = new Map();
+
+function clearFoodRatingCache() {
+  foodCommentsCache.clear();
+  foodRatingStatsCache.clear();
+}
+
 function getFoodComments(food) {
-  return foodReviews.filter(review => String(review.foodId) === String(food.id));
+  if (!food || !food.id) return [];
+  const foodId = String(food.id);
+  if (foodCommentsCache.has(foodId)) {
+    return foodCommentsCache.get(foodId);
+  }
+  const comments = foodReviews.filter(review => String(review.foodId) === foodId);
+  foodCommentsCache.set(foodId, comments);
+  return comments;
 }
 
 async function loadFoodReviews() {
@@ -1872,9 +1896,11 @@ async function loadFoodReviews() {
     foodReviews = Array.isArray(reviewData)
       ? reviewData.filter(review => normalizeReviewRating(review.rating) > 0)
       : [];
+    clearFoodRatingCache();
   } catch (error) {
     console.error("Lỗi tải đánh giá món ăn:", error);
     foodReviews = [];
+    clearFoodRatingCache();
   }
 
   renderHomeReviews();
@@ -1941,6 +1967,14 @@ function renderRatingLabel(rating, reviewCount = 0) {
 }
 
 function getFoodRatingStats(food) {
+  if (!food || !food.id) {
+    return { rating: 0, reviewCount: 0, comments: [] };
+  }
+  const foodId = String(food.id);
+  if (foodRatingStatsCache.has(foodId)) {
+    return foodRatingStatsCache.get(foodId);
+  }
+
   const comments = getFoodComments(food);
   const storedReviewCount = Math.max(0, Number(food.reviewCount || 0));
   const storedRating = Math.max(0, Math.min(5, Number(food.rating || 0)));
@@ -1951,11 +1985,13 @@ function getFoodRatingStats(food) {
       ? comments.reduce((sum, review) => sum + normalizeReviewRating(review.rating), 0) / comments.length
       : 0);
 
-  return {
+  const stats = {
     rating: Math.max(0, Math.min(5, Number(rating) || 0)),
     reviewCount,
     comments
   };
+  foodRatingStatsCache.set(foodId, stats);
+  return stats;
 }
 
 function getFoodDetailUrl(foodId, options = {}) {

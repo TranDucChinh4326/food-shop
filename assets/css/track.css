@@ -1,10 +1,7 @@
 /* Page-specific styles for track.html. Shared styles live in base.css. */
 
 .track-page-compact {
-  background:
-    radial-gradient(circle at 10% 8%, rgba(255, 104, 49, 0.1), transparent 26%),
-    radial-gradient(circle at 90% 12%, rgba(67, 42, 28, 0.08), transparent 28%),
-    linear-gradient(180deg, #fffaf6 0%, #fff3ec 100%);
+  background: linear-gradient(180deg, #fffbf7 0%, #fff3ec 100%);
   min-height: calc(100vh - 180px);
   padding: 30px clamp(16px, 4.5vw, 84px) 72px;
 }
@@ -252,16 +249,18 @@
   background: #ffffff;
   border: 1px solid #ebdcd3;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(85, 45, 20, 0.06);
+  box-shadow: 0 4px 16px rgba(85, 45, 20, 0.05);
+  contain: content;
   margin-bottom: 20px;
   overflow: hidden;
   padding: 0;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transform: translateZ(0);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .order-card:hover {
   border-color: #ffc4ab;
-  box-shadow: 0 14px 36px rgba(85, 45, 20, 0.1);
+  box-shadow: 0 10px 24px rgba(85, 45, 20, 0.09);
 }
 
 /* Order Header */
@@ -743,8 +742,7 @@
 }
 
 .order-cancel-dialog::backdrop {
-  background: rgba(20, 12, 8, 0.55);
-  backdrop-filter: blur(4px);
+  background: rgba(20, 12, 8, 0.6);
 }
 
 .cancel-dialog-content {
