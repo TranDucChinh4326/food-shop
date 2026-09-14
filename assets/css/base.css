@@ -5023,7 +5023,7 @@ footer {
 .support-toggle {
   align-items: center;
   background: linear-gradient(135deg, #ff7a28 0%, #ff4b1f 60%, #ea2a0e 100%);
-  border: 3px solid rgba(255, 255, 255, 0.95);
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
   box-shadow: 0 10px 24px rgba(255, 75, 31, 0.35), 0 4px 12px rgba(45, 18, 10, 0.15);
   color: #fff;
@@ -5031,18 +5031,18 @@ footer {
   display: inline-flex;
   font-size: 0;
   font-weight: 700;
-  height: 52px;
+  height: 46px;
   justify-content: center;
-  min-height: 52px;
+  min-height: 46px;
   padding: 0;
   position: relative;
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
-  width: 52px;
+  width: 46px;
 }
 
 .support-toggle:hover {
   box-shadow: 0 16px 32px rgba(255, 75, 31, 0.44), 0 6px 16px rgba(45, 18, 10, 0.18);
-  transform: translateY(-2.5px) scale(1.06);
+  transform: translateY(-2px) scale(1.08);
 }
 
 .support-toggle:active {
@@ -5067,12 +5067,12 @@ footer {
   border: 2px solid #ffffff;
   border-radius: 50%;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  height: 11px;
+  height: 10px;
   pointer-events: none;
   position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 11px;
+  right: 1px;
+  top: 1px;
+  width: 10px;
   z-index: 3;
 }
 
@@ -5084,18 +5084,18 @@ footer {
   background: linear-gradient(135deg, #0082ff 0%, #0068ff 100%);
   border: 2.5px solid #ffffff;
   border-radius: 50%;
-  bottom: 60px;
+  bottom: 56px;
   box-shadow: 0 7px 20px rgba(0, 104, 255, 0.36), 0 3px 8px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   display: inline-flex;
-  height: 44px;
+  height: 46px;
   justify-content: center;
   position: absolute;
-  right: 4px;
+  right: 0px;
   text-decoration: none;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease, opacity 0.2s ease;
   user-select: none;
-  width: 44px;
+  width: 46px;
   z-index: 10;
 }
 
@@ -5195,8 +5195,8 @@ footer {
 
 .support-toggle .support-robot-icon.with-wordmark,
 .support-toggle .support-robot-icon {
-  height: 38px;
-  width: 38px;
+  height: 33px;
+  width: 33px;
   filter: drop-shadow(0 2px 5px rgba(168, 35, 3, 0.3));
 }
 
@@ -7935,23 +7935,23 @@ footer {
   background: #ffffff;
   border: none;
   border-radius: 50%;
-  bottom: 128px;
+  bottom: 130px;
   box-shadow: 0 5px 18px rgba(45, 18, 10, 0.15), 0 2px 7px rgba(255, 87, 34, 0.12);
   color: #ff5722;
   cursor: pointer;
   display: inline-flex;
-  height: 38px;
+  height: 46px;
   justify-content: center;
   opacity: 0;
   padding: 0;
   pointer-events: none;
   position: fixed;
-  right: 25px;
+  right: 18px;
   transform: translateY(12px) scale(0.9);
   transition: opacity 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.22s ease;
-  width: 38px;
+  width: 46px;
   z-index: 1150;
   box-sizing: border-box;
 }
@@ -8016,8 +8016,8 @@ body:has(.support-widget.open) #backToTopBtn {
 
 .back-to-top-arrow svg {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 /* ============================================================
@@ -8303,15 +8303,15 @@ body:has(.support-widget.open) #backToTopBtn {
 
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 116px;
-    height: 34px;
-    right: 17px;
-    width: 34px;
+    bottom: 110px;
+    height: 40px;
+    right: 14px;
+    width: 40px;
   }
 
   .back-to-top-arrow svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
   }
 
   .support-widget {
@@ -8320,20 +8320,20 @@ body:has(.support-widget.open) #backToTopBtn {
   }
 
   .support-toggle {
-    height: 48px;
-    width: 48px;
-    min-height: 48px;
+    height: 40px;
+    width: 40px;
+    min-height: 40px;
   }
 
   .support-toggle .support-robot-icon {
-    height: 34px;
-    width: 34px;
+    height: 28px;
+    width: 28px;
   }
 
   .support-zalo-floating {
-    bottom: 54px;
+    bottom: 48px;
     height: 40px;
-    right: 4px;
+    right: 0px;
     width: 40px;
   }
 
