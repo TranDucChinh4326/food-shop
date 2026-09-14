@@ -31,6 +31,7 @@ let announcementTimer;
 let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
+let announcementReadObserver = null;
 let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 let qrPaymentStatusTimer = null;
@@ -3239,7 +3240,11 @@ function renderAnnouncementArchive() {
   }
 
   list.innerHTML = pageItems.map(item => `
-    <article class="archive-announcement ${escapeHtml(item.status)}">
+    <article class="archive-announcement ${escapeHtml(item.status)} ${Number(item.is_read) ? "is-read" : "is-new"}"
+      data-announcement-id="${Number(item.id)}" data-is-read="${Number(item.is_read) ? "1" : "0"}">
+      <span class="announcement-read-ribbon" aria-label="${Number(item.is_read) ? "Đã đọc" : "Thông báo mới"}">
+        ${Number(item.is_read) ? "ĐÃ ĐỌC" : "NEW"}
+      </span>
       <div>
         <span class="archive-status ${escapeHtml(item.status)}">${escapeHtml(getAnnouncementStatusText(item.status))}</span>
         <h2>${escapeHtml(item.title)}</h2>
@@ -3258,6 +3263,8 @@ function renderAnnouncementArchive() {
     </article>
   `).join("");
 
+  observeUnreadAnnouncements();
+
   if (!pager) return;
 
   pager.innerHTML = `
@@ -3268,6 +3275,64 @@ function renderAnnouncementArchive() {
       <button type="button" data-archive-page="next" ${announcementArchivePage === totalPages ? "disabled" : ""}>&rsaquo;</button>
     </div>
   `;
+}
+
+async function markAnnouncementRead(article) {
+  const token = sessionStorage.getItem("foodhub_token");
+  const id = Number(article?.dataset.announcementId);
+  if (!token || !id || article.dataset.isRead === "1" || article.dataset.markingRead === "1") return;
+
+  article.dataset.markingRead = "1";
+  try {
+    const response = await fetch(`${ANNOUNCEMENTS_API}/read`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ids: [id] })
+    });
+    if (!response.ok) return;
+
+    const item = announcementArchive.find(entry => Number(entry.id) === id);
+    if (item) item.is_read = 1;
+    article.dataset.isRead = "1";
+    article.classList.remove("is-new");
+    article.classList.add("is-read");
+    const ribbon = article.querySelector(".announcement-read-ribbon");
+    if (ribbon) {
+      ribbon.textContent = "ĐÃ ĐỌC";
+      ribbon.setAttribute("aria-label", "Đã đọc");
+    }
+    window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
+  } catch (error) {
+    console.warn("Không thể đánh dấu thông báo đã đọc:", error.message);
+  } finally {
+    delete article.dataset.markingRead;
+  }
+}
+
+function observeUnreadAnnouncements() {
+  if (announcementReadObserver) announcementReadObserver.disconnect();
+  if (!sessionStorage.getItem("foodhub_token")) return;
+
+  const unreadArticles = document.querySelectorAll('.archive-announcement[data-is-read="0"]');
+  if (!("IntersectionObserver" in window)) {
+    unreadArticles.forEach(article => markAnnouncementRead(article));
+    return;
+  }
+
+  announcementReadObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.6) return;
+      announcementReadObserver.unobserve(entry.target);
+      window.setTimeout(() => {
+        if (entry.target.isConnected) markAnnouncementRead(entry.target);
+      }, 700);
+    });
+  }, { threshold: 0.6 });
+
+  unreadArticles.forEach(article => announcementReadObserver.observe(article));
 }
 
 async function loadAnnouncementArchive() {
@@ -3291,26 +3356,6 @@ async function loadAnnouncementArchive() {
     announcementArchivePage = 1;
     renderAnnouncementArchive();
 
-    const unreadIds = token
-      ? announcements.filter(item => !Number(item.is_read)).map(item => Number(item.id)).filter(Boolean)
-      : [];
-    if (unreadIds.length > 0) {
-      const readResponse = await fetch(`${ANNOUNCEMENTS_API}/read`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ ids: unreadIds })
-      });
-
-      if (readResponse.ok) {
-        announcementArchive.forEach(item => {
-          if (unreadIds.includes(Number(item.id))) item.is_read = 1;
-        });
-        window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
-      }
-    }
   } catch (error) {
     list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
   }
