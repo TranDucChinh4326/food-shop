@@ -147,8 +147,35 @@
 }
 
 .inventory-stats-grid {
+  gap: 12px;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+}
+
+.inventory-stats-grid .stats-card {
+  min-height: 110px;
+  padding: 14px 12px 12px 16px;
+}
+
+.inventory-stats-grid .stats-card-value {
+  font-size: clamp(19px, 1.45vw, 24px);
+  margin: 4px 0 2px;
+}
+
+.inventory-stats-grid .stats-card-hint {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.inventory-stats-grid .stats-card-icon {
+  height: 34px;
+  margin-left: 4px;
+  width: 34px;
+}
+
+.inventory-stats-grid .stats-card-icon svg {
+  height: 16px;
+  width: 16px;
 }
 
 .stats-card {

@@ -1949,7 +1949,8 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 
 
-.table-toolbar.multi-filter #foodPageSize {
+.table-toolbar.multi-filter #foodPageSize,
+.table-toolbar.multi-filter #inventoryPageSize {
   font-variant-numeric: tabular-nums;
   text-align: left;
   width: 96px;

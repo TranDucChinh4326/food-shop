@@ -4167,42 +4167,42 @@ function renderInventorySummary(summary = {}) {
       className: "stats-card stats-card-customers",
       label: "Tổng món",
       value: Number(summary.totalFoods || 0).toLocaleString("vi-VN"),
-      hint: "Món đang quản lý tồn kho",
+      hint: "Món đang quản lý",
       icon: inventoryIcons.totalFoods
     },
     {
       className: "stats-card stats-card-online",
       label: "Tổng tồn",
       value: Number(summary.totalStock || 0).toLocaleString("vi-VN"),
-      hint: "Số lượng hiện còn",
+      hint: "Số lượng còn tồn",
       icon: inventoryIcons.totalStock
     },
     {
       className: "stats-card stats-card-warning",
       label: "Sắp hết",
       value: Number(summary.lowStock || 0).toLocaleString("vi-VN"),
-      hint: "Món còn từ 1 đến 10",
+      hint: "Còn từ 1 đến 10",
       icon: inventoryIcons.lowStock
     },
     {
       className: "stats-card stats-card-danger",
       label: "Hết hàng",
       value: Number(summary.outOfStock || 0).toLocaleString("vi-VN"),
-      hint: "Món tồn kho bằng 0",
+      hint: "Tồn kho bằng 0",
       icon: inventoryIcons.outOfStock
     },
     {
       className: "stats-card stats-card-revenue",
       label: "Đã nhập",
       value: Number(summary.totalIn || 0).toLocaleString("vi-VN"),
-      hint: "Tổng số lượng từng nhập",
+      hint: "Tổng số đã nhập",
       icon: inventoryIcons.totalIn
     },
     {
       className: "stats-card stats-card-orders",
       label: "Đã bán",
       value: Number(summary.totalOut || 0).toLocaleString("vi-VN"),
-      hint: "Tổng số lượng từng xuất",
+      hint: "Tổng số đã xuất",
       icon: inventoryIcons.totalOut
     }
   ];
