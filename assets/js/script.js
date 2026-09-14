@@ -3255,11 +3255,8 @@ function updateAnnouncementTabCounts() {
   const totalAll = announcementArchive.length;
   const unreadList = announcementArchive.filter(item => !Number(item.is_read));
   const totalUnread = unreadList.length;
-  const totalPromotions = announcementArchive.filter(item => {
-    const cat = getAnnouncementCategory(item);
-    return cat === "promotions" || cat === "flash";
-  }).length;
   const totalMenu = announcementArchive.filter(item => getAnnouncementCategory(item) === "menu").length;
+  const totalNews = announcementArchive.filter(item => getAnnouncementCategory(item) !== "menu").length;
 
   const countAllEl = document.getElementById("tabCountAll");
   if (countAllEl) countAllEl.textContent = totalAll;
@@ -3270,11 +3267,11 @@ function updateAnnouncementTabCounts() {
     countUnreadEl.style.display = totalUnread > 0 ? "inline-flex" : "none";
   }
 
-  const countPromoEl = document.getElementById("tabCountPromotions");
-  if (countPromoEl) countPromoEl.textContent = totalPromotions;
-
   const countMenuEl = document.getElementById("tabCountMenu");
   if (countMenuEl) countMenuEl.textContent = totalMenu;
+
+  const countNewsEl = document.getElementById("tabCountNews");
+  if (countNewsEl) countNewsEl.textContent = totalNews;
 
   const unreadPill = document.getElementById("announcementUnreadPill");
   const unreadText = document.getElementById("announcementUnreadCountText");
@@ -3304,11 +3301,10 @@ function getFilteredAnnouncementArchive() {
     let matchesTab = true;
     if (currentAnnouncementTab === "unread") {
       matchesTab = !Number(item.is_read);
-    } else if (currentAnnouncementTab === "promotions") {
-      const cat = getAnnouncementCategory(item);
-      matchesTab = cat === "promotions" || cat === "flash";
     } else if (currentAnnouncementTab === "menu") {
       matchesTab = getAnnouncementCategory(item) === "menu";
+    } else if (currentAnnouncementTab === "news") {
+      matchesTab = getAnnouncementCategory(item) !== "menu";
     }
 
     return matchesSearch && matchesTab;
@@ -3471,7 +3467,7 @@ async function markAnnouncementRead(article) {
   
   if (token) {
     try {
-      await fetch(`${ANNOUNCEMENTS_API}/read`, {
+      const response = await fetch(`${ANNOUNCEMENTS_API}/read`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -3479,8 +3475,11 @@ async function markAnnouncementRead(article) {
         },
         body: JSON.stringify({ ids: [id] })
       });
+      if (!response.ok) throw new Error("Announcement read update failed");
     } catch (error) {
       console.warn("Không thể đánh dấu thông báo đã đọc:", error.message);
+      delete article.dataset.markingRead;
+      return;
     }
   }
 
@@ -3504,6 +3503,7 @@ async function markAllAnnouncementsRead() {
   if (unreadItems.length === 0) return;
 
   const btn = document.getElementById("markAllAnnouncementsReadBtn");
+  const originalButtonHtml = btn?.innerHTML || "";
   if (btn) {
     btn.disabled = true;
     btn.innerHTML = `<span>Đang lưu...</span>`;
@@ -3526,6 +3526,11 @@ async function markAllAnnouncementsRead() {
       }
     } catch (error) {
       console.warn("Lỗi đánh dấu tất cả đã đọc:", error.message);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalButtonHtml;
+      }
+      return;
     }
   }
 
@@ -6145,7 +6150,9 @@ function initBackToTopButton() {
     const offset = circumference - progress * circumference;
     circle.style.strokeDashoffset = `${offset.toFixed(1)}`;
 
-    const shouldShow = scrollY > 280;
+    const supportWidget = document.getElementById("support-widget");
+    const isChatOpen = Boolean(supportWidget && supportWidget.classList.contains("open"));
+    const shouldShow = scrollY > 280 && !isChatOpen;
     if (shouldShow !== isBtnVisible) {
       isBtnVisible = shouldShow;
       btn.classList.toggle("visible", shouldShow);
@@ -6161,6 +6168,7 @@ function initBackToTopButton() {
 
   window.addEventListener("scroll", scheduleUpdate, { passive: true });
   window.addEventListener("resize", scheduleUpdate, { passive: true });
+  window.addEventListener("foodhub:chat-toggle", scheduleUpdate);
 
   if (window.ResizeObserver && document.body) {
     const ro = new ResizeObserver(scheduleUpdate);
@@ -6305,7 +6313,7 @@ function initSupportWidget() {
   widget.className = "support-widget";
   widget.innerHTML = `
     <div class="support-panel" aria-label="Kênh hỗ trợ Bếp 1979">
-      <a href="https://zalo.me/" target="_blank" rel="noopener" class="support-link zalo">
+      <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
       </a>
@@ -6598,11 +6606,8 @@ function initChatSupportWidget() {
         </div>
         <div class="chat-header-actions">
           <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-header-zalo" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Chat Zalo với Bếp 1979">
-            <svg class="chat-zalo-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <rect width="24" height="24" rx="6" fill="#0068FF"/>
-              <path d="M4.5 7h4.8l-3.8 6.4h4.2v1.8H4l4-6.4H4.5V7zm6.8 0h2.2v8.2h-2.2V7zm5.2 0c1.7 0 2.8 1.1 2.8 2.8v2.6c0 1.7-1.1 2.8-2.8 2.8s-2.8-1.1-2.8-2.8V9.8c0-1.7 1.1-2.8 2.8-2.8zm0 1.6c-.6 0-1 .4-1 1.2v2.6c0 .8.4 1.2 1 1.2s1-.4 1-1.2V9.8c0-.8-.4-1.2-1-1.2z" fill="#fff"/>
-            </svg>
-            <span>Zalo</span>
+            <span class="chat-zalo-icon-badge" aria-hidden="true">Zalo</span>
+            <span>Nhắn Zalo</span>
           </a>
           <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
             <span></span><span></span><span></span>
@@ -6621,7 +6626,7 @@ function initChatSupportWidget() {
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, combo, giá, khuyến mãi, giao hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
           <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-suggestion-chip chat-zalo-chip" title="Chat Zalo trực tiếp với Bếp 1979 (0387 700 5477)">
-            <svg class="chip-zalo-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#0068FF"/><path d="M4.5 7h4.8l-3.8 6.4h4.2v1.8H4l4-6.4H4.5V7zm6.8 0h2.2v8.2h-2.2V7zm5.2 0c1.7 0 2.8 1.1 2.8 2.8v2.6c0 1.7-1.1 2.8-2.8 2.8s-2.8-1.1-2.8-2.8V9.8c0-1.7 1.1-2.8 2.8-2.8zm0 1.6c-.6 0-1 .4-1 1.2v2.6c0 .8.4 1.2 1 1.2s1-.4 1-1.2V9.8c0-.8-.4-1.2-1-1.2z" fill="#fff"/></svg>
+            <span class="chat-zalo-icon-badge" aria-hidden="true">Zalo</span>
             <span>Chat Zalo tư vấn</span>
           </a>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
@@ -6676,10 +6681,7 @@ function initChatSupportWidget() {
     </div>
     <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-zalo-floating" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Liên hệ Zalo 0387 700 5477">
       <span class="zalo-pulse-ring" aria-hidden="true"></span>
-      <svg class="support-zalo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="48" height="48" rx="14" fill="#0068FF"/>
-        <path d="M9 14h9.6l-7.6 12.8h8.4v3.6H8l8-12.8H9V14zm13.6 0h4.4v16.4h-4.4V14zm10.4 0c3.4 0 5.6 2.2 5.6 5.6v5.2c0 3.4-2.2 5.6-5.6 5.6s-5.6-2.2-5.6-5.6v-5.2c0-3.4 2.2-5.6 5.6-5.6zm0 3.2c-1.2 0-2 .8-2 2.4v5.2c0 1.6.8 2.4 2 2.4s2-.8 2-2.4v-5.2c0-1.6-.8-2.4-2-2.4z" fill="#ffffff"/>
-      </svg>
+      <span class="support-zalo-text" aria-hidden="true">Zalo</span>
       <span class="zalo-floating-tooltip">Chat Zalo: 0387 700 5477</span>
     </a>
     <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Bếp 1979">
@@ -6719,12 +6721,14 @@ function initChatSupportWidget() {
     } else {
       hideChatPopovers();
     }
+    window.dispatchEvent(new CustomEvent("foodhub:chat-toggle"));
   });
 
   closeButton.addEventListener("click", () => {
     widget.classList.remove("open");
     button.setAttribute("aria-expanded", "false");
     hideChatPopovers();
+    window.dispatchEvent(new CustomEvent("foodhub:chat-toggle"));
   });
 
   menuButton.addEventListener("click", event => {

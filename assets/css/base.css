@@ -5080,20 +5080,21 @@ footer {
    ============================================================ */
 .support-zalo-floating {
   align-items: center;
-  background: linear-gradient(135deg, #0080ff 0%, #0068ff 100%);
-  border: 3px solid #ffffff;
+  background: linear-gradient(135deg, #0082ff 0%, #0068ff 100%);
+  border: 3.5px solid #ffffff;
   border-radius: 50%;
   bottom: 74px;
   box-shadow: 0 10px 24px rgba(0, 104, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   display: inline-flex;
-  height: 52px;
+  height: 54px;
   justify-content: center;
   position: absolute;
-  right: 6px;
+  right: 5px;
   text-decoration: none;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease, opacity 0.2s ease;
-  width: 52px;
+  user-select: none;
+  width: 54px;
   z-index: 10;
 }
 
@@ -5112,11 +5113,16 @@ footer {
   transform: scale(0.8);
 }
 
-.support-zalo-svg {
-  border-radius: 12px;
-  display: block;
-  height: 34px;
-  width: 34px;
+.support-zalo-text {
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 16.5px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 30, 90, 0.4);
+  transform: translateY(-0.5px);
+  user-select: none;
 }
 
 .zalo-pulse-ring {
@@ -5386,9 +5392,19 @@ footer {
   transform: translateY(0) scale(0.96);
 }
 
-.chat-zalo-svg {
-  display: block;
-  flex-shrink: 0;
+.chat-zalo-icon-badge {
+  align-items: center;
+  background: #0068ff;
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-flex;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 9.5px;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 2.5px 5px;
 }
 
 
@@ -5681,17 +5697,9 @@ footer {
   transform: translateY(-1.5px);
 }
 
-.chat-suggestion-chip.chat-zalo-chip .chip-zalo-icon {
-  display: block;
-  flex-shrink: 0;
-}
-
-.chat-suggestion-chip.chat-zalo-chip:hover .chip-zalo-icon rect {
-  fill: #ffffff;
-}
-
-.chat-suggestion-chip.chat-zalo-chip:hover .chip-zalo-icon path {
-  fill: #0068ff;
+.chat-suggestion-chip.chat-zalo-chip:hover .chat-zalo-icon-badge {
+  background: #ffffff;
+  color: #0068ff;
 }
 
 
@@ -7925,7 +7933,7 @@ footer {
   background: #ffffff;
   border: none;
   border-radius: 50%;
-  bottom: 96px;
+  bottom: 160px;
   box-shadow: 0 8px 24px rgba(45, 18, 10, 0.15), 0 2px 8px rgba(255, 87, 34, 0.12);
   color: #ff5722;
   cursor: pointer;
@@ -7944,6 +7952,13 @@ footer {
   width: 48px;
   z-index: 1150;
   box-sizing: border-box;
+}
+
+.support-widget.open ~ #backToTopBtn,
+body:has(.support-widget.open) #backToTopBtn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(16px) scale(0.8) !important;
 }
 
 .back-to-top-btn.visible {
@@ -8286,9 +8301,9 @@ footer {
 
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 86px;
+    bottom: 148px;
     height: 44px;
-    right: 18px;
+    right: 22px;
     width: 44px;
   }
 
@@ -8938,6 +8953,11 @@ footer {
   border-color: #0068ff;
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 104, 255, 0.45);
+}
+
+[data-theme="dark"] .chat-header-zalo:hover .chat-zalo-icon-badge {
+  background: #ffffff;
+  color: #0068ff;
 }
 
 [data-theme="dark"] .chat-quick-menu {
