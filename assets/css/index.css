@@ -18,6 +18,12 @@ body::after {
   padding: 44px 8%;
 }
 
+.home-shop-section > * {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1180px;
+}
+
 .home-combo-section {
   padding: 26px 8% 0;
 }
@@ -31,6 +37,8 @@ body::after {
   border: 1.5px solid rgba(255, 185, 130, 0.28);
   border-radius: 20px;
   box-shadow: 0 20px 48px rgba(45, 18, 9, 0.16), 0 4px 16px rgba(255, 87, 34, 0.08);
+  margin: 0 auto;
+  max-width: 1180px;
   overflow: hidden;
   position: relative;
   touch-action: pan-y;

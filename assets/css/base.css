@@ -2831,7 +2831,10 @@ nav a.is-active,
   border: 1px solid #f0e5dc;
   border-radius: 8px;
   box-shadow: 0 18px 50px rgba(78, 45, 25, 0.08);
+  margin: 0 auto;
+  max-width: 1180px;
   padding: 26px;
+  width: 100%;
 }
 
 
@@ -8033,10 +8036,12 @@ body:has(.support-widget.open) #backToTopBtn {
   flex-wrap: wrap;
   gap: 14px;
   justify-content: space-between;
-  margin: 20px 8% 0;
+  margin: 20px auto 0;
+  max-width: 1180px;
   overflow: hidden;
   padding: 10px 18px;
   position: relative;
+  width: calc(100% - 16%);
 }
 
 .flash-sale-banner[hidden] {
