@@ -1,7 +1,7 @@
 /* Page-specific styles for menu.html. Shared styles live in base.css. */
 
 .menu-page {
-  background: linear-gradient(180deg, #fffaf6 0%, #fff2eb 100%);
+  background: transparent;
   padding: 24px clamp(16px, 5vw, 96px) 68px;
 }
 

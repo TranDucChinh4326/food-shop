@@ -37,9 +37,7 @@ body.food-detail-open {
 }
 
 .food-detail-page {
-  background:
-    radial-gradient(circle at top left, rgba(255, 122, 26, 0.08), transparent 28%),
-    #fff7f1;
+  background: transparent;
   padding: 26px 8% 64px;
 }
 

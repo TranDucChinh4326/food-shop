@@ -29,11 +29,12 @@
 
 
 body {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255, 138, 31, 0.1), transparent 32%),
-    radial-gradient(circle at 100% 16%, rgba(38, 56, 79, 0.08), transparent 28%),
-    #fff8f3;
+  background-color: #faf7f2;
+  background-image: linear-gradient(180deg, #fdfbf7 0%, #faf5ee 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--fh-ink);
+  min-height: 100vh;
   top: 0 !important;
 }
 

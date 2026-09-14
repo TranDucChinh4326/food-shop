@@ -1,10 +1,7 @@
 /* Page-specific styles for contact.html. Shared styles live in base.css. */
 
 .contact-page {
-  background:
-    radial-gradient(circle at 10% 8%, rgba(255, 104, 49, 0.14), transparent 28%),
-    radial-gradient(circle at 88% 10%, rgba(67, 42, 28, 0.1), transparent 30%),
-    linear-gradient(180deg, #fffaf6 0%, #fff2eb 100%);
+  background: transparent;
   display: grid;
   gap: 28px;
   padding: 36px clamp(16px, 7vw, 118px) 72px;

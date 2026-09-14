@@ -1,7 +1,7 @@
 /* Page-specific styles for track.html. Shared styles live in base.css. */
 
 .track-page-compact {
-  background: linear-gradient(180deg, #fffbf7 0%, #fff3ec 100%);
+  background: transparent;
   min-height: calc(100vh - 180px);
   padding: 30px clamp(16px, 4.5vw, 84px) 72px;
 }

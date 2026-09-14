@@ -3183,17 +3183,29 @@ let announcementReadObserver = null;
 
 function getAnnouncementCategory(item) {
   const text = `${item?.title || ""} ${item?.content || ""}`.toLowerCase();
-  if (text.includes("món") || text.includes("thực đơn") || text.includes("menu") || text.includes("bếp") || text.includes("cơm") || text.includes("phở") || text.includes("bánh mì") || text.includes("nước") || text.includes("uống") || text.includes("chế biến")) {
+  if (text.includes("flash sale") || text.includes("chớp nhoáng") || text.includes("giờ vàng")) {
+    return "flash";
+  }
+  if (text.includes("voucher") || text.includes("mã giảm") || text.includes("giảm giá") || text.includes("ưu đãi") || text.includes("khuyến mãi") || text.includes("sale") || text.includes("tặng")) {
+    return "promotions";
+  }
+  if (text.includes("món") || text.includes("thực đơn") || text.includes("menu") || text.includes("bếp") || text.includes("cơm") || text.includes("phở") || text.includes("bánh mì") || text.includes("nước") || text.includes("uống")) {
     return "menu";
   }
-  return "news";
+  return "info";
 }
 
 function getAnnouncementThemeInfo(category) {
-  if (category === "menu") {
-    return { themeClass: "theme-menu", tagClass: "menu", label: "Món & Thực đơn", icon: "🍲" };
+  switch (category) {
+    case "flash":
+      return { themeClass: "theme-flash", tagClass: "flash", label: "Flash Sale", icon: "⚡" };
+    case "promotions":
+      return { themeClass: "theme-promo", tagClass: "promo", label: "Ưu đãi", icon: "🎁" };
+    case "menu":
+      return { themeClass: "theme-menu", tagClass: "menu", label: "Thực đơn", icon: "🍲" };
+    default:
+      return { themeClass: "theme-info", tagClass: "info", label: "Tin tức", icon: "📢" };
   }
-  return { themeClass: "theme-info", tagClass: "info", label: "Tin tức quán", icon: "📢" };
 }
 
 function formatRelativeTime(dateValue) {
@@ -3230,6 +3242,9 @@ function formatRelativeTime(dateValue) {
 
 function getAnnouncementSmartCta(item) {
   const text = `${item?.title || ""} ${item?.content || ""}`.toLowerCase();
+  if (text.includes("voucher") || text.includes("mã giảm") || text.includes("ưu đãi")) {
+    return `<a href="vouchers.html" class="announcement-cta-btn" onclick="event.stopPropagation()">🎁 Mở kho voucher</a>`;
+  }
   if (text.includes("món") || text.includes("thực đơn") || text.includes("menu") || text.includes("đặt") || text.includes("bếp")) {
     return `<a href="menu.html" class="announcement-cta-btn" onclick="event.stopPropagation()">🍲 Xem thực đơn ngay</a>`;
   }
@@ -3240,8 +3255,11 @@ function updateAnnouncementTabCounts() {
   const totalAll = announcementArchive.length;
   const unreadList = announcementArchive.filter(item => !Number(item.is_read));
   const totalUnread = unreadList.length;
+  const totalPromotions = announcementArchive.filter(item => {
+    const cat = getAnnouncementCategory(item);
+    return cat === "promotions" || cat === "flash";
+  }).length;
   const totalMenu = announcementArchive.filter(item => getAnnouncementCategory(item) === "menu").length;
-  const totalNews = announcementArchive.filter(item => getAnnouncementCategory(item) === "news").length;
 
   const countAllEl = document.getElementById("tabCountAll");
   if (countAllEl) countAllEl.textContent = totalAll;
@@ -3252,11 +3270,11 @@ function updateAnnouncementTabCounts() {
     countUnreadEl.style.display = totalUnread > 0 ? "inline-flex" : "none";
   }
 
+  const countPromoEl = document.getElementById("tabCountPromotions");
+  if (countPromoEl) countPromoEl.textContent = totalPromotions;
+
   const countMenuEl = document.getElementById("tabCountMenu");
   if (countMenuEl) countMenuEl.textContent = totalMenu;
-
-  const countNewsEl = document.getElementById("tabCountNews");
-  if (countNewsEl) countNewsEl.textContent = totalNews;
 
   const unreadPill = document.getElementById("announcementUnreadPill");
   const unreadText = document.getElementById("announcementUnreadCountText");
@@ -3286,10 +3304,11 @@ function getFilteredAnnouncementArchive() {
     let matchesTab = true;
     if (currentAnnouncementTab === "unread") {
       matchesTab = !Number(item.is_read);
+    } else if (currentAnnouncementTab === "promotions") {
+      const cat = getAnnouncementCategory(item);
+      matchesTab = cat === "promotions" || cat === "flash";
     } else if (currentAnnouncementTab === "menu") {
       matchesTab = getAnnouncementCategory(item) === "menu";
-    } else if (currentAnnouncementTab === "news") {
-      matchesTab = getAnnouncementCategory(item) === "news";
     }
 
     return matchesSearch && matchesTab;
