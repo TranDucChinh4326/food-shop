@@ -479,6 +479,19 @@
   width: 54px;
 }
 
+.order-item-thumb-fallback {
+  align-items: center;
+  background: linear-gradient(135deg, #fff2eb 0%, #ffe5d8 100%);
+  display: flex;
+  justify-content: center;
+}
+
+.order-item-thumb-icon {
+  font-size: 24px;
+  line-height: 1;
+  user-select: none;
+}
+
 .order-item-info {
   display: flex;
   flex: 1;

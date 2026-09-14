@@ -1505,14 +1505,18 @@ async function loadFoods() {
   const homeSectionBox = document.getElementById("homeFoodSections");
   const foodDetailPage = document.getElementById("foodDetailPage");
   const cartItems = document.getElementById("cart-items");
+  const trackResult = document.getElementById("track-result");
 
-  if (!foodList && !comboBox && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems) return;
+  if (!foodList && !comboBox && !bestSellerBox && !homeSectionBox && !foodDetailPage && !cartItems && !trackResult) return;
   if (comboBox) loadHomeCombos();
 
   const cachedFoods = readFoodsCache();
   if (cachedFoods?.items.length) {
     foods = cachedFoods.items;
     renderFoodSurfaces();
+    if (trackResult && typeof renderOrderHistory === "function" && cachedUserOrders?.length) {
+      renderOrderHistory();
+    }
     loadFoodReviews();
     loadActiveFlashSales().then(() => {
       renderFoodSurfaces();
@@ -1544,6 +1548,9 @@ async function loadFoods() {
       renderFlashSaleBanner();
     });
     renderFoodSurfaces();
+    if (trackResult && typeof renderOrderHistory === "function" && cachedUserOrders?.length) {
+      renderOrderHistory();
+    }
     if (!cachedFoods?.items.length) loadFoodReviews();
   } catch (error) {
     console.error("Lỗi tải món ăn:", error);
@@ -4793,6 +4800,24 @@ async function loadOrderHistory(eventOrOptions) {
 
       cachedUserOrders = Array.isArray(data) ? data : [];
       updateOrderTabBadges(cachedUserOrders);
+
+      if (!foods.length) {
+        const cached = readFoodsCache();
+        if (cached?.items?.length) {
+          foods = cached.items;
+        } else {
+          try {
+            const foodRes = await fetch(API_URL);
+            if (foodRes.ok) {
+              foods = normalizeFoodData(await foodRes.json());
+              writeFoodsCache(foods);
+            }
+          } catch (e) {
+            console.warn("Lỗi tải danh mục món cho đơn hàng:", e);
+          }
+        }
+      }
+
       await loadFoodReviews();
       renderOrderHistory();
     } catch (error) {
@@ -4892,6 +4917,18 @@ function renderOrderStepper(status) {
   `;
 }
 
+function getOrderFoodFallbackIcon(name = "") {
+  const lower = String(name || "").toLowerCase();
+  if (lower.includes("phở") || lower.includes("bún") || lower.includes("mì") || lower.includes("miến") || lower.includes("hủ tiếu") || lower.includes("cháo")) return "🍜";
+  if (lower.includes("bạc xỉu") || lower.includes("cà phê") || lower.includes("cafe") || lower.includes("trà") || lower.includes("sinh tố") || lower.includes("nước") || lower.includes("sữa")) return "☕";
+  if (lower.includes("cơm") || lower.includes("xôi")) return "🍚";
+  if (lower.includes("bánh mì") || lower.includes("sandwich") || lower.includes("burger")) return "🥖";
+  if (lower.includes("pizza")) return "🍕";
+  if (lower.includes("gà") || lower.includes("vịt") || lower.includes("bò") || lower.includes("heo") || lower.includes("thịt")) return "🍗";
+  if (lower.includes("kem") || lower.includes("chè") || lower.includes("bánh") || lower.includes("ngọt")) return "🍰";
+  return "🍽️";
+}
+
 function renderOrderHistory() {
   const resultBox = document.getElementById("track-result");
   if (!resultBox) return;
@@ -4929,7 +4966,6 @@ function renderOrderHistory() {
       cancelled: "status-cancelled",
       canceled: "status-cancelled"
     };
-    const statusClass = statusClasses[status] || "status-pending";
     const dateStr = new Date(order.created_at).toLocaleString("vi-VN", {
       hour: "2-digit",
       minute: "2-digit",
@@ -4937,7 +4973,7 @@ function renderOrderHistory() {
       month: "2-digit",
       year: "numeric"
     });
-
+    const statusClass = statusClasses[status] || "status-pending";
     const isPending = status === "pending";
     const isDone = status === "done";
 
@@ -4960,13 +4996,23 @@ function renderOrderHistory() {
 
         <div class="order-items-list" id="order-items-${order.id}">
           ${(order.items || []).map((item, idx) => {
-            const food = foods.find(f => f.id === item.food_id);
-            const thumbUrl = item.food_image || food?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80";
+            const food = foods.find(f =>
+              (item.food_id && String(f.id) === String(item.food_id)) ||
+              (f.name && item.food_name && f.name.trim().toLowerCase() === item.food_name.trim().toLowerCase())
+            );
+            const rawImage = String(item.food_image || food?.image || "").trim();
+            const isPlaceholder = rawImage.includes("images.unsplash.com");
+            const realImage = (!isPlaceholder && rawImage) ? rawImage : "";
             const hiddenStyle = (isCollapsible && idx >= 3) ? 'style="display:none;" data-overflow-item="true"' : "";
+            const fallbackIcon = getOrderFoodFallbackIcon(item.food_name);
+
+            const thumbMarkup = realImage
+              ? `<img src="${escapeHtml(realImage)}" alt="${escapeHtml(item.food_name)}" class="order-item-thumb" loading="lazy" onerror="this.onerror=null; this.outerHTML='<div class=\\'order-item-thumb order-item-thumb-fallback\\'><span class=\\'order-item-thumb-icon\\'>${fallbackIcon}</span></div>';">`
+              : `<div class="order-item-thumb order-item-thumb-fallback" aria-hidden="true"><span class="order-item-thumb-icon">${fallbackIcon}</span></div>`;
 
             return `
               <div class="order-item-row" ${hiddenStyle}>
-                <img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(item.food_name)}" class="order-item-thumb" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80'">
+                ${thumbMarkup}
                 <div class="order-item-info">
                   <h4 class="order-item-title">${escapeHtml(item.food_name)}</h4>
                   <span class="order-item-meta">${formatMoney(item.price)} x ${Number(item.quantity)}</span>
@@ -5064,20 +5110,28 @@ function reorderItems(orderId) {
 
   let addedCount = 0;
   for (const item of order.items) {
-    const food = foods.find(f => f.id === item.food_id);
-    const existing = cart.find(c => c.id === item.food_id);
+    const food = foods.find(f =>
+      (item.food_id && String(f.id) === String(item.food_id)) ||
+      (f.name && item.food_name && f.name.trim().toLowerCase() === item.food_name.trim().toLowerCase())
+    );
+    const existing = cart.find(c =>
+      (item.food_id && String(c.id) === String(item.food_id)) ||
+      (c.name && item.food_name && c.name.trim().toLowerCase() === item.food_name.trim().toLowerCase())
+    );
     const qty = Number(item.quantity) || 1;
     const price = food ? getFoodSalePrice(food) : Number(item.price || 0);
+    const rawImage = String(item.food_image || food?.image || "").trim();
+    const realImage = rawImage.includes("images.unsplash.com") ? "" : rawImage;
 
     if (existing) {
       existing.quantity += qty;
     } else {
       cart.push({
-        id: item.food_id,
+        id: item.food_id || (food ? food.id : Date.now()),
         name: item.food_name,
         price: price,
         quantity: qty,
-        image: item.food_image || food?.image || ""
+        image: realImage
       });
     }
     addedCount += qty;
