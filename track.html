@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- Trang tra cứu đơn: hiển thị trạng thái đơn hàng và thanh toán sau khi khách đặt món. -->
+<!-- Trang tra cứu đơn: hiển thị trạng thái đơn hàng và lịch sử đơn hàng của khách. -->
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lịch sử đơn hàng - Bếp 1979</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260826-live-flash-sale-v2">
-  <link rel="stylesheet" href="assets/css/track.css?v=20260826-address-format-v2">
+  <link rel="stylesheet" href="assets/css/base.css?v=20260914-track-ux-v1">
+  <link rel="stylesheet" href="assets/css/track.css?v=20260914-track-ux-v1">
 </head>
 <body>
   <div data-shared-header></div>
@@ -17,25 +17,71 @@
         <div>
           <span class="section-kicker">Đơn hàng của tôi</span>
           <h2>Lịch sử đặt hàng</h2>
-          <p>Lọc nhanh theo mã đơn, thông tin giao hàng hoặc ngày đặt.</p>
+          <p>Theo dõi tiến trình giao món, xem lại chi tiết hoặc đặt lại món yêu thích.</p>
         </div>
-        <a href="menu.html" class="text-link">Đặt thêm món</a>
+        <a href="menu.html" class="btn track-menu-link">🍽️ Đặt thêm món</a>
       </div>
 
+      <!-- Navigation tabs for quick status filtering -->
+      <nav class="order-status-tabs" id="orderStatusTabs" aria-label="Lọc trạng thái đơn hàng">
+        <button type="button" class="order-tab-btn active" data-tab="all" onclick="filterOrdersByTab('all')">
+          <span>Tất cả đơn</span>
+          <span class="order-tab-badge" id="tabCountAll"></span>
+        </button>
+        <button type="button" class="order-tab-btn" data-tab="pending" onclick="filterOrdersByTab('pending')">
+          <span>⏳ Chờ xác nhận</span>
+          <span class="order-tab-badge" id="tabCountPending"></span>
+        </button>
+        <button type="button" class="order-tab-btn" data-tab="delivering" onclick="filterOrdersByTab('delivering')">
+          <span>🚚 Đang giao</span>
+          <span class="order-tab-badge" id="tabCountDelivering"></span>
+        </button>
+        <button type="button" class="order-tab-btn" data-tab="done" onclick="filterOrdersByTab('done')">
+          <span>✅ Hoàn tất</span>
+          <span class="order-tab-badge" id="tabCountDone"></span>
+        </button>
+        <button type="button" class="order-tab-btn" data-tab="cancelled" onclick="filterOrdersByTab('cancelled')">
+          <span>❌ Đã hủy</span>
+          <span class="order-tab-badge" id="tabCountCancelled"></span>
+        </button>
+      </nav>
+
       <form class="history-filter" onsubmit="loadOrderHistory(event)">
-        <input type="search" id="orderSearch" placeholder="Tìm mã đơn, tên, SĐT hoặc địa chỉ">
-        <input type="date" id="orderDate">
-        <button type="submit" class="btn">Lọc đơn</button>
-        <button type="button" class="btn muted-btn" onclick="resetOrderHistoryFilter()">Xóa lọc</button>
+        <div class="order-search-wrap">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="search" id="orderSearch" placeholder="Tìm theo mã đơn, tên người nhận, SĐT..." oninput="handleOrderSearchInput()">
+          <button type="button" id="orderSearchClearBtn" class="order-clear-search-btn" onclick="clearOrderSearch()" style="display:none;" aria-label="Xóa tìm kiếm">✕</button>
+        </div>
+        <div class="order-date-wrap">
+          <input type="date" id="orderDate" onchange="loadOrderHistory(event)">
+        </div>
+        <button type="submit" class="btn order-filter-submit-btn">Tìm kiếm</button>
+        <button type="button" class="btn muted-btn" onclick="resetOrderHistoryFilter()">Đặt lại</button>
       </form>
 
-      <div id="track-result" class="track-result"></div>
+      <div id="track-result" class="track-result" aria-live="polite"></div>
     </section>
   </main>
+
+  <!-- Modal xác nhận hủy đơn -->
+  <dialog id="cancelOrderDialog" class="order-cancel-dialog">
+    <div class="cancel-dialog-content">
+      <div class="cancel-dialog-header">
+        <span class="cancel-dialog-icon">⚠️</span>
+        <h3>Xác nhận hủy đơn hàng</h3>
+      </div>
+      <p id="cancelDialogMessage">Bạn có chắc chắn muốn hủy đơn hàng này không? Sau khi hủy, đơn không thể hoàn tác.</p>
+      <div class="cancel-dialog-actions">
+        <button type="button" class="btn muted-btn" onclick="closeCancelDialog()">Không hủy</button>
+        <button type="button" id="confirmCancelOrderBtn" class="btn btn-danger" onclick="confirmCancelOrder()">Đồng ý hủy</button>
+      </div>
+    </div>
+  </dialog>
+
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260826-pin-clean-v6"></script>
-  <script src="assets/js/script.js?v=20260826-pin-clean-v6"></script>
+  <script src="assets/js/shared-layout.js?v=20260914-track-ux-v1"></script>
+  <script src="assets/js/script.js?v=20260914-track-ux-v1"></script>
 </body>
 </html>

@@ -4755,8 +4755,10 @@ async function loadOrderHistory(eventOrOptions) {
         return;
       }
 
+      cachedUserOrders = Array.isArray(data) ? data : [];
+      updateOrderTabBadges(cachedUserOrders);
       await loadFoodReviews();
-      renderOrderHistory(data);
+      renderOrderHistory();
     } catch (error) {
       if (!silent) {
         resultBox.innerHTML = error.name === "AbortError"
@@ -4773,17 +4775,108 @@ async function loadOrderHistory(eventOrOptions) {
   return orderHistoryLoadPromise;
 }
 
-function renderOrderHistory(orders) {
-  const resultBox = document.getElementById("track-result");
+let cachedUserOrders = [];
+let activeOrderTab = "all";
+let pendingCancelOrderId = null;
 
+function updateOrderTabBadges(orders) {
+  const counts = {
+    all: orders.length,
+    pending: orders.filter(o => o.status === "pending").length,
+    delivering: orders.filter(o => o.status === "delivering").length,
+    done: orders.filter(o => o.status === "done").length,
+    cancelled: orders.filter(o => o.status === "cancelled" || o.status === "canceled").length
+  };
+
+  const updateBadge = (id, count) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = count;
+    el.style.display = count > 0 ? "inline-flex" : "none";
+  };
+
+  updateBadge("tabCountAll", counts.all);
+  updateBadge("tabCountPending", counts.pending);
+  updateBadge("tabCountDelivering", counts.delivering);
+  updateBadge("tabCountDone", counts.done);
+  updateBadge("tabCountCancelled", counts.cancelled);
+}
+
+function filterOrdersByTab(tab) {
+  activeOrderTab = tab;
+  document.querySelectorAll(".order-tab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
+  renderOrderHistory();
+}
+
+function renderOrderStepper(status) {
+  if (status === "cancelled" || status === "canceled") {
+    return `
+      <div class="order-cancelled-alert">
+        <span>❌ Đơn hàng này đã được hủy. Mọi khoản hoàn/voucher (nếu có) đã được hoàn lại tài khoản của bạn.</span>
+      </div>
+    `;
+  }
+
+  const steps = [
+    { key: "placed", label: "Đã đặt", icon: "1" },
+    { key: "confirmed", label: "Đã xác nhận", icon: "2" },
+    { key: "delivering", label: "Đang giao", icon: "3" },
+    { key: "done", label: "Hoàn tất", icon: "4" }
+  ];
+
+  let currentLevel = 1;
+  if (status === "confirmed") currentLevel = 2;
+  else if (status === "delivering") currentLevel = 3;
+  else if (status === "done") currentLevel = 4;
+
+  const progressPercent = ((currentLevel - 1) / (steps.length - 1)) * 100;
+
+  return `
+    <div class="order-stepper-box">
+      <div class="order-stepper">
+        <div class="order-stepper-bar-fill" style="width: ${progressPercent}%;"></div>
+        ${steps.map((step, idx) => {
+          const stepNum = idx + 1;
+          const isCompleted = stepNum < currentLevel || (stepNum === currentLevel && status === "done");
+          const isActive = stepNum === currentLevel && status !== "done";
+          const nodeContent = isCompleted ? "✓" : step.icon;
+          const stateClass = isCompleted ? "completed" : isActive ? "active" : "";
+
+          return `
+            <div class="step-item ${stateClass}">
+              <span class="step-node">${nodeContent}</span>
+              <span class="step-label">${step.label}</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderOrderHistory() {
+  const resultBox = document.getElementById("track-result");
   if (!resultBox) return;
+
+  const orders = cachedUserOrders.filter(order => {
+    const s = order.status || "pending";
+    if (activeOrderTab === "all") return true;
+    if (activeOrderTab === "pending") return s === "pending";
+    if (activeOrderTab === "delivering") return s === "delivering";
+    if (activeOrderTab === "done") return s === "done";
+    if (activeOrderTab === "cancelled") return s === "cancelled" || s === "canceled";
+    return true;
+  });
 
   if (!orders.length) {
     resultBox.innerHTML = `
       <div class="empty-history">
-        <h3>Chưa có đơn hàng phù hợp</h3>
-        <p>Bạn có thể quay lại thực đơn để đặt món hoặc thử bộ lọc khác.</p>
-        <a href="menu.html" class="btn">Đặt món ngay</a>
+        <span class="empty-history-icon" aria-hidden="true">🧾</span>
+        <h3>Chưa có đơn hàng nào</h3>
+        <p>${activeOrderTab === "all" ? "Bạn chưa có đơn hàng nào tại Bếp 1979." : "Không có đơn hàng nào ở trạng thái này."}</p>
+        <a href="menu.html" class="btn">Khám phá thực đơn ngay</a>
       </div>
     `;
     return;
@@ -4797,66 +4890,250 @@ function renderOrderHistory(orders) {
       delivering: "status-delivering",
       confirmed: "status-confirmed",
       pending: "status-pending",
-      canceled: "status-canceled"
+      cancelled: "status-cancelled",
+      canceled: "status-cancelled"
     };
     const statusClass = statusClasses[status] || "status-pending";
+    const dateStr = new Date(order.created_at).toLocaleString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+
+    const isPending = status === "pending";
+    const isDone = status === "done";
+
+    const itemsCount = (order.items || []).length;
+    const isCollapsible = itemsCount > 3;
 
     return `
-      <article class="track-card order-card">
-        <div class="order-history-top">
-          <div>
-            <p class="order-code">Đơn hàng #${order.id}</p>
-            <h3>${formatMoney(order.total_price)}</h3>
-            <span>${new Date(order.created_at).toLocaleString("vi-VN")}</span>
+      <article class="order-card" id="order-card-${order.id}">
+        <div class="order-card-header">
+          <div class="order-header-left">
+            <span class="order-id-badge">Đơn hàng #${order.id}</span>
+            <span class="order-datetime">• ${dateStr}</span>
           </div>
-          <span class="status-pill ${statusClass}">${getOrderStatusLabel(order.status)}</span>
+          <div class="order-header-right">
+            <span class="status-pill ${statusClass}">${getOrderStatusLabel(order.status)}</span>
+          </div>
         </div>
 
-        <div class="history-info">
-          <div>
-            <small>Người nhận</small>
+        ${renderOrderStepper(status)}
+
+        <div class="order-items-list" id="order-items-${order.id}">
+          ${(order.items || []).map((item, idx) => {
+            const food = foods.find(f => f.id === item.food_id);
+            const thumbUrl = item.food_image || food?.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80";
+            const hiddenStyle = (isCollapsible && idx >= 3) ? 'style="display:none;" data-overflow-item="true"' : "";
+
+            return `
+              <div class="order-item-row" ${hiddenStyle}>
+                <img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(item.food_name)}" class="order-item-thumb" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&auto=format&fit=crop&q=80'">
+                <div class="order-item-info">
+                  <h4 class="order-item-title">${escapeHtml(item.food_name)}</h4>
+                  <span class="order-item-meta">${formatMoney(item.price)} x ${Number(item.quantity)}</span>
+                  ${renderOrderReviewControl(order, item)}
+                </div>
+                <div class="order-item-price-col">
+                  <strong class="order-item-total">${formatMoney(item.subtotal)}</strong>
+                </div>
+              </div>
+            `;
+          }).join("")}
+
+          ${isCollapsible ? `
+            <button type="button" class="order-toggle-items-btn" onclick="toggleOrderItems(${order.id}, this)">
+              Xem thêm ${itemsCount - 3} món khác ▾
+            </button>
+          ` : ""}
+        </div>
+
+        <div class="order-info-grid">
+          <div class="order-info-item">
+            <small>Người nhận hàng</small>
             <p>${escapeHtml(order.customer_name)} - ${escapeHtml(order.phone)}</p>
           </div>
-          <div>
-            <small>Địa chỉ giao hàng</small>
+          <div class="order-info-item">
+            <small>Địa chỉ nhận món</small>
             <p>${escapeHtml(formattedAddress)}</p>
           </div>
-          <div>
-            <small>Thanh toán</small>
-            <p>${getPaymentMethodLabel(order.payment_method)} - ${getPaymentStatusLabel(order.payment_status)}</p>
+          <div class="order-info-item">
+            <small>Phương thức thanh toán</small>
+            <p>${getPaymentMethodLabel(order.payment_method)} (${getPaymentStatusLabel(order.payment_status)})</p>
           </div>
-          ${order.note ? `<div><small>Ghi chú</small><p>${escapeHtml(order.note)}</p></div>` : ""}
-        </div>
-
-        <div class="history-items">
-          ${order.items.map(item => `
-            <div class="track-line order-item-row">
-              <div class="order-item-main">
-                <span>${escapeHtml(item.food_name)}</span>
-                <small>Số lượng: ${Number(item.quantity)}</small>
-                ${renderOrderReviewControl(order, item)}
-              </div>
-              <strong>${formatMoney(item.subtotal)}</strong>
-            </div>
-          `).join("")}
-          <div class="track-line order-item-row">
-            <div class="order-item-main">
-              <span>Phí giao hàng${order.shipping_method_name ? ` - ${escapeHtml(order.shipping_method_name)}` : ""}</span>
-            </div>
-            <strong>${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}</strong>
-          </div>
-          ${Number(order.discount_amount || 0) > 0 ? `
-            <div class="track-line order-item-row">
-              <div class="order-item-main">
-                <span>Mã giảm giá ${escapeHtml(order.discount_code || "")}</span>
-              </div>
-              <strong>-${formatMoney(order.discount_amount)}</strong>
+          ${order.note ? `
+            <div class="order-info-item">
+              <small>Ghi chú đơn hàng</small>
+              <p>${escapeHtml(order.note)}</p>
             </div>
           ` : ""}
+        </div>
+
+        <div class="order-card-footer">
+          <div class="order-totals-block">
+            <span class="order-sub-fee">
+              Phí giao: ${Number(order.shipping_fee || 0) > 0 ? formatMoney(order.shipping_fee) : "Miễn phí"}
+              ${Number(order.discount_amount || 0) > 0 ? ` • Giảm giá: -${formatMoney(order.discount_amount)} (${escapeHtml(order.discount_code || "Voucher")})` : ""}
+            </span>
+            <div class="order-total-price-row">
+              <span>Tổng thanh toán:</span>
+              <strong>${formatMoney(order.total_price)}</strong>
+            </div>
+          </div>
+
+          <div class="order-actions-row">
+            ${isPending ? `
+              <button type="button" class="btn-cancel-order" onclick="openCancelOrderDialog(${order.id})" title="Hủy đơn hàng này">
+                <span>❌ Hủy đơn</span>
+              </button>
+            ` : ""}
+            <button type="button" class="btn-reorder" onclick="reorderItems(${order.id})" title="Thêm tất cả món vào giỏ hàng để đặt lại">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>Đặt lại đơn này</span>
+            </button>
+          </div>
         </div>
       </article>
     `;
   }).join("");
+}
+
+function toggleOrderItems(orderId, btn) {
+  const container = document.getElementById(`order-items-${orderId}`);
+  if (!container) return;
+  const items = container.querySelectorAll("[data-overflow-item]");
+  const isExpanded = btn.dataset.expanded === "true";
+
+  items.forEach(el => {
+    el.style.display = isExpanded ? "none" : "flex";
+  });
+
+  if (isExpanded) {
+    btn.dataset.expanded = "false";
+    btn.textContent = `Xem thêm ${items.length} món khác ▾`;
+  } else {
+    btn.dataset.expanded = "true";
+    btn.textContent = "Thu gọn bớt ▴";
+  }
+}
+
+function reorderItems(orderId) {
+  const order = cachedUserOrders.find(o => String(o.id) === String(orderId));
+  if (!order || !Array.isArray(order.items) || order.items.length === 0) {
+    showSiteToast("Không tìm thấy thông tin món để đặt lại", "error");
+    return;
+  }
+
+  let addedCount = 0;
+  for (const item of order.items) {
+    const food = foods.find(f => f.id === item.food_id);
+    const existing = cart.find(c => c.id === item.food_id);
+    const qty = Number(item.quantity) || 1;
+    const price = food ? getFoodSalePrice(food) : Number(item.price || 0);
+
+    if (existing) {
+      existing.quantity += qty;
+    } else {
+      cart.push({
+        id: item.food_id,
+        name: item.food_name,
+        price: price,
+        quantity: qty,
+        image: item.food_image || food?.image || ""
+      });
+    }
+    addedCount += qty;
+  }
+
+  saveCart();
+  renderCart();
+  updateCartCount();
+  showSiteToast(`Đã thêm ${addedCount} món vào giỏ hàng! Đang chuyển đến giỏ hàng...`, "success");
+  setTimeout(() => {
+    window.location.href = "cart.html";
+  }, 900);
+}
+
+function openCancelOrderDialog(orderId) {
+  pendingCancelOrderId = orderId;
+  const dialog = document.getElementById("cancelOrderDialog");
+  const msg = document.getElementById("cancelDialogMessage");
+  if (msg) msg.textContent = `Bạn có chắc chắn muốn hủy đơn hàng #${orderId} không? Mọi khuyến mãi & khoản hoàn sẽ được cập nhật lại vào tài khoản.`;
+  if (dialog) {
+    if (typeof dialog.showModal === "function") {
+      dialog.showModal();
+    } else {
+      dialog.setAttribute("open", "true");
+    }
+  }
+}
+
+function closeCancelDialog() {
+  pendingCancelOrderId = null;
+  const dialog = document.getElementById("cancelOrderDialog");
+  if (dialog) {
+    if (typeof dialog.close === "function") {
+      dialog.close();
+    } else {
+      dialog.removeAttribute("open");
+    }
+  }
+}
+
+async function confirmCancelOrder() {
+  if (!pendingCancelOrderId) return;
+  const orderId = pendingCancelOrderId;
+  const confirmBtn = document.getElementById("confirmCancelOrderBtn");
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Đang hủy...";
+  }
+
+  try {
+    const response = await fetch(`${ORDERS_API}/${orderId}/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getAuthToken()}`
+      }
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Không thể hủy đơn hàng");
+    }
+
+    closeCancelDialog();
+    showSiteToast("Đã hủy đơn hàng thành công", "success");
+    await loadOrderHistory({ silent: false });
+  } catch (error) {
+    showSiteToast(error.message, "error");
+  } finally {
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Đồng ý hủy";
+    }
+  }
+}
+
+function handleOrderSearchInput() {
+  const searchInput = document.getElementById("orderSearch");
+  const clearBtn = document.getElementById("orderSearchClearBtn");
+  if (clearBtn && searchInput) {
+    clearBtn.style.display = searchInput.value.trim() ? "flex" : "none";
+  }
+}
+
+function clearOrderSearch() {
+  const searchInput = document.getElementById("orderSearch");
+  const clearBtn = document.getElementById("orderSearchClearBtn");
+  if (searchInput) {
+    searchInput.value = "";
+    searchInput.focus();
+  }
+  if (clearBtn) clearBtn.style.display = "none";
+  loadOrderHistory();
 }
 
 function resetOrderHistoryFilter() {
@@ -4870,6 +5147,15 @@ function resetOrderHistoryFilter() {
 }
 
 window.loadOrderHistory = loadOrderHistory;
+window.filterOrdersByTab = filterOrdersByTab;
+window.toggleOrderItems = toggleOrderItems;
+window.reorderItems = reorderItems;
+window.openCancelOrderDialog = openCancelOrderDialog;
+window.closeCancelDialog = closeCancelDialog;
+window.confirmCancelOrder = confirmCancelOrder;
+window.handleOrderSearchInput = handleOrderSearchInput;
+window.clearOrderSearch = clearOrderSearch;
+window.resetOrderHistoryFilter = resetOrderHistoryFilter;
 
 function getOrderStatusLabel(status) {
   const labels = {
