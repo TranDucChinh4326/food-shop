@@ -274,6 +274,7 @@ async function loadCategories() {
   }
 
   syncFoodTypeField();
+  syncFoodListLinks();
   setModeText();
   renderCategoryOptions();
 }
@@ -313,6 +314,13 @@ async function uploadImageFile(file) {
   return data.image;
 }
 
+function syncFoodListLinks() {
+  const listUrl = `admin.html?section=foods&foodCategory=${encodeURIComponent(selectedRootSlug || "all")}`;
+  document.querySelectorAll("[data-food-list-link]").forEach(link => {
+    link.href = listUrl;
+  });
+}
+
 async function handleImageFileChange() {
   const file = foodImageFile.files?.[0];
 
@@ -347,6 +355,7 @@ async function loadFood() {
 
   foodId.value = food.id;
   syncFoodTypeField();
+  syncFoodListLinks();
   setModeText();
   renderCategoryOptions(food.category_id || "");
   foodCategory.value = food.category_id || foodCategory.value;

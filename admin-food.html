@@ -59,7 +59,7 @@
       <div class="page-heading form-page-heading">
         <div>
           <h2 id="foodFormTitle">Thêm mới món</h2>
-          <p><a href="admin.html">Quản lý món ăn</a> <span>/</span> <span id="foodBreadcrumb">Thêm mới</span></p>
+          <p><a href="admin.html?section=foods&foodCategory=all" data-food-list-link>Quản lý món ăn</a> <span>/</span> <span id="foodBreadcrumb">Thêm mới</span></p>
         </div>
       </div>
 
@@ -119,7 +119,7 @@
 
         <div class="form-actions account-form-actions">
           <button type="submit" class="primary-btn">Lưu món</button>
-          <a href="admin.html" class="ghost-btn button-link">Quay về</a>
+          <a href="admin.html?section=foods&foodCategory=all" class="ghost-btn button-link" data-food-list-link>Quay về</a>
         </div>
       </form>
     </section>
@@ -129,6 +129,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/admin/admin-sidebar.js?v=20260914-full-child-nav-v1"></script>
-  <script src="assets/js/admin/admin-food.js?v=20260826-system-audit"></script>
+  <script src="assets/js/admin/admin-food.js?v=20260914-child-nav-fix-v1"></script>
 </body>
 </html>
