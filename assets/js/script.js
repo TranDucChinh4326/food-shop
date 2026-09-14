@@ -6597,6 +6597,13 @@ function initChatSupportWidget() {
           </div>
         </div>
         <div class="chat-header-actions">
+          <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-header-zalo" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Chat Zalo với Bếp 1979">
+            <svg class="chat-zalo-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="24" height="24" rx="6" fill="#0068FF"/>
+              <path d="M4.5 7h4.8l-3.8 6.4h4.2v1.8H4l4-6.4H4.5V7zm6.8 0h2.2v8.2h-2.2V7zm5.2 0c1.7 0 2.8 1.1 2.8 2.8v2.6c0 1.7-1.1 2.8-2.8 2.8s-2.8-1.1-2.8-2.8V9.8c0-1.7 1.1-2.8 2.8-2.8zm0 1.6c-.6 0-1 .4-1 1.2v2.6c0 .8.4 1.2 1 1.2s1-.4 1-1.2V9.8c0-.8-.4-1.2-1-1.2z" fill="#fff"/>
+            </svg>
+            <span>Zalo</span>
+          </a>
           <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
             <span></span><span></span><span></span>
           </button>
@@ -6606,12 +6613,17 @@ function initChatSupportWidget() {
       <div class="chat-quick-menu" hidden>
         <a href="menu.html">Xem thực đơn</a>
         <a href="track.html">Lịch sử đơn hàng</a>
+        <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-menu-zalo">💬 Chat Zalo (0387 700 5477)</a>
         <a href="contact.html">Liên hệ Bếp 1979</a>
       </div>
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Bếp 1979 có thể hỗ trợ gì cho bạn?</div>
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, combo, giá, khuyến mãi, giao hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
+          <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-suggestion-chip chat-zalo-chip" title="Chat Zalo trực tiếp với Bếp 1979 (0387 700 5477)">
+            <svg class="chip-zalo-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#0068FF"/><path d="M4.5 7h4.8l-3.8 6.4h4.2v1.8H4l4-6.4H4.5V7zm6.8 0h2.2v8.2h-2.2V7zm5.2 0c1.7 0 2.8 1.1 2.8 2.8v2.6c0 1.7-1.1 2.8-2.8 2.8s-2.8-1.1-2.8-2.8V9.8c0-1.7 1.1-2.8 2.8-2.8zm0 1.6c-.6 0-1 .4-1 1.2v2.6c0 .8.4 1.2 1 1.2s1-.4 1-1.2V9.8c0-.8-.4-1.2-1-1.2z" fill="#fff"/></svg>
+            <span>Chat Zalo tư vấn</span>
+          </a>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Món ăn nào bán chạy nhất hôm nay?">🔥 Món bán chạy</button>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Gợi ý combo còn hàng cho tôi">🍱 Combo món ăn</button>
           <button type="button" class="chat-suggestion-chip" data-chat-prompt="Có những mã giảm giá nào?">🎟️ Voucher ưu đãi</button>
@@ -6662,6 +6674,14 @@ function initChatSupportWidget() {
       <strong>Bếp 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
+    <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-zalo-floating" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Liên hệ Zalo 0387 700 5477">
+      <span class="zalo-pulse-ring" aria-hidden="true"></span>
+      <svg class="support-zalo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="48" height="48" rx="14" fill="#0068FF"/>
+        <path d="M9 14h9.6l-7.6 12.8h8.4v3.6H8l8-12.8H9V14zm13.6 0h4.4v16.4h-4.4V14zm10.4 0c3.4 0 5.6 2.2 5.6 5.6v5.2c0 3.4-2.2 5.6-5.6 5.6s-5.6-2.2-5.6-5.6v-5.2c0-3.4 2.2-5.6 5.6-5.6zm0 3.2c-1.2 0-2 .8-2 2.4v5.2c0 1.6.8 2.4 2 2.4s2-.8 2-2.4v-5.2c0-1.6-.8-2.4-2-2.4z" fill="#ffffff"/>
+      </svg>
+      <span class="zalo-floating-tooltip">Chat Zalo: 0387 700 5477</span>
+    </a>
     <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Bếp 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotLogo}</span>
       <span class="bot-online-badge" aria-hidden="true" title="Trực tuyến 24/7"></span>

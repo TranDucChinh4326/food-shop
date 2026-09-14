@@ -5075,6 +5075,110 @@ footer {
   z-index: 3;
 }
 
+/* ============================================================
+   FLOATING ZALO CONTACT BUTTON & PULSE EFFECT
+   ============================================================ */
+.support-zalo-floating {
+  align-items: center;
+  background: linear-gradient(135deg, #0080ff 0%, #0068ff 100%);
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  bottom: 74px;
+  box-shadow: 0 10px 24px rgba(0, 104, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: inline-flex;
+  height: 52px;
+  justify-content: center;
+  position: absolute;
+  right: 6px;
+  text-decoration: none;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease, opacity 0.2s ease;
+  width: 52px;
+  z-index: 10;
+}
+
+.support-zalo-floating:hover {
+  box-shadow: 0 16px 32px rgba(0, 104, 255, 0.52), 0 6px 14px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px) scale(1.08);
+}
+
+.support-zalo-floating:active {
+  transform: translateY(0) scale(0.94);
+}
+
+.support-widget.open .support-zalo-floating {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
+}
+
+.support-zalo-svg {
+  border-radius: 12px;
+  display: block;
+  height: 34px;
+  width: 34px;
+}
+
+.zalo-pulse-ring {
+  animation: zaloPulseRing 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+  border: 2px solid #0068ff;
+  border-radius: 50%;
+  inset: -6px;
+  opacity: 0.7;
+  pointer-events: none;
+  position: absolute;
+}
+
+@keyframes zaloPulseRing {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.92);
+  }
+  65% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+.zalo-floating-tooltip {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  padding: 6px 13px;
+  pointer-events: none;
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.zalo-floating-tooltip::after {
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid #1e293b;
+  border-top: 5px solid transparent;
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.support-zalo-floating:hover .zalo-floating-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
 .support-robot-icon {
   display: block;
   height: 50px;
@@ -5254,6 +5358,39 @@ footer {
   gap: 6px;
 }
 
+.chat-header-zalo {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  color: #0068ff;
+  display: inline-flex;
+  font-size: 11.5px;
+  font-weight: 700;
+  gap: 5px;
+  height: 28px;
+  padding: 0 10px;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.chat-header-zalo:hover {
+  background: #f0f7ff;
+  box-shadow: 0 4px 12px rgba(0, 104, 255, 0.28);
+  color: #0056d6;
+  transform: translateY(-1.5px) scale(1.03);
+}
+
+.chat-header-zalo:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.chat-zalo-svg {
+  display: block;
+  flex-shrink: 0;
+}
+
 
 
 .chat-header strong,
@@ -5323,8 +5460,8 @@ footer {
   background: #fff7f1;
   border-bottom: 1px solid #f0e5dc;
   display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  grid-template-columns: repeat(2, 1fr);
   padding: 8px;
 }
 
@@ -5346,11 +5483,23 @@ footer {
   padding: 6px;
   text-align: center;
   text-decoration: none;
+  transition: all 0.18s ease;
 }
 
 .chat-quick-menu a:hover {
   border-color: #ffb196;
   color: #ff5722;
+}
+
+.chat-quick-menu a.chat-menu-zalo {
+  border-color: #bcd9ff;
+  color: #0068ff;
+}
+
+.chat-quick-menu a.chat-menu-zalo:hover {
+  background: #eef6ff;
+  border-color: #0068ff;
+  color: #0056d6;
 }
 
 .chat-messages {
@@ -5516,6 +5665,33 @@ footer {
   border-color: #ff8a38;
   color: #c2410c;
   transform: translateY(-1.5px);
+}
+
+.chat-suggestion-chip.chat-zalo-chip {
+  background: #f0f7ff;
+  border-color: #b9d8ff;
+  color: #0068ff;
+  text-decoration: none;
+}
+
+.chat-suggestion-chip.chat-zalo-chip:hover {
+  background: #0068ff;
+  border-color: #0068ff;
+  color: #ffffff;
+  transform: translateY(-1.5px);
+}
+
+.chat-suggestion-chip.chat-zalo-chip .chip-zalo-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.chat-suggestion-chip.chat-zalo-chip:hover .chip-zalo-icon rect {
+  fill: #ffffff;
+}
+
+.chat-suggestion-chip.chat-zalo-chip:hover .chip-zalo-icon path {
+  fill: #0068ff;
 }
 
 
@@ -8741,4 +8917,143 @@ footer {
     display: none !important;
   }
 }
+
+/* ============================================================
+   DARK THEME - CHAT SUPPORT WIDGET & ZALO COMPONENTS
+   ============================================================ */
+[data-theme="dark"] .support-panel {
+  background: #1f1916;
+  border-color: #3a3028;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .chat-header-zalo {
+  background: #0f1e36;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .chat-header-zalo:hover {
+  background: #0068ff;
+  border-color: #0068ff;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 104, 255, 0.45);
+}
+
+[data-theme="dark"] .chat-quick-menu {
+  background: #1b1512;
+  border-bottom-color: #382c24;
+}
+
+[data-theme="dark"] .chat-quick-menu a {
+  background: #251d18;
+  border-color: #3a2e26;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-quick-menu a:hover {
+  border-color: #ff6b3d;
+  color: #ff6b3d;
+  background: #2f241e;
+}
+
+[data-theme="dark"] .chat-quick-menu a.chat-menu-zalo {
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .chat-quick-menu a.chat-menu-zalo:hover {
+  background: rgba(0, 104, 255, 0.22);
+  border-color: #0068ff;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .chat-messages {
+  background: #181310;
+}
+
+[data-theme="dark"] .chat-message.bot {
+  background: #27201b;
+  border-color: #3a2e26;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-message.bot.muted {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .chat-suggestion-chip {
+  background: #27201b;
+  border-color: #3d3027;
+  color: #ff9d3b;
+}
+
+[data-theme="dark"] .chat-suggestion-chip:hover {
+  background: #332820;
+  border-color: #ff6b3d;
+  color: #ff6b3d;
+}
+
+[data-theme="dark"] .chat-suggestion-chip.chat-zalo-chip {
+  background: rgba(0, 104, 255, 0.16);
+  border-color: rgba(96, 165, 250, 0.35);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .chat-suggestion-chip.chat-zalo-chip:hover {
+  background: #0068ff;
+  border-color: #0068ff;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .chat-form {
+  background: #1f1916;
+  border-top-color: #3a3028;
+}
+
+[data-theme="dark"] .chat-input {
+  background: #16110e;
+  border-color: #3a3028;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-input:focus {
+  border-color: #ff6b3d;
+}
+
+[data-theme="dark"] .chat-tool {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .chat-tool:hover {
+  background: #2b231d;
+  color: #ff6b3d;
+}
+
+[data-theme="dark"] .chat-emoji-picker {
+  background: #1f1916;
+  border-color: #3a3028;
+}
+
+[data-theme="dark"] .support-zalo-floating {
+  border-color: #27201b;
+  box-shadow: 0 10px 26px rgba(0, 104, 255, 0.45), 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .zalo-floating-tooltip {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .zalo-floating-tooltip::after {
+  border-left-color: #0f172a;
+}
+
+[data-theme="dark"] .chat-bubble-tip {
+  background: #27201b;
+  border-color: #3d3027;
+  color: #f7f3ee;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+
 
