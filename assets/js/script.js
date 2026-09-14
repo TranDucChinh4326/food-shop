@@ -3178,29 +3178,141 @@ function getAnnouncementStatusText(status) {
   return labels[status] || status || "Không rõ";
 }
 
-function getDateInputValue(value) {
-  if (!value) return "";
+let currentAnnouncementTab = "all";
+let announcementSearchDebounce = null;
+let announcementReadObserver = null;
 
-  const date = new Date(value);
+function getAnnouncementCategory(item) {
+  const text = `${item?.title || ""} ${item?.content || ""}`.toLowerCase();
+  if (text.includes("flash sale") || text.includes("chớp nhoáng") || text.includes("giờ vàng")) {
+    return "flash";
+  }
+  if (text.includes("voucher") || text.includes("mã giảm") || text.includes("giảm giá") || text.includes("ưu đãi") || text.includes("khuyến mãi") || text.includes("sale") || text.includes("tặng")) {
+    return "promotions";
+  }
+  if (text.includes("món") || text.includes("thực đơn") || text.includes("menu") || text.includes("bếp") || text.includes("cơm") || text.includes("phở") || text.includes("bánh mì") || text.includes("nước") || text.includes("uống")) {
+    return "menu";
+  }
+  return "info";
+}
+
+function getAnnouncementThemeInfo(category) {
+  switch (category) {
+    case "flash":
+      return { themeClass: "theme-flash", tagClass: "flash", label: "Flash Sale", icon: "⚡" };
+    case "promotions":
+      return { themeClass: "theme-promo", tagClass: "promo", label: "Ưu đãi", icon: "🎁" };
+    case "menu":
+      return { themeClass: "theme-menu", tagClass: "menu", label: "Thực đơn", icon: "🍲" };
+    default:
+      return { themeClass: "theme-info", tagClass: "info", label: "Tin tức", icon: "📢" };
+  }
+}
+
+function formatRelativeTime(dateValue) {
+  if (!dateValue) return "";
+  const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return "";
 
-  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return offsetDate.toISOString().slice(0, 10);
+  const now = Date.now();
+  const diff = now - date.getTime();
+
+  if (diff < 0) {
+    return formatDateTime(dateValue);
+  }
+  if (diff < 60 * 1000) {
+    return "Vừa xong";
+  }
+  if (diff < 60 * 60 * 1000) {
+    const mins = Math.max(1, Math.floor(diff / (60 * 1000)));
+    return `${mins} phút trước`;
+  }
+  if (diff < 24 * 60 * 60 * 1000) {
+    const hours = Math.floor(diff / (60 * 60 * 1000));
+    return `${hours} giờ trước`;
+  }
+  if (diff < 48 * 60 * 60 * 1000) {
+    return "Hôm qua";
+  }
+  if (diff < 7 * 24 * 60 * 60 * 1000) {
+    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+    return `${days} ngày trước`;
+  }
+  return formatDateTime(dateValue);
+}
+
+function getAnnouncementSmartCta(item) {
+  const text = `${item?.title || ""} ${item?.content || ""}`.toLowerCase();
+  if (text.includes("voucher") || text.includes("mã giảm") || text.includes("ưu đãi")) {
+    return `<a href="vouchers.html" class="announcement-cta-btn" onclick="event.stopPropagation()">🎁 Mở kho voucher</a>`;
+  }
+  if (text.includes("món") || text.includes("thực đơn") || text.includes("menu") || text.includes("đặt") || text.includes("bếp")) {
+    return `<a href="menu.html" class="announcement-cta-btn" onclick="event.stopPropagation()">🍲 Xem thực đơn ngay</a>`;
+  }
+  return "";
+}
+
+function updateAnnouncementTabCounts() {
+  const totalAll = announcementArchive.length;
+  const unreadList = announcementArchive.filter(item => !Number(item.is_read));
+  const totalUnread = unreadList.length;
+  const totalPromotions = announcementArchive.filter(item => {
+    const cat = getAnnouncementCategory(item);
+    return cat === "promotions" || cat === "flash";
+  }).length;
+  const totalMenu = announcementArchive.filter(item => getAnnouncementCategory(item) === "menu").length;
+
+  const countAllEl = document.getElementById("tabCountAll");
+  if (countAllEl) countAllEl.textContent = totalAll;
+
+  const countUnreadEl = document.getElementById("tabCountUnread");
+  if (countUnreadEl) {
+    countUnreadEl.textContent = totalUnread;
+    countUnreadEl.style.display = totalUnread > 0 ? "inline-flex" : "none";
+  }
+
+  const countPromoEl = document.getElementById("tabCountPromotions");
+  if (countPromoEl) countPromoEl.textContent = totalPromotions;
+
+  const countMenuEl = document.getElementById("tabCountMenu");
+  if (countMenuEl) countMenuEl.textContent = totalMenu;
+
+  const unreadPill = document.getElementById("announcementUnreadPill");
+  const unreadText = document.getElementById("announcementUnreadCountText");
+  if (unreadPill && unreadText) {
+    if (totalUnread > 0) {
+      unreadText.textContent = `${totalUnread} chưa đọc`;
+      unreadPill.style.display = "inline-flex";
+    } else {
+      unreadPill.style.display = "none";
+    }
+  }
+
+  const markAllBtn = document.getElementById("markAllAnnouncementsReadBtn");
+  if (markAllBtn) {
+    markAllBtn.disabled = totalUnread === 0;
+  }
 }
 
 function getFilteredAnnouncementArchive() {
   const search = document.getElementById("announcementArchiveSearch")?.value.trim().toLowerCase() || "";
-  const date = document.getElementById("announcementArchiveDate")?.value || "";
-  const status = document.getElementById("announcementArchiveStatus")?.value || "";
   const sort = document.getElementById("announcementArchiveSort")?.value || "newest";
 
   return announcementArchive.filter(item => {
     const haystack = `${item.title || ""} ${item.content || ""}`.toLowerCase();
     const matchesSearch = !search || haystack.includes(search);
-    const matchesDate = !date || getDateInputValue(item.published_at) === date;
-    const matchesStatus = !status || item.status === status;
+    
+    let matchesTab = true;
+    if (currentAnnouncementTab === "unread") {
+      matchesTab = !Number(item.is_read);
+    } else if (currentAnnouncementTab === "promotions") {
+      const cat = getAnnouncementCategory(item);
+      matchesTab = cat === "promotions" || cat === "flash";
+    } else if (currentAnnouncementTab === "menu") {
+      matchesTab = getAnnouncementCategory(item) === "menu";
+    }
 
-    return matchesSearch && matchesDate && matchesStatus;
+    return matchesSearch && matchesTab;
   }).sort((a, b) => {
     if (sort === "oldest") {
       return new Date(a.published_at || 0) - new Date(b.published_at || 0);
@@ -3219,9 +3331,11 @@ function getFilteredAnnouncementArchive() {
 function renderAnnouncementArchive() {
   const list = document.getElementById("announcementArchiveList");
   const pager = document.getElementById("announcementArchivePager");
-  const pageSize = Number(document.getElementById("announcementArchivePageSize")?.value || 5);
+  const pageSize = 6;
 
   if (!list) return;
+
+  updateAnnouncementTabCounts();
 
   const filtered = getFilteredAnnouncementArchive();
   const total = filtered.length;
@@ -3234,82 +3348,235 @@ function renderAnnouncementArchive() {
   const to = start + pageItems.length;
 
   if (total === 0) {
-    list.innerHTML = `<p>Không có thông báo phù hợp.</p>`;
+    const isUnreadTab = currentAnnouncementTab === "unread";
+    const hasSearch = Boolean(document.getElementById("announcementArchiveSearch")?.value.trim());
+    
+    let emptyTitle = "Không có thông báo nào";
+    let emptyDesc = "Không tìm thấy thông báo phù hợp với bộ lọc hiện tại.";
+    let actionBtn = `<button type="button" class="empty-state-btn" onclick="resetAnnouncementFilters()">Xem tất cả thông báo</button>`;
+
+    if (isUnreadTab) {
+      emptyTitle = "Bạn đã đọc hết thông báo rồi! 🎉";
+      emptyDesc = "Không còn tin tức mới nào cần xem. Hãy cùng khám phá thực đơn thơm ngon của Bếp 1979 nhé.";
+      actionBtn = `<a href="menu.html" class="empty-state-btn">🍲 Khám phá thực đơn ngay</a>`;
+    } else if (hasSearch) {
+      emptyTitle = "Không tìm thấy kết quả phù hợp";
+      emptyDesc = "Hãy thử tìm với từ khóa khác hoặc xóa bộ lọc tìm kiếm.";
+      actionBtn = `<button type="button" class="empty-state-btn" onclick="clearAnnouncementSearch()">Xóa tìm kiếm</button>`;
+    }
+
+    list.innerHTML = `
+      <div class="announcement-empty-state">
+        <div class="empty-state-icon">🔔</div>
+        <h3>${emptyTitle}</h3>
+        <p>${emptyDesc}</p>
+        ${actionBtn}
+      </div>
+    `;
     if (pager) pager.innerHTML = "";
     return;
   }
 
-  list.innerHTML = pageItems.map(item => `
-    <article class="archive-announcement ${escapeHtml(item.status)} ${Number(item.is_read) ? "is-read" : "is-new"}"
-      data-announcement-id="${Number(item.id)}" data-is-read="${Number(item.is_read) ? "1" : "0"}">
-      <span class="announcement-read-ribbon" aria-label="${Number(item.is_read) ? "Đã đọc" : "Thông báo mới"}">
-        ${Number(item.is_read) ? "ĐÃ ĐỌC" : "NEW"}
+  list.innerHTML = pageItems.map(item => {
+    const isRead = Number(item.is_read) === 1;
+    const category = getAnnouncementCategory(item);
+    const theme = getAnnouncementThemeInfo(category);
+    const timeAgo = formatRelativeTime(item.published_at);
+    const fullDate = formatDateTime(item.published_at);
+    const smartCta = getAnnouncementSmartCta(item);
+
+    const expiryHtml = item.expires_at ? `
+      <span class="announcement-expiry-badge" title="Thời hạn hiệu lực">
+        ⏳ Hết hạn: ${formatDateTime(item.expires_at)}
       </span>
-      <div>
-        <span class="archive-status ${escapeHtml(item.status)}">${escapeHtml(getAnnouncementStatusText(item.status))}</span>
-        <h2>${escapeHtml(item.title)}</h2>
-        ${item.content ? `<p>${escapeHtml(item.content)}</p>` : ""}
-      </div>
-      <dl>
-        <div>
-          <dt>Ngày đăng</dt>
-          <dd>${formatDateTime(item.published_at)}</dd>
+    ` : "";
+
+    const singleReadBtn = !isRead ? `
+      <button type="button" class="announcement-read-btn" onclick="handleSingleAnnouncementRead(event, ${Number(item.id)})" title="Đánh dấu tin này đã đọc">
+        ✓ Đã đọc
+      </button>
+    ` : "";
+
+    return `
+      <article class="archive-announcement ${theme.themeClass} ${isRead ? "is-read" : "is-new"}"
+        data-announcement-id="${Number(item.id)}" data-is-read="${isRead ? "1" : "0"}"
+        onclick="handleAnnouncementCardClick(event, ${Number(item.id)})">
+        
+        <div class="announcement-avatar ${theme.themeClass}" aria-hidden="true">
+          ${theme.icon}
         </div>
-        <div>
-          <dt>Hết hiệu lực</dt>
-          <dd>${item.expires_at ? formatDateTime(item.expires_at) : "Không giới hạn"}</dd>
+
+        <div class="announcement-card-content">
+          <div class="announcement-card-header">
+            <div class="announcement-card-title-row">
+              ${!isRead ? `<span class="card-unread-dot" title="Thông báo mới chưa đọc"></span>` : ""}
+              <span class="card-category-tag ${theme.tagClass}">${escapeHtml(theme.label)}</span>
+              <h2>${escapeHtml(item.title)}</h2>
+            </div>
+            <div class="announcement-time-meta" title="${escapeHtml(fullDate)}">
+              <span>🕒</span>
+              <span>${escapeHtml(timeAgo)}</span>
+            </div>
+          </div>
+
+          ${item.content ? `<p class="announcement-body-text">${escapeHtml(item.content)}</p>` : ""}
+
+          <div class="announcement-card-footer">
+            ${expiryHtml}
+            <div class="announcement-cta-actions">
+              ${smartCta}
+              ${singleReadBtn}
+            </div>
+          </div>
         </div>
-      </dl>
-    </article>
-  `).join("");
+      </article>
+    `;
+  }).join("");
 
   observeUnreadAnnouncements();
 
   if (!pager) return;
 
   pager.innerHTML = `
-    <span>Đang hiển thị từ ${from} đến ${to} của ${total} thông báo</span>
+    <span>Hiển thị ${from} - ${to} trên tổng ${total} thông báo</span>
     <div class="archive-pager-buttons">
-      <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""}>&lsaquo;</button>
+      <button type="button" data-archive-page="prev" ${announcementArchivePage === 1 ? "disabled" : ""} aria-label="Trang trước">&lsaquo;</button>
       ${getCompactPaginationItems(totalPages, announcementArchivePage).map(page => renderPaginationButton(page, announcementArchivePage, "archive")).join("")}
-      <button type="button" data-archive-page="next" ${announcementArchivePage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      <button type="button" data-archive-page="next" ${announcementArchivePage === totalPages ? "disabled" : ""} aria-label="Trang tiếp">&rsaquo;</button>
     </div>
   `;
+}
+
+function handleAnnouncementCardClick(event, id) {
+  if (event.target.closest("a, button")) return;
+  const article = document.querySelector(`.archive-announcement[data-announcement-id="${id}"]`);
+  if (article && article.dataset.isRead === "0") {
+    markAnnouncementRead(article);
+  }
+}
+
+function handleSingleAnnouncementRead(event, id) {
+  event.stopPropagation();
+  const article = document.querySelector(`.archive-announcement[data-announcement-id="${id}"]`);
+  if (article) {
+    markAnnouncementRead(article);
+  }
 }
 
 async function markAnnouncementRead(article) {
   const token = sessionStorage.getItem("foodhub_token");
   const id = Number(article?.dataset.announcementId);
-  if (!token || !id || article.dataset.isRead === "1" || article.dataset.markingRead === "1") return;
+  if (!id || article.dataset.isRead === "1" || article.dataset.markingRead === "1") return;
 
   article.dataset.markingRead = "1";
-  try {
-    const response = await fetch(`${ANNOUNCEMENTS_API}/read`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ ids: [id] })
-    });
-    if (!response.ok) return;
-
-    const item = announcementArchive.find(entry => Number(entry.id) === id);
-    if (item) item.is_read = 1;
-    article.dataset.isRead = "1";
-    article.classList.remove("is-new");
-    article.classList.add("is-read");
-    const ribbon = article.querySelector(".announcement-read-ribbon");
-    if (ribbon) {
-      ribbon.textContent = "ĐÃ ĐỌC";
-      ribbon.setAttribute("aria-label", "Đã đọc");
+  
+  if (token) {
+    try {
+      await fetch(`${ANNOUNCEMENTS_API}/read`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ids: [id] })
+      });
+    } catch (error) {
+      console.warn("Không thể đánh dấu thông báo đã đọc:", error.message);
     }
-    window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
-  } catch (error) {
-    console.warn("Không thể đánh dấu thông báo đã đọc:", error.message);
-  } finally {
-    delete article.dataset.markingRead;
   }
+
+  const item = announcementArchive.find(entry => Number(entry.id) === id);
+  if (item) item.is_read = 1;
+  article.dataset.isRead = "1";
+  article.classList.remove("is-new");
+  article.classList.add("is-read");
+
+  article.querySelector(".card-unread-dot")?.remove();
+  article.querySelector(".announcement-read-btn")?.remove();
+
+  updateAnnouncementTabCounts();
+  window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
+  delete article.dataset.markingRead;
+}
+
+async function markAllAnnouncementsRead() {
+  const token = sessionStorage.getItem("foodhub_token");
+  const unreadItems = announcementArchive.filter(item => !Number(item.is_read));
+  if (unreadItems.length === 0) return;
+
+  const btn = document.getElementById("markAllAnnouncementsReadBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>Đang lưu...</span>`;
+  }
+
+  const ids = unreadItems.map(item => Number(item.id)).filter(Boolean);
+
+  if (token) {
+    try {
+      const response = await fetch(`${ANNOUNCEMENTS_API}/read`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ids })
+      });
+      if (!response.ok) {
+        throw new Error("Không thể cập nhật trên máy chủ");
+      }
+    } catch (error) {
+      console.warn("Lỗi đánh dấu tất cả đã đọc:", error.message);
+    }
+  }
+
+  announcementArchive.forEach(item => { item.is_read = 1; });
+  renderAnnouncementArchive();
+  window.dispatchEvent(new CustomEvent("foodhub:announcements-read"));
+
+  if (btn) {
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"></polyline>
+        <polyline points="23 10 12 21 8 17"></polyline>
+      </svg>
+      <span>Đã đọc tất cả</span>
+    `;
+    btn.disabled = true;
+  }
+
+  const showSiteToastFn = getWindowFunction("showSiteToast");
+  if (showSiteToastFn) {
+    showSiteToastFn("Đã đánh dấu tất cả thông báo là đã đọc!", "success");
+  }
+}
+
+function clearAnnouncementSearch() {
+  const input = document.getElementById("announcementArchiveSearch");
+  const clearBtn = document.getElementById("announcementSearchClear");
+  if (input) input.value = "";
+  if (clearBtn) clearBtn.style.display = "none";
+  announcementArchivePage = 1;
+  renderAnnouncementArchive();
+}
+
+function resetAnnouncementFilters() {
+  currentAnnouncementTab = "all";
+  document.querySelectorAll(".announcement-tab").forEach(tab => {
+    const isActive = tab.dataset.tab === "all";
+    tab.classList.toggle("active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  const search = document.getElementById("announcementArchiveSearch");
+  const clearBtn = document.getElementById("announcementSearchClear");
+  const sort = document.getElementById("announcementArchiveSort");
+  if (search) search.value = "";
+  if (clearBtn) clearBtn.style.display = "none";
+  if (sort) sort.value = "newest";
+
+  announcementArchivePage = 1;
+  renderAnnouncementArchive();
 }
 
 function observeUnreadAnnouncements() {
@@ -3337,70 +3604,107 @@ function observeUnreadAnnouncements() {
 
 async function loadAnnouncementArchive() {
   const list = document.getElementById("announcementArchiveList");
-
   if (!list) return;
 
-  list.innerHTML = `<p>Đang tải thông báo...</p>`;
+  // Hiển thị khung Skeleton Shimmer trong khi đợi nạp dữ liệu
+  list.innerHTML = Array.from({ length: 3 }).map(() => `
+    <div class="announcement-skeleton-card">
+      <div class="skeleton-shimmer skeleton-avatar"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-shimmer skeleton-line skeleton-title"></div>
+        <div class="skeleton-shimmer skeleton-line skeleton-text-1"></div>
+        <div class="skeleton-shimmer skeleton-line skeleton-text-2"></div>
+      </div>
+    </div>
+  `).join("");
+
+  const token = sessionStorage.getItem("foodhub_token");
+  const guestHint = document.getElementById("announcementGuestHint");
+  if (guestHint) {
+    guestHint.style.display = token ? "none" : "flex";
+  }
 
   try {
-    const token = sessionStorage.getItem("foodhub_token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const response = await fetch(`${ANNOUNCEMENTS_API}/archive`, { headers });
     const announcements = await response.json();
 
     if (!response.ok) {
-      throw new Error(announcements.message || "Không thể tải thông báo.");
+      throw new Error(announcements.message || "Không thể tải danh sách thông báo.");
     }
 
-    announcementArchive = announcements;
+    announcementArchive = Array.isArray(announcements) ? announcements : [];
     announcementArchivePage = 1;
     renderAnnouncementArchive();
 
   } catch (error) {
-    list.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+    list.innerHTML = `
+      <div class="announcement-empty-state">
+        <div class="empty-state-icon">⚠️</div>
+        <h3>Không thể tải thông báo</h3>
+        <p>${escapeHtml(error.message)}</p>
+        <button type="button" class="empty-state-btn" onclick="loadAnnouncementArchive()">Thử lại</button>
+      </div>
+    `;
   }
 }
 
 function initAnnouncementArchiveFilters() {
   const search = document.getElementById("announcementArchiveSearch");
-  const date = document.getElementById("announcementArchiveDate");
-  const status = document.getElementById("announcementArchiveStatus");
+  const clearBtn = document.getElementById("announcementSearchClear");
   const sort = document.getElementById("announcementArchiveSort");
-  const pageSize = document.getElementById("announcementArchivePageSize");
-  const reset = document.getElementById("announcementArchiveReset");
   const pager = document.getElementById("announcementArchivePager");
+  const markAllBtn = document.getElementById("markAllAnnouncementsReadBtn");
+  const tabs = document.querySelectorAll(".announcement-tab");
 
-  if (!search && !date && !status && !sort && !pageSize && !pager) return;
+  if (!search && !sort && !pager && !markAllBtn && tabs.length === 0) return;
 
-  [search, date, status, sort, pageSize].forEach(control => {
-    control?.addEventListener("input", () => {
-      announcementArchivePage = 1;
-      renderAnnouncementArchive();
-    });
+  // 1. Tab phân loại thông báo
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
+      tab.classList.add("active");
+      tab.setAttribute("aria-selected", "true");
 
-    control?.addEventListener("change", () => {
+      currentAnnouncementTab = tab.dataset.tab || "all";
       announcementArchivePage = 1;
       renderAnnouncementArchive();
     });
   });
 
-  reset?.addEventListener("click", () => {
-    if (search) search.value = "";
-    if (date) date.value = "";
-    if (status) status.value = "";
-    if (sort) sort.value = "newest";
-    if (pageSize) pageSize.value = "5";
+  // 2. Ô tìm kiếm với debounce 150ms
+  search?.addEventListener("input", () => {
+    if (clearBtn) {
+      clearBtn.style.display = search.value.trim() ? "flex" : "none";
+    }
+    clearTimeout(announcementSearchDebounce);
+    announcementSearchDebounce = setTimeout(() => {
+      announcementArchivePage = 1;
+      renderAnnouncementArchive();
+    }, 150);
+  });
 
+  clearBtn?.addEventListener("click", clearAnnouncementSearch);
+
+  // 3. Sắp xếp
+  sort?.addEventListener("change", () => {
     announcementArchivePage = 1;
     renderAnnouncementArchive();
   });
 
+  // 4. Đánh dấu tất cả đã đọc
+  markAllBtn?.addEventListener("click", markAllAnnouncementsRead);
+
+  // 5. Phân trang
   pager?.addEventListener("click", event => {
     const button = event.target.closest("[data-archive-page]");
     if (!button) return;
 
     const action = button.dataset.archivePage;
-    const totalPages = Math.max(1, Math.ceil(getFilteredAnnouncementArchive().length / Number(pageSize?.value || 5)));
+    const totalPages = Math.max(1, Math.ceil(getFilteredAnnouncementArchive().length / 6));
 
     if (action === "prev") {
       announcementArchivePage -= 1;
@@ -3412,6 +3716,10 @@ function initAnnouncementArchiveFilters() {
 
     announcementArchivePage = Math.min(Math.max(announcementArchivePage, 1), totalPages);
     renderAnnouncementArchive();
+    const panel = document.querySelector(".announcement-archive-panel");
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   });
 }
 

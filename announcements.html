@@ -1,52 +1,96 @@
 <!DOCTYPE html>
-<!-- Trang thông báo công khai: hiển thị danh sách thông báo đang hiệu lực từ backend. -->
+<!-- Trang thông báo công khai: hiển thị danh sách thông báo và ưu đãi từ Bếp 1979. -->
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thông báo - Bếp 1979</title>
-  <link rel="stylesheet" href="assets/css/base.css?v=20260826-live-flash-sale-v2">
-  <link rel="stylesheet" href="assets/css/announcements.css?v=20260914-read-ribbon-v1">
+  <title>Trung tâm thông báo - Bếp 1979</title>
+  <link rel="stylesheet" href="assets/css/base.css?v=20260914-idle-recommend-v3">
+  <link rel="stylesheet" href="assets/css/announcements.css?v=20260914-notif-pro-v1">
 </head>
 <body>
   <div data-shared-header></div>
 
   <main class="announcements-page">
     <section class="announcement-archive-panel">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">Thông báo</span>
-          <h2>Cập nhật mới từ Bếp 1979</h2>
-          <p>Theo dõi ưu đãi, lịch cập nhật thực đơn và những thông tin quan trọng khi đặt món.</p>
+      <!-- Top Heading & Quick Actions -->
+      <div class="announcement-top-bar">
+        <div class="announcement-title-group">
+          <div class="announcement-badge-row">
+            <span class="eyebrow">Trung tâm tin tức</span>
+            <span class="announcement-unread-pill" id="announcementUnreadPill" style="display: none;">
+              <span class="unread-pulse-dot"></span>
+              <span id="announcementUnreadCountText">0 chưa đọc</span>
+            </span>
+          </div>
+          <h2>Thông báo từ Bếp 1979</h2>
+          <p>Cập nhật ưu đãi sốt dẻo, thực đơn mới và các tin tức mới nhất khi đặt món tại quán.</p>
+        </div>
+
+        <div class="announcement-header-actions">
+          <button type="button" id="markAllAnnouncementsReadBtn" class="announcement-action-btn mark-all-btn" title="Đánh dấu tất cả thông báo là đã đọc">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+              <polyline points="23 10 12 21 8 17"></polyline>
+            </svg>
+            <span>Đã đọc tất cả</span>
+          </button>
         </div>
       </div>
 
-      <div class="announcement-filters">
-        <input type="search" id="announcementArchiveSearch" placeholder="Tìm kiếm thông báo">
-        <input type="date" id="announcementArchiveDate" aria-label="Lọc theo ngày đăng">
-        <select id="announcementArchiveStatus" aria-label="Lọc theo trạng thái">
-          <option value="">Tất cả trạng thái</option>
-          <option value="active">Đang hoạt động</option>
-          <option value="scheduled">Sắp hiển thị</option>
-          <option value="expired">Hết hạn</option>
-          <option value="hidden">Đã ẩn</option>
-        </select>
-        <select id="announcementArchiveSort" aria-label="Sắp xếp thông báo">
-          <option value="newest" selected>Mới nhất</option>
-          <option value="oldest">Cũ nhất</option>
-          <option value="expireSoon">Sắp hết hạn</option>
-        </select>
-        <select id="announcementArchivePageSize" aria-label="Số thông báo mỗi trang">
-          <option value="5" selected>5 dòng</option>
-          <option value="10">10 dòng</option>
-          <option value="20">20 dòng</option>
-        </select>
-        <button type="button" id="announcementArchiveReset" class="announcement-filter-reset">Xóa lọc</button>
+      <!-- Category Filter Tabs & Search Controls -->
+      <div class="announcement-nav-bar">
+        <div class="announcement-tabs" role="tablist" aria-label="Phân loại thông báo">
+          <button type="button" class="announcement-tab active" data-tab="all" role="tab" aria-selected="true">
+            <span>Tất cả</span>
+            <span class="tab-badge" id="tabCountAll">0</span>
+          </button>
+          <button type="button" class="announcement-tab" data-tab="unread" role="tab" aria-selected="false">
+            <span>Chưa đọc</span>
+            <span class="tab-badge unread-badge" id="tabCountUnread" style="display: none;">0</span>
+          </button>
+          <button type="button" class="announcement-tab" data-tab="promotions" role="tab" aria-selected="false">
+            <span>🎁 Ưu đãi & Voucher</span>
+            <span class="tab-badge" id="tabCountPromotions">0</span>
+          </button>
+          <button type="button" class="announcement-tab" data-tab="menu" role="tab" aria-selected="false">
+            <span>🍲 Món & Thực đơn</span>
+            <span class="tab-badge" id="tabCountMenu">0</span>
+          </button>
+        </div>
+
+        <div class="announcement-search-sort">
+          <div class="announcement-search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" id="announcementArchiveSearch" placeholder="Tìm theo tiêu đề, nội dung..." aria-label="Tìm kiếm thông báo">
+            <button type="button" id="announcementSearchClear" class="search-clear-btn" aria-label="Xóa tìm kiếm" style="display: none;">✕</button>
+          </div>
+
+          <div class="announcement-sort-wrap">
+            <select id="announcementArchiveSort" aria-label="Sắp xếp thông báo" class="announcement-sort-select">
+              <option value="newest" selected>✨ Mới nhất</option>
+              <option value="oldest">⌛ Cũ nhất</option>
+              <option value="expireSoon">⏳ Sắp hết hạn</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div id="announcementArchiveList" class="announcement-archive-list">
-        Đang tải thông báo...
+      <!-- Guest Login Hint (nếu chưa đăng nhập) -->
+      <div id="announcementGuestHint" class="announcement-guest-hint" style="display: none;">
+        <span class="guest-hint-icon">💡</span>
+        <span>Bạn đang xem với tư cách khách. <a href="login.html?redirect=announcements.html">Đăng nhập</a> để lưu trạng thái đã đọc và nhận thông báo cá nhân hóa!</span>
       </div>
+
+      <!-- Announcement List Container -->
+      <div id="announcementArchiveList" class="announcement-archive-list" aria-live="polite">
+        <!-- Được sinh động bởi JavaScript -->
+      </div>
+
+      <!-- Pagination Footer -->
       <div id="announcementArchivePager" class="announcement-archive-pager"></div>
     </section>
   </main>
@@ -54,7 +98,7 @@
   <div data-shared-footer></div>
 
   <script src="config.js"></script>
-  <script src="assets/js/shared-layout.js?v=20260914-notification-read-v1"></script>
-  <script src="assets/js/script.js?v=20260914-read-ribbon-v1"></script>
+  <script src="assets/js/shared-layout.js?v=20260914-notification-read-v2"></script>
+  <script src="assets/js/script.js?v=20260914-notif-pro-v1"></script>
 </body>
 </html>
