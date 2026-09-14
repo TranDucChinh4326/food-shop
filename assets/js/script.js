@@ -6607,7 +6607,6 @@ function initChatSupportWidget() {
         <div class="chat-header-actions">
           <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="chat-header-zalo" title="Chat Zalo với Bếp 1979 (0387 700 547)" aria-label="Chat Zalo với Bếp 1979">
             <span class="chat-zalo-icon-badge" aria-hidden="true">Zalo</span>
-            <span>Nhắn Zalo</span>
           </a>
           <button type="button" class="chat-menu" aria-label="Menu hỗ trợ">
             <span></span><span></span><span></span>
