@@ -6579,13 +6579,15 @@ function triggerIdleFoodRecommendation() {
   const originalPrice = Number(candidate.price || 0);
   const finalPrice = isSale ? Number(saleInfo.salePrice || originalPrice) : originalPrice;
 
-  // 2. Chuẩn bị nội dung bong bóng Chatbot tinh gọn, không bị tràn dòng
-  const bubbleTag = isSale
-    ? `<span class="chat-bubble-mini-tag sale">🔥 Flash Sale</span>`
-    : `<span class="chat-bubble-mini-tag">👨‍🍳 Bếp gợi ý</span>`;
-  const bubbleHeadline = isSale
-    ? `Món đang sale hời nè!`
-    : `Món này ngon nè bạn ơi!`;
+  // 2. Chuẩn bị nội dung bong bóng Chatbot tinh gọn (không để chữ Bếp gợi ý ở bong bóng chat)
+  const headerHtml = isSale
+    ? `<div class="chat-bubble-header-clean">
+        <span class="chat-bubble-mini-tag sale">🔥 Flash Sale</span>
+        <span class="chat-bubble-title-clean">Món này đang sale hời nè!</span>
+      </div>`
+    : `<div class="chat-bubble-header-clean">
+        <span class="chat-bubble-title-clean">✨ Món này ngon nè bạn ơi!</span>
+      </div>`;
   
   const rawImage = String(candidate.image || "").trim();
   const isPlaceholder = rawImage.includes("images.unsplash.com");
@@ -6601,10 +6603,7 @@ function triggerIdleFoodRecommendation() {
     : `<span>${formatMoney(finalPrice)}</span>`;
 
   bubble.innerHTML = `
-    <div class="chat-bubble-header-clean">
-      ${bubbleTag}
-      <span class="chat-bubble-title-clean">${bubbleHeadline}</span>
-    </div>
+    ${headerHtml}
     <div class="chat-bubble-item-card">
       ${thumbHtml}
       <div class="chat-bubble-item-info">
