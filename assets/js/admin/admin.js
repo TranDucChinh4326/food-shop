@@ -46,6 +46,11 @@ const stockImportHistory = document.getElementById("stockImportHistory");
 const downloadStockTemplateBtn = document.getElementById("downloadStockTemplateBtn");
 const inventorySummary = document.getElementById("inventorySummary");
 const inventoryOverviewList = document.getElementById("inventoryOverviewList");
+const inventorySearch = document.getElementById("inventorySearch");
+const inventoryCategoryFilter = document.getElementById("inventoryCategoryFilter");
+const inventoryStockFilter = document.getElementById("inventoryStockFilter");
+const inventorySortFilter = document.getElementById("inventorySortFilter");
+const inventoryPageSize = document.getElementById("inventoryPageSize");
 const stockExportHistory = document.getElementById("stockExportHistory");
 const inventoryImportFrom = document.getElementById("inventoryImportFrom");
 const inventoryImportTo = document.getElementById("inventoryImportTo");
@@ -184,6 +189,10 @@ let activeFoodCategory = "all";
 let activeFoodSubcategory = "all";
 let foodsPage = 1;
 let foodsPerPage = 5;
+let inventorySearchTimer;
+let cachedInventoryFoods = [];
+let inventoryPage = 1;
+let inventoryPerPage = 25;
 let userSearchTimer;
 let cachedUsers = [];
 let usersPage = 1;
@@ -4144,37 +4153,164 @@ async function loadStockImportHistory() {
 function renderInventorySummary(summary = {}) {
   if (!inventorySummary) return;
 
+  const inventoryIcons = {
+    totalFoods: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>',
+    totalStock: '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>',
+    lowStock: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>',
+    outOfStock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>',
+    totalIn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12" /><path d="m8 11 4 4 4-4" /><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" /></svg>',
+    totalOut: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="m8 7 4-4 4 4" /><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" /></svg>'
+  };
+
   const cards = [
-    ["Tổng món", summary.totalFoods || 0, "Món đang quản lý tồn kho"],
-    ["Tổng tồn", summary.totalStock || 0, "Số lượng hiện còn"],
-    ["Sắp hết", summary.lowStock || 0, "Món còn từ 1 đến 10"],
-    ["Hết hàng", summary.outOfStock || 0, "Món tồn bằng 0"],
-    ["Đã nhập", summary.totalIn || 0, "Tổng số lượng từng nhập"],
-    ["Đã bán", summary.totalOut || 0, "Tổng số lượng từng xuất"]
+    {
+      className: "stats-card stats-card-customers",
+      label: "Tổng món",
+      value: Number(summary.totalFoods || 0).toLocaleString("vi-VN"),
+      hint: "Món đang quản lý tồn kho",
+      icon: inventoryIcons.totalFoods
+    },
+    {
+      className: "stats-card stats-card-online",
+      label: "Tổng tồn",
+      value: Number(summary.totalStock || 0).toLocaleString("vi-VN"),
+      hint: "Số lượng hiện còn",
+      icon: inventoryIcons.totalStock
+    },
+    {
+      className: "stats-card stats-card-warning",
+      label: "Sắp hết",
+      value: Number(summary.lowStock || 0).toLocaleString("vi-VN"),
+      hint: "Món còn từ 1 đến 10",
+      icon: inventoryIcons.lowStock
+    },
+    {
+      className: "stats-card stats-card-danger",
+      label: "Hết hàng",
+      value: Number(summary.outOfStock || 0).toLocaleString("vi-VN"),
+      hint: "Món tồn kho bằng 0",
+      icon: inventoryIcons.outOfStock
+    },
+    {
+      className: "stats-card stats-card-revenue",
+      label: "Đã nhập",
+      value: Number(summary.totalIn || 0).toLocaleString("vi-VN"),
+      hint: "Tổng số lượng từng nhập",
+      icon: inventoryIcons.totalIn
+    },
+    {
+      className: "stats-card stats-card-orders",
+      label: "Đã bán",
+      value: Number(summary.totalOut || 0).toLocaleString("vi-VN"),
+      hint: "Tổng số lượng từng xuất",
+      icon: inventoryIcons.totalOut
+    }
   ];
 
-  inventorySummary.innerHTML = cards.map(([label, value, hint]) => `
-    <article class="stats-card">
-      <div>
-        <span>${escapeHtml(label)}</span>
-        <strong>${Number(value || 0).toLocaleString("vi-VN")}</strong>
-        <small class="stats-card-hint">${escapeHtml(hint)}</small>
+  inventorySummary.innerHTML = cards.map(card => `
+    <article class="${card.className}">
+      <div class="stats-card-main">
+        <span class="stats-card-label">${escapeHtml(card.label)}</span>
+        <strong class="stats-card-value">${card.value}</strong>
+        <small class="stats-card-hint">${escapeHtml(card.hint)}</small>
       </div>
+      <em class="stats-card-icon" aria-hidden="true">${card.icon}</em>
     </article>
   `).join("");
 }
 
-function renderInventoryOverviewTable(foods = []) {
+function renderInventoryCategoryFilterOptions(foods = []) {
+  if (!inventoryCategoryFilter) return;
+  const currentVal = inventoryCategoryFilter.value || "all";
+  const categories = new Map();
+  foods.forEach(f => {
+    if (f.category_name) {
+      categories.set(String(f.category_name), f.category_name);
+    }
+  });
+
+  const options = ['<option value="all">Tất cả danh mục</option>'];
+  categories.forEach(name => {
+    options.push(`<option value="${escapeHtml(name)}"${currentVal === name ? " selected" : ""}>${escapeHtml(name)}</option>`);
+  });
+  inventoryCategoryFilter.innerHTML = options.join("");
+}
+
+function getFilteredInventoryFoods() {
+  const search = String(inventorySearch?.value || "").trim().toLowerCase();
+  const category = inventoryCategoryFilter?.value || "all";
+  const stockStatus = inventoryStockFilter?.value || "all";
+  const sort = inventorySortFilter?.value || "id_asc";
+
+  let list = cachedInventoryFoods.filter(food => {
+    const name = String(food.name || "").toLowerCase();
+    const idStr = String(food.id || "");
+    const formattedId = `#${idStr}`;
+    const catName = String(food.category_name || "");
+
+    const matchesSearch = !search
+      || name.includes(search)
+      || idStr.includes(search)
+      || formattedId.includes(search)
+      || catName.toLowerCase().includes(search);
+
+    const matchesCategory = category === "all" || catName === category;
+
+    const stock = Number(food.stock_quantity || 0);
+    let matchesStock = true;
+    if (stockStatus === "in_stock") matchesStock = stock > 10;
+    else if (stockStatus === "low_stock") matchesStock = stock > 0 && stock <= 10;
+    else if (stockStatus === "out_of_stock") matchesStock = stock <= 0;
+
+    return matchesSearch && matchesCategory && matchesStock;
+  });
+
+  list.sort((a, b) => {
+    const stockA = Number(a.stock_quantity || 0);
+    const stockB = Number(b.stock_quantity || 0);
+    const inA = Number(a.total_in || 0);
+    const inB = Number(b.total_in || 0);
+    const outA = Number(a.total_out || 0);
+    const outB = Number(b.total_out || 0);
+    const idA = Number(a.id || 0);
+    const idB = Number(b.id || 0);
+
+    switch (sort) {
+      case "stock_desc": return stockB - stockA;
+      case "stock_asc": return stockA - stockB;
+      case "sold_desc": return outB - outA;
+      case "in_desc": return inB - inA;
+      case "id_asc":
+      default:
+        return idA - idB;
+    }
+  });
+
+  return list;
+}
+
+function renderInventoryOverviewTable() {
   if (!inventoryOverviewList) return;
 
-  if (!foods.length) {
-    inventoryOverviewList.textContent = "Chưa có món trong kho.";
+  inventoryPerPage = Number(inventoryPageSize?.value || inventoryPerPage || 25);
+  const filtered = getFilteredInventoryFoods();
+  const totalItems = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / inventoryPerPage));
+  inventoryPage = Math.min(Math.max(inventoryPage, 1), totalPages);
+
+  if (!totalItems) {
+    inventoryOverviewList.innerHTML = '<div class="table-state compact-state">Không tìm thấy món nào phù hợp với bộ lọc.</div>';
     return;
   }
 
+  const startIndex = (inventoryPage - 1) * inventoryPerPage;
+  const pageItems = filtered.slice(startIndex, startIndex + inventoryPerPage);
+  const from = startIndex + 1;
+  const to = startIndex + pageItems.length;
+
   inventoryOverviewList.innerHTML = `
     <div class="table-wrap">
-      <table class="admin-table">
+      <table class="admin-table inventory-admin-table">
         <thead>
           <tr>
             <th>Mã món</th>
@@ -4187,10 +4323,10 @@ function renderInventoryOverviewTable(foods = []) {
           </tr>
         </thead>
         <tbody>
-          ${foods.map(food => {
+          ${pageItems.map(food => {
             const stock = Number(food.stock_quantity || 0);
             const label = stock <= 0 ? "Hết hàng" : stock <= 10 ? "Sắp hết" : "Còn hàng";
-            const tone = stock <= 0 ? "locked" : "active";
+            const tone = stock <= 0 ? "locked" : stock <= 10 ? "warning" : "active";
             return `
               <tr>
                 <td>#${Number(food.id)}</td>
@@ -4206,6 +4342,14 @@ function renderInventoryOverviewTable(foods = []) {
         </tbody>
       </table>
     </div>
+    <div class="table-footer">
+      Đang hiển thị từ ${from} đến ${to} của ${totalItems} kết quả
+      <div class="pager">
+        <button type="button" data-inventory-page="prev" ${inventoryPage === 1 ? "disabled" : ""}>&lsaquo;</button>
+        ${getCompactPaginationItems(totalPages, inventoryPage).map(page => renderAdminPaginationButton(page, inventoryPage, "inventory")).join("")}
+        <button type="button" data-inventory-page="next" ${inventoryPage === totalPages ? "disabled" : ""}>&rsaquo;</button>
+      </div>
+    </div>
   `;
 }
 
@@ -4216,7 +4360,10 @@ async function loadInventoryOverview() {
   try {
     const data = await requestJson(`${ADMIN_API}/inventory/overview`);
     renderInventorySummary(data.summary || {});
-    renderInventoryOverviewTable(data.foods || []);
+    cachedInventoryFoods = data.foods || [];
+    renderInventoryCategoryFilterOptions(cachedInventoryFoods);
+    inventoryPage = 1;
+    renderInventoryOverviewTable();
   } catch (error) {
     inventoryOverviewList.textContent = error.message;
     showAdminToast(error.message, "error");
@@ -5076,6 +5223,47 @@ inventoryTabs.forEach(tab => {
     if (target === "imports") loadInventoryImports();
     if (target === "exports") loadInventoryExports();
   });
+});
+inventorySearch?.addEventListener("input", () => {
+  clearTimeout(inventorySearchTimer);
+  inventoryPage = 1;
+  inventorySearchTimer = setTimeout(renderInventoryOverviewTable, 250);
+});
+inventoryCategoryFilter?.addEventListener("change", () => {
+  inventoryPage = 1;
+  renderInventoryOverviewTable();
+});
+inventoryStockFilter?.addEventListener("change", () => {
+  inventoryPage = 1;
+  renderInventoryOverviewTable();
+});
+inventorySortFilter?.addEventListener("change", () => {
+  inventoryPage = 1;
+  renderInventoryOverviewTable();
+});
+inventoryPageSize?.addEventListener("change", () => {
+  inventoryPerPage = Number(inventoryPageSize.value || 25);
+  inventoryPage = 1;
+  renderInventoryOverviewTable();
+});
+inventoryOverviewList?.addEventListener("click", event => {
+  const pageButton = event.target.closest("[data-inventory-page]");
+  if (!pageButton || pageButton.disabled) return;
+
+  const targetPage = pageButton.dataset.inventoryPage;
+  const filtered = getFilteredInventoryFoods();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / inventoryPerPage));
+
+  if (targetPage === "prev") {
+    inventoryPage = Math.max(1, inventoryPage - 1);
+  } else if (targetPage === "next") {
+    inventoryPage = Math.min(totalPages, inventoryPage + 1);
+  } else {
+    inventoryPage = Number(targetPage);
+  }
+
+  renderInventoryOverviewTable();
+  inventoryOverviewList.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 stockImportHistory?.addEventListener("click", event => {
   const detailButton = event.target.closest("[data-inventory-import-detail]");

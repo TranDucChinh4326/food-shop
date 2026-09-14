@@ -404,7 +404,34 @@
         </div>
 
         <div class="inventory-pane active" data-inventory-pane="overview">
-          <div id="inventorySummary" class="stats-grid table-state">Đang tải tổng quan kho...</div>
+          <div id="inventorySummary" class="stats-grid inventory-stats-grid table-state">Đang tải tổng quan kho...</div>
+
+          <div class="table-toolbar multi-filter inventory-toolbar">
+            <input type="search" id="inventorySearch" placeholder="Tìm tên món, mã món...">
+            <select id="inventoryCategoryFilter" aria-label="Lọc theo danh mục">
+              <option value="all">Tất cả danh mục</option>
+            </select>
+            <select id="inventoryStockFilter" aria-label="Lọc theo tình trạng tồn kho">
+              <option value="all">Tất cả trạng thái tồn</option>
+              <option value="in_stock">Còn hàng (> 10)</option>
+              <option value="low_stock">Sắp hết (1 - 10)</option>
+              <option value="out_of_stock">Hết hàng (0)</option>
+            </select>
+            <select id="inventorySortFilter" aria-label="Sắp xếp tồn kho">
+              <option value="id_asc">Mã món: Tăng dần</option>
+              <option value="stock_desc">Tồn kho: Nhiều nhất</option>
+              <option value="stock_asc">Tồn kho: Ít nhất</option>
+              <option value="sold_desc">Bán chạy nhất</option>
+              <option value="in_desc">Nhập nhiều nhất</option>
+            </select>
+            <select id="inventoryPageSize" aria-label="Số dòng hiển thị">
+              <option value="10">10 / trang</option>
+              <option value="25" selected>25 / trang</option>
+              <option value="50">50 / trang</option>
+              <option value="100">100 / trang</option>
+            </select>
+          </div>
+
           <div id="inventoryOverviewList" class="accounts-list table-state">Đang tải tồn kho...</div>
         </div>
 

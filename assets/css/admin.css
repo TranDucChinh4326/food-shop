@@ -146,6 +146,11 @@
   width: 100%;
 }
 
+.inventory-stats-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 20px;
+}
+
 .stats-card {
   align-items: flex-start;
   background: #ffffff;
@@ -221,6 +226,24 @@
   background: #fffbeb;
   border: 1px solid #fde68a;
   color: #d97706;
+}
+
+.stats-card-warning::before {
+  background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+}
+.stats-card-warning .stats-card-icon {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+}
+
+.stats-card-danger::before {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+.stats-card-danger .stats-card-icon {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
 }
 
 .stats-card-main {
@@ -444,6 +467,22 @@
   gap: 10px;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.inventory-toolbar {
+  margin-bottom: 14px;
+}
+
+.inventory-admin-table td:nth-child(1),
+.inventory-admin-table th:nth-child(1) {
+  width: 90px;
+}
+
+.inventory-admin-table td:nth-child(4),
+.inventory-admin-table td:nth-child(5),
+.inventory-admin-table td:nth-child(6) {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 
 /* ============================================================
@@ -1369,7 +1408,8 @@
    9. Responsive Breakpoints
    ============================================================ */
 @media (max-width: 1200px) {
-  .stats-grid {
+  .stats-grid,
+  .inventory-stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -1392,13 +1432,15 @@
     justify-content: stretch;
   }
 
-  .stats-grid {
+  .stats-grid,
+  .inventory-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 540px) {
-  .stats-grid {
+  .stats-grid,
+  .inventory-stats-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 

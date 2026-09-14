@@ -839,10 +839,32 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 [data-theme="dark"] .admin-section-card,
 [data-theme="dark"] .admin-table-wrap,
 [data-theme="dark"] .overview-stat-card,
+[data-theme="dark"] .stats-card,
+[data-theme="dark"] .dashboard-card,
 [data-theme="dark"] .admin-panel {
   background: #1d1815;
   border-color: #382d25;
 }
+
+[data-theme="dark"] .stats-card-value {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .stats-card-label {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .stats-card-hint {
+  color: #8c7b70;
+}
+
+[data-theme="dark"] .stats-card-revenue .stats-card-icon { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+[data-theme="dark"] .stats-card-orders .stats-card-icon { background: rgba(255, 87, 34, 0.15); border-color: rgba(255, 87, 34, 0.3); color: #fb923c; }
+[data-theme="dark"] .stats-card-customers .stats-card-icon { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #a78bfa; }
+[data-theme="dark"] .stats-card-online .stats-card-icon { background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8; }
+[data-theme="dark"] .stats-card-success .stats-card-icon,
+[data-theme="dark"] .stats-card-warning .stats-card-icon { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24; }
+[data-theme="dark"] .stats-card-danger .stats-card-icon { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
 
 [data-theme="dark"] table th {
   background: #251e19;
