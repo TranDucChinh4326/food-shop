@@ -719,71 +719,9 @@ function renderMenuCategoryOptions() {
   }
 
   if (chipsBox) {
-    chipsBox.style.display = "flex";
-
-    const CATEGORY_ITEMS = [
-      { slug: "all", name: "Tất cả", icon: "🍽️" },
-      { slug: "do-an", name: "Đồ ăn", icon: "🍲" },
-      { slug: "com", name: "Cơm", icon: "🍚" },
-      { slug: "pho", name: "Phở", icon: "🍜" },
-      { slug: "mi", name: "Mì", icon: "🍝" },
-      { slug: "bun", name: "Bún", icon: "🥢" },
-      { slug: "nuoc-uong", name: "Nước uống", icon: "🥤" },
-      { slug: "tra", name: "Trà", icon: "🍵" },
-      { slug: "ca-phe", name: "Cà phê", icon: "☕" },
-      { slug: "nuoc-ep-sinh-to", name: "Nước ép & Sinh tố", icon: "🍹" },
-      { slug: "nuoc-dong-chai", name: "Đóng chai", icon: "🧃" }
-    ];
-
-    const availableSlugs = new Set();
-    foods.forEach(food => {
-      if (food.category) availableSlugs.add(food.category);
-      if (food.subcategory) availableSlugs.add(food.subcategory);
-    });
-    publicCategories.forEach(cat => {
-      if (cat.slug) availableSlugs.add(cat.slug);
-    });
-
-    let displayCategories = CATEGORY_ITEMS.filter(item => 
-      item.slug === "all" || 
-      item.slug === "do-an" || 
-      item.slug === "nuoc-uong" || 
-      availableSlugs.has(item.slug)
-    );
-
-    publicCategories.forEach(cat => {
-      if (cat.slug && !CATEGORY_ITEMS.some(item => item.slug === cat.slug)) {
-        displayCategories.push({
-          slug: cat.slug,
-          name: cat.name,
-          icon: "🏷️"
-        });
-      }
-    });
-
-    chipsBox.innerHTML = displayCategories.map(item => {
-      const isActive = (item.slug === categoryValue) || (item.slug === "all" && (!categoryValue || categoryValue === "all"));
-      return `
-        <a href="${getCategoryUrl(item.slug)}" class="${isActive ? "active" : ""}" data-category-slug="${item.slug}" onclick="selectMenuCategory('${item.slug}', event)" aria-current="${isActive ? "page" : "false"}">
-          <span>${item.icon}</span>
-          <span>${escapeHtml(item.name)}</span>
-        </a>
-      `;
-    }).join("");
+    chipsBox.innerHTML = "";
+    chipsBox.style.display = "none";
   }
-}
-
-function selectMenuCategory(slug, event) {
-  if (event) event.preventDefault();
-  const url = new URL(window.location);
-  if (slug === "all") {
-    url.searchParams.delete("category");
-  } else {
-    url.searchParams.set("category", slug);
-  }
-  window.history.pushState({}, "", url.toString());
-  renderMenuCategoryOptions();
-  renderFoods();
 }
 
 function handleMenuSearchInput() {
