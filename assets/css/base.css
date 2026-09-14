@@ -1977,17 +1977,18 @@ header.header-compact .header-tools {
 .floating-ad {
   background: #fffaf6;
   border: 1px solid rgba(255, 104, 49, 0.18);
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 14px 34px rgba(56, 33, 20, 0.16);
   display: block;
-  height: clamp(230px, 15vw, 285px);
+  height: clamp(210px, 13.5vw, 255px);
+  max-height: calc(100vh - 320px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 58%;
+  top: 38%;
   transform: translateY(-50%);
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: clamp(78px, 5vw, 96px);
+  width: clamp(74px, 4.6vw, 90px);
   z-index: 30;
 }
 
@@ -2047,7 +2048,7 @@ header.header-compact .header-tools {
 
 .floating-ad:hover {
   box-shadow: 0 18px 42px rgba(56, 33, 20, 0.22);
-  transform: translateY(-50%) translateY(-4px);
+  transform: translateY(-50%) translateY(-3px);
 }
 
 
@@ -4746,9 +4747,9 @@ footer {
 
 
 .support-widget {
-  bottom: 22px;
+  bottom: 20px;
   position: fixed;
-  right: 22px;
+  right: 20px;
   z-index: 1200;
 }
 
@@ -5022,26 +5023,26 @@ footer {
 .support-toggle {
   align-items: center;
   background: linear-gradient(135deg, #ff7a28 0%, #ff4b1f 60%, #ea2a0e 100%);
-  border: 3.5px solid rgba(255, 255, 255, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
-  box-shadow: 0 14px 32px rgba(255, 75, 31, 0.38), 0 6px 16px rgba(45, 18, 10, 0.18);
+  box-shadow: 0 12px 28px rgba(255, 75, 31, 0.36), 0 5px 14px rgba(45, 18, 10, 0.16);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-size: 0;
   font-weight: 700;
-  height: 64px;
+  height: 56px;
   justify-content: center;
-  min-height: 64px;
+  min-height: 56px;
   padding: 0;
   position: relative;
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
-  width: 64px;
+  width: 56px;
 }
 
 .support-toggle:hover {
-  box-shadow: 0 20px 42px rgba(255, 75, 31, 0.48), 0 8px 20px rgba(45, 18, 10, 0.22);
-  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 18px 36px rgba(255, 75, 31, 0.46), 0 7px 18px rgba(45, 18, 10, 0.2);
+  transform: translateY(-3px) scale(1.06);
 }
 
 .support-toggle:active {
@@ -5071,7 +5072,7 @@ footer {
   position: absolute;
   right: 2px;
   top: 2px;
-  width: 14px;
+  width: 12px;
   z-index: 3;
 }
 
@@ -5081,26 +5082,26 @@ footer {
 .support-zalo-floating {
   align-items: center;
   background: linear-gradient(135deg, #0082ff 0%, #0068ff 100%);
-  border: 3.5px solid #ffffff;
+  border: 3px solid #ffffff;
   border-radius: 50%;
-  bottom: 74px;
-  box-shadow: 0 10px 24px rgba(0, 104, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.12);
+  bottom: 66px;
+  box-shadow: 0 8px 22px rgba(0, 104, 255, 0.38), 0 3px 8px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   display: inline-flex;
-  height: 54px;
+  height: 48px;
   justify-content: center;
   position: absolute;
-  right: 5px;
+  right: 4px;
   text-decoration: none;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease, opacity 0.2s ease;
   user-select: none;
-  width: 54px;
+  width: 48px;
   z-index: 10;
 }
 
 .support-zalo-floating:hover {
-  box-shadow: 0 16px 32px rgba(0, 104, 255, 0.52), 0 6px 14px rgba(0, 0, 0, 0.15);
-  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 14px 28px rgba(0, 104, 255, 0.5), 0 5px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2.5px) scale(1.08);
 }
 
 .support-zalo-floating:active {
@@ -5116,9 +5117,9 @@ footer {
 .support-zalo-text {
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 16.5px;
+  font-size: 15px;
   font-weight: 900;
-  letter-spacing: 0;
+  letter-spacing: -0.3px;
   line-height: 1;
   text-shadow: 0 1px 3px rgba(0, 30, 90, 0.4);
   transform: translateY(-0.5px);
@@ -5194,8 +5195,8 @@ footer {
 
 .support-toggle .support-robot-icon.with-wordmark,
 .support-toggle .support-robot-icon {
-  height: 48px;
-  width: 48px;
+  height: 42px;
+  width: 42px;
   filter: drop-shadow(0 2px 5px rgba(168, 35, 3, 0.3));
 }
 
@@ -7933,23 +7934,23 @@ footer {
   background: #ffffff;
   border: none;
   border-radius: 50%;
-  bottom: 160px;
-  box-shadow: 0 8px 24px rgba(45, 18, 10, 0.15), 0 2px 8px rgba(255, 87, 34, 0.12);
+  bottom: 142px;
+  box-shadow: 0 6px 20px rgba(45, 18, 10, 0.15), 0 2px 8px rgba(255, 87, 34, 0.12);
   color: #ff5722;
   cursor: pointer;
   display: inline-flex;
-  height: 48px;
+  height: 42px;
   justify-content: center;
   opacity: 0;
   padding: 0;
   pointer-events: none;
   position: fixed;
-  right: 30px;
-  transform: translateY(16px) scale(0.9);
+  right: 27px;
+  transform: translateY(14px) scale(0.9);
   transition: opacity 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.22s ease;
-  width: 48px;
+  width: 42px;
   z-index: 1150;
   box-sizing: border-box;
 }
@@ -8014,8 +8015,8 @@ body:has(.support-widget.open) #backToTopBtn {
 
 .back-to-top-arrow svg {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 /* ============================================================
@@ -8301,15 +8302,42 @@ body:has(.support-widget.open) #backToTopBtn {
 
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 148px;
-    height: 44px;
-    right: 22px;
-    width: 44px;
+    bottom: 126px;
+    height: 38px;
+    right: 18px;
+    width: 38px;
   }
 
   .back-to-top-arrow svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .support-widget {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .support-toggle {
+    height: 50px;
+    width: 50px;
+    min-height: 50px;
+  }
+
+  .support-toggle .support-robot-icon {
+    height: 36px;
+    width: 36px;
+  }
+
+  .support-zalo-floating {
+    bottom: 58px;
+    height: 42px;
+    right: 4px;
+    width: 42px;
+  }
+
+  .support-zalo-text {
+    font-size: 13.5px;
   }
 
   .flash-sale-banner {
