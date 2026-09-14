@@ -6317,6 +6317,9 @@ function initChatSupportWidget() {
     const isOpen = widget.classList.toggle("open");
     button.setAttribute("aria-expanded", String(isOpen));
     if (isOpen) {
+      if (typeof dismissIdleFoodRecommendation === "function") {
+        dismissIdleFoodRecommendation();
+      }
       chatInput.focus();
     } else {
       hideChatPopovers();
@@ -6474,6 +6477,210 @@ function maybeShowChatBubble(widget) {
   }, 5000);
 }
 
+/* ============================================================
+   Chatbot Idle Food Recommendation & Spotlight Engine
+   - Kích hoạt khi khách hàng dừng lướt trang khoảng 15s
+   - Chatbot bật bong bóng mời dùng thử món
+   - Thẻ món tương ứng trên trang được highlight nổi bật (spotlight viền phát sáng)
+   - Tự động ẩn sau đúng 5s và bắt đầu nhịp đếm tiếp theo
+   - Ưu tiên các món đang Flash Sale, món bán chạy hoặc món đang có trên màn hình
+   ============================================================ */
+let idleRecommendTimer = null;
+let idleRecommendHideTimer = null;
+let lastRecommendedFoodId = null;
+let currentHighlightedCard = null;
+
+const IDLE_TRIGGER_MS = 15000; // 15 giây không tương tác
+const RECOMMEND_DURATION_MS = 5000; // Hiển thị gợi ý trong 5 giây
+
+function initIdleFoodRecommendation() {
+  const path = window.location.pathname.toLowerCase();
+  const isTargetPage = path.includes("index.html") || path.endsWith("/") ||
+                       path.includes("menu.html") ||
+                       path.includes("food-detail.html");
+
+  if (!isTargetPage) return;
+
+  const resetIdleTimer = () => {
+    if (idleRecommendTimer) {
+      clearTimeout(idleRecommendTimer);
+    }
+    // Không đặt đếm giờ lặp nếu gợi ý đang hiển thị trên màn hình
+    if (!currentHighlightedCard) {
+      idleRecommendTimer = setTimeout(() => {
+        triggerIdleFoodRecommendation();
+      }, IDLE_TRIGGER_MS);
+    }
+  };
+
+  const activityEvents = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+  let throttleTimer = null;
+  const onUserActivity = () => {
+    if (throttleTimer) return;
+    throttleTimer = setTimeout(() => {
+      throttleTimer = null;
+      resetIdleTimer();
+    }, 400);
+  };
+
+  activityEvents.forEach(evt => {
+    window.addEventListener(evt, onUserActivity, { passive: true });
+  });
+
+  resetIdleTimer();
+}
+
+function triggerIdleFoodRecommendation() {
+  const widget = document.getElementById("support-widget");
+  if (!widget) return;
+
+  // Nếu người dùng đang mở bảng chat thì không làm phiền
+  if (widget.classList.contains("open")) return;
+
+  const bubble = widget.querySelector(".chat-bubble-tip");
+  if (!bubble) return;
+
+  if (!Array.isArray(foods) || foods.length === 0) return;
+
+  // 1. Thuật toán chọn món gợi ý:
+  // - Ưu tiên 1: Món đang có Flash Sale đang diễn ra
+  // - Ưu tiên 2: Món đang có thẻ hiển thị sẵn trên màn hình DOM hiện tại
+  // - Ưu tiên 3: Món bán chạy nhất / điểm đánh giá cao
+  let candidate = null;
+
+  const saleFoods = foods.filter(f => Number(f.stockQuantity || 0) > 0 && Boolean(getFoodFlashSale(f)));
+  
+  const cardsInDom = Array.from(document.querySelectorAll("[data-open-food-detail]"));
+  const foodIdsInDom = cardsInDom.map(el => String(el.getAttribute("data-open-food-detail"))).filter(Boolean);
+
+  const domSaleFoods = saleFoods.filter(f => foodIdsInDom.includes(String(f.id)) && String(f.id) !== String(lastRecommendedFoodId));
+  const domFoods = foods.filter(f => Number(f.stockQuantity || 0) > 0 && foodIdsInDom.includes(String(f.id)) && String(f.id) !== String(lastRecommendedFoodId));
+
+  if (domSaleFoods.length > 0) {
+    candidate = domSaleFoods[Math.floor(Math.random() * domSaleFoods.length)];
+  } else if (saleFoods.length > 0 && String(saleFoods[0].id) !== String(lastRecommendedFoodId)) {
+    candidate = saleFoods[Math.floor(Math.random() * saleFoods.length)];
+  } else if (domFoods.length > 0) {
+    const sorted = [...domFoods].sort((a, b) => (Number(b.soldCount || 0) - Number(a.soldCount || 0)));
+    const topCandidates = sorted.slice(0, 6);
+    candidate = topCandidates[Math.floor(Math.random() * topCandidates.length)];
+  } else {
+    const available = foods.filter(f => Number(f.stockQuantity || 0) > 0 && String(f.id) !== String(lastRecommendedFoodId));
+    if (available.length > 0) {
+      candidate = available[Math.floor(Math.random() * available.length)];
+    }
+  }
+
+  if (!candidate) return;
+  lastRecommendedFoodId = candidate.id;
+
+  const isSale = Boolean(getFoodFlashSale(candidate));
+  const saleInfo = isSale ? getFoodFlashSale(candidate) : null;
+  const originalPrice = Number(candidate.price || 0);
+  const finalPrice = isSale ? Number(saleInfo.salePrice || originalPrice) : originalPrice;
+
+  // 2. Chuẩn bị nội dung bong bóng Chatbot
+  const bubbleTagText = isSale ? "🔥 FLASH SALE" : "👨‍🍳 Bếp gợi ý";
+  const bubbleTagClass = isSale ? "chat-bubble-tag sale" : "chat-bubble-tag";
+  const bubbleGreeting = isSale ? "Món này đang sale hời nè!" : "Món này ngon nè bạn ơi!";
+  
+  const rawImage = String(candidate.image || "").trim();
+  const isPlaceholder = rawImage.includes("images.unsplash.com");
+  const realImage = (!isPlaceholder && rawImage) ? rawImage : "";
+  const fallbackIcon = typeof getOrderFoodFallbackIcon === "function" ? getOrderFoodFallbackIcon(candidate.name) : "🍽️";
+
+  const thumbHtml = realImage
+    ? `<img src="${escapeHtml(realImage)}" alt="${escapeHtml(candidate.name)}" class="chat-bubble-food-thumb" onerror="this.outerHTML='<div class=\\'chat-bubble-food-thumb-fallback\\'>${fallbackIcon}</div>';">`
+    : `<div class="chat-bubble-food-thumb-fallback">${fallbackIcon}</div>`;
+
+  const priceHtml = isSale
+    ? `<span>${formatMoney(finalPrice)}</span><s>${formatMoney(originalPrice)}</s>`
+    : `<span>${formatMoney(finalPrice)}</span>`;
+
+  bubble.innerHTML = `
+    <div class="chat-bubble-header">
+      <strong style="font-size:12.5px;color:#241610;">${bubbleGreeting}</strong>
+      <span class="${bubbleTagClass}">${bubbleTagText}</span>
+    </div>
+    <div class="chat-bubble-food-card">
+      ${thumbHtml}
+      <div class="chat-bubble-food-details">
+        <span class="chat-bubble-food-name" title="${escapeHtml(candidate.name)}">${escapeHtml(candidate.name)}</span>
+        <div class="chat-bubble-food-price">${priceHtml}</div>
+      </div>
+    </div>
+    <span class="chat-bubble-cta">Xem món ngay ➔</span>
+  `;
+
+  bubble.classList.add("is-recommendation");
+  bubble.hidden = false;
+  requestAnimationFrame(() => {
+    bubble.classList.add("show");
+  });
+
+  // 3. Highlight thẻ món ăn trên trang (Spotlight viền phát sáng)
+  let targetCard = document.querySelector(`[data-open-food-detail="${candidate.id}"]`);
+  
+  if (!targetCard && window.location.pathname.includes("food-detail.html")) {
+    const mainCard = document.querySelector("#foodDetailPage .food-detail-card");
+    const currentId = new URLSearchParams(window.location.search).get("id");
+    if (mainCard && String(currentId) === String(candidate.id)) {
+      targetCard = mainCard;
+    }
+  }
+
+  // Tắt highlight cũ nếu có
+  if (currentHighlightedCard) {
+    currentHighlightedCard.classList.remove("food-card-spotlight");
+  }
+
+  if (targetCard) {
+    currentHighlightedCard = targetCard;
+    targetCard.classList.add("food-card-spotlight");
+  }
+
+  // Bấm vào bong bóng sẽ cuộn mượt tới món ăn hoặc mở chi tiết món
+  bubble.onclick = (e) => {
+    e.stopPropagation();
+    if (targetCard) {
+      targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      window.location.href = `food-detail.html?id=${candidate.id}`;
+    }
+  };
+
+  // 4. Tự động ẩn sau đúng 5 giây (5000ms)
+  if (idleRecommendHideTimer) clearTimeout(idleRecommendHideTimer);
+  idleRecommendHideTimer = setTimeout(() => {
+    dismissIdleFoodRecommendation();
+  }, RECOMMEND_DURATION_MS);
+}
+
+function dismissIdleFoodRecommendation() {
+  const widget = document.getElementById("support-widget");
+  const bubble = widget?.querySelector(".chat-bubble-tip");
+
+  if (bubble) {
+    bubble.classList.remove("show");
+    setTimeout(() => {
+      bubble.hidden = true;
+      bubble.classList.remove("is-recommendation");
+      bubble.onclick = null;
+    }, 280);
+  }
+
+  if (currentHighlightedCard) {
+    currentHighlightedCard.classList.remove("food-card-spotlight");
+    currentHighlightedCard = null;
+  }
+
+  // Bắt đầu lại bộ đếm 15 giây cho lần gợi ý tiếp theo
+  if (idleRecommendTimer) clearTimeout(idleRecommendTimer);
+  idleRecommendTimer = setTimeout(() => {
+    triggerIdleFoodRecommendation();
+  }, IDLE_TRIGGER_MS);
+}
+
 window.addEventListener("beforeunload", event => {
   if (!activeQrPayment) return;
 
@@ -6532,6 +6739,7 @@ loadAvailableVouchers();
 loadOwnedVouchers();
 loadShippingMethods();
 initChatSupportWidget();
+initIdleFoodRecommendation();
 
 // Xử lý riêng cho trang Giỏ hàng / Đặt hàng (checkout)
 if (document.getElementById("orderForm") && protectCheckoutPage()) {
