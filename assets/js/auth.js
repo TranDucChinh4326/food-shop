@@ -724,7 +724,7 @@ function initSupportWidget() {
   widget.className = "support-widget";
   widget.innerHTML = `
     <div class="support-panel" aria-label="Kênh hỗ trợ Bếp 1979">
-      <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-link zalo">
+      <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
       </a>
@@ -732,7 +732,7 @@ function initSupportWidget() {
         <span>f</span>
         <strong>Messenger</strong>
       </a>
-      <a href="tel:03877005477" class="support-link phone">
+      <a href="tel:0387700547" class="support-link phone">
         <span>☎</span>
         <strong>Hotline</strong>
       </a>

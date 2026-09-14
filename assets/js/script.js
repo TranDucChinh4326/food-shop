@@ -6313,7 +6313,7 @@ function initSupportWidget() {
   widget.className = "support-widget";
   widget.innerHTML = `
     <div class="support-panel" aria-label="Kênh hỗ trợ Bếp 1979">
-      <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-link zalo">
+      <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="support-link zalo">
         <span>Z</span>
         <strong>Zalo</strong>
       </a>
@@ -6321,7 +6321,7 @@ function initSupportWidget() {
         <span>f</span>
         <strong>Messenger</strong>
       </a>
-      <a href="tel:03877005477" class="support-link phone">
+      <a href="tel:0387700547" class="support-link phone">
         <span>☎</span>
         <strong>Hotline</strong>
       </a>
@@ -6605,7 +6605,7 @@ function initChatSupportWidget() {
           </div>
         </div>
         <div class="chat-header-actions">
-          <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-header-zalo" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Chat Zalo với Bếp 1979">
+          <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="chat-header-zalo" title="Chat Zalo với Bếp 1979 (0387 700 547)" aria-label="Chat Zalo với Bếp 1979">
             <span class="chat-zalo-icon-badge" aria-hidden="true">Zalo</span>
             <span>Nhắn Zalo</span>
           </a>
@@ -6618,14 +6618,14 @@ function initChatSupportWidget() {
       <div class="chat-quick-menu" hidden>
         <a href="menu.html">Xem thực đơn</a>
         <a href="track.html">Lịch sử đơn hàng</a>
-        <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-menu-zalo">💬 Chat Zalo (0387 700 5477)</a>
+        <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="chat-menu-zalo">💬 Chat Zalo (0387 700 547)</a>
         <a href="contact.html">Liên hệ Bếp 1979</a>
       </div>
       <div class="chat-messages" aria-live="polite">
         <div class="chat-message bot">Xin chào ${escapeHtml(displayName)}, Bếp 1979 có thể hỗ trợ gì cho bạn?</div>
         <div class="chat-message bot muted">Bạn có thể hỏi về món ăn, combo, giá, khuyến mãi, giao hàng hoặc trạng thái đơn.</div>
         <div class="chat-quick-suggestions">
-          <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="chat-suggestion-chip chat-zalo-chip" title="Chat Zalo trực tiếp với Bếp 1979 (0387 700 5477)">
+          <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="chat-suggestion-chip chat-zalo-chip" title="Chat Zalo trực tiếp với Bếp 1979 (0387 700 547)">
             <span class="chat-zalo-icon-badge" aria-hidden="true">Zalo</span>
             <span>Chat Zalo tư vấn</span>
           </a>
@@ -6679,10 +6679,10 @@ function initChatSupportWidget() {
       <strong>Bếp 1979 đây!</strong>
       <span>Bạn có cần tôi hỗ trợ gì không?</span>
     </div>
-    <a href="https://zalo.me/03877005477" target="_blank" rel="noopener noreferrer" class="support-zalo-floating" title="Chat Zalo với Bếp 1979 (0387 700 5477)" aria-label="Liên hệ Zalo 0387 700 5477">
+    <a href="https://zalo.me/0387700547" target="_blank" rel="noopener noreferrer" class="support-zalo-floating" title="Chat Zalo với Bếp 1979 (0387 700 547)" aria-label="Liên hệ Zalo 0387 700 547">
       <span class="zalo-pulse-ring" aria-hidden="true"></span>
       <span class="support-zalo-text" aria-hidden="true">Zalo</span>
-      <span class="zalo-floating-tooltip">Chat Zalo: 0387 700 5477</span>
+      <span class="zalo-floating-tooltip">Chat Zalo: 0387 700 547</span>
     </a>
     <button type="button" class="support-toggle" aria-label="Mở hỗ trợ chatbot" aria-expanded="false" title="Chat với trợ lý Bếp 1979">
       <span class="support-toggle-icon" aria-hidden="true">${robotLogo}</span>
