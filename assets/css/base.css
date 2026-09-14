@@ -4336,27 +4336,27 @@ footer {
 
 
 .chat-bubble-tip {
-  background: linear-gradient(180deg, #fff 0%, #fff8f3 100%);
-  border: 1px solid #f3d9ca;
-  border-radius: 14px;
-  bottom: 10px;
-  box-shadow: 0 16px 34px rgba(50, 28, 18, 0.14);
-  color: #3c2a21;
-  display: grid;
-  gap: 3px;
+  background: #ffffff;
+  border: 1.5px solid #ffdecb;
+  border-radius: 16px;
+  bottom: 8px;
+  box-shadow: 0 14px 34px rgba(45, 18, 10, 0.14), 0 3px 10px rgba(255, 87, 34, 0.08);
+  color: #241610;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   line-height: 1.35;
-  max-width: 240px;
+  max-width: 285px;
+  min-width: 240px;
   opacity: 0;
-  padding: 11px 14px 12px;
+  padding: 11px 13px;
   pointer-events: none;
   position: absolute;
-  right: 76px;
-  transform: translateX(8px) scale(0.98);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  width: max-content;
+  right: 78px;
+  transform: translateX(10px) scale(0.96);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10;
 }
-
-
 
 .chat-bubble-tip strong {
   color: #ff6f00;
@@ -4364,30 +4364,24 @@ footer {
   font-weight: 700;
 }
 
-
-
 .chat-bubble-tip span {
   color: #3c2a21;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
 }
 
-
-
 .chat-bubble-tip::after {
-  background: #fff8f3;
-  border-right: 1px solid #f0dfd5;
-  border-top: 1px solid #f0dfd5;
+  background: #ffffff;
+  border-right: 1.5px solid #ffdecb;
+  border-top: 1.5px solid #ffdecb;
+  bottom: 22px;
   content: "";
-  height: 12px;
+  height: 11px;
   position: absolute;
-  right: -7px;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-  width: 12px;
+  right: -6.5px;
+  transform: rotate(45deg);
+  width: 11px;
 }
-
-
 
 .chat-bubble-tip.show {
   opacity: 1;
@@ -4397,54 +4391,71 @@ footer {
 
 .chat-bubble-tip.is-recommendation {
   cursor: pointer;
-  border-color: #ffd8c5;
-  box-shadow: 0 14px 34px rgba(255, 87, 34, 0.22), 0 4px 12px rgba(50, 28, 18, 0.1);
-  max-width: 275px;
-  min-width: 215px;
+  border-color: #ffd4be;
+  box-shadow: 0 14px 36px rgba(255, 87, 34, 0.2), 0 4px 14px rgba(50, 28, 18, 0.1);
+  padding: 10px 12px;
 }
 
 .chat-bubble-tip.is-recommendation:hover {
-  transform: translateX(-3px) scale(1.02);
-  box-shadow: 0 18px 40px rgba(255, 87, 34, 0.28), 0 6px 16px rgba(50, 28, 18, 0.14);
+  transform: translateX(-3px) scale(1.01);
+  box-shadow: 0 18px 42px rgba(255, 87, 34, 0.28), 0 6px 16px rgba(50, 28, 18, 0.12);
 }
 
-.chat-bubble-header {
+.chat-bubble-header-clean {
   align-items: center;
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 7px;
+  white-space: nowrap;
 }
 
-.chat-bubble-tag {
-  background: #ff5722;
+.chat-bubble-mini-tag {
+  background: #fff0e6;
+  border: 1px solid #ffd3bb;
   border-radius: 999px;
-  color: #fff;
-  font-size: 10px;
+  color: #ea2a0e;
+  flex-shrink: 0;
+  font-size: 10.5px;
   font-weight: 800;
-  letter-spacing: 0.3px;
-  padding: 2px 7px;
-  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  padding: 2.5px 8px;
+  white-space: nowrap;
 }
 
-.chat-bubble-tag.sale {
-  background: linear-gradient(135deg, #e53935 0%, #ff5722 100%);
-  animation: badgeGlow 1.5s infinite alternate;
+.chat-bubble-mini-tag.sale {
+  background: linear-gradient(135deg, #ff4b1f 0%, #ff7a28 100%);
+  border-color: transparent;
+  color: #ffffff;
 }
 
-.chat-bubble-food-card {
+.chat-bubble-title-clean {
+  color: #2b1810;
+  font-size: 12.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-bubble-item-card {
   align-items: center;
-  background: #ffffff;
+  background: #fffaf6;
   border: 1px solid #fae8df;
-  border-radius: 10px;
+  border-radius: 11px;
   display: flex;
-  gap: 10px;
+  gap: 9px;
   padding: 6px 8px;
-  margin-top: 3px;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.chat-bubble-food-thumb {
+.chat-bubble-tip:hover .chat-bubble-item-card {
+  background: #fff4ed;
+  border-color: #ffc9af;
+}
+
+.chat-bubble-item-thumb {
   aspect-ratio: 1 / 1;
   background: #fbf5f1;
+  border: 1px solid #ebd8ce;
   border-radius: 8px;
   flex: 0 0 42px;
   height: 42px;
@@ -4453,9 +4464,10 @@ footer {
   width: 42px;
 }
 
-.chat-bubble-food-thumb-fallback {
+.chat-bubble-item-thumb-fallback {
   align-items: center;
   background: linear-gradient(135deg, #fff2eb 0%, #ffe5d8 100%);
+  border: 1px solid #ebd8ce;
   border-radius: 8px;
   display: flex;
   flex: 0 0 42px;
@@ -4465,92 +4477,120 @@ footer {
   width: 42px;
 }
 
-.chat-bubble-food-details {
+.chat-bubble-item-info {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
 }
 
-.chat-bubble-food-name {
+.chat-bubble-item-name {
   color: #241610;
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.chat-bubble-food-price {
-  color: #ff5722;
+.chat-bubble-item-price {
+  align-items: baseline;
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.chat-bubble-item-price span {
+  color: #ea2a0e;
   font-size: 12.5px;
   font-weight: 800;
 }
 
-.chat-bubble-food-price s {
+.chat-bubble-item-price s {
   color: #8c7366;
   font-size: 11px;
-  font-weight: 400;
-  margin-left: 4px;
+  font-weight: 500;
 }
 
-.chat-bubble-cta {
-  color: #ea2a0e;
-  display: block;
+.chat-bubble-view-action {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #f2ddd2;
+  border-radius: 50%;
+  color: #ff5722;
+  display: flex;
+  flex: 0 0 24px;
   font-size: 11px;
-  font-weight: 700;
-  margin-top: 2px;
-  text-align: right;
+  font-weight: 900;
+  height: 24px;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 24px;
 }
 
-/* Food Card Spotlight / Highlight Effect */
-@keyframes recommendPulseGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7), 0 10px 28px rgba(255, 87, 34, 0.25);
+.chat-bubble-tip:hover .chat-bubble-view-action {
+  background: #ff5722;
+  border-color: #ff5722;
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+/* Food Card Spotlight / Highlight Effect (NO ZOOM, crisp badge inside card) */
+@keyframes recommendGlowBreathe {
+  0%, 100% {
+    border-color: #ff5722 !important;
+    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.4), 0 6px 20px rgba(255, 87, 34, 0.18) !important;
   }
-  70% {
-    box-shadow: 0 0 0 7px rgba(255, 87, 34, 0), 0 14px 34px rgba(255, 87, 34, 0.38);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 87, 34, 0), 0 10px 28px rgba(255, 87, 34, 0.25);
+  50% {
+    border-color: #ff3d00 !important;
+    box-shadow: 0 0 0 5px rgba(255, 87, 34, 0.65), 0 10px 28px rgba(255, 87, 34, 0.3) !important;
   }
 }
 
-@keyframes spotlightBadgePop {
+.food-card-spotlight {
+  animation: recommendGlowBreathe 1.8s infinite ease-in-out !important;
+  border-color: #ff5722 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.food-spotlight-badge {
+  align-items: center;
+  animation: spotlightBadgeSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  background: linear-gradient(135deg, #ff5722 0%, #ea2a0e 100%);
+  border: 1.5px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(234, 42, 14, 0.45);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 800;
+  gap: 3px;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  padding: 4px 10px;
+  pointer-events: none;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  white-space: nowrap;
+  z-index: 30;
+}
+
+.food-card-spotlight.has-sale-badge .food-spotlight-badge {
+  top: 40px;
+}
+
+@keyframes spotlightBadgeSlideIn {
   0% {
     opacity: 0;
-    transform: translateY(6px) scale(0.85);
+    transform: translateY(-4px) scale(0.92);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-}
-
-.food-card-spotlight {
-  animation: recommendPulseGlow 1.6s infinite ease-in-out !important;
-  border-color: #ff5722 !important;
-  position: relative;
-  transform: translateY(-4px) scale(1.02) !important;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
-  z-index: 5 !important;
-}
-
-.food-card-spotlight::before {
-  animation: spotlightBadgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  background: linear-gradient(135deg, #ff5722 0%, #e53935 100%);
-  border-radius: 999px;
-  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
-  color: #ffffff;
-  content: "✨ Bếp gợi ý!";
-  font-size: 11px;
-  font-weight: 800;
-  left: 12px;
-  letter-spacing: 0.3px;
-  padding: 3px 10px;
-  pointer-events: none;
-  position: absolute;
-  top: -12px;
-  z-index: 10;
 }
 
 .chat-bubble-tip[hidden] {

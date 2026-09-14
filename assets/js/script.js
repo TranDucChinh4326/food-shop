@@ -6579,10 +6579,13 @@ function triggerIdleFoodRecommendation() {
   const originalPrice = Number(candidate.price || 0);
   const finalPrice = isSale ? Number(saleInfo.salePrice || originalPrice) : originalPrice;
 
-  // 2. Chuẩn bị nội dung bong bóng Chatbot
-  const bubbleTagText = isSale ? "🔥 FLASH SALE" : "👨‍🍳 Bếp gợi ý";
-  const bubbleTagClass = isSale ? "chat-bubble-tag sale" : "chat-bubble-tag";
-  const bubbleGreeting = isSale ? "Món này đang sale hời nè!" : "Món này ngon nè bạn ơi!";
+  // 2. Chuẩn bị nội dung bong bóng Chatbot tinh gọn, không bị tràn dòng
+  const bubbleTag = isSale
+    ? `<span class="chat-bubble-mini-tag sale">🔥 Flash Sale</span>`
+    : `<span class="chat-bubble-mini-tag">👨‍🍳 Bếp gợi ý</span>`;
+  const bubbleHeadline = isSale
+    ? `Món đang sale hời nè!`
+    : `Món này ngon nè bạn ơi!`;
   
   const rawImage = String(candidate.image || "").trim();
   const isPlaceholder = rawImage.includes("images.unsplash.com");
@@ -6590,26 +6593,26 @@ function triggerIdleFoodRecommendation() {
   const fallbackIcon = typeof getOrderFoodFallbackIcon === "function" ? getOrderFoodFallbackIcon(candidate.name) : "🍽️";
 
   const thumbHtml = realImage
-    ? `<img src="${escapeHtml(realImage)}" alt="${escapeHtml(candidate.name)}" class="chat-bubble-food-thumb" onerror="this.outerHTML='<div class=\\'chat-bubble-food-thumb-fallback\\'>${fallbackIcon}</div>';">`
-    : `<div class="chat-bubble-food-thumb-fallback">${fallbackIcon}</div>`;
+    ? `<img src="${escapeHtml(realImage)}" alt="${escapeHtml(candidate.name)}" class="chat-bubble-item-thumb" onerror="this.outerHTML='<div class=\\'chat-bubble-item-thumb-fallback\\'>${fallbackIcon}</div>';">`
+    : `<div class="chat-bubble-item-thumb-fallback">${fallbackIcon}</div>`;
 
   const priceHtml = isSale
     ? `<span>${formatMoney(finalPrice)}</span><s>${formatMoney(originalPrice)}</s>`
     : `<span>${formatMoney(finalPrice)}</span>`;
 
   bubble.innerHTML = `
-    <div class="chat-bubble-header">
-      <strong style="font-size:12.5px;color:#241610;">${bubbleGreeting}</strong>
-      <span class="${bubbleTagClass}">${bubbleTagText}</span>
+    <div class="chat-bubble-header-clean">
+      ${bubbleTag}
+      <span class="chat-bubble-title-clean">${bubbleHeadline}</span>
     </div>
-    <div class="chat-bubble-food-card">
+    <div class="chat-bubble-item-card">
       ${thumbHtml}
-      <div class="chat-bubble-food-details">
-        <span class="chat-bubble-food-name" title="${escapeHtml(candidate.name)}">${escapeHtml(candidate.name)}</span>
-        <div class="chat-bubble-food-price">${priceHtml}</div>
+      <div class="chat-bubble-item-info">
+        <span class="chat-bubble-item-name" title="${escapeHtml(candidate.name)}">${escapeHtml(candidate.name)}</span>
+        <div class="chat-bubble-item-price">${priceHtml}</div>
       </div>
+      <span class="chat-bubble-view-action" title="Xem món">➔</span>
     </div>
-    <span class="chat-bubble-cta">Xem món ngay ➔</span>
   `;
 
   bubble.classList.add("is-recommendation");
@@ -6618,7 +6621,7 @@ function triggerIdleFoodRecommendation() {
     bubble.classList.add("show");
   });
 
-  // 3. Highlight thẻ món ăn trên trang (Spotlight viền phát sáng)
+  // 3. Highlight thẻ món ăn trên trang (Spotlight viền phát sáng & nhãn Bếp gợi ý không bị che/phóng to)
   let targetCard = document.querySelector(`[data-open-food-detail="${candidate.id}"]`);
   
   if (!targetCard && window.location.pathname.includes("food-detail.html")) {
@@ -6631,12 +6634,23 @@ function triggerIdleFoodRecommendation() {
 
   // Tắt highlight cũ nếu có
   if (currentHighlightedCard) {
-    currentHighlightedCard.classList.remove("food-card-spotlight");
+    currentHighlightedCard.classList.remove("food-card-spotlight", "has-sale-badge");
+    currentHighlightedCard.querySelectorAll(".food-spotlight-badge").forEach(el => el.remove());
   }
 
   if (targetCard) {
     currentHighlightedCard = targetCard;
     targetCard.classList.add("food-card-spotlight");
+
+    if (targetCard.querySelector(".food-flash-badge")) {
+      targetCard.classList.add("has-sale-badge");
+    }
+
+    const badgeContainer = targetCard.querySelector(".food-card-img-wrap, .best-seller-img-wrap, .food-detail-image-wrap") || targetCard;
+    const badge = document.createElement("span");
+    badge.className = "food-spotlight-badge";
+    badge.innerHTML = "✨ Bếp gợi ý";
+    badgeContainer.appendChild(badge);
   }
 
   // Bấm vào bong bóng sẽ cuộn mượt tới món ăn hoặc mở chi tiết món
@@ -6666,11 +6680,12 @@ function dismissIdleFoodRecommendation() {
       bubble.hidden = true;
       bubble.classList.remove("is-recommendation");
       bubble.onclick = null;
-    }, 280);
+    }, 250);
   }
 
   if (currentHighlightedCard) {
-    currentHighlightedCard.classList.remove("food-card-spotlight");
+    currentHighlightedCard.classList.remove("food-card-spotlight", "has-sale-badge");
+    currentHighlightedCard.querySelectorAll(".food-spotlight-badge").forEach(el => el.remove());
     currentHighlightedCard = null;
   }
 
