@@ -495,3 +495,29 @@
     white-space: normal;
   }
 }
+
+/* ============================================================
+   BẾP 1979 - FEEDBACK PAGE DARK THEME
+   ============================================================ */
+[data-theme="dark"] .feedback-hero h1,
+[data-theme="dark"] .feedback-card h2,
+[data-theme="dark"] .feedback-history-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .feedback-form-card,
+[data-theme="dark"] .feedback-history-card,
+[data-theme="dark"] .feedback-item {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .feedback-item {
+  background: #241c18;
+}
+
+[data-theme="dark"] .feedback-item-comment {
+  color: #ede5dc;
+}
+

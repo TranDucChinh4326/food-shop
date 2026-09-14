@@ -1,3 +1,14 @@
+// Thiết lập theme ngay lập tức chống chớp sáng (Zero-FOUC)
+(function() {
+  try {
+    const saved = localStorage.getItem("foodhub_theme");
+    const theme = (saved === "dark" || saved === "light")
+      ? saved
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (_) {}
+})();
+
 function getFoodHubConfig() {
   return window["FOODHUB_CONFIG"] || {};
 }
@@ -27,10 +38,68 @@ function getFoodHubCurrentLanguage() {
   return "vi";
 }
 
+function getFoodHubCurrentTheme() {
+  const saved = localStorage.getItem("foodhub_theme");
+  if (saved === "dark" || saved === "light") return saved;
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
+}
+
+function applyFoodHubTheme(theme) {
+  const normalized = theme === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", normalized);
+  const lang = getFoodHubCurrentLanguage();
+  const titleText = normalized === "dark"
+    ? (lang === "en" ? "Switch to light mode" : "Chuyển sang giao diện sáng")
+    : (lang === "en" ? "Switch to dark mode" : "Chuyển sang giao diện tối");
+
+  document.querySelectorAll("[data-theme-toggle]").forEach(btn => {
+    btn.setAttribute("title", titleText);
+    btn.setAttribute("aria-label", titleText);
+    btn.setAttribute("data-theme-mode", normalized);
+  });
+
+  window.dispatchEvent(new CustomEvent("foodhub:themechange", { detail: { theme: normalized } }));
+}
+
+function toggleFoodHubTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || getFoodHubCurrentTheme();
+  const next = current === "dark" ? "light" : "dark";
+  localStorage.setItem("foodhub_theme", next);
+  applyFoodHubTheme(next);
+}
+
+function initFoodHubTheme() {
+  const theme = getFoodHubCurrentTheme();
+  applyFoodHubTheme(theme);
+
+  document.addEventListener("click", event => {
+    const btn = event.target.closest("[data-theme-toggle]");
+    if (btn) {
+      event.preventDefault();
+      toggleFoodHubTheme();
+    }
+  });
+
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+      if (!localStorage.getItem("foodhub_theme")) {
+        applyFoodHubTheme(e.matches ? "dark" : "light");
+      }
+    });
+  }
+}
+
 function renderSharedHeader() {
   const currentLang = getFoodHubCurrentLanguage();
   const currentCode = currentLang === "en" ? "EN" : "VI";
   const currentTitle = currentLang === "en" ? "Language: English" : "Ngôn ngữ: Tiếng Việt";
+  const currentTheme = getFoodHubCurrentTheme();
+  const currentThemeTitle = currentTheme === "dark"
+    ? (currentLang === "en" ? "Switch to light mode" : "Chuyển sang giao diện sáng")
+    : (currentLang === "en" ? "Switch to dark mode" : "Chuyển sang giao diện tối");
 
   document.querySelectorAll("[data-shared-header]").forEach(slot => {
     slot.className = "site-header-wrapper";
@@ -71,6 +140,22 @@ function renderSharedHeader() {
               </button>
             </div>
           </div>
+          <button type="button" class="top-icon theme-toggle notranslate" data-theme-toggle title="${currentThemeTitle}" aria-label="${currentThemeTitle}" translate="no">
+            <svg class="header-action-svg theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="header-action-svg theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
           <a href="vouchers.html" class="top-icon voucher-icon" title="Voucher khuyến mãi" aria-label="Voucher khuyến mãi" data-voucher-link>
             <svg class="header-action-svg voucher-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <defs>
@@ -826,6 +911,15 @@ function syncLanguageUI(lang) {
       btn.setAttribute("aria-selected", String(isMatch));
     });
   });
+
+  const curTheme = getFoodHubCurrentTheme();
+  const themeTip = curTheme === "dark"
+    ? (currentLang === "en" ? "Switch to light mode" : "Chuyển sang giao diện sáng")
+    : (currentLang === "en" ? "Switch to dark mode" : "Chuyển sang giao diện tối");
+  document.querySelectorAll("[data-theme-toggle]").forEach(btn => {
+    btn.setAttribute("title", themeTip);
+    btn.setAttribute("aria-label", themeTip);
+  });
 }
 
 function initLanguageMenu() {
@@ -1073,6 +1167,7 @@ function initGentleFoodRain() {
 }
 
 renderSharedHeader();
+initFoodHubTheme();
 renderSharedFooter();
 syncSharedNavActive();
 initLanguageMenu();

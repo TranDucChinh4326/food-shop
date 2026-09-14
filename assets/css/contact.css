@@ -539,3 +539,38 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   BẾP 1979 - CONTACT PAGE DARK THEME
+   ============================================================ */
+[data-theme="dark"] .contact-hero h1,
+[data-theme="dark"] .contact-card h2,
+[data-theme="dark"] .faq-item summary {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .contact-channels-card,
+[data-theme="dark"] .contact-feedback-box,
+[data-theme="dark"] .faq-item {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .channel-item {
+  background: #241c18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .channel-info strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .channel-info span {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .faq-answer {
+  color: #c9bdb3;
+}
+

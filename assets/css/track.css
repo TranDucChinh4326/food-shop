@@ -846,3 +846,44 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   BẾP 1979 - TRACK ORDERS DARK THEME
+   ============================================================ */
+[data-theme="dark"] .track-panel,
+[data-theme="dark"] .order-card,
+[data-theme="dark"] .track-search-box {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .track-heading h1,
+[data-theme="dark"] .order-id,
+[data-theme="dark"] .order-item-title,
+[data-theme="dark"] .order-item-total {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .track-filter-pill {
+  background: #241c18;
+  border-color: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .track-filter-pill.active {
+  background: #ff6b3d;
+  color: #ffffff;
+  border-color: #ff6b3d;
+}
+
+[data-theme="dark"] .order-card-header,
+[data-theme="dark"] .order-card-footer {
+  border-color: #332820;
+}
+
+[data-theme="dark"] .order-stepper {
+  background: #241c18;
+  border: 1px solid #382d25;
+}
+

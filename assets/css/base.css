@@ -15,6 +15,21 @@
   --fh-blue: #26384f;
   --fh-shadow: 0 18px 44px rgba(78, 45, 25, 0.1);
 }
+
+:root[data-theme="dark"] {
+  --fh-orange: #ff6b3d;
+  --fh-orange-dark: #f05423;
+  --fh-amber: #ff9d3b;
+  --fh-ink: #f7f3ee;
+  --fh-muted: #b5a498;
+  --fh-line: #3a3028;
+  --fh-paper: #1f1916;
+  --fh-soft: #27201b;
+  --fh-green: #22c55e;
+  --fh-blue: #3d5675;
+  --fh-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
 * {
   margin: 0;
   padding: 0;
@@ -36,6 +51,15 @@ body {
   color: var(--fh-ink);
   min-height: 100vh;
   top: 0 !important;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+[data-theme="dark"] body {
+  background-color: #14100e;
+  background-image: linear-gradient(180deg, #181310 0%, #110e0c 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: var(--fh-ink);
 }
 
 .goog-te-banner-frame,
@@ -779,6 +803,400 @@ header.header-compact .header-tools {
   60% { transform: rotate(8deg); }
   80% { transform: rotate(-4deg); }
   100% { transform: rotate(0); }
+}
+
+/* Theme Toggle Button Micro-Interactions & Transitions */
+.top-icon.theme-toggle {
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  user-select: none;
+  width: 44px;
+  color: #ff8a1f;
+  background: #ffffff;
+  border: 1.5px solid #f0e5dc;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              background-color 0.2s ease,
+              border-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.top-icon.theme-toggle:hover {
+  background: #fff5ee;
+  border-color: #ffd4c0;
+  color: #ff5722;
+  box-shadow: 0 8px 20px rgba(255, 138, 31, 0.22);
+  transform: translateY(-2px) scale(1.06);
+}
+
+.theme-toggle .theme-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease;
+}
+
+:root:not([data-theme="dark"]) .theme-toggle .theme-icon-sun {
+  display: none !important;
+}
+
+:root:not([data-theme="dark"]) .theme-toggle .theme-icon-moon {
+  display: block !important;
+}
+
+.top-icon.theme-toggle:hover .theme-icon-moon {
+  transform: rotate(-16deg) scale(1.1);
+}
+
+[data-theme="dark"] .top-icon.theme-toggle {
+  background: #231c18;
+  border-color: #42342a;
+  color: #ffaa48;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .top-icon.theme-toggle:hover {
+  background: #2c221d;
+  border-color: #ff8a1f;
+  color: #ffbc6b;
+  box-shadow: 0 8px 24px rgba(255, 170, 72, 0.25);
+  transform: translateY(-2px) scale(1.06);
+}
+
+[data-theme="dark"] .theme-toggle .theme-icon-moon {
+  display: none !important;
+}
+
+[data-theme="dark"] .theme-toggle .theme-icon-sun {
+  display: block !important;
+  color: #ffaa48;
+}
+
+.top-icon.theme-toggle:hover .theme-icon-sun {
+  transform: rotate(45deg) scale(1.12);
+}
+
+/* ============================================================
+   BẾP 1979 - DARK MODE COMPONENT SYSTEM (WARM GOURMET)
+   ============================================================ */
+[data-theme="dark"] header {
+  background: rgba(22, 17, 14, 0.94);
+  border-bottom: 1px solid rgba(75, 58, 48, 0.55);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .top-icon {
+  background: #231c18;
+  border-color: #3d3128;
+  color: #ff7a45;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .top-icon:hover {
+  background: #2c221d;
+  border-color: #ff7a45;
+  box-shadow: 0 8px 20px rgba(255, 122, 69, 0.22);
+}
+
+[data-theme="dark"] .brand-copy strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .brand-copy small {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .header-search-inner {
+  background: #231b17;
+  border: 1px solid #423429;
+}
+
+[data-theme="dark"] .header-search-inner input {
+  background: transparent;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .header-search-inner input::placeholder {
+  color: #8c7b70;
+}
+
+[data-theme="dark"] .header-search-inner button {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .cart-btn {
+  background: linear-gradient(135deg, #251d18 0%, #1e1713 100%);
+  border-color: #45372d;
+  color: #f7f3ee;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .cart-btn:hover {
+  border-color: #ff6b3d;
+  box-shadow: 0 8px 24px rgba(255, 107, 61, 0.25);
+}
+
+[data-theme="dark"] header nav {
+  background: #1c1613;
+  border-top: 1px solid #362c24;
+}
+
+[data-theme="dark"] header nav a {
+  color: #ddd2c7;
+}
+
+[data-theme="dark"] header nav a:hover,
+[data-theme="dark"] header nav a.is-active {
+  color: #ff6b3d;
+}
+
+[data-theme="dark"] .nav-dropdown-panel,
+[data-theme="dark"] .language-dropdown,
+[data-theme="dark"] .header-search-dropdown {
+  background: #231b17;
+  border: 1px solid #423429;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .nav-dropdown-panel a,
+[data-theme="dark"] .language-dropdown button,
+[data-theme="dark"] .header-search-item {
+  color: #ede5dc;
+}
+
+[data-theme="dark"] .nav-dropdown-panel a:hover,
+[data-theme="dark"] .language-dropdown button:hover,
+[data-theme="dark"] .language-dropdown button.active,
+[data-theme="dark"] .header-search-item:hover,
+[data-theme="dark"] .header-search-item.is-selected {
+  background: #2f241e;
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .language-dropdown button .lang-badge {
+  background: #332720;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .language-dropdown button:hover .lang-badge {
+  background: #443228;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .header-search-meta {
+  color: #948378;
+}
+
+[data-theme="dark"] .food-card,
+[data-theme="dark"] .home-food-card {
+  background: #1f1814;
+  border: 1px solid #382d25;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .food-card:hover,
+[data-theme="dark"] .home-food-card:hover {
+  border-color: #ff6b3d;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .food-card h3,
+[data-theme="dark"] .home-food-card h3,
+[data-theme="dark"] .food-card-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-card p,
+[data-theme="dark"] .home-food-card p,
+[data-theme="dark"] .food-card-desc {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .ghost-btn {
+  background: #251d18;
+  border-color: #45372d;
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .ghost-btn:hover {
+  background: #2f251f;
+  border-color: #ff6b3d;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .site-footer,
+[data-theme="dark"] footer {
+  background: #14100e;
+  border-top: 1px solid #332821;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .site-footer a,
+[data-theme="dark"] footer a {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .site-footer a:hover,
+[data-theme="dark"] footer a:hover {
+  color: #ff6b3d;
+}
+
+[data-theme="dark"] .footer-bottom {
+  border-top: 1px solid #281f19;
+  color: #7d6e64;
+}
+
+[data-theme="dark"] .food-detail-card,
+[data-theme="dark"] .food-detail-panel,
+[data-theme="dark"] .quick-view-modal {
+  background: #1f1814;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-box,
+[data-theme="dark"] #chatbox {
+  background: #1f1814;
+  border: 1px solid #3d3128;
+  color: #f7f3ee;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .chat-header {
+  background: linear-gradient(135deg, #2a1f18 0%, #1f1713 100%);
+  border-bottom: 1px solid #3d3128;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-input-area {
+  background: #191310;
+  border-top: 1px solid #362a22;
+}
+
+[data-theme="dark"] .chat-input-area input,
+[data-theme="dark"] .chat-input-area textarea {
+  background: #251c17;
+  border: 1px solid #423328;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-bubble.bot-bubble {
+  background: #29201a;
+  color: #ede5dc;
+  border: 1px solid #3d3027;
+}
+
+[data-theme="dark"] .chat-bubble.user-bubble {
+  background: linear-gradient(135deg, #ff6b3d, #e52d00);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .chat-dish-suggestion-bubble {
+  background: #231a15;
+  border-color: #ff6b3d;
+  color: #f7f3ee;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .chat-dish-suggestion-bubble .suggestion-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-dish-suggestion-bubble .suggestion-desc {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .toast {
+  background: #251d18;
+  border: 1px solid #45372d;
+  color: #f7f3ee;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: #241c18;
+  border-color: #42342a;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: #ff6b3d;
+  outline-color: #ff6b3d;
+}
+
+[data-theme="dark"] .checkout-card,
+[data-theme="dark"] .cart-section,
+[data-theme="dark"] .checkout-stepper {
+  background: #1f1814;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .checkout-step-tab {
+  background: #261e19;
+  border-color: #3d3128;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .checkout-step-tab.active {
+  background: #33241b;
+  border-color: #ff6b3d;
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .payment-option {
+  background: #261e19;
+  border-color: #3d3128;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .announcement-top-bar,
+[data-theme="dark"] .announcements-hero,
+[data-theme="dark"] .announcement-filter-nav,
+[data-theme="dark"] .archive-announcement,
+[data-theme="dark"] .voucher-panel,
+[data-theme="dark"] .announcement-archive-panel {
+  background: #1f1814;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .archive-announcement.is-read {
+  background: #1a1411;
+  border-color: #30261f;
+}
+
+[data-theme="dark"] .announcement-search-box input {
+  background: #261e19;
+  border-color: #42342a;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .filter-tab-pill {
+  background: #261e19;
+  border-color: #3d3128;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .filter-tab-pill.active {
+  background: #ff6b3d;
+  color: #ffffff;
+  border-color: #ff6b3d;
 }
 
 .header-search {

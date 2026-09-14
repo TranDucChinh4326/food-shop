@@ -658,3 +658,63 @@
   100% { transform: scale(1); }
 }
 
+/* ============================================================
+   BẾP 1979 - MENU PAGE DARK THEME
+   ============================================================ */
+[data-theme="dark"] .menu-panel {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .menu-toolbar {
+  border-bottom-color: #382d25;
+}
+
+[data-theme="dark"] .menu-toolbar h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-food-count {
+  background: #2e1f18;
+  border-color: #4a3225;
+  color: #ffaa48;
+}
+
+[data-theme="dark"] .menu-toolbar p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .menu-search-input-wrap,
+[data-theme="dark"] .menu-sort-select,
+[data-theme="dark"] .menu-quick-filter-btn {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-search-input {
+  background: transparent;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-quick-filter-btn.active {
+  background: #ff6b3d;
+  border-color: #ff6b3d;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .menu-category-pill {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .menu-category-pill:hover,
+[data-theme="dark"] .menu-category-pill.active {
+  background: #33241b;
+  border-color: #ff6b3d;
+  color: #ff7a45;
+}
+
+

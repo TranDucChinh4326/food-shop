@@ -931,3 +931,106 @@
     width: 100%;
   }
 }
+
+/* ============================================================
+   BẾP 1979 - ANNOUNCEMENTS & VOUCHERS DARK THEME
+   ============================================================ */
+[data-theme="dark"] .announcements-hero {
+  background: linear-gradient(135deg, #251d18 0%, #1c1511 100%);
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .announcement-top-bar {
+  background: #1d1815;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .announcements-hero h1,
+[data-theme="dark"] .announcement-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .announcement-subtitle {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .announcement-filter-nav {
+  background: #1d1815;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .filter-tab-pill {
+  background: #241c18;
+  border-color: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .filter-tab-pill:hover {
+  background: #2c221d;
+  color: #ffaa48;
+}
+
+[data-theme="dark"] .filter-tab-pill.active {
+  background: #ff6b3d;
+  color: #ffffff;
+  border-color: #ff6b3d;
+}
+
+[data-theme="dark"] .announcement-search-box {
+  background: #241c18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .announcement-search-box input {
+  background: transparent;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .announcement-sort-select {
+  background: #241c18;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .archive-announcement {
+  background: #1f1814;
+  border-color: #382d25;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .archive-announcement.is-read {
+  background: #181310;
+  border-color: #2b221c;
+}
+
+[data-theme="dark"] .archive-announcement:hover {
+  border-color: #ff6b3d;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .announcement-content p {
+  color: #c9bdb3;
+}
+
+[data-theme="dark"] .announcement-skeleton-card {
+  background: #1f1814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .skeleton-shimmer {
+  background: linear-gradient(90deg, #251d18 25%, #30261f 50%, #251d18 75%);
+  background-size: 200% 100%;
+}
+
+[data-theme="dark"] .voucher-panel,
+[data-theme="dark"] .announcement-archive-panel {
+  background: #1d1815;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .voucher-card {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+

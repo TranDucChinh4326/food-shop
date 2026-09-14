@@ -825,3 +825,42 @@ body.food-detail-open {
   padding-left: 14px;
 }
 
+/* ============================================================
+   BẾP 1979 - FOOD DETAIL PAGE DARK THEME
+   ============================================================ */
+[data-theme="dark"] .food-detail-card,
+[data-theme="dark"] .food-detail-panel {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .food-detail-heading h1,
+[data-theme="dark"] .food-detail-info h1 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-desc,
+[data-theme="dark"] .food-detail-meta {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .food-detail-qty {
+  background: #241c18;
+  border-color: #3d3027;
+}
+
+[data-theme="dark"] .food-detail-qty span {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .flash-sale-box {
+  background: #26151c;
+  border-color: #591d34;
+}
+
+[data-theme="dark"] .food-detail-price.has-flash-sale {
+  background: linear-gradient(90deg, #26151c, transparent) !important;
+}
+
+

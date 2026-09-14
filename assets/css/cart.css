@@ -873,4 +873,78 @@
   text-align: left;
   color: #ff5722;
 }
-/* Style cho trang giỏ hàng: danh sách món, tổng tiền, voucher, phí giao hàng và khối thanh toán. */
+
+/* ============================================================
+   BẾP 1979 - CART & CHECKOUT DARK THEME
+   ============================================================ */
+[data-theme="dark"] .checkout-page-heading h1 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .checkout-page-heading .text-link {
+  background: #2e2018;
+  border-color: #4a3225;
+  color: #ffaa48;
+}
+
+[data-theme="dark"] .checkout-stepper {
+  background: rgba(29, 24, 21, 0.94);
+  border-color: #382d25;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .checkout-step-tab {
+  background: #241c18;
+  border-color: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .checkout-step-tab.active {
+  background: #33241b;
+  border-color: #ff6b3d;
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .checkout-card {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .cart-item {
+  background: #241c18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .cart-item-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .cart-total {
+  background: #281d17;
+  color: #ffaa48;
+  border: 1px solid #4a3225;
+}
+
+[data-theme="dark"] .checkout-summary-box,
+[data-theme="dark"] .checkout-review-box {
+  background: #241c18;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .payment-option {
+  background: #241c18;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .payment-option:hover {
+  border-color: #ff6b3d;
+}
+
+[data-theme="dark"] .discount-box {
+  background: #241c18;
+  border-color: #382d25;
+}
+
