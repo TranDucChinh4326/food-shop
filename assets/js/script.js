@@ -1786,7 +1786,7 @@ async function loadFoodReviews() {
   if (!homeReviewBox && !homeReviewFilters && !foodDetailPage && !orderHistoryBox) return;
 
   try {
-    const response = await fetchWithTimeout(`${FOOD_REVIEWS_API}?limit=40`);
+    const response = await fetchWithTimeout(`${FOOD_REVIEWS_API}?limit=200`);
     if (!response.ok) throw new Error(`Reviews API returned ${response.status}`);
 
     const reviewData = await response.json();
