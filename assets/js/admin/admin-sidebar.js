@@ -32,6 +32,75 @@ const ADMIN_ICONS = {
   logout: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6v12h4"/><path d="M14 8l4 4-4 4"/><path d="M8 12h10"/></svg>'
 };
 
+function renderAdminChildNavigation() {
+  const page = location.pathname.split("/").pop().toLowerCase();
+  const activeSection = page === "admin-food.html"
+    ? "foods"
+    : page === "admin-account.html"
+      ? "accounts"
+      : page === "admin-announcement.html"
+        ? "announcements"
+        : "";
+  const nav = document.querySelector(".admin-nav");
+
+  if (!nav || !activeSection) return;
+
+  const active = section => section === activeSection ? " active" : "";
+  const open = sections => sections.includes(activeSection) ? " is-open" : "";
+  const expanded = sections => sections.includes(activeSection) ? "true" : "false";
+
+  nav.innerHTML = `
+    <a class="admin-nav-btn${active("overview")}" href="admin.html?section=overview"><span class="nav-icon" data-icon="home" aria-hidden="true"></span><span class="nav-text">Tổng quan</span></a>
+    <a class="admin-nav-btn${active("orders")}" href="admin.html?section=orders"><span class="nav-icon" data-icon="orders" aria-hidden="true"></span><span class="nav-text">Đơn hàng</span></a>
+    <a class="admin-nav-btn${active("categories")}" href="admin.html?section=categories"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý danh mục</span></a>
+    <div class="admin-nav-group${open(["foods"])}">
+      <button class="admin-nav-btn admin-nav-toggle${active("foods")}" type="button" aria-expanded="${expanded(["foods"])}"><span class="nav-icon" data-icon="utensils" aria-hidden="true"></span><span class="nav-text">Quản lý món ăn</span></button>
+      <div class="admin-subnav"><a href="admin.html?section=foods&foodCategory=all"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Danh sách món</span></a></div>
+    </div>
+    <a class="admin-nav-btn${active("combos")}" href="admin.html?section=combos"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Combo món ăn</span></a>
+    <a class="admin-nav-btn${active("inventory")}" href="admin.html?section=inventory"><span class="nav-icon" data-icon="categories" aria-hidden="true"></span><span class="nav-text">Quản lý kho</span></a>
+    <div class="admin-nav-group${open(["accounts"])}">
+      <button class="admin-nav-btn admin-nav-toggle${active("accounts")}" type="button" aria-expanded="${expanded(["accounts"])}"><span class="nav-icon" data-icon="account" aria-hidden="true"></span><span class="nav-text">Tài khoản</span></button>
+      <div class="admin-subnav">
+        <a href="admin.html?section=accounts&accountType=staff"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Nhân viên</span></a>
+        <a href="admin.html?section=accounts&accountType=customers"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Khách hàng</span></a>
+      </div>
+    </div>
+    <div class="admin-nav-group${open(["announcements"])}">
+      <button class="admin-nav-btn admin-nav-toggle${active("announcements")}" type="button" aria-expanded="${expanded(["announcements"])}"><span class="nav-icon" data-icon="bell" aria-hidden="true"></span><span class="nav-text">Quản lý tin tức</span></button>
+      <div class="admin-subnav">
+        <a href="admin.html?section=announcements"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Thông báo</span></a>
+        <a href="admin.html?section=advertisements"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Quảng cáo</span></a>
+      </div>
+    </div>
+    <div class="admin-nav-group">
+      <button class="admin-nav-btn admin-nav-toggle" type="button" aria-expanded="false"><span class="nav-icon" data-icon="ticket" aria-hidden="true"></span><span class="nav-text">Quản lý khuyến mãi</span></button>
+      <div class="admin-subnav">
+        <a href="admin.html?section=flash-sales"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Flash sale</span></a>
+        <a href="admin.html?section=discounts"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Mã giảm giá</span></a>
+      </div>
+    </div>
+    <a class="admin-nav-btn" href="admin.html?section=shipping"><span class="nav-icon" data-icon="delivery" aria-hidden="true"></span><span class="nav-text">Phí vận chuyển</span></a>
+    <a class="admin-nav-btn" href="admin.html?section=audit-logs"><span class="nav-icon" data-icon="audit" aria-hidden="true"></span><span class="nav-text">Nhật ký</span></a>
+    <div class="admin-nav-group">
+      <button class="admin-nav-btn admin-nav-toggle" type="button" aria-expanded="false"><span class="nav-icon" data-icon="feedback" aria-hidden="true"></span><span class="nav-text">Chăm sóc khách hàng</span></button>
+      <div class="admin-subnav">
+        <a href="admin.html?section=feedback"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Phản hồi</span></a>
+        <a href="admin.html?section=food-reviews"><span class="nav-icon" data-icon="dot" aria-hidden="true"></span><span class="nav-text">Bình luận món</span></a>
+      </div>
+    </div>
+  `;
+
+  nav.querySelectorAll(".admin-nav-toggle").forEach(button => {
+    button.addEventListener("click", () => {
+      const group = button.closest(".admin-nav-group");
+      const willOpen = !group.classList.contains("is-open");
+      group.classList.toggle("is-open", willOpen);
+      button.setAttribute("aria-expanded", String(willOpen));
+    });
+  });
+}
+
 function renderAdminIcons() {
   // Gắn SVG icon vào các phần tử có data-icon.
   // HTML admin chỉ cần khai báo tên icon, còn SVG được quản lý tập trung tại đây.
@@ -134,6 +203,7 @@ function initAdminSidebar() {
   const sidebar = document.querySelector(".admin-sidebar");
   const toggle = document.querySelector("[data-sidebar-toggle]");
 
+  renderAdminChildNavigation();
   renderAdminIcons();
   syncAdminUserName();
   initAdminThemeToggle();
