@@ -31,7 +31,6 @@ let announcementTimer;
 let floatingAdTimers = [];
 let announcementArchive = [];
 let announcementArchivePage = 1;
-let announcementReadObserver = null;
 let activeQrPayment = null;
 let qrPaymentCountdownTimer = null;
 let qrPaymentStatusTimer = null;
