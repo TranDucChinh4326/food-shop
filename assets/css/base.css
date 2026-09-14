@@ -1980,15 +1980,15 @@ header.header-compact .header-tools {
   border-radius: 12px;
   box-shadow: 0 14px 34px rgba(56, 33, 20, 0.16);
   display: block;
-  height: clamp(190px, 25vh, 235px);
+  height: clamp(185px, 23vh, 225px);
   max-height: calc(100vh - 280px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 110px;
+  top: clamp(150px, 22vh, 185px);
   transform: none;
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: clamp(72px, 4.5vw, 86px);
+  width: clamp(70px, 4.4vw, 84px);
   z-index: 30;
 }
 
