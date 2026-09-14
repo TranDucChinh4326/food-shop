@@ -33,12 +33,12 @@ const ADMIN_ICONS = {
 };
 
 function renderAdminChildNavigation() {
-  const page = location.pathname.split("/").pop().toLowerCase();
-  const activeSection = page === "admin-food.html"
+  const page = location.pathname.split("/").pop().toLowerCase().replace(/\.html$/, "");
+  const activeSection = page === "admin-food"
     ? "foods"
-    : page === "admin-account.html"
+    : page === "admin-account"
       ? "accounts"
-      : page === "admin-announcement.html"
+      : page === "admin-announcement"
         ? "announcements"
         : "";
   const nav = document.querySelector(".admin-nav");
