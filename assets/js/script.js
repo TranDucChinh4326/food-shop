@@ -1841,6 +1841,13 @@ function renderStarText(rating = 5) {
   return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
+function renderStarHtml(rating = 5) {
+  const value = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+  const filled = '<span class="star-gold">★</span>'.repeat(value);
+  const empty = '<span class="star-muted">★</span>'.repeat(5 - value);
+  return filled + empty;
+}
+
 function renderRatingLabel(rating, reviewCount = 0) {
   if (!Number(reviewCount)) return "Chưa có đánh giá";
   return `${renderStarText(rating)} ${Number(rating || 0).toFixed(1)}`;
@@ -2151,7 +2158,7 @@ function renderReviewListCard(review, options = {}) {
           </div>
         </div>
         <div class="review-card-stars" aria-label="${rating} sao">
-          <span class="stars-gold">${renderStarText(rating)}</span>
+          ${renderStarHtml(rating)}
         </div>
       </div>
 
@@ -2275,16 +2282,21 @@ function renderReviewPanel(scope, controlsElement, listElement, reviews, options
         ? reviews.filter(r => String(r.foodId) === String(state.food))
         : reviews;
 
-    const star5Count = targetReviews.filter(r => Number(r.rating) === 5).length;
-    const star4Count = targetReviews.filter(r => Number(r.rating) === 4).length;
-    const star3Count = targetReviews.filter(r => Number(r.rating) === 3).length;
+    const countsByStar = {
+      5: targetReviews.filter(r => Number(r.rating) === 5).length,
+      4: targetReviews.filter(r => Number(r.rating) === 4).length,
+      3: targetReviews.filter(r => Number(r.rating) === 3).length,
+      2: targetReviews.filter(r => Number(r.rating) === 2).length,
+      1: targetReviews.filter(r => Number(r.rating) === 1).length
+    };
+    const starChipsToRender = [5, 4, 3, 2, 1].filter(s => countsByStar[s] > 0 || s >= 3);
 
     controlsElement.innerHTML = `
       <div class="review-star-chips">
         <button type="button" class="review-chip-btn ${state.rating === "all" ? "active" : ""}" data-star-chip="all">Tất cả (${targetReviews.length})</button>
-        <button type="button" class="review-chip-btn ${state.rating === "5" ? "active" : ""}" data-star-chip="5">★ 5 sao (${star5Count})</button>
-        <button type="button" class="review-chip-btn ${state.rating === "4" ? "active" : ""}" data-star-chip="4">★ 4 sao (${star4Count})</button>
-        <button type="button" class="review-chip-btn ${state.rating === "3" ? "active" : ""}" data-star-chip="3">★ 3 sao (${star3Count})</button>
+        ${starChipsToRender.map(star => `
+          <button type="button" class="review-chip-btn ${state.rating === String(star) ? "active" : ""}" data-star-chip="${star}">★ ${star} sao (${countsByStar[star]})</button>
+        `).join("")}
       </div>
       <div class="review-selects-wrap">
         ${(isHome || options.includeCurrent) ? `<label><span>Món ăn</span><select data-review-filter="food">${getReviewFoodOptions(state.food, options)}</select></label>` : ""}
@@ -2341,7 +2353,7 @@ function renderHomeReviews() {
         <div class="review-summary-score-col">
           <span class="review-summary-big-score">${avgRating}</span>
           <div class="review-summary-stars-wrap">
-            <span class="review-summary-stars">${renderStarText(Math.round(Number(avgRating)))}</span>
+            <span class="review-summary-stars">${renderStarHtml(Math.round(Number(avgRating)))}</span>
             <span class="review-summary-count">${totalCount}+ đánh giá đã xác thực</span>
           </div>
         </div>

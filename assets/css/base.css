@@ -2065,13 +2065,19 @@ nav a.is-active,
 }
 
 .review-card-stars {
+  display: inline-flex;
+  gap: 1.5px;
   flex-shrink: 0;
+  font-size: 15px;
 }
 
-.review-card-stars .stars-gold {
+.review-card-stars .stars-gold,
+.star-gold {
   color: #ffaa00;
-  font-size: 15px;
-  letter-spacing: 1.5px;
+}
+
+.star-muted {
+  color: #dcd0c7;
 }
 
 .review-card-body {
