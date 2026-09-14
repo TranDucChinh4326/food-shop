@@ -1980,15 +1980,15 @@ header.header-compact .header-tools {
   border-radius: 12px;
   box-shadow: 0 14px 34px rgba(56, 33, 20, 0.16);
   display: block;
-  height: clamp(210px, 13.5vw, 255px);
-  max-height: calc(100vh - 320px);
+  height: clamp(190px, 25vh, 235px);
+  max-height: calc(100vh - 280px);
   overflow: hidden;
   pointer-events: auto;
   position: fixed;
-  top: 38%;
-  transform: translateY(-50%);
+  top: 110px;
+  transform: none;
   transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  width: clamp(74px, 4.6vw, 90px);
+  width: clamp(72px, 4.5vw, 86px);
   z-index: 30;
 }
 
@@ -2048,7 +2048,7 @@ header.header-compact .header-tools {
 
 .floating-ad:hover {
   box-shadow: 0 18px 42px rgba(56, 33, 20, 0.22);
-  transform: translateY(-50%) translateY(-3px);
+  transform: translateY(-3px);
 }
 
 
@@ -4747,9 +4747,9 @@ footer {
 
 
 .support-widget {
-  bottom: 20px;
+  bottom: 18px;
   position: fixed;
-  right: 20px;
+  right: 18px;
   z-index: 1200;
 }
 
@@ -5025,24 +5025,24 @@ footer {
   background: linear-gradient(135deg, #ff7a28 0%, #ff4b1f 60%, #ea2a0e 100%);
   border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: 50%;
-  box-shadow: 0 12px 28px rgba(255, 75, 31, 0.36), 0 5px 14px rgba(45, 18, 10, 0.16);
+  box-shadow: 0 10px 24px rgba(255, 75, 31, 0.35), 0 4px 12px rgba(45, 18, 10, 0.15);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
   font-size: 0;
   font-weight: 700;
-  height: 56px;
+  height: 52px;
   justify-content: center;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0;
   position: relative;
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
-  width: 56px;
+  width: 52px;
 }
 
 .support-toggle:hover {
-  box-shadow: 0 18px 36px rgba(255, 75, 31, 0.46), 0 7px 18px rgba(45, 18, 10, 0.2);
-  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 16px 32px rgba(255, 75, 31, 0.44), 0 6px 16px rgba(45, 18, 10, 0.18);
+  transform: translateY(-2.5px) scale(1.06);
 }
 
 .support-toggle:active {
@@ -5064,15 +5064,15 @@ footer {
 
 .bot-online-badge {
   background: #10b981;
-  border: 2.5px solid #ffffff;
+  border: 2px solid #ffffff;
   border-radius: 50%;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  height: 14px;
+  height: 11px;
   pointer-events: none;
   position: absolute;
   right: 2px;
   top: 2px;
-  width: 12px;
+  width: 11px;
   z-index: 3;
 }
 
@@ -5082,26 +5082,26 @@ footer {
 .support-zalo-floating {
   align-items: center;
   background: linear-gradient(135deg, #0082ff 0%, #0068ff 100%);
-  border: 3px solid #ffffff;
+  border: 2.5px solid #ffffff;
   border-radius: 50%;
-  bottom: 66px;
-  box-shadow: 0 8px 22px rgba(0, 104, 255, 0.38), 0 3px 8px rgba(0, 0, 0, 0.12);
+  bottom: 60px;
+  box-shadow: 0 7px 20px rgba(0, 104, 255, 0.36), 0 3px 8px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   display: inline-flex;
-  height: 48px;
+  height: 44px;
   justify-content: center;
   position: absolute;
   right: 4px;
   text-decoration: none;
   transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.24s ease, opacity 0.2s ease;
   user-select: none;
-  width: 48px;
+  width: 44px;
   z-index: 10;
 }
 
 .support-zalo-floating:hover {
-  box-shadow: 0 14px 28px rgba(0, 104, 255, 0.5), 0 5px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2.5px) scale(1.08);
+  box-shadow: 0 12px 24px rgba(0, 104, 255, 0.48), 0 4px 10px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px) scale(1.08);
 }
 
 .support-zalo-floating:active {
@@ -5117,7 +5117,7 @@ footer {
 .support-zalo-text {
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: -0.3px;
   line-height: 1;
@@ -5195,8 +5195,8 @@ footer {
 
 .support-toggle .support-robot-icon.with-wordmark,
 .support-toggle .support-robot-icon {
-  height: 42px;
-  width: 42px;
+  height: 38px;
+  width: 38px;
   filter: drop-shadow(0 2px 5px rgba(168, 35, 3, 0.3));
 }
 
@@ -7934,23 +7934,23 @@ footer {
   background: #ffffff;
   border: none;
   border-radius: 50%;
-  bottom: 142px;
-  box-shadow: 0 6px 20px rgba(45, 18, 10, 0.15), 0 2px 8px rgba(255, 87, 34, 0.12);
+  bottom: 128px;
+  box-shadow: 0 5px 18px rgba(45, 18, 10, 0.15), 0 2px 7px rgba(255, 87, 34, 0.12);
   color: #ff5722;
   cursor: pointer;
   display: inline-flex;
-  height: 42px;
+  height: 38px;
   justify-content: center;
   opacity: 0;
   padding: 0;
   pointer-events: none;
   position: fixed;
-  right: 27px;
-  transform: translateY(14px) scale(0.9);
+  right: 25px;
+  transform: translateY(12px) scale(0.9);
   transition: opacity 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.22s ease;
-  width: 42px;
+  width: 38px;
   z-index: 1150;
   box-sizing: border-box;
 }
@@ -8015,8 +8015,8 @@ body:has(.support-widget.open) #backToTopBtn {
 
 .back-to-top-arrow svg {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 /* ============================================================
@@ -8302,42 +8302,42 @@ body:has(.support-widget.open) #backToTopBtn {
 
 @media (max-width: 768px) {
   .back-to-top-btn {
-    bottom: 126px;
-    height: 38px;
-    right: 18px;
-    width: 38px;
+    bottom: 116px;
+    height: 34px;
+    right: 17px;
+    width: 34px;
   }
 
   .back-to-top-arrow svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 
   .support-widget {
-    bottom: 16px;
-    right: 16px;
+    bottom: 14px;
+    right: 14px;
   }
 
   .support-toggle {
-    height: 50px;
-    width: 50px;
-    min-height: 50px;
+    height: 48px;
+    width: 48px;
+    min-height: 48px;
   }
 
   .support-toggle .support-robot-icon {
-    height: 36px;
-    width: 36px;
+    height: 34px;
+    width: 34px;
   }
 
   .support-zalo-floating {
-    bottom: 58px;
-    height: 42px;
+    bottom: 54px;
+    height: 40px;
     right: 4px;
-    width: 42px;
+    width: 40px;
   }
 
   .support-zalo-text {
-    font-size: 13.5px;
+    font-size: 13px;
   }
 
   .flash-sale-banner {
