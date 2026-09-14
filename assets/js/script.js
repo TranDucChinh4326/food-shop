@@ -5693,37 +5693,50 @@ function initBackToTopButton() {
 
   let isTicking = false;
   let isBtnVisible = false;
-  let cachedMaxScroll = 1;
 
-  function recalculateMaxScroll() {
-    cachedMaxScroll = Math.max(1, (document.documentElement.scrollHeight || document.body.scrollHeight || 0) - window.innerHeight);
+  function getDocumentMaxScroll() {
+    const doc = document.documentElement;
+    const body = document.body;
+    const docH = Math.max(
+      doc ? doc.scrollHeight : 0,
+      body ? body.scrollHeight : 0,
+      doc ? doc.offsetHeight : 0,
+      body ? body.offsetHeight : 0
+    );
+    const winH = window.innerHeight || (doc ? doc.clientHeight : 0) || 1;
+    return Math.max(1, docH - winH);
   }
-  recalculateMaxScroll();
-  window.addEventListener("resize", recalculateMaxScroll, { passive: true });
 
   function updateScrollProgress() {
     isTicking = false;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const scrollY = window.scrollY || window.pageYOffset || (document.documentElement ? document.documentElement.scrollTop : 0) || 0;
+    const maxScroll = getDocumentMaxScroll();
 
-    if (cachedMaxScroll > 0) {
-      const progress = Math.min(Math.max(scrollY / cachedMaxScroll, 0), 1);
-      const offset = circumference - progress * circumference;
-      circle.style.strokeDashoffset = `${offset.toFixed(1)}`;
-    }
+    const progress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+    const offset = circumference - progress * circumference;
+    circle.style.strokeDashoffset = `${offset.toFixed(1)}`;
 
-    const shouldShow = scrollY > 350;
+    const shouldShow = scrollY > 280;
     if (shouldShow !== isBtnVisible) {
       isBtnVisible = shouldShow;
       btn.classList.toggle("visible", shouldShow);
     }
   }
 
-  window.addEventListener("scroll", () => {
+  const scheduleUpdate = () => {
     if (!isTicking) {
       isTicking = true;
       window.requestAnimationFrame(updateScrollProgress);
     }
-  }, { passive: true });
+  };
+
+  window.addEventListener("scroll", scheduleUpdate, { passive: true });
+  window.addEventListener("resize", scheduleUpdate, { passive: true });
+
+  if (window.ResizeObserver && document.body) {
+    const ro = new ResizeObserver(scheduleUpdate);
+    ro.observe(document.body);
+  }
 
   btn.addEventListener("click", () => {
     window.scrollTo({
