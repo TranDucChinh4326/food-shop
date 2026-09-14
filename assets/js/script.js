@@ -719,9 +719,150 @@ function renderMenuCategoryOptions() {
   }
 
   if (chipsBox) {
-    chipsBox.innerHTML = "";
-    chipsBox.style.display = "none";
+    chipsBox.style.display = "flex";
+
+    const CATEGORY_ITEMS = [
+      { slug: "all", name: "Tất cả", icon: "🍽️" },
+      { slug: "do-an", name: "Đồ ăn", icon: "🍲" },
+      { slug: "com", name: "Cơm", icon: "🍚" },
+      { slug: "pho", name: "Phở", icon: "🍜" },
+      { slug: "mi", name: "Mì", icon: "🍝" },
+      { slug: "bun", name: "Bún", icon: "🥢" },
+      { slug: "nuoc-uong", name: "Nước uống", icon: "🥤" },
+      { slug: "tra", name: "Trà", icon: "🍵" },
+      { slug: "ca-phe", name: "Cà phê", icon: "☕" },
+      { slug: "nuoc-ep-sinh-to", name: "Nước ép & Sinh tố", icon: "🍹" },
+      { slug: "nuoc-dong-chai", name: "Đóng chai", icon: "🧃" }
+    ];
+
+    const availableSlugs = new Set();
+    foods.forEach(food => {
+      if (food.category) availableSlugs.add(food.category);
+      if (food.subcategory) availableSlugs.add(food.subcategory);
+    });
+    publicCategories.forEach(cat => {
+      if (cat.slug) availableSlugs.add(cat.slug);
+    });
+
+    let displayCategories = CATEGORY_ITEMS.filter(item => 
+      item.slug === "all" || 
+      item.slug === "do-an" || 
+      item.slug === "nuoc-uong" || 
+      availableSlugs.has(item.slug)
+    );
+
+    publicCategories.forEach(cat => {
+      if (cat.slug && !CATEGORY_ITEMS.some(item => item.slug === cat.slug)) {
+        displayCategories.push({
+          slug: cat.slug,
+          name: cat.name,
+          icon: "🏷️"
+        });
+      }
+    });
+
+    chipsBox.innerHTML = displayCategories.map(item => {
+      const isActive = (item.slug === categoryValue) || (item.slug === "all" && (!categoryValue || categoryValue === "all"));
+      return `
+        <a href="${getCategoryUrl(item.slug)}" class="${isActive ? "active" : ""}" data-category-slug="${item.slug}" onclick="selectMenuCategory('${item.slug}', event)" aria-current="${isActive ? "page" : "false"}">
+          <span>${item.icon}</span>
+          <span>${escapeHtml(item.name)}</span>
+        </a>
+      `;
+    }).join("");
   }
+}
+
+function selectMenuCategory(slug, event) {
+  if (event) event.preventDefault();
+  const url = new URL(window.location);
+  if (slug === "all") {
+    url.searchParams.delete("category");
+  } else {
+    url.searchParams.set("category", slug);
+  }
+  window.history.pushState({}, "", url.toString());
+  renderMenuCategoryOptions();
+  renderFoods();
+}
+
+function handleMenuSearchInput() {
+  const searchInput = document.getElementById("searchInput");
+  const clearBtn = document.getElementById("menuSearchClearBtn");
+  if (clearBtn && searchInput) {
+    clearBtn.style.display = searchInput.value.trim() ? "flex" : "none";
+  }
+  renderFoods();
+}
+
+function clearMenuSearch() {
+  const searchInput = document.getElementById("searchInput");
+  const clearBtn = document.getElementById("menuSearchClearBtn");
+  if (searchInput) {
+    searchInput.value = "";
+    searchInput.focus();
+  }
+  if (clearBtn) {
+    clearBtn.style.display = "none";
+  }
+  renderFoods();
+}
+
+function toggleMenuSaleFilter() {
+  const btn = document.getElementById("menuSaleOnlyBtn");
+  if (!btn) return;
+  const isCurrentlyActive = btn.getAttribute("aria-pressed") === "true" || btn.classList.contains("active");
+  const newState = !isCurrentlyActive;
+  btn.setAttribute("aria-pressed", String(newState));
+  btn.classList.toggle("active", newState);
+  renderFoods();
+}
+
+function stepMenuQuantity(foodId, delta, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const input = document.querySelector(`[data-food-qty="${foodId}"]`);
+  if (!input) return;
+  const max = Number(input.getAttribute("max") || 99);
+  const min = Number(input.getAttribute("min") || 1);
+  let currentVal = Number(input.value) || 1;
+  currentVal = Math.min(Math.max(currentVal + delta, min), max);
+  input.value = currentVal;
+}
+
+function setMenuSearchSuggestion(keyword) {
+  const searchInput = document.getElementById("searchInput");
+  const clearBtn = document.getElementById("menuSearchClearBtn");
+  if (searchInput) {
+    searchInput.value = keyword;
+    if (clearBtn) clearBtn.style.display = "flex";
+  }
+  renderFoods();
+}
+
+function resetMenuFilters() {
+  const searchInput = document.getElementById("searchInput");
+  const clearBtn = document.getElementById("menuSearchClearBtn");
+  const sortSelect = document.getElementById("menuSortSelect");
+  const saleBtn = document.getElementById("menuSaleOnlyBtn");
+
+  if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.style.display = "none";
+  if (sortSelect) sortSelect.value = "default";
+  if (saleBtn) {
+    saleBtn.setAttribute("aria-pressed", "false");
+    saleBtn.classList.remove("active");
+  }
+
+  const url = new URL(window.location);
+  url.searchParams.delete("search");
+  url.searchParams.delete("category");
+  window.history.pushState({}, "", url.toString());
+
+  renderMenuCategoryOptions();
+  renderFoods();
 }
 
 function setSelectOptions(select, options, placeholder) {
@@ -3232,6 +3373,10 @@ function startAnnouncementTicker(box, itemCount) {
 function renderFoods() {
   const foodList = document.getElementById("food-list");
   const searchInput = document.getElementById("searchInput");
+  const sortSelect = document.getElementById("menuSortSelect");
+  const saleBtn = document.getElementById("menuSaleOnlyBtn");
+  const foodCountBadge = document.getElementById("menuFoodCount");
+  const clearBtn = document.getElementById("menuSearchClearBtn");
 
   if (!foodList || !searchInput) return;
 
@@ -3241,54 +3386,153 @@ function renderFoods() {
     searchInput.dataset.urlSearchApplied = "true";
   }
 
-  const searchValue = searchInput.value.toLowerCase();
+  if (clearBtn) {
+    clearBtn.style.display = searchInput.value.trim() ? "flex" : "none";
+  }
+
+  const searchValue = searchInput.value.toLowerCase().trim();
   const categoryValue = getMenuCategoryValue();
+  const sortValue = sortSelect ? sortSelect.value : "default";
+  const isSaleOnly = saleBtn ? (saleBtn.getAttribute("aria-pressed") === "true" || saleBtn.classList.contains("active")) : false;
+
   renderMenuCategoryOptions();
 
-  const filteredFoods = foods.filter(food => {
-    const matchSearch = food.name.toLowerCase().includes(searchValue);
-    const matchCategory = categoryValue === "all" || food.category === categoryValue || food.subcategory === categoryValue;
-    return matchSearch && matchCategory;
-  }).sort((first, second) =>
-    String(first.category || "").localeCompare(String(second.category || ""), "vi") ||
-    String(first.subcategory || "").localeCompare(String(second.subcategory || ""), "vi") ||
-    String(first.name || "").localeCompare(String(second.name || ""), "vi")
-  );
+  let filteredFoods = foods.filter(food => {
+    const matchSearch = !searchValue ||
+      String(food.name || "").toLowerCase().includes(searchValue) ||
+      String(food.desc || "").toLowerCase().includes(searchValue) ||
+      String(food.categoryName || "").toLowerCase().includes(searchValue) ||
+      String(food.subcategory || "").toLowerCase().includes(searchValue);
 
+    const matchCategory = categoryValue === "all" ||
+      food.category === categoryValue ||
+      food.subcategory === categoryValue;
+
+    const matchSale = !isSaleOnly || Boolean(getFoodFlashSale(food));
+
+    return matchSearch && matchCategory && matchSale;
+  });
+
+  // Sorting logic
+  if (sortValue === "price-asc") {
+    filteredFoods.sort((a, b) => getFoodSalePrice(a) - getFoodSalePrice(b));
+  } else if (sortValue === "price-desc") {
+    filteredFoods.sort((a, b) => getFoodSalePrice(b) - getFoodSalePrice(a));
+  } else if (sortValue === "rating") {
+    filteredFoods.sort((a, b) => {
+      const ratingA = getFoodRatingStats(a).rating;
+      const ratingB = getFoodRatingStats(b).rating;
+      return ratingB - ratingA;
+    });
+  } else if (sortValue === "sales") {
+    filteredFoods.sort((a, b) => {
+      const soldA = Number(a.soldCount || a.sold || 0);
+      const soldB = Number(b.soldCount || b.sold || 0);
+      return soldB - soldA;
+    });
+  } else {
+    // Default sorting by category & name
+    filteredFoods.sort((first, second) =>
+      String(first.category || "").localeCompare(String(second.category || ""), "vi") ||
+      String(first.subcategory || "").localeCompare(String(second.subcategory || ""), "vi") ||
+      String(first.name || "").localeCompare(String(second.name || ""), "vi")
+    );
+  }
+
+  // Update dish count indicator
+  if (foodCountBadge) {
+    foodCountBadge.textContent = `${filteredFoods.length} món`;
+  }
+
+  // Empty state when search or filter returns 0 items
   if (filteredFoods.length === 0) {
-    foodList.innerHTML = "<p>Không tìm thấy món ăn phù hợp.</p>";
+    foodList.innerHTML = `
+      <div class="menu-empty-state">
+        <span class="menu-empty-icon" aria-hidden="true">🍲</span>
+        <h3>Không tìm thấy món ăn phù hợp</h3>
+        <p>Thử tìm kiếm với từ khóa khác hoặc bấm chọn gợi ý bên dưới:</p>
+        <div class="menu-empty-suggestions">
+          <button type="button" onclick="setMenuSearchSuggestion('Cơm')">🍚 Cơm</button>
+          <button type="button" onclick="setMenuSearchSuggestion('Phở')">🍜 Phở</button>
+          <button type="button" onclick="setMenuSearchSuggestion('Bún')">🥢 Bún</button>
+          <button type="button" onclick="setMenuSearchSuggestion('Mì')">🍝 Mì</button>
+          <button type="button" onclick="setMenuSearchSuggestion('Trà')">🍵 Trà</button>
+          <button type="button" onclick="setMenuSearchSuggestion('Cà phê')">☕ Cà phê</button>
+        </div>
+        <button type="button" class="menu-empty-reset-btn" onclick="resetMenuFilters()">Xem tất cả món</button>
+      </div>
+    `;
     return;
   }
 
   foodList.innerHTML = filteredFoods.map(food => {
     const stock = Number(food.stockQuantity || 0);
-    const quantityInput = `<input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" ${stock <= 0 ? "disabled" : ""}>`;
-    const buttonLabel = stock > 0 ? "Thêm vào giỏ" : "Hết hàng";
-    const stockLabel = stock > 0 ? `Còn ${stock}` : "Hết hàng";
     const isSale = Boolean(getFoodFlashSale(food));
+    const sale = getFoodFlashSale(food);
+    const basePrice = Number(food?.price || 0);
+    const stats = getFoodRatingStats(food);
+
+    const ratingHtml = stats.reviewCount > 0
+      ? `<span class="menu-card-rating"><span class="star-gold">★</span> ${stats.rating.toFixed(1)} <small>(${stats.reviewCount})</small></span>`
+      : `<span class="menu-card-rating">✨ Món mới</span>`;
+
+    const stockBadge = stock > 0
+      ? `<span class="menu-card-stock in-stock">Còn ${stock}</span>`
+      : `<span class="menu-card-stock out-stock">Hết hàng</span>`;
+
+    const priceHtml = isSale && sale && sale.salePrice < basePrice
+      ? `
+        <div class="menu-card-price-stack">
+          <div class="flash-price-row">
+            <strong>${formatMoney(sale.salePrice)}</strong>
+            <em>-${Math.max(1, Math.round((1 - sale.salePrice / basePrice) * 100))}%</em>
+          </div>
+          <del>${formatMoney(basePrice)}</del>
+        </div>
+      `
+      : `
+        <div class="menu-card-price">
+          <strong>${formatMoney(basePrice)}</strong>
+        </div>
+      `;
+
+    const quantityStepper = `
+      <div class="menu-stepper" onclick="event.stopPropagation()">
+        <button type="button" class="menu-stepper-btn" onclick="stepMenuQuantity(${food.id}, -1, event)" aria-label="Giảm số lượng" ${stock <= 0 ? "disabled" : ""}>-</button>
+        <input type="number" min="1" max="${Math.max(stock, 1)}" value="1" data-food-qty="${food.id}" aria-label="Số lượng" ${stock <= 0 ? "disabled" : ""}>
+        <button type="button" class="menu-stepper-btn" onclick="stepMenuQuantity(${food.id}, 1, event)" aria-label="Tăng số lượng" ${stock <= 0 ? "disabled" : ""}>+</button>
+      </div>
+    `;
 
     return `
       <div class="food-card ${isSale ? "is-flash-sale" : ""}" data-open-food-detail="${food.id}" data-detail-from="menu" data-detail-category="${escapeHtml(food.subcategory || food.category || getMenuCategoryValue())}">
         <div class="food-card-img-wrap">
           <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}" aria-label="Xem chi tiết ${escapeHtml(food.name)}">
-            <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}">
+            <img src="${escapeHtml(food.image || "")}" alt="${escapeHtml(food.name)}" loading="lazy">
           </a>
           ${renderFlashSaleBadge(food)}
           ${renderFavButton(food.id)}
         </div>
-        <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}">
-          <h3>${escapeHtml(food.name)}</h3>
-          <p>${escapeHtml(food.desc || "")}</p>
-        </a>
-        <div class="food-price-row">
-          ${renderFoodPrice(food)}
-          <span class="food-stock-badge ${stock > 0 ? "in-stock" : "out-stock"}">${stockLabel}</span>
+        <div class="menu-card-body">
+          <div class="menu-card-meta">
+            ${ratingHtml}
+            ${stockBadge}
+          </div>
+          <a class="food-card-detail-link" href="${getFoodDetailUrl(food.id, { from: "menu", category: food.subcategory || food.category || getMenuCategoryValue() })}">
+            <h3>${escapeHtml(food.name)}</h3>
+            <p>${escapeHtml(food.desc || "")}</p>
+          </a>
+          <div class="menu-card-bottom-row">
+            ${priceHtml}
+            <div class="menu-card-actions">
+              ${quantityStepper}
+              <button type="button" class="menu-add-cart-btn" onclick="event.stopPropagation(); addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""} title="${stock > 0 ? "Thêm vào giỏ hàng" : "Đã hết hàng"}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Thêm</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="food-qty-row">
-          <label for="food-qty-${food.id}">Số lượng</label>
-          ${quantityInput}
-        </div>
-        <button type="button" class="food-card-add-btn" onclick="addToCart(${food.id}, event)" ${stock <= 0 ? "disabled" : ""}>${buttonLabel}</button>
       </div>
     `;
   }).join("");
@@ -5931,6 +6175,13 @@ document.addEventListener("click", event => {
 
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeFoodDetail();
+});
+
+window.addEventListener("popstate", () => {
+  if (document.getElementById("food-list")) {
+    renderMenuCategoryOptions();
+    renderFoods();
+  }
 });
 
 // Khởi tạo các module toàn trang ngay lập tức

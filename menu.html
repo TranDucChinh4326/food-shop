@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thực đơn - Bếp 1979</title>
   <link rel="stylesheet" href="assets/css/base.css?v=20260914-review-ux-v1">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260826-mobile-header-pro-v5">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260914-menu-ux-v1">
 </head>
 <body>
   <div data-shared-header></div>
@@ -14,14 +14,39 @@
   <main class="menu-page">
     <section class="menu-panel">
       <div class="menu-toolbar">
-        <div>
-          <h2 id="menuCategoryHeading">Thực đơn Bếp 1979</h2>
+        <div class="menu-toolbar-left">
+          <div class="menu-heading-row">
+            <h2 id="menuCategoryHeading">Thực đơn Bếp 1979</h2>
+            <span class="menu-food-count" id="menuFoodCount" aria-live="polite"></span>
+          </div>
           <p id="menuCategoryDescription">Khám phá trọn bộ các món ăn tươi ngon chuẩn vị, giao nhanh tận nơi trong 30 phút.</p>
         </div>
-        <div class="filter-box">
-          <input type="search" id="searchInput" placeholder="Tìm kiếm món ăn..." oninput="renderFoods()" aria-label="Tìm kiếm món ăn">
+
+        <div class="menu-controls-row">
+          <div class="filter-box menu-search-box">
+            <svg class="menu-search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="search" id="searchInput" placeholder="Tìm kiếm món ăn..." oninput="handleMenuSearchInput()" aria-label="Tìm kiếm món ăn">
+            <button type="button" class="menu-search-clear-btn" id="menuSearchClearBtn" aria-label="Xóa tìm kiếm" onclick="clearMenuSearch()" style="display: none;">✕</button>
+          </div>
+          <div class="menu-filter-actions">
+            <div class="menu-sort-wrapper">
+              <select id="menuSortSelect" class="menu-sort-select" onchange="renderFoods()" aria-label="Sắp xếp món ăn">
+                <option value="default">✨ Phổ biến nhất</option>
+                <option value="price-asc">💵 Giá: Thấp đến cao</option>
+                <option value="price-desc">💎 Giá: Cao đến thấp</option>
+                <option value="rating">⭐ Đánh giá cao nhất</option>
+                <option value="sales">🔥 Bán chạy nhất</option>
+              </select>
+            </div>
+            <button type="button" id="menuSaleOnlyBtn" class="menu-quick-filter-btn" onclick="toggleMenuSaleFilter()" aria-pressed="false">
+              <span class="menu-sale-icon">⚡</span>
+              <span>Đang giảm giá</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      <nav class="menu-category-chips" id="menuCategoryChips" aria-label="Danh mục món ăn"></nav>
 
       <div class="food-list" id="food-list" aria-live="polite"></div>
     </section>
@@ -30,6 +55,6 @@
 
   <script src="config.js"></script>
   <script src="assets/js/shared-layout.js?v=20260913-luxury-cart-v1"></script>
-  <script src="assets/js/script.js?v=20260914-real-review-stars-v4"></script>
+  <script src="assets/js/script.js?v=20260914-menu-ux-v1"></script>
 </body>
 </html>
