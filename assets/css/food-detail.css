@@ -829,38 +829,200 @@ body.food-detail-open {
    BẾP 1979 - FOOD DETAIL PAGE DARK THEME
    ============================================================ */
 [data-theme="dark"] .food-detail-card,
-[data-theme="dark"] .food-detail-panel {
-  background: #1d1815;
+[data-theme="dark"] .food-detail-panel,
+[data-theme="dark"] .food-detail-page-card {
+  background: #191411;
   border-color: #382d25;
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 20px 58px rgba(0, 0, 0, 0.55);
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-breadcrumb {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .food-detail-breadcrumb a {
+  color: #c4b5a8;
+}
+
+[data-theme="dark"] .food-detail-breadcrumb a:hover {
+  color: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-breadcrumb span {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-breadcrumb b {
+  color: #554439;
+}
+
+[data-theme="dark"] .food-detail-page-empty {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-close {
+  background: #251d18;
+  border-color: #3d3027;
+  color: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-close:hover {
+  background: #33241e;
+  border-color: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-image {
+  background: #251d18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .food-detail-image-wrap.is-flash-sale::after {
+  background: #191411;
+}
+
+[data-theme="dark"] .food-detail-perspectives article {
+  background: linear-gradient(180deg, #221a16, #1c1512);
+  border-color: #382d25;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .food-detail-perspectives strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-perspectives span {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .food-detail-category {
+  background: #2d1810;
+  border-color: #542718;
+  color: #ff8548;
 }
 
 [data-theme="dark"] .food-detail-heading h1,
-[data-theme="dark"] .food-detail-info h1 {
+[data-theme="dark"] .food-detail-heading h2,
+[data-theme="dark"] .food-detail-info h1,
+[data-theme="dark"] .food-detail-info h2 {
   color: #f7f3ee;
 }
 
 [data-theme="dark"] .food-detail-desc,
-[data-theme="dark"] .food-detail-meta {
+[data-theme="dark"] .food-detail-meta,
+[data-theme="dark"] .food-detail-info p {
   color: #b5a498;
 }
 
+[data-theme="dark"] .food-detail-stats {
+  background: #221a16;
+  border-color: #382d25;
+  color: #a8988d;
+}
+
+[data-theme="dark"] .food-detail-stars {
+  color: #ffaa33;
+}
+
+[data-theme="dark"] .food-detail-price {
+  background: linear-gradient(90deg, #251b15, rgba(37, 27, 21, 0));
+  color: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-price.has-flash-sale {
+  background: linear-gradient(90deg, #2b141d, rgba(43, 20, 29, 0)) !important;
+  border-left-color: #ff007f;
+}
+
+[data-theme="dark"] .food-detail-description {
+  background: #201814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .food-detail-description h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-description p {
+  color: #c4b5a8;
+}
+
+[data-theme="dark"] .food-detail-description p::before {
+  background: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-options {
+  border-top-color: #382d25;
+}
+
+[data-theme="dark"] .food-detail-options h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .food-detail-options label {
+  background: #221a16;
+  border-color: #382d25;
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .food-detail-options label span {
+  color: #ff8548;
+}
+
 [data-theme="dark"] .food-detail-qty {
-  background: #241c18;
+  background: #221a16;
   border-color: #3d3027;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .food-detail-qty button[data-food-qty-step="-1"] {
+  background: #2f231d;
+  color: #ff7a36;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .food-detail-qty button[data-food-qty-step="-1"]::before {
+  border-color: rgba(255, 122, 54, 0.25);
+}
+
+[data-theme="dark"] .food-detail-qty button[data-food-qty-step="-1"]:hover:not(:disabled) {
+  background: #3a2a22;
+  color: #ff9157;
 }
 
 [data-theme="dark"] .food-detail-qty span {
   color: #f7f3ee;
 }
 
+[data-theme="dark"] .food-detail-flash-box,
 [data-theme="dark"] .flash-sale-box {
-  background: #26151c;
-  border-color: #591d34;
+  background: linear-gradient(135deg, #26151c 0%, #221a16 45%, #18222a 100%);
+  border-color: rgba(255, 0, 128, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-[data-theme="dark"] .food-detail-price.has-flash-sale {
-  background: linear-gradient(90deg, #26151c, transparent) !important;
+[data-theme="dark"] .flash-box-timer {
+  background: #251d18;
+  border-color: #591d34;
+  color: #c4b5a8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .flash-box-bottom {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .food-detail-thumbs button {
+  background: #251d18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .food-detail-thumbs button.active {
+  border-color: #ff6831;
+}
+
+[data-theme="dark"] .food-detail-reviews h3 {
+  color: #f7f3ee;
 }
 
 
