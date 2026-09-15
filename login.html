@@ -101,6 +101,26 @@
               </span>
             </label>
 
+            <div class="password-strength-wrap" id="registerPasswordStrength" data-password-strength-for="registerPassword">
+              <div class="password-strength-header">
+                <span class="strength-label">Độ mạnh mật khẩu</span>
+                <span class="strength-status" data-strength-status data-state="empty">Chưa nhập</span>
+              </div>
+              <div class="password-strength-bars" data-strength-bars data-strength="empty">
+                <span class="strength-bar"></span>
+                <span class="strength-bar"></span>
+                <span class="strength-bar"></span>
+                <span class="strength-bar"></span>
+              </div>
+              <ul class="password-criteria-list">
+                <li data-criterion="length"><span class="criterion-check" aria-hidden="true"></span><span>Tối thiểu 8 ký tự</span></li>
+                <li data-criterion="lowercase"><span class="criterion-check" aria-hidden="true"></span><span>Chữ thường (a-z)</span></li>
+                <li data-criterion="uppercase"><span class="criterion-check" aria-hidden="true"></span><span>Chữ hoa (A-Z)</span></li>
+                <li data-criterion="number"><span class="criterion-check" aria-hidden="true"></span><span>Chữ số (0-9)</span></li>
+                <li data-criterion="special"><span class="criterion-check" aria-hidden="true"></span><span>Ký tự đặc biệt (!@#$...)</span></li>
+              </ul>
+            </div>
+
             <button type="submit" class="primary-btn">Tạo tài khoản</button>
           </form>
 

@@ -153,7 +153,7 @@ function finishLogin(data) {
   // Hoàn tất đăng nhập ở frontend: lưu token/user, bật gợi ý chat và điều hướng về trang trước đó.
   // Input là response backend gồm token và user đã được publicUser chuẩn hóa.
   if (!data.token || !data.user) {
-    showToast(data.message || "Thiếu thong tin đăng nhập.", "error");
+    showToast(data.message || "Thiếu thông tin đăng nhập.", "error");
     return;
   }
 
@@ -342,6 +342,86 @@ function getRegisterPasswordError(value) {
   if (!/\d/.test(password)) return "Mật khẩu phải có ít nhất 1 chữ số.";
   if (!/[^A-Za-z0-9]/.test(password)) return "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.";
   return "";
+}
+
+function evaluatePasswordCriteria(password) {
+  const pwd = String(password || "");
+  const criteria = {
+    length: pwd.length >= 8,
+    lowercase: /[a-z]/.test(pwd),
+    uppercase: /[A-Z]/.test(pwd),
+    number: /\d/.test(pwd),
+    special: /[^A-Za-z0-9]/.test(pwd)
+  };
+
+  const validCount = Object.values(criteria).filter(Boolean).length;
+  let strength = "empty";
+  let strengthLabel = "Chưa nhập";
+  let barLevel = "empty";
+
+  if (pwd.length > 0) {
+    if (validCount <= 2) {
+      strength = "weak";
+      strengthLabel = "Yếu";
+      barLevel = "weak";
+    } else if (validCount === 3) {
+      strength = "medium";
+      strengthLabel = "Trung bình";
+      barLevel = "medium-1";
+    } else if (validCount === 4) {
+      strength = "medium";
+      strengthLabel = "Khá mạnh";
+      barLevel = "medium-2";
+    } else {
+      strength = "strong";
+      strengthLabel = "Mạnh";
+      barLevel = "strong";
+    }
+  }
+
+  return { criteria, validCount, strength, strengthLabel, barLevel };
+}
+
+function updatePasswordStrengthUI(input, wrap) {
+  if (!input || !wrap) return;
+
+  const result = evaluatePasswordCriteria(input.value);
+
+  // Cập nhật từng dòng điều kiện
+  Object.entries(result.criteria).forEach(([key, isValid]) => {
+    const item = wrap.querySelector(`[data-criterion="${key}"]`);
+    if (item) {
+      item.classList.toggle("is-valid", isValid);
+    }
+  });
+
+  // Cập nhật thanh tiến trình
+  const bars = wrap.querySelector("[data-strength-bars]");
+  if (bars) {
+    bars.setAttribute("data-strength", result.barLevel);
+  }
+
+  // Cập nhật nhãn trạng thái
+  const status = wrap.querySelector("[data-strength-status]");
+  if (status) {
+    status.textContent = result.strengthLabel;
+    status.setAttribute("data-state", result.strength);
+  }
+}
+
+function initPasswordStrengthCheckers() {
+  const wraps = document.querySelectorAll("[data-password-strength-for]");
+  wraps.forEach(wrap => {
+    const inputId = wrap.dataset.passwordStrengthFor;
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    input.addEventListener("input", () => {
+      updatePasswordStrengthUI(input, wrap);
+    });
+
+    updatePasswordStrengthUI(input, wrap);
+  });
 }
 
 async function register(event) {
@@ -621,7 +701,7 @@ function initAuthPasswordToggles() {
       const shouldShow = input.type === "password";
       input.type = shouldShow ? "text" : "password";
       button.innerHTML = shouldShow ? eyeOffIcon : eyeIcon;
-      button.setAttribute("aria-label", shouldShow ? "\u1ea8n m\u1eadt kh\u1ea9u" : "Hi\u1ec7n m\u1eadt kh\u1ea9u");
+      button.setAttribute("aria-label", shouldShow ? "Ẩn mật khẩu" : "Hiện mật khẩu");
     });
   });
 }
@@ -640,7 +720,7 @@ function initAuthSlider() {
     }
 
     const target = isRegister ? "register.html" : "login.html";
-    const title = isRegister ? "\u0110\u0103ng k\u00fd - Bếp 1979" : "\u0110\u0103ng nh\u1eadp - Bếp 1979";
+    const title = isRegister ? "Đăng ký - Bếp 1979" : "Đăng nhập - Bếp 1979";
     if (!window.location.pathname.endsWith(target)) {
       window.history.replaceState(null, title, target);
       document.title = title;
@@ -760,3 +840,5 @@ initAuthPasswordToggles();
 initAuthSlider();
 initResetPasswordForm();
 initSocialSetupForm();
+initPasswordStrengthCheckers();
+initSupportWidget();

@@ -267,6 +267,146 @@ input:focus {
   width: 18px;
 }
 
+/* ============================================================
+   Password Strength Meter & Criteria Checklist
+   ============================================================ */
+.password-strength-wrap {
+  background: #fffaf6;
+  border: 1px solid #efd8cc;
+  border-radius: 10px;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.password-strength-header {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.strength-label {
+  color: #765f54;
+  font-weight: 600;
+}
+
+.strength-status {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.strength-status[data-state="empty"] {
+  color: #8c7367;
+}
+
+.strength-status[data-state="weak"] {
+  color: #ef4444;
+}
+
+.strength-status[data-state="medium"] {
+  color: #d97706;
+}
+
+.strength-status[data-state="strong"] {
+  color: #16a34a;
+}
+
+.password-strength-bars {
+  display: flex;
+  gap: 5px;
+  height: 5px;
+  margin-bottom: 8px;
+}
+
+.strength-bar {
+  background: #ecd9cc;
+  border-radius: 999px;
+  flex: 1;
+  height: 100%;
+  transition: background-color 0.25s ease;
+}
+
+/* Yếu: 1 vạch đỏ */
+.password-strength-bars[data-strength="weak"] .strength-bar:nth-child(1) {
+  background: #ef4444;
+}
+
+/* Trung bình: 2-3 vạch vàng/cam */
+.password-strength-bars[data-strength="medium-1"] .strength-bar:nth-child(-n+2) {
+  background: #f59e0b;
+}
+
+.password-strength-bars[data-strength="medium-2"] .strength-bar:nth-child(-n+3) {
+  background: #f59e0b;
+}
+
+/* Mạnh: 4 vạch xanh lá */
+.password-strength-bars[data-strength="strong"] .strength-bar {
+  background: #16a34a;
+}
+
+.password-criteria-list {
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.password-criteria-list li {
+  align-items: center;
+  color: #8c7367;
+  display: flex;
+  font-size: 11.5px;
+  gap: 6px;
+  line-height: 1.25;
+  transition: color 0.18s ease;
+}
+
+.password-criteria-list li[data-criterion="special"] {
+  grid-column: 1 / -1;
+}
+
+.criterion-check {
+  align-items: center;
+  border: 1.5px solid #c9b0a1;
+  border-radius: 50%;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 14px;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 14px;
+}
+
+.password-criteria-list li.is-valid {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.password-criteria-list li.is-valid .criterion-check {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  transform: scale(1.05);
+}
+
+.password-criteria-list li.is-valid .criterion-check::after {
+  border: solid #ffffff;
+  border-width: 0 1.8px 1.8px 0;
+  content: "";
+  display: block;
+  height: 6.5px;
+  margin-bottom: 1.5px;
+  transform: rotate(45deg);
+  width: 3.5px;
+}
+
 .primary-btn {
   background: linear-gradient(135deg, #ff5722 0%, #ff8a1f 100%);
   border: none;
@@ -365,8 +505,8 @@ input:focus {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr;
-  height: min(580px, calc(100dvh - 32px));
-  max-height: min(580px, calc(100dvh - 32px));
+  height: min(620px, calc(100dvh - 32px));
+  max-height: min(620px, calc(100dvh - 32px));
   max-width: 900px;
   min-height: 0;
   overflow: hidden;
@@ -387,7 +527,8 @@ input:focus {
   grid-row: 1;
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 24px 38px;
   position: relative;
   transition: opacity 0.35s ease, transform 0.45s ease;
@@ -1153,5 +1294,35 @@ input:focus {
   background: #251c18;
   border-color: #3d3027;
   color: #f7f3ee;
+}
+
+[data-theme="dark"] .password-strength-wrap {
+  background: #241c18;
+  border-color: #3d3027;
+}
+
+[data-theme="dark"] .strength-label {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .strength-bar {
+  background: #382d25;
+}
+
+[data-theme="dark"] .password-criteria-list li {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .criterion-check {
+  border-color: #5c493d;
+}
+
+[data-theme="dark"] .password-criteria-list li.is-valid {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .password-criteria-list li.is-valid .criterion-check {
+  background-color: #22c55e;
+  border-color: #22c55e;
 }
 
