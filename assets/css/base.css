@@ -9102,4 +9102,61 @@ body:has(.support-widget.open) #backToTopBtn {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
 }
 
+/* ============================================================
+   DARK THEME - REVIEW COMPONENTS & ORDER REVIEW FORM
+   ============================================================ */
+[data-theme="dark"] .review-filter-bar {
+  border-top-color: #382c24;
+}
+
+[data-theme="dark"] .review-filter-bar label {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .review-filter-bar select {
+  background-color: #251d18;
+  border-color: #3a3028;
+  color: #f7f3ee;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ff7a28 50%),
+    linear-gradient(135deg, #ff7a28 50%, transparent 50%);
+}
+
+[data-theme="dark"] .review-filter-bar select:focus {
+  border-color: #ff6b3d;
+  box-shadow: 0 0 0 3px rgba(255, 107, 61, 0.2);
+}
+
+[data-theme="dark"] .order-review-form {
+  background: #1f1916;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .order-review-form label,
+[data-theme="dark"] .order-review-stars legend {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .order-review-stars legend small {
+  color: #ff8a50;
+}
+
+[data-theme="dark"] .order-review-star-options label {
+  color: #4a3e36;
+}
+
+[data-theme="dark"] .order-review-form select,
+[data-theme="dark"] .order-review-form textarea {
+  background: #171210;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .order-review-form select:focus,
+[data-theme="dark"] .order-review-form textarea:focus {
+  border-color: #ff6b3d;
+  box-shadow: 0 0 0 3px rgba(255, 107, 61, 0.2);
+}
+
+
 
