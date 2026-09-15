@@ -7,8 +7,8 @@
   <title>Quản trị Bếp 1979</title>
   <script>(function(){try{var s=localStorage.getItem("foodhub_theme");var t=s==="dark"||s==="light"?s:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(_){}})();</script>
   <link rel="stylesheet" href="assets/vendor/select2/css/select2.min.css?v=4.0.13">
-  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260915-pin-dark-v1">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20260831-standard-table-v8">
+  <link rel="stylesheet" href="assets/css/admin-base.css?v=20260915-admin-forms-v5">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260915-admin-forms-v5">
 </head>
 <body>
   <aside class="admin-sidebar">
@@ -216,17 +216,16 @@
           <div id="categoriesList" class="accounts-list table-state">Đang tải danh mục...</div>
         </div>
 
-        <div id="categoryFormView" class="category-form-view" hidden>
-          <div class="form-page-heading category-form-heading">
+        <div id="categoryFormView" class="admin-form-view" hidden>
+          <div class="form-subheading">
             <div>
-              <p class="kicker">Danh mục</p>
               <h3 id="categoryFormTitle">Thêm danh mục</h3>
               <p id="categoryFormSubtitle">Tạo danh mục cha hoặc danh mục con để hiển thị trên web.</p>
             </div>
-            <button type="button" class="ghost-btn" data-back-category-list> Về danh sách</button>
+            <button type="button" class="ghost-btn" data-back-category-list>Về danh sách</button>
           </div>
 
-          <form id="categoryForm" class="announcement-page-form category-page-form">
+          <form id="categoryForm" class="announcement-page-form discount-form is-open">
             <input type="hidden" id="categoryId">
             <label>
               Tên danh mục

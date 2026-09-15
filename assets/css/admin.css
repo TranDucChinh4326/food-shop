@@ -1498,3 +1498,181 @@
     padding: 0 16px 16px;
   }
 }
+
+/* ============================================================
+   BẾP 1979 - ADMIN DASHBOARD DARK THEME
+   ============================================================ */
+[data-theme="dark"] .dashboard-card {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .dashboard-card-title {
+  background: linear-gradient(180deg, #251e19 0%, #1d1815 100%);
+  border-bottom-color: #382d25;
+}
+
+[data-theme="dark"] .dashboard-card-title h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .dashboard-card-title span {
+  background: #2d1810;
+  border-color: #542718;
+  color: #ff8548;
+}
+
+[data-theme="dark"] .dashboard-filter {
+  background: rgba(29, 24, 21, 0.7);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .dashboard-filter input[type="date"],
+[data-theme="dark"] .dashboard-filter select {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .dashboard-filter .primary-btn {
+  background: #ff5722;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .dashboard-filter .primary-btn:hover {
+  background: #ff6831;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.4);
+}
+
+[data-theme="dark"] .dashboard-filter .ghost-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .dashboard-filter .ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .chart-empty {
+  background: #201814;
+  border-color: #4a3429;
+}
+
+[data-theme="dark"] .chart-empty strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chart-empty span {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .stock-import-panel,
+[data-theme="dark"] .stock-import-history {
+  background: #201814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .stock-import-panel h3,
+[data-theme="dark"] .stock-import-history-title h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .stock-import-panel p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .stock-import-form input[type="date"],
+[data-theme="dark"] .stock-import-form input[type="file"] {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+/* Dark Theme - Inventory Tabs */
+[data-theme="dark"] .inventory-tab {
+  background: #201814;
+  border-color: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .inventory-tab:hover {
+  border-color: #ff6831;
+  color: #ff7e4b;
+}
+
+[data-theme="dark"] .inventory-tab.active {
+  background: linear-gradient(135deg, #ff5722 0%, #ea580c 100%);
+  border-color: #ff5722;
+  color: #ffffff;
+}
+
+/* Dark Theme - Category List */
+[data-theme="dark"] .category-list-item {
+  background: #201814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .category-list-item:hover,
+[data-theme="dark"] .category-list-item.is-active {
+  background: #261d18;
+  border-color: #ff6831;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .category-name {
+  color: #f7f3ee;
+}
+
+/* Dark Theme - Top Food Items */
+[data-theme="dark"] .top-food-item {
+  background: #201814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .top-food-item:hover {
+  background: #261d18;
+  border-color: #ff6831;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .top-food-name {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .top-food-qty-text {
+  color: #a8988d;
+}
+
+/* Dark Theme - Customer Satisfaction Card */
+[data-theme="dark"] .satisfaction-header-card {
+  background: #201814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .satisfaction-pill.sentiment-fair {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .satisfaction-count {
+  color: #a8988d;
+}
+
+/* Dark Theme - Customer Stats Search & Filters */
+[data-theme="dark"] .cust-stats-search-wrap input,
+[data-theme="dark"] .cust-stats-filter-wrap select {
+  background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .cust-stats-search-wrap input:focus,
+[data-theme="dark"] .cust-stats-filter-wrap select:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2);
+}
+
