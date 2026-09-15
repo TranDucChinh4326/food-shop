@@ -948,3 +948,64 @@
   border-color: #382d25;
 }
 
+/* ============================================================
+   DARK THEME - DELIVERY MAP PICKER MODAL
+   ============================================================ */
+[data-theme="dark"] .delivery-map-dialog {
+  background: rgba(10, 8, 7, 0.78);
+}
+
+[data-theme="dark"] .delivery-map-card {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .delivery-map-head h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .delivery-map-head p,
+[data-theme="dark"] .delivery-map-status {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .delivery-map-close {
+  background: #251d18;
+  border-color: #403227;
+  color: #ff7a3d;
+}
+
+[data-theme="dark"] .delivery-map-close:hover {
+  background: #32261e;
+  border-color: #ff6831;
+  color: #ff9b6b;
+}
+
+[data-theme="dark"] .delivery-map-search input {
+  background: #251d18;
+  border-color: #403227;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .delivery-map-search input:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2);
+}
+
+[data-theme="dark"] .delivery-map-canvas {
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .leaflet-bar a {
+  background-color: #251d18 !important;
+  border-bottom-color: #382d25 !important;
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .leaflet-bar a:hover {
+  background-color: #32251e !important;
+  color: #ff8a55 !important;
+}
+

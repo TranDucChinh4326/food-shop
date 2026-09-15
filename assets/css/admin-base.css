@@ -3774,3 +3774,34 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
     width: 100% !important;
   }
 }
+
+/* Dark Theme - Admin PIN Lock Modal */
+[data-theme="dark"] .admin-pin-lock {
+  background: rgba(10, 8, 7, 0.75);
+}
+
+[data-theme="dark"] .admin-pin-card {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] .admin-pin-card h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .admin-pin-card p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .admin-pin-box-row input {
+  background: #251d18 !important;
+  border-color: #45372d !important;
+  color: #f7f3ee !important;
+  -webkit-text-fill-color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .admin-pin-box-row input:focus {
+  border-color: #ff6a2a !important;
+  box-shadow: 0 0 0 4px rgba(255, 106, 42, 0.25) !important;
+}

@@ -1498,16 +1498,101 @@ button.account-photo-badge {
 
 /* Favorites */
 [data-theme="dark"] .profile-favorite-food-card {
-  background: #1f1814;
+  background: #191411;
   border-color: #382d25;
+  border-left-color: #ff6831;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
+[data-theme="dark"] .profile-favorite-food-card h3,
+[data-theme="dark"] .profile-favorite-food-card h3 a,
 [data-theme="dark"] .profile-favorite-food-card h4 {
-  color: #f7f3ee;
+  color: #f7f3ee !important;
 }
 
 [data-theme="dark"] .profile-favorite-food-card p {
-  color: #b5a498;
+  color: #a8988d;
 }
 
+[data-theme="dark"] .profile-favorite-main small {
+  color: #8c786b;
+}
 
+[data-theme="dark"] .profile-favorite-placeholder {
+  background: #251d18;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .profile-favorite-actions .social-link-btn:not(.subtle) {
+  background: linear-gradient(135deg, #ff5722 0%, #ff7a28 100%) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.3);
+}
+
+[data-theme="dark"] .profile-favorite-actions .social-link-btn:not(.subtle):hover {
+  background: linear-gradient(135deg, #e54714 0%, #ff6819 100%) !important;
+  box-shadow: 0 6px 18px rgba(255, 87, 34, 0.4);
+}
+
+[data-theme="dark"] .profile-favorite-actions .social-link-btn.subtle {
+  background: #251d18 !important;
+  border: 1px solid #403227 !important;
+  color: #d4c5b9 !important;
+}
+
+[data-theme="dark"] .profile-favorite-actions .social-link-btn.subtle:hover {
+  background: #30241d !important;
+  border-color: #ff6831 !important;
+  color: #ff8a55 !important;
+}
+
+[data-theme="dark"] .profile-favorite-actions .social-link-btn:disabled {
+  background: #1f1814 !important;
+  border-color: #33261f !important;
+  color: #6b584d !important;
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .saved-address-actions button,
+[data-theme="dark"] .profile-voucher-card .social-link-btn,
+[data-theme="dark"] .address-book-form .social-link-btn,
+[data-theme="dark"] .captcha-row .social-link-btn {
+  background: #251d18;
+  border-color: #453428;
+  color: #ff8a55 !important;
+}
+
+[data-theme="dark"] .saved-address-actions button:hover,
+[data-theme="dark"] .profile-voucher-card .social-link-btn:hover,
+[data-theme="dark"] .address-book-form .social-link-btn:hover,
+[data-theme="dark"] .captcha-row .social-link-btn:hover {
+  background: #32251e;
+  border-color: #ff6831;
+  color: #ff9b6b !important;
+}
+
+/* Empty states in Profile */
+[data-theme="dark"] .profile-page .empty-cart {
+  background: #191411;
+  border: 1px dashed #382d25;
+  color: #a8988d;
+}
+
+[data-theme="dark"] .profile-voucher-list > .social-link-btn,
+[data-theme="dark"] .profile-favorite-food-list > .social-link-btn,
+[data-theme="dark"] #savedAddressList > .social-link-btn {
+  background: #251d18 !important;
+  border: 1px solid #453428 !important;
+  color: #ff8a55 !important;
+}
+
+[data-theme="dark"] .profile-voucher-list > .social-link-btn:hover,
+[data-theme="dark"] .profile-favorite-food-list > .social-link-btn:hover,
+[data-theme="dark"] #savedAddressList > .social-link-btn:hover {
+  background: #32251e !important;
+  border-color: #ff6831 !important;
+  color: #ff9b6b !important;
+}

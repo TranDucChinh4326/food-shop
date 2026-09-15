@@ -9260,5 +9260,89 @@ body:has(.support-widget.open) #backToTopBtn {
   box-shadow: 0 0 0 3px rgba(255, 107, 61, 0.2);
 }
 
+/* ============================================================
+   DARK THEME - PIN LOCK OVERLAY & MODAL
+   ============================================================ */
+[data-theme="dark"] .user-pin-lock {
+  background: rgba(10, 8, 7, 0.75);
+}
+
+[data-theme="dark"] .user-pin-card {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.75);
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .user-pin-card h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .user-pin-card p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .pin-box-row input,
+[data-theme="dark"] .user-pin-card .pin-box-row input {
+  background: #251d18 !important;
+  border: 1.5px solid #45372d !important;
+  color: #f7f3ee !important;
+  -webkit-text-fill-color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .pin-box-row input:focus,
+[data-theme="dark"] .user-pin-card .pin-box-row input:focus {
+  border-color: #ff6831 !important;
+  box-shadow: 0 0 0 4px rgba(255, 104, 49, 0.25) !important;
+}
+
+[data-theme="dark"] .user-pin-card > input:not([type="hidden"]) {
+  background: #251d18;
+  border-color: #45372d;
+  color: #f7f3ee;
+  -webkit-text-fill-color: #f7f3ee;
+}
+
+[data-theme="dark"] .user-pin-card > input:not([type="hidden"]):focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 4px rgba(255, 104, 49, 0.25);
+}
+
+[data-theme="dark"] .user-pin-card small {
+  color: #f87171;
+}
+
+/* Dark Theme - Social Link Buttons & Generic Pills */
+[data-theme="dark"] .social-link-btn {
+  background: #251d18;
+  border-color: #45372d;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .social-link-btn:hover {
+  background: #32261e;
+  border-color: #ff6831;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .social-link-btn.subtle {
+  background: #1f1814;
+  border-color: #382c23;
+  color: #a8988d;
+}
+
+[data-theme="dark"] .social-link-btn.subtle:hover {
+  background: #2c2019;
+  border-color: #ff6831;
+  color: #ff8a55;
+}
+
+/* Dark Theme - Empty States */
+[data-theme="dark"] .empty-cart {
+  background: #191411;
+  border: 1px dashed #382d25;
+  color: #a8988d;
+}
+
 
 
