@@ -1,5 +1,4 @@
 /* Page-specific styles for feedback.html. Shared styles live in base.css. */
-
 .feedback-page {
   background: transparent;
   display: grid;
@@ -499,25 +498,166 @@
 /* ============================================================
    BẾP 1979 - FEEDBACK PAGE DARK THEME
    ============================================================ */
-[data-theme="dark"] .feedback-hero h1,
-[data-theme="dark"] .feedback-card h2,
-[data-theme="dark"] .feedback-history-title {
+[data-theme="dark"] .feedback-heading h1 {
   color: #f7f3ee;
 }
 
-[data-theme="dark"] .feedback-form-card,
-[data-theme="dark"] .feedback-history-card,
-[data-theme="dark"] .feedback-item {
-  background: #1d1815;
+[data-theme="dark"] .feedback-heading p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .feedback-card {
+  background: #191411;
   border-color: #382d25;
-  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.5);
 }
 
-[data-theme="dark"] .feedback-item {
+[data-theme="dark"] .feedback-card .section-heading {
+  background: #221a16;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .feedback-card .section-heading h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .feedback-card .section-heading p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .feedback-card label {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .feedback-card input,
+[data-theme="dark"] .feedback-card select,
+[data-theme="dark"] .feedback-card textarea {
   background: #241c18;
+  border-color: #3d3027;
+  color: #f7f3ee;
 }
 
-[data-theme="dark"] .feedback-item-comment {
+[data-theme="dark"] .feedback-card input:focus,
+[data-theme="dark"] .feedback-card select:focus,
+[data-theme="dark"] .feedback-card textarea:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 4px rgba(255, 104, 49, 0.2);
+}
+
+[data-theme="dark"] .char-counter {
+  color: #8c766b;
+}
+
+/* Rating Picker */
+[data-theme="dark"] .rating-picker {
+  background: #221a16;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .rating-picker label {
+  background: #2b211b;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .rating-picker label:hover {
+  background: #352820;
+}
+
+[data-theme="dark"] .rating-picker small {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .rating-picker label:has(input:checked) small {
+  color: #ffffff;
+}
+
+/* Topic Chips */
+[data-theme="dark"] .topic-chip {
+  background: #251d18;
+  border-color: #382d25;
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .topic-chip:hover {
+  background: #31241e;
+  border-color: #ff6831;
+  color: #ff8a50;
+}
+
+[data-theme="dark"] .topic-chip.active {
+  background: linear-gradient(135deg, #ff7a28 0%, #ea580c 100%);
+  border-color: #ea580c;
+  color: #ffffff;
+}
+
+/* Feedback History Cards */
+[data-theme="dark"] .feedback-history-card {
+  background: #221a16;
+  border-color: #382d25;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .feedback-history-card:hover {
+  border-color: #ff7a3d;
+}
+
+[data-theme="dark"] .feedback-item-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .feedback-item-meta {
+  color: #9e897e;
+}
+
+[data-theme="dark"] .category-tag {
+  background: #2b1d16;
+  border-color: #4a3225;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .dot-sep {
+  color: #4a382d;
+}
+
+[data-theme="dark"] .feedback-item-text {
   color: #ede5dc;
+}
+
+/* Status Badges */
+[data-theme="dark"] .feedback-status.new {
+  background: rgba(234, 88, 12, 0.15);
+  border-color: rgba(234, 88, 12, 0.35);
+  color: #fb923c;
+}
+
+[data-theme="dark"] .feedback-status.in_progress {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .feedback-status.replied {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+/* Admin Reply Box */
+[data-theme="dark"] .feedback-reply-box {
+  background: #19251c;
+  border-color: #2b4432;
+  color: #86efac;
+}
+
+[data-theme="dark"] .feedback-reply-box p {
+  color: #dcfce7;
+}
+
+[data-theme="dark"] .reply-box-head strong {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .reply-box-head small {
+  color: #86efac;
 }
 

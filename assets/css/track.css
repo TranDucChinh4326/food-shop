@@ -1,5 +1,4 @@
 /* Page-specific styles for track.html. Shared styles live in base.css. */
-
 .track-page-compact {
   background: transparent;
   min-height: calc(100vh - 180px);
@@ -850,40 +849,337 @@
 /* ============================================================
    BẾP 1979 - TRACK ORDERS DARK THEME
    ============================================================ */
-[data-theme="dark"] .track-panel,
-[data-theme="dark"] .order-card,
-[data-theme="dark"] .track-search-box {
-  background: #1d1815;
+[data-theme="dark"] .track-card-shell,
+[data-theme="dark"] .track-panel {
+  background: #191411;
   border-color: #382d25;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.5);
 }
 
-[data-theme="dark"] .track-heading h1,
-[data-theme="dark"] .order-id,
-[data-theme="dark"] .order-item-title,
+[data-theme="dark"] .track-page-compact .section-heading h2 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .track-page-compact .section-heading p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .track-menu-link {
+  background: #2b1d16;
+  border-color: #4a3225;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .track-menu-link:hover {
+  background: #ff5a23;
+  border-color: #ff5a23;
+  color: #ffffff;
+}
+
+/* Status Navigation Tabs */
+[data-theme="dark"] .order-status-tabs {
+  background: #221a16;
+  border-color: #382d25;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .order-tab-btn {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .order-tab-btn:hover {
+  background: #2d221c;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .order-tab-btn.active {
+  background: linear-gradient(135deg, #ff5a23, #ff8a22);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(255, 90, 35, 0.35);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-tab-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .order-tab-btn.active .order-tab-badge {
+  background: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+/* Filter Form */
+[data-theme="dark"] .history-filter {
+  background: #221a16;
+  border-color: #382d25;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .order-search-wrap svg {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .order-search-wrap input {
+  background: #1a1310;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .order-search-wrap input:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2);
+}
+
+[data-theme="dark"] .order-clear-search-btn {
+  background: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .order-clear-search-btn:hover {
+  background: #e84716;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-date-wrap input {
+  background: #1a1310;
+  border-color: #3d3027;
+  color: #f7f3ee;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .order-filter-submit-btn {
+  background: #ff5a23;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-filter-submit-btn:hover {
+  background: #e84716;
+}
+
+[data-theme="dark"] .history-filter .muted-btn {
+  background: #2d221c;
+  border: 1px solid #3d3027;
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .history-filter .muted-btn:hover {
+  background: #382a22;
+  color: #ffffff;
+}
+
+/* Order Card */
+[data-theme="dark"] .order-card {
+  background: #1e1815;
+  border-color: #382d25;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .order-card:hover {
+  border-color: #ff6831;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .order-card-header {
+  background: #241c18;
+  border-bottom-color: #332820;
+}
+
+[data-theme="dark"] .order-id-badge {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .order-datetime {
+  color: #9e897e;
+}
+
+/* Status Badges */
+[data-theme="dark"] .status-pill.status-pending {
+  background: rgba(234, 88, 12, 0.15);
+  border-color: rgba(234, 88, 12, 0.35);
+  color: #fb923c;
+}
+
+[data-theme="dark"] .status-pill.status-confirmed {
+  background: rgba(202, 138, 4, 0.15);
+  border-color: rgba(202, 138, 4, 0.35);
+  color: #facc15;
+}
+
+[data-theme="dark"] .status-pill.status-delivering {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .status-pill.status-done {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+[data-theme="dark"] .status-pill.status-cancelled,
+[data-theme="dark"] .status-pill.status-canceled {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* Order Stepper */
+[data-theme="dark"] .order-stepper-box {
+  background: #1a1411;
+  border-bottom-color: #332820;
+}
+
+[data-theme="dark"] .order-stepper::before {
+  background: #382d25;
+}
+
+[data-theme="dark"] .step-node {
+  background: #251d18;
+  border-color: #45372d;
+  color: #a89488;
+}
+
+[data-theme="dark"] .step-label {
+  color: #8c766b;
+}
+
+[data-theme="dark"] .step-item.active .step-label {
+  color: #ff6831;
+}
+
+[data-theme="dark"] .step-item.completed .step-label {
+  color: #4ade80;
+}
+
+/* Cancelled Alert */
+[data-theme="dark"] .order-cancelled-alert {
+  background: rgba(239, 68, 68, 0.12);
+  border-bottom-color: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+/* Items List */
+[data-theme="dark"] .order-items-list {
+  border-bottom-color: #332820;
+}
+
+[data-theme="dark"] .order-item-row + .order-item-row {
+  border-top-color: #2b221d;
+}
+
+[data-theme="dark"] .order-item-thumb {
+  background: #251d18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .order-item-thumb-fallback {
+  background: linear-gradient(135deg, #2a1f1a 0%, #34251e 100%);
+}
+
+[data-theme="dark"] .order-item-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .order-item-meta {
+  color: #9e897e;
+}
+
 [data-theme="dark"] .order-item-total {
   color: #f7f3ee;
 }
 
-[data-theme="dark"] .track-filter-pill {
-  background: #241c18;
+[data-theme="dark"] .btn-review-item {
+  background: #2b1d16;
+  border-color: #4a3225;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .btn-review-item:hover {
+  background: #ff5a23;
+  border-color: #ff5a23;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-reviewed-tag {
+  color: #4ade80;
+}
+
+/* Delivery & Info Grid */
+[data-theme="dark"] .order-info-grid {
+  background: #221a16;
+  border-bottom-color: #332820;
+}
+
+[data-theme="dark"] .order-info-item small {
+  color: #8c766b;
+}
+
+[data-theme="dark"] .order-info-item p {
+  color: #f7f3ee;
+}
+
+/* Footer & Actions */
+[data-theme="dark"] .order-card-footer {
+  background: #1e1815;
+}
+
+[data-theme="dark"] .order-sub-fee {
+  color: #8c766b;
+}
+
+[data-theme="dark"] .order-total-price-row span {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .order-total-price-row strong {
+  color: #ff6831;
+}
+
+[data-theme="dark"] .btn-cancel-order {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+[data-theme="dark"] .btn-cancel-order:hover {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: #ef4444;
+}
+
+/* Empty State */
+[data-theme="dark"] .empty-history {
+  background: #1e1815;
   border-color: #382d25;
   color: #b5a498;
 }
 
-[data-theme="dark"] .track-filter-pill.active {
-  background: #ff6b3d;
-  color: #ffffff;
-  border-color: #ff6b3d;
+[data-theme="dark"] .empty-history h3 {
+  color: #f7f3ee;
 }
 
-[data-theme="dark"] .order-card-header,
-[data-theme="dark"] .order-card-footer {
-  border-color: #332820;
+[data-theme="dark"] .empty-history p {
+  color: #8c766b;
 }
 
-[data-theme="dark"] .order-stepper {
-  background: #241c18;
-  border: 1px solid #382d25;
+/* Cancel Dialog */
+[data-theme="dark"] .cancel-dialog {
+  background: #1e1815;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .cancel-dialog h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .cancel-dialog p {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .cancel-dialog-actions .btn-secondary {
+  background: #2b221d;
+  border-color: #382d25;
+  color: #d4c5b9;
 }
 

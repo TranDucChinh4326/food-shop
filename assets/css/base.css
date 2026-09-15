@@ -3075,6 +3075,14 @@ h2 {
   padding: 24px;
 }
 
+[data-theme="dark"] .checkout-card,
+[data-theme="dark"] .track-card-shell,
+[data-theme="dark"] .profile-card {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.5);
+}
+
 
 
 .address-input-grid {
@@ -9102,10 +9110,98 @@ body:has(.support-widget.open) #backToTopBtn {
 }
 
 [data-theme="dark"] .chat-bubble-tip {
-  background: #27201b;
+  background: #1e1814;
   border-color: #3d3027;
   color: #f7f3ee;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .chat-bubble-tip::after {
+  background: #1e1814;
+  border-right: 1.5px solid #3d3027;
+  border-top: 1.5px solid #3d3027;
+}
+
+[data-theme="dark"] .chat-bubble-tip.is-recommendation {
+  border-color: #4a382e;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(255, 87, 34, 0.15);
+}
+
+[data-theme="dark"] .chat-bubble-tip.is-recommendation:hover {
+  border-color: #ff6831;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.7), 0 6px 16px rgba(255, 87, 34, 0.25);
+}
+
+[data-theme="dark"] .chat-bubble-title-clean {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-bubble-tip strong {
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .chat-bubble-tip span {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-bubble-mini-tag {
+  background: #2a1f18;
+  border-color: #453225;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .chat-bubble-mini-tag.sale {
+  background: linear-gradient(135deg, #ff4b1f 0%, #ff7a28 100%);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .chat-bubble-item-card {
+  background: #251d18;
+  border-color: #382c23;
+}
+
+[data-theme="dark"] .chat-bubble-tip:hover .chat-bubble-item-card {
+  background: #2d231d;
+  border-color: #4d3a2e;
+}
+
+[data-theme="dark"] .chat-bubble-item-thumb {
+  background: #1e1814;
+  border-color: #382c23;
+}
+
+[data-theme="dark"] .chat-bubble-item-thumb-fallback {
+  background: #2b201a;
+  border-color: #382c23;
+}
+
+[data-theme="dark"] .chat-bubble-item-name {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .chat-bubble-item-price span {
+  color: #ff6831;
+}
+
+[data-theme="dark"] .chat-bubble-item-price s {
+  color: #9a887b;
+}
+
+[data-theme="dark"] .chat-bubble-view-action {
+  background: #332720;
+  border-color: #4d3a2e;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .chat-bubble-tip:hover .chat-bubble-view-action {
+  background: #ff5722;
+  border-color: #ff5722;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .food-spotlight-badge {
+  border-color: #251d18;
 }
 
 /* ============================================================

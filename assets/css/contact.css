@@ -1,5 +1,4 @@
 /* Page-specific styles for contact.html. Shared styles live in base.css. */
-
 .contact-page {
   background: transparent;
   display: grid;
@@ -543,16 +542,34 @@
 /* ============================================================
    BẾP 1979 - CONTACT PAGE DARK THEME
    ============================================================ */
-[data-theme="dark"] .contact-hero h1,
+[data-theme="dark"] .contact-heading h1,
 [data-theme="dark"] .contact-card h2,
-[data-theme="dark"] .faq-item summary {
+[data-theme="dark"] .channel-card-header h2,
+[data-theme="dark"] .contact-feedback-box h2,
+[data-theme="dark"] .faq-section-header h2,
+[data-theme="dark"] .channel-content h3,
+[data-theme="dark"] .quick-social-connect h3,
+[data-theme="dark"] .faq-card summary strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .contact-heading p,
+[data-theme="dark"] .channel-card-header p,
+[data-theme="dark"] .contact-feedback-box p,
+[data-theme="dark"] .channel-content small,
+[data-theme="dark"] .feedback-perks-list li,
+[data-theme="dark"] .feedback-cta-note {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .channel-content p.channel-value {
   color: #f7f3ee;
 }
 
 [data-theme="dark"] .contact-channels-card,
 [data-theme="dark"] .contact-feedback-box,
-[data-theme="dark"] .faq-item {
-  background: #1d1815;
+[data-theme="dark"] .faq-card {
+  background: #191411;
   border-color: #382d25;
   box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
 }
@@ -570,7 +587,33 @@
   color: #b5a498;
 }
 
-[data-theme="dark"] .faq-answer {
-  color: #c9bdb3;
+/* Quick Social Connect Buttons */
+[data-theme="dark"] .social-pill-btn {
+  background: #251d18;
+  border-color: #382d25;
+  color: #d4c5b9;
 }
 
+[data-theme="dark"] .social-pill-btn:hover {
+  background: #2f241e;
+  border-color: #ff6831;
+  color: #ff8a50;
+}
+
+/* Copy buttons */
+[data-theme="dark"] .copy-btn {
+  background: #2b1e16;
+  border-color: #4a3225;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .copy-btn:hover {
+  background: #ff5a23;
+  color: #ffffff;
+}
+
+/* FAQ Answer */
+[data-theme="dark"] .faq-answer,
+[data-theme="dark"] .faq-answer p {
+  color: #c9bdb3;
+}
