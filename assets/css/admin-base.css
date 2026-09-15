@@ -4045,3 +4045,136 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
   color: #f7f3ee;
 }
 
+/* Dark Theme - Customer Feedback & Food Reviews */
+[data-theme="dark"] .feedback-admin-card {
+  background: #1d1815 !important;
+  border-color: #382d25 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .feedback-admin-head h3 {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .feedback-admin-head p {
+  color: #a8988d !important;
+}
+
+[data-theme="dark"] .feedback-admin-head p strong {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .status-select {
+  background: #241c18 !important;
+  border-color: #3d3027 !important;
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .status-select:focus {
+  border-color: #ff6831 !important;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2) !important;
+  outline: none;
+}
+
+[data-theme="dark"] .feedback-admin-rating {
+  color: #f59e0b;
+}
+
+[data-theme="dark"] .feedback-admin-rating span {
+  color: #a8988d !important;
+}
+
+[data-theme="dark"] .feedback-admin-content {
+  color: #d4c5b9 !important;
+}
+
+[data-theme="dark"] .feedback-admin-reply {
+  background: rgba(34, 197, 94, 0.12) !important;
+  border: 1px solid rgba(74, 222, 128, 0.28) !important;
+  color: #86efac !important;
+}
+
+[data-theme="dark"] .feedback-admin-reply strong {
+  color: #4ade80 !important;
+}
+
+[data-theme="dark"] .feedback-admin-reply p {
+  color: #dcfce7 !important;
+}
+
+[data-theme="dark"] .feedback-admin-reply small {
+  color: #86efac !important;
+}
+
+[data-theme="dark"] .feedback-reply-form textarea {
+  background: #241c18 !important;
+  border-color: #3d3027 !important;
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .feedback-reply-form textarea:focus {
+  border-color: #ff6831 !important;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2) !important;
+  outline: none;
+}
+
+[data-theme="dark"] .food-review-admin-body .ad-thumb {
+  background: #241c18;
+  border-color: #3d3027;
+}
+
+[data-theme="dark"] .account-status.active {
+  background: rgba(34, 197, 94, 0.18) !important;
+  color: #86efac !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+
+[data-theme="dark"] .account-status.locked {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+[data-theme="dark"] .account-status.warning {
+  background: rgba(249, 115, 22, 0.18) !important;
+  color: #fdba74 !important;
+  border: 1px solid rgba(249, 115, 22, 0.3) !important;
+}
+
+/* Admin Action Buttons & Danger Button */
+.danger-btn {
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.danger-btn:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #b91c1c;
+}
+
+[data-theme="dark"] .ghost-btn,
+[data-theme="dark"] .icon-text-btn {
+  background: #251d18;
+  border-color: #3d3027;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .ghost-btn:hover,
+[data-theme="dark"] .icon-text-btn:hover {
+  background: #2e221c;
+  border-color: #ff6831;
+  color: #ff8a4c;
+}
+
+[data-theme="dark"] .ghost-btn.danger-btn {
+  background: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.32) !important;
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .ghost-btn.danger-btn:hover {
+  background: rgba(239, 68, 68, 0.24) !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
