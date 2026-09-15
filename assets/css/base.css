@@ -9651,5 +9651,144 @@ body:has(.support-widget.open) #backToTopBtn {
   color: #ff385c !important;
 }
 
+/* ============================================================
+   Dark theme for Live Countdown Timer & Flash Sale Banner
+   ============================================================ */
+[data-theme="dark"] .flash-sale-banner {
+  background: linear-gradient(135deg, #251619 0%, #1e1714 50%, #26151c 100%);
+  border-color: #4a282f;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .flash-sale-banner::before {
+  background: radial-gradient(circle, rgba(255, 75, 31, 0.18) 0%, transparent 70%);
+}
+
+[data-theme="dark"] .flash-sale-title {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .flash-sale-title small {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .countdown-timer {
+  background: rgba(34, 25, 22, 0.95);
+  border-color: #4d3328;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .countdown-timer .timer-num {
+  background: linear-gradient(180deg, #3d251c 0%, #20130e 100%);
+  border: 1px solid #543325;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .countdown-timer .timer-unit small {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .flash-sale-mini-card {
+  background: rgba(37, 28, 24, 0.9);
+  border-color: #4d362a;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .flash-sale-mini-card:hover {
+  background: #33241e;
+  border-color: #ff6831;
+  box-shadow: 0 6px 18px rgba(255, 87, 34, 0.25);
+}
+
+[data-theme="dark"] .flash-sale-mini-card strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .flash-sale-mini-card b {
+  color: #ff6831;
+}
+
+[data-theme="dark"] .flash-sale-mini-card del {
+  color: #8c786c;
+}
+
+[data-theme="dark"] .voucher-timer-badge {
+  background: #2b1810;
+  border-color: #542718;
+  color: #ff8548;
+}
+
+/* ============================================================
+   Dark theme for Header Action Buttons & Account Menu
+   ============================================================ */
+[data-theme="dark"] .header-action.secondary {
+  background: #251d18;
+  border: 1px solid #3d3027;
+  color: #ff6831;
+}
+
+[data-theme="dark"] .header-action.secondary:hover {
+  background: #2f231d;
+  border-color: #ff6831;
+  color: #ff8548;
+}
+
+[data-theme="dark"] .header-action.primary {
+  background: #ff5722;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .header-action.primary:hover {
+  background: #ff6831;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.4);
+}
+
+[data-theme="dark"] .account-toggle {
+  background: #251d18;
+  border-color: #3d3027;
+}
+
+[data-theme="dark"] .account-toggle:hover {
+  background: #2f231d;
+  border-color: #ff6831;
+}
+
+[data-theme="dark"] .account-dropdown {
+  background: #1d1815;
+  border-color: #382d25;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .account-summary {
+  border-bottom-color: #382d25;
+}
+
+[data-theme="dark"] .account-summary strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .account-summary small {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .account-menu-link {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .account-menu-link:hover {
+  background: #261e19;
+  color: #ff6831;
+}
+
+[data-theme="dark"] .account-menu-link.danger {
+  color: #f87171;
+}
+
+[data-theme="dark"] .account-menu-link.danger:hover {
+  background: #331518;
+  color: #fca5a5;
+}
+
 
 
