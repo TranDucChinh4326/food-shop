@@ -9344,5 +9344,76 @@ body:has(.support-widget.open) #backToTopBtn {
   color: #a8988d;
 }
 
+/* ============================================================
+   DARK THEME - FOOD SUGGESTIONS & UPSELL SECTION
+   ============================================================ */
+[data-theme="dark"] .suggestion-section {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .suggestion-heading {
+  border-bottom-color: #382d25;
+}
+
+[data-theme="dark"] .suggestion-heading h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .suggestion-heading a {
+  color: #ff7a3d;
+}
+
+[data-theme="dark"] .suggestion-heading a:hover {
+  color: #ff9b6b;
+}
+
+[data-theme="dark"] .suggestion-card {
+  background: #221a16;
+  border-color: #382d25;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .suggestion-card:hover {
+  background: #281f1a;
+  border-color: #ff6831;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .suggestion-image {
+  background: #191411;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .suggestion-category {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .suggestion-card h4 a {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .suggestion-card:hover h4 a {
+  color: #ff7a3d;
+}
+
+[data-theme="dark"] .suggestion-meta {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .suggestion-stock {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+[data-theme="dark"] .suggestion-action strong {
+  color: #ff6831 !important;
+}
+
+[data-theme="dark"] .suggestion-action del {
+  color: #8c786b !important;
+}
+
 
 

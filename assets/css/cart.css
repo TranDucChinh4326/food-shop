@@ -939,13 +939,145 @@
   color: #f7f3ee;
 }
 
-[data-theme="dark"] .payment-option:hover {
-  border-color: #ff6b3d;
+[data-theme="dark"] .checkout-payment-section h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .checkout-confirm-panel {
+  background: #191411;
+  border-color: #382d25;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="dark"] .discount-box {
+  background: transparent;
+  border: none;
+}
+
+[data-theme="dark"] .checkout-map-picker {
   background: #241c18;
   border-color: #382d25;
+}
+
+[data-theme="dark"] .checkout-map-picker strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .checkout-map-picker span {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .checkout-step-actions {
+  border-top-color: #382d25;
+}
+
+[data-theme="dark"] .checkout-review-section + .checkout-review-section {
+  border-top-color: #382d25;
+}
+
+[data-theme="dark"] .checkout-review-box {
+  background: #191411 !important;
+  border-color: #382d25 !important;
+}
+
+[data-theme="dark"] .checkout-review-box h3 {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-review-box p {
+  color: #d4c5b9 !important;
+}
+
+[data-theme="dark"] .checkout-review-primary {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-review-primary span {
+  color: #ff8a55 !important;
+}
+
+[data-theme="dark"] .checkout-review-list li {
+  background: #251d18 !important;
+  border-color: #382d25 !important;
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-review-list li span {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-review-list strong {
+  color: #ff6831 !important;
+}
+
+[data-theme="dark"] .checkout-review-meta dt {
+  color: #a8988d !important;
+}
+
+[data-theme="dark"] .checkout-review-meta dd {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-confirm-card .checkout-summary-box,
+[data-theme="dark"] .checkout-summary-box {
+  background: #191411 !important;
+  border-color: #382d25 !important;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-theme="dark"] .checkout-summary-box span {
+  color: #a8988d !important;
+}
+
+[data-theme="dark"] .checkout-summary-box strong {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-summary-total {
+  border-top-color: #382d25 !important;
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .checkout-confirm-card .checkout-summary-total strong {
+  color: #ff6831 !important;
+}
+
+[data-theme="dark"] .payment-option {
+  background: #221a16;
+  border-color: #382d25;
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .payment-option:hover {
+  border-color: #ff6831;
+}
+
+[data-theme="dark"] .payment-option:has(input:checked) {
+  background: #2e2018 !important;
+  border-color: #ff6831 !important;
+  box-shadow: 0 0 0 1px #ff6831;
+}
+
+[data-theme="dark"] .payment-option strong {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .payment-option small {
+  color: #a8988d !important;
+}
+
+[data-theme="dark"] .shipping-option em {
+  color: #ff7a3d !important;
+}
+
+[data-theme="dark"] .checkout-warning {
+  background: #2d1e16;
+  border-color: #4d3326;
+  color: #ffaa78;
+}
+
+[data-theme="dark"] .checkout-warning a {
+  color: #ff7a3d;
 }
 
 /* ============================================================
@@ -1009,3 +1141,40 @@
   color: #ff8a55 !important;
 }
 
+/* ============================================================
+   DARK THEME - CART ITEM CONTROLS & TOTALS
+   ============================================================ */
+[data-theme="dark"] .cart-item .qty-box {
+  background: #251d18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .cart-item .qty-btn {
+  background: #352720;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .cart-item .qty-btn:hover {
+  background: #ff5722;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cart-item .qty-box strong {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .cart-item-total {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .cart-remove-btn {
+  background: #251d18;
+  border-color: #453428;
+  color: #f87171;
+}
+
+[data-theme="dark"] .cart-remove-btn:hover {
+  background: #32251e;
+  border-color: #f87171;
+  color: #ef4444;
+}

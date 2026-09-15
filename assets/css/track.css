@@ -1164,22 +1164,47 @@
 }
 
 /* Cancel Dialog */
-[data-theme="dark"] .cancel-dialog {
-  background: #1e1815;
-  border-color: #382d25;
+[data-theme="dark"] .order-cancel-dialog {
+  background: #191411;
+  border: 1px solid #382d25;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
 }
 
-[data-theme="dark"] .cancel-dialog h3 {
+[data-theme="dark"] .order-cancel-dialog::backdrop {
+  background: rgba(10, 8, 7, 0.75);
+}
+
+[data-theme="dark"] .cancel-dialog-content {
+  background: #191411;
   color: #f7f3ee;
 }
 
-[data-theme="dark"] .cancel-dialog p {
-  color: #b5a498;
+[data-theme="dark"] .cancel-dialog-header h3 {
+  color: #f7f3ee;
 }
 
-[data-theme="dark"] .cancel-dialog-actions .btn-secondary {
-  background: #2b221d;
-  border-color: #382d25;
+[data-theme="dark"] .cancel-dialog-content p {
+  color: #a8988d;
+}
+
+[data-theme="dark"] .cancel-dialog-actions .muted-btn {
+  background: #251d18;
+  border: 1px solid #3d3027;
   color: #d4c5b9;
+}
+
+[data-theme="dark"] .cancel-dialog-actions .muted-btn:hover {
+  background: #32261e;
+  border-color: #ff6831;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .cancel-dialog-actions .btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cancel-dialog-actions .btn-danger:hover {
+  background: #b91c1c;
 }
 
