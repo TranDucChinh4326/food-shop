@@ -1411,9 +1411,16 @@ body.sidebar-collapsed .admin-sidebar:not(:hover) .brand-copy {
 
 .ghost-btn,
 .icon-text-btn {
-  background: #f8fafc;
+  background: var(--paper);
   border: 1px solid var(--line);
   color: var(--ink);
+}
+
+.ghost-btn:hover,
+.icon-text-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 
