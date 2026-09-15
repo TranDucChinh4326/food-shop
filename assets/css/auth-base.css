@@ -280,9 +280,26 @@ input:focus {
   background: #fffaf6;
   border: 1px solid #efd8cc;
   border-radius: 10px;
+  display: none;
   margin: 8px 0 12px;
   padding: 10px 12px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.password-strength-wrap.show {
+  animation: passwordStrengthFadeIn 0.2s ease-out forwards;
+  display: block;
+}
+
+@keyframes passwordStrengthFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .password-strength-header {

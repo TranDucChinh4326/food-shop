@@ -416,11 +416,22 @@ function initPasswordStrengthCheckers() {
     const input = document.getElementById(inputId);
     if (!input) return;
 
+    const updateVisibility = () => {
+      const isFocused = document.activeElement === input;
+      const hasValue = Boolean(input.value && input.value.length > 0);
+      wrap.classList.toggle("show", isFocused || hasValue);
+    };
+
+    input.addEventListener("focus", updateVisibility);
+    input.addEventListener("blur", updateVisibility);
+
     input.addEventListener("input", () => {
       updatePasswordStrengthUI(input, wrap);
+      updateVisibility();
     });
 
     updatePasswordStrengthUI(input, wrap);
+    updateVisibility();
   });
 }
 
