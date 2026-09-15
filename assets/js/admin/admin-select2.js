@@ -31,6 +31,23 @@
         searching: () => "Đang tìm kiếm..."
       }
     });
+
+    if (select.dataset.select2ValueSync !== "true") {
+      const valueDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value");
+      if (valueDescriptor?.get && valueDescriptor?.set) {
+        Object.defineProperty(select, "value", {
+          configurable: true,
+          get() {
+            return valueDescriptor.get.call(this);
+          },
+          set(value) {
+            valueDescriptor.set.call(this, value);
+            requestAnimationFrame(() => $(this).trigger("change.select2"));
+          }
+        });
+      }
+      select.dataset.select2ValueSync = "true";
+    }
   }
 
   function enhanceWithin(root = document) {
