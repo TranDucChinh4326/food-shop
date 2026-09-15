@@ -79,15 +79,17 @@
           <div class="auth-divider"><span>hoặc tạo bằng email</span></div>
 
           <form onsubmit="register(event)">
-            <label>
-              Họ và tên
-              <input type="text" id="registerFullname" name="fullname" placeholder="Nguyễn Văn A" autocomplete="name" required>
-            </label>
+            <div class="auth-row">
+              <label>
+                Họ và tên
+                <input type="text" id="registerFullname" name="fullname" placeholder="Nguyễn Văn A" autocomplete="name" required>
+              </label>
 
-            <label>
-              Username
-              <input type="text" id="registerUsername" name="username" placeholder="nguyenvana" autocomplete="username" required>
-            </label>
+              <label>
+                Username
+                <input type="text" id="registerUsername" name="username" placeholder="nguyenvana" autocomplete="username" required>
+              </label>
+            </div>
 
             <label>
               Email
@@ -97,7 +99,7 @@
             <label>
               Mật khẩu
               <span class="auth-password-wrap">
-                <input type="password" id="registerPassword" name="password" placeholder="Ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt" minlength="8" autocomplete="new-password" required>
+                <input type="password" id="registerPassword" name="password" placeholder="Tối thiểu 8 ký tự" minlength="8" autocomplete="new-password" required>
                 <button type="button" class="auth-password-toggle" data-auth-toggle-password="registerPassword" aria-label="Hiện mật khẩu"></button>
               </span>
             </label>
