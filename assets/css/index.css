@@ -1927,6 +1927,38 @@ body::after {
   color: #ff8a50;
 }
 
+/* =========================================================================
+   THẺ MÓN ĂN TRANG CHỦ - DARK MODE
+   ========================================================================= */
+[data-theme="dark"] .home-food-card {
+  background: #1f1814;
+  border-color: #382d25;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .home-food-card:hover {
+  border-color: #ff6b3d;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .home-food-category {
+  background: #2d1e16;
+  border-color: #452d20;
+  color: #ff8a50;
+}
+
+[data-theme="dark"] .home-food-card h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .home-food-card p {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .home-food-meta {
+  color: #9e897e;
+}
+
 /* Responsive styles cho banner combo trang chu */
 @media (max-width: 960px) {
   .home-combo-section {

@@ -8817,6 +8817,12 @@ body:has(.support-widget.open) #backToTopBtn {
   background: transparent;
 }
 
+[data-theme="dark"] .home-food-card.is-flash-sale::after,
+[data-theme="dark"] .food-card.is-flash-sale::after,
+[data-theme="dark"] .suggestion-card.is-flash-sale::after {
+  background: #1f1814 !important;
+}
+
 /* 2 đốm sáng Neon Laser siêu rực rỡ quay vật lý 360 độ liên tục */
 .home-food-card.is-flash-sale::before,
 .food-card.is-flash-sale::before,

@@ -688,23 +688,195 @@
   color: #a8988d;
 }
 
-[data-theme="dark"] .menu-search-input-wrap,
-[data-theme="dark"] .menu-sort-select,
+/* Search bar */
+[data-theme="dark"] .menu-search-box input {
+  background: #241c18;
+  border-color: #3d3027;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-search-box input:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 4px rgba(255, 104, 49, 0.2);
+}
+
+[data-theme="dark"] .menu-search-icon {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .menu-search-clear-btn {
+  background: #382d25;
+  color: #b5a498;
+}
+
+[data-theme="dark"] .menu-search-clear-btn:hover {
+  background: #ff6831;
+  color: #ffffff;
+}
+
+/* Sort & Filter controls */
+[data-theme="dark"] .menu-sort-select {
+  background: #241c18 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b5a498' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+  border-color: #3d3027;
+  color: #f7f3ee;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .menu-sort-select:focus {
+  border-color: #ff6831;
+  box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2);
+}
+
 [data-theme="dark"] .menu-quick-filter-btn {
   background: #241c18;
   border-color: #3d3027;
   color: #f7f3ee;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] .menu-search-input {
-  background: transparent;
+[data-theme="dark"] .menu-quick-filter-btn:hover {
+  border-color: #ff8a22;
+  color: #ff8a55;
+}
+
+[data-theme="dark"] .menu-quick-filter-btn.active,
+[data-theme="dark"] .menu-quick-filter-btn[aria-pressed="true"] {
+  background: linear-gradient(135deg, #ff5a23, #ff8a22);
+  border-color: #ff5a23;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(255, 90, 35, 0.4);
+}
+
+/* Food Card on Menu Page */
+[data-theme="dark"] .menu-page .food-card {
+  background: #1f1814;
+  border-color: #382d25;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .menu-page .food-card:hover {
+  border-color: #ff6b3d;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .menu-page .food-card-img-wrap {
+  background: #17120f;
+}
+
+[data-theme="dark"] .menu-page .food-card .fav-heart-btn {
+  background: #251d18 !important;
+  border-color: #3d3027 !important;
+  color: #b5a498 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .menu-page .food-card .fav-heart-btn:hover {
+  background: #31251e !important;
+  color: #ff385c !important;
+}
+
+[data-theme="dark"] .menu-page .food-card .fav-heart-btn.active {
+  background: #251d18 !important;
+  color: #ff385c !important;
+}
+
+[data-theme="dark"] .menu-card-body h3 {
   color: #f7f3ee;
 }
 
-[data-theme="dark"] .menu-quick-filter-btn.active {
-  background: #ff6b3d;
+[data-theme="dark"] .menu-card-body:hover h3 {
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .menu-card-body p {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .menu-card-rating {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .menu-card-rating .star-muted {
+  color: #4a3e36;
+}
+
+[data-theme="dark"] .menu-card-stock.in-stock {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+[data-theme="dark"] .menu-card-stock.out-stock {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+[data-theme="dark"] .menu-card-bottom-row {
+  border-top-color: #382d25;
+}
+
+[data-theme="dark"] .menu-card-price strong,
+[data-theme="dark"] .menu-card-price-stack .flash-price-row strong {
+  color: #ff6b3d;
+}
+
+[data-theme="dark"] .menu-card-price-stack del {
+  color: #85746b;
+}
+
+[data-theme="dark"] .menu-card-price-stack .flash-price-row em {
+  background: rgba(255, 107, 61, 0.18);
+  color: #ff8a50;
+}
+
+/* Stepper & Action buttons */
+[data-theme="dark"] .menu-stepper {
+  background: #251d18;
+  border-color: #3d3027;
+}
+
+[data-theme="dark"] .menu-stepper-btn {
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .menu-stepper-btn:hover {
+  background: #33261f;
+  color: #ff7a45;
+}
+
+[data-theme="dark"] .menu-stepper input[data-food-qty] {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-add-cart-btn:disabled {
+  background: #382d25;
+  color: #6a5a51;
+}
+
+/* Empty State */
+[data-theme="dark"] .menu-empty-state {
+  background: #1f1814;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .menu-empty-state h3 {
+  color: #f7f3ee;
+}
+
+[data-theme="dark"] .menu-empty-state p {
+  color: #b5a498;
+}
+
+[data-theme="dark"] .menu-empty-suggestions button {
+  background: #251d18;
+  border-color: #3d3027;
+  color: #d4c5b9;
+}
+
+[data-theme="dark"] .menu-empty-suggestions button:hover {
+  background: #33261f;
   border-color: #ff6b3d;
-  color: #ffffff;
+  color: #ff7a45;
 }
 
 [data-theme="dark"] .menu-category-pill {
@@ -719,5 +891,6 @@
   border-color: #ff6b3d;
   color: #ff7a45;
 }
+
 
 
