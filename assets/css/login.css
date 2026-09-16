@@ -68,12 +68,28 @@
   border-radius: 20px;
 }
 
+/* Explicit display toggles */
+[hidden],
+.password-login-section[hidden],
+.password-login-section.is-hidden {
+  display: none !important;
+}
+
+.password-login-section {
+  display: block;
+}
+
 /* QR Login Container */
 .qr-login-section {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  animation: qrFadeIn 0.3s ease;
+  gap: 14px;
+  animation: qrFadeIn 0.25s ease;
+}
+
+.qr-login-section[hidden],
+.qr-login-section.is-hidden {
+  display: none !important;
 }
 
 @keyframes qrFadeIn {

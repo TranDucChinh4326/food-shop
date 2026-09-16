@@ -856,6 +856,20 @@ let currentQrSessionId = null;
 let qrRemainingSeconds = 120;
 
 function initWebQrLogin() {
+  const qrSection = document.getElementById("qrLoginSection");
+  const passwordSection = document.getElementById("passwordLoginSection");
+
+  if (qrSection) {
+    qrSection.hidden = true;
+    qrSection.classList.add("is-hidden");
+    qrSection.style.setProperty("display", "none", "important");
+  }
+  if (passwordSection) {
+    passwordSection.hidden = false;
+    passwordSection.classList.remove("is-hidden");
+    passwordSection.style.setProperty("display", "block", "important");
+  }
+
   const qrRefreshBtn = document.getElementById("qrRefreshBtn");
   qrRefreshBtn?.addEventListener("click", () => {
     startNewQrSession();
@@ -865,16 +879,38 @@ function initWebQrLogin() {
 function switchToQrLogin() {
   const passwordSection = document.getElementById("passwordLoginSection");
   const qrSection = document.getElementById("qrLoginSection");
-  if (passwordSection) passwordSection.hidden = true;
-  if (qrSection) qrSection.hidden = false;
+
+  if (passwordSection) {
+    passwordSection.hidden = true;
+    passwordSection.classList.add("is-hidden");
+    passwordSection.style.setProperty("display", "none", "important");
+  }
+
+  if (qrSection) {
+    qrSection.hidden = false;
+    qrSection.classList.remove("is-hidden");
+    qrSection.style.setProperty("display", "flex", "important");
+  }
+
   startNewQrSession();
 }
 
 function switchToPasswordLogin() {
   const passwordSection = document.getElementById("passwordLoginSection");
   const qrSection = document.getElementById("qrLoginSection");
-  if (qrSection) qrSection.hidden = true;
-  if (passwordSection) passwordSection.hidden = false;
+
+  if (qrSection) {
+    qrSection.hidden = true;
+    qrSection.classList.add("is-hidden");
+    qrSection.style.setProperty("display", "none", "important");
+  }
+
+  if (passwordSection) {
+    passwordSection.hidden = false;
+    passwordSection.classList.remove("is-hidden");
+    passwordSection.style.setProperty("display", "block", "important");
+  }
+
   stopQrSession();
 }
 
