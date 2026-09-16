@@ -917,6 +917,8 @@ function switchToPasswordLogin() {
 window.switchToQrLogin = switchToQrLogin;
 window.switchToPasswordLogin = switchToPasswordLogin;
 
+let qrKeepAliveTimer = null;
+
 function stopQrSession() {
   if (qrPollTimer) {
     clearInterval(qrPollTimer);
@@ -925,6 +927,10 @@ function stopQrSession() {
   if (qrCountdownTimer) {
     clearInterval(qrCountdownTimer);
     qrCountdownTimer = null;
+  }
+  if (qrKeepAliveTimer) {
+    clearInterval(qrKeepAliveTimer);
+    qrKeepAliveTimer = null;
   }
 }
 
@@ -983,6 +989,11 @@ async function startNewQrSession() {
     qrPollTimer = setInterval(() => {
       checkQrSessionStatus(currentQrSessionId);
     }, 1500);
+
+    // Keep server alive (prevent Render free-tier sleep) while QR is displayed
+    qrKeepAliveTimer = setInterval(() => {
+      fetch(`${AUTH_API}/health`, { method: "GET" }).catch(() => {});
+    }, 25000);
 
   } catch (error) {
     console.error("QR Init Error:", error);
