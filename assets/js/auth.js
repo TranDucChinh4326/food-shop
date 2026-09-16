@@ -856,39 +856,30 @@ let currentQrSessionId = null;
 let qrRemainingSeconds = 120;
 
 function initWebQrLogin() {
-  const methodTabs = document.querySelectorAll(".auth-method-tab");
-  const passwordSection = document.getElementById("passwordLoginSection");
-  const qrSection = document.getElementById("qrLoginSection");
   const qrRefreshBtn = document.getElementById("qrRefreshBtn");
-
-  if (!methodTabs.length || !passwordSection || !qrSection) return;
-
-  methodTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      const method = tab.dataset.authMethod;
-      methodTabs.forEach(t => {
-        t.classList.remove("active");
-        t.setAttribute("aria-selected", "false");
-      });
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
-
-      if (method === "qr") {
-        passwordSection.hidden = true;
-        qrSection.hidden = false;
-        startNewQrSession();
-      } else {
-        passwordSection.hidden = false;
-        qrSection.hidden = true;
-        stopQrSession();
-      }
-    });
-  });
-
   qrRefreshBtn?.addEventListener("click", () => {
     startNewQrSession();
   });
 }
+
+function switchToQrLogin() {
+  const passwordSection = document.getElementById("passwordLoginSection");
+  const qrSection = document.getElementById("qrLoginSection");
+  if (passwordSection) passwordSection.hidden = true;
+  if (qrSection) qrSection.hidden = false;
+  startNewQrSession();
+}
+
+function switchToPasswordLogin() {
+  const passwordSection = document.getElementById("passwordLoginSection");
+  const qrSection = document.getElementById("qrLoginSection");
+  if (qrSection) qrSection.hidden = true;
+  if (passwordSection) passwordSection.hidden = false;
+  stopQrSession();
+}
+
+window.switchToQrLogin = switchToQrLogin;
+window.switchToPasswordLogin = switchToPasswordLogin;
 
 function stopQrSession() {
   if (qrPollTimer) {
@@ -965,28 +956,31 @@ async function startNewQrSession() {
 }
 
 function renderQrCodeImage(container, text) {
+  if (!container) return;
   container.innerHTML = "";
   try {
     if (typeof window.QRCode === "function") {
       new window.QRCode(container, {
-        text: text,
-        width: 180,
-        height: 180,
-        colorDark: "#1e130c",
+        text: String(text).trim(),
+        width: 190,
+        height: 190,
+        colorDark: "#1a1008",
         colorLight: "#ffffff",
         correctLevel: window.QRCode.CorrectLevel.M
       });
       return;
     }
   } catch (e) {
-    console.warn("Client QRCode generator error, falling back to SVG API:", e);
+    console.warn("Client QRCode generator error, falling back to API:", e);
   }
 
   const img = document.createElement("img");
-  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(text)}`;
+  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=${encodeURIComponent(text)}`;
   img.alt = "Mã QR Đăng nhập Bếp 1979";
-  img.width = 180;
-  img.height = 180;
+  img.width = 190;
+  img.height = 190;
+  img.style.borderRadius = "8px";
+  img.style.display = "block";
   container.appendChild(img);
 }
 
