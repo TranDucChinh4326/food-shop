@@ -847,9 +847,204 @@ function initSupportWidget() {
   document.body.appendChild(widget);
 }
 
+// ==========================================
+// QR CODE WEB LOGIN CONTROLLER
+// ==========================================
+let qrPollTimer = null;
+let qrCountdownTimer = null;
+let currentQrSessionId = null;
+let qrRemainingSeconds = 120;
+
+function initWebQrLogin() {
+  const methodTabs = document.querySelectorAll(".auth-method-tab");
+  const passwordSection = document.getElementById("passwordLoginSection");
+  const qrSection = document.getElementById("qrLoginSection");
+  const qrRefreshBtn = document.getElementById("qrRefreshBtn");
+
+  if (!methodTabs.length || !passwordSection || !qrSection) return;
+
+  methodTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const method = tab.dataset.authMethod;
+      methodTabs.forEach(t => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
+      tab.classList.add("active");
+      tab.setAttribute("aria-selected", "true");
+
+      if (method === "qr") {
+        passwordSection.hidden = true;
+        qrSection.hidden = false;
+        startNewQrSession();
+      } else {
+        passwordSection.hidden = false;
+        qrSection.hidden = true;
+        stopQrSession();
+      }
+    });
+  });
+
+  qrRefreshBtn?.addEventListener("click", () => {
+    startNewQrSession();
+  });
+}
+
+function stopQrSession() {
+  if (qrPollTimer) {
+    clearInterval(qrPollTimer);
+    qrPollTimer = null;
+  }
+  if (qrCountdownTimer) {
+    clearInterval(qrCountdownTimer);
+    qrCountdownTimer = null;
+  }
+}
+
+async function startNewQrSession() {
+  stopQrSession();
+
+  const container = document.getElementById("qrCanvasContainer");
+  const expiredOverlay = document.getElementById("qrExpiredOverlay");
+  const statusIndicator = document.getElementById("qrStatusIndicator");
+  const statusText = document.getElementById("qrStatusText");
+  const shortCodeText = document.getElementById("qrShortCodeText");
+  const timerCount = document.getElementById("qrTimerCount");
+
+  if (!container) return;
+
+  expiredOverlay?.setAttribute("hidden", "");
+  container.innerHTML = '<div class="qr-loading-spinner" aria-hidden="true"></div>';
+  statusIndicator?.classList.remove("scanned", "confirmed");
+  if (statusText) statusText.textContent = "Đang tạo mã QR...";
+  if (shortCodeText) shortCodeText.textContent = "------";
+
+  try {
+    const res = await fetch(`${AUTH_API}/qr/session/init`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success || !data.sessionId) {
+      throw new Error(data.message || "Không thể tạo mã QR.");
+    }
+
+    currentQrSessionId = data.sessionId;
+    qrRemainingSeconds = data.expiresIn || 120;
+
+    renderQrCodeImage(container, data.qrData || data.sessionId);
+
+    if (shortCodeText && data.shortCode) {
+      shortCodeText.textContent = data.shortCode;
+    }
+
+    if (statusText) statusText.textContent = "Đang chờ quét mã...";
+
+    updateQrTimerDisplay(timerCount, qrRemainingSeconds);
+    qrCountdownTimer = setInterval(() => {
+      qrRemainingSeconds--;
+      updateQrTimerDisplay(timerCount, qrRemainingSeconds);
+
+      if (qrRemainingSeconds <= 0) {
+        stopQrSession();
+        expiredOverlay?.removeAttribute("hidden");
+        if (statusText) statusText.textContent = "Mã QR đã hết hạn.";
+      }
+    }, 1000);
+
+    qrPollTimer = setInterval(() => {
+      checkQrSessionStatus(currentQrSessionId);
+    }, 1500);
+
+  } catch (error) {
+    console.error("QR Init Error:", error);
+    container.innerHTML = `<p style="color:#dc2626;font-size:13px;padding:12px;">${escapeHtml(error.message || "Lỗi tải mã QR")}</p>`;
+    if (statusText) statusText.textContent = "Lỗi kết nối máy chủ";
+  }
+}
+
+function renderQrCodeImage(container, text) {
+  container.innerHTML = "";
+  try {
+    if (typeof window.QRCode === "function") {
+      new window.QRCode(container, {
+        text: text,
+        width: 180,
+        height: 180,
+        colorDark: "#1e130c",
+        colorLight: "#ffffff",
+        correctLevel: window.QRCode.CorrectLevel.M
+      });
+      return;
+    }
+  } catch (e) {
+    console.warn("Client QRCode generator error, falling back to SVG API:", e);
+  }
+
+  const img = document.createElement("img");
+  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(text)}`;
+  img.alt = "Mã QR Đăng nhập Bếp 1979";
+  img.width = 180;
+  img.height = 180;
+  container.appendChild(img);
+}
+
+function updateQrTimerDisplay(element, seconds) {
+  if (!element) return;
+  const mins = Math.floor(Math.max(0, seconds) / 60);
+  const secs = Math.max(0, seconds) % 60;
+  element.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+async function checkQrSessionStatus(sessionId) {
+  if (!sessionId) return;
+
+  try {
+    const res = await fetch(`${AUTH_API}/qr/session/check/${sessionId}`);
+    const data = await res.json();
+
+    const statusIndicator = document.getElementById("qrStatusIndicator");
+    const statusText = document.getElementById("qrStatusText");
+    const expiredOverlay = document.getElementById("qrExpiredOverlay");
+
+    if (data.status === "scanned") {
+      statusIndicator?.classList.add("scanned");
+      statusIndicator?.classList.remove("confirmed");
+      if (statusText) {
+        statusText.textContent = data.message || "Đã quét! Vui lòng bấm Xác nhận trên điện thoại...";
+      }
+    } else if (data.status === "confirmed") {
+      stopQrSession();
+      statusIndicator?.classList.add("confirmed");
+      if (statusText) {
+        statusText.textContent = "Xác nhận thành công! Đang vào Bếp 1979...";
+      }
+      finishLogin({
+        token: data.token,
+        user: data.user,
+        message: "Đăng nhập thành công qua mã QR!"
+      });
+    } else if (data.status === "rejected") {
+      stopQrSession();
+      showToast("Yêu cầu đăng nhập đã bị từ chối trên thiết bị.", "error");
+      expiredOverlay?.removeAttribute("hidden");
+      if (statusText) statusText.textContent = "Đăng nhập bị từ chối.";
+    } else if (data.status === "expired") {
+      stopQrSession();
+      expiredOverlay?.removeAttribute("hidden");
+      if (statusText) statusText.textContent = "Mã QR đã hết hạn.";
+    }
+  } catch (error) {
+    console.warn("QR check polling error:", error);
+  }
+}
+
 initAuthPasswordToggles();
 initAuthSlider();
 initResetPasswordForm();
 initSocialSetupForm();
 initPasswordStrengthCheckers();
 initSupportWidget();
+initWebQrLogin();
+
