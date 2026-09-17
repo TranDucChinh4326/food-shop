@@ -10,7 +10,7 @@
 
 .brand-mark {
   align-items: center;
-  background: linear-gradient(135deg, #ff4b1f, #ff9b2f);
+  background: #ff5722 url("../images/brand-logo.png?v=20260917") center / cover no-repeat;
   border-radius: 14px;
   box-shadow: 0 12px 28px rgba(255, 87, 34, 0.24);
   color: #fff;
@@ -23,34 +23,15 @@
 }
 
 .brand-mark::before {
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 999px;
-  content: "";
-  height: 5px;
-  left: 10px;
-  position: absolute;
-  right: 10px;
-  top: 10px;
+  content: none;
 }
 
 .brand-mark::after {
-  background: rgba(36, 24, 18, 0.16);
-  border-radius: 999px;
-  bottom: 9px;
-  content: "";
-  height: 5px;
-  left: 9px;
-  position: absolute;
-  right: 9px;
+  content: none;
 }
 
 .brand-mark span {
-  font-size: 15px;
-  font-weight: 950;
-  letter-spacing: 0;
-  line-height: 1;
-  position: relative;
-  z-index: 1;
+  display: none;
 }
 
 .brand-copy {
