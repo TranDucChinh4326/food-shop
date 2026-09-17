@@ -2,7 +2,7 @@
 // Các file JS đọc FOODHUB_CONFIG để biết backend API và ID đăng nhập mạng xã hội đang dùng.
 window.FOODHUB_CONFIG = {
   API_BASE_URL: "https://food-backend-xrb9.onrender.com/api",
-  GOOGLE_CLIENT_ID: "738762709250-ejdg7co0608ddn45bm75jrsnveu36vmv.apps.googleusercontent.com",
+  GOOGLE_CLIENT_ID: "1035084433038-7ab68das8hl0s2b2mgv4b27b9k00enmi.apps.googleusercontent.com",
   FACEBOOK_APP_ID: "1385223216785892"
 };
 
