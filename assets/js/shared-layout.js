@@ -400,7 +400,7 @@ function syncSharedNavActive() {
 }
 
 function startFoodHubPresenceHeartbeat() {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const apiBase = getSharedApiBase();
   if (!token || window["__foodHubPresenceHeartbeatStarted"]) return;
 
@@ -422,7 +422,7 @@ function startFoodHubPresenceHeartbeat() {
 }
 
 function startFoodHubRealtime() {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const apiBase = getSharedApiBase();
   const socketBase = apiBase.replace(/\/api\/?$/, "");
   if (!token || window["__foodHubRealtimeStarted"]) return;
@@ -478,8 +478,8 @@ function startFoodHubRealtime() {
 }
 
 function startFoodHubNotificationBadges() {
-  const token = sessionStorage.getItem("foodhub_token");
-  const userRaw = sessionStorage.getItem("foodhub_user");
+  const token = localStorage.getItem("foodhub_token");
+  const userRaw = localStorage.getItem("foodhub_user");
   const apiBase = getSharedApiBase();
   const isAnnouncementPage = location.pathname.endsWith("/announcements.html") || location.pathname.endsWith("announcements.html");
   const isVoucherPage = location.pathname.endsWith("/vouchers.html") || location.pathname.endsWith("vouchers.html");
@@ -524,8 +524,8 @@ function startFoodHubNotificationBadges() {
 
   const notifyOnce = (key, message, type = "info") => {
     const marker = `${key}_${new Date().toISOString().slice(0, 10)}`;
-    if (sessionStorage.getItem(marker) === "1") return;
-    sessionStorage.setItem(marker, "1");
+    if (localStorage.getItem(marker) === "1") return;
+    localStorage.setItem(marker, "1");
 
     setTimeout(() => {
       const showSiteToast = getWindowFunction("showSiteToast");
@@ -609,20 +609,20 @@ function startFoodHubIdleSessionGuard() {
   const activityKey = "foodhub_last_activity_at";
   const userPinLockKey = "foodhub_user_pin_locked";
   const idleLimitMs = Number(getFoodHubConfig().USER_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
-  const token = sessionStorage.getItem(tokenKey);
+  const token = localStorage.getItem(tokenKey);
   const apiBase = getSharedApiBase();
   let failedAttempts = 0;
-  let isLocked = sessionStorage.getItem(userPinLockKey) === "1";
+  let isLocked = localStorage.getItem(userPinLockKey) === "1";
 
   if (!token || window["__foodHubIdleSessionStarted"]) return;
 
   window["__foodHubIdleSessionStarted"] = true;
   const now = Date.now();
-  const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
+  const lastActivity = Number(localStorage.getItem(activityKey) || now);
 
   const getSessionUser = () => {
     try {
-      return JSON.parse(sessionStorage.getItem(userKey) || "null");
+      return JSON.parse(localStorage.getItem(userKey) || "null");
     } catch (err) {
       return null;
     }
@@ -689,16 +689,16 @@ function startFoodHubIdleSessionGuard() {
   };
 
   const clearSession = () => {
-    sessionStorage.removeItem(tokenKey);
-    sessionStorage.removeItem(userKey);
-    sessionStorage.removeItem(cartKey);
-    sessionStorage.removeItem(activityKey);
-    sessionStorage.removeItem(userPinLockKey);
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(userKey);
+    localStorage.removeItem(cartKey);
+    localStorage.removeItem(activityKey);
+    localStorage.removeItem(userPinLockKey);
   };
 
   const redirectToLogin = () => {
     if (location.pathname.endsWith("/login.html") || location.pathname.endsWith("/register.html")) return;
-    sessionStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "index.html"}${location.search || ""}`);
+    localStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "index.html"}${location.search || ""}`);
     window.location.href = "login.html?reason=session-timeout";
   };
 
@@ -749,7 +749,7 @@ function startFoodHubIdleSessionGuard() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem(tokenKey) || ""}`
+            Authorization: `Bearer ${localStorage.getItem(tokenKey) || ""}`
           },
           body: JSON.stringify({ pin })
         });
@@ -775,8 +775,8 @@ function startFoodHubIdleSessionGuard() {
 
         failedAttempts = 0;
         isLocked = false;
-        sessionStorage.removeItem(userPinLockKey);
-        sessionStorage.setItem(activityKey, String(Date.now()));
+        localStorage.removeItem(userPinLockKey);
+        localStorage.setItem(activityKey, String(Date.now()));
         resetPinOverlayInputs(overlay);
         overlay.classList.remove("is-visible");
       } catch (err) {
@@ -799,7 +799,7 @@ function startFoodHubIdleSessionGuard() {
     }
 
     isLocked = true;
-    sessionStorage.setItem(userPinLockKey, "1");
+    localStorage.setItem(userPinLockKey, "1");
     const overlay = ensurePinOverlay();
     resetPinOverlayInputs(overlay);
     overlay.classList.add("is-visible");
@@ -828,7 +828,7 @@ function startFoodHubIdleSessionGuard() {
     const now = Date.now();
     if (now - lastMarkActivityAt < 10000) return;
     lastMarkActivityAt = now;
-    sessionStorage.setItem(activityKey, String(now));
+    localStorage.setItem(activityKey, String(now));
   };
   ["click", "keydown", "pointerdown"].forEach(eventName => {
     window.addEventListener(eventName, markActivity, { passive: true });
@@ -836,8 +836,8 @@ function startFoodHubIdleSessionGuard() {
   markActivity();
 
   window.setInterval(() => {
-    const currentToken = sessionStorage.getItem(tokenKey);
-    const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
+    const currentToken = localStorage.getItem(tokenKey);
+    const latestActivity = Number(localStorage.getItem(activityKey) || 0);
     if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) {
       lockScreen();
     }
@@ -974,7 +974,7 @@ function initLanguageMenu() {
 
 function initSharedCartButtonState() {
   try {
-    const raw = sessionStorage.getItem("foodhub_cart");
+    const raw = localStorage.getItem("foodhub_cart");
     const cartItems = raw ? JSON.parse(raw) : [];
     const count = Array.isArray(cartItems)
       ? cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0)

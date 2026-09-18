@@ -36,8 +36,8 @@ async function requestProfileJson(url, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (response.status === 401) {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
     requireLogin(data.message || "Phiên đăng nhập da hết hạn.", "profile.html");
     throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
@@ -64,8 +64,8 @@ async function requestProfileFormData(url, formData, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (response.status === 401) {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
     requireLogin(data.message || "Phiên đăng nhập da hết hạn.", "profile.html");
     throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
@@ -344,7 +344,7 @@ function openAvatarChoiceModal() {
   const modal = document.getElementById("avatarChoiceModal");
   if (!modal) return;
 
-  const currentAvatar = selectedAvatarData || JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "{}").avatar || "";
+  const currentAvatar = selectedAvatarData || JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "{}").avatar || "";
   renderPresetAvatars(currentAvatar);
 
   if (typeof modal.showModal === "function") {
@@ -387,7 +387,7 @@ function renderPresetAvatars(currentAvatarUrl) {
 async function selectPresetAvatar(avatarUrl) {
   if (!avatarUrl) return;
 
-  const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "{}");
+  const user = JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "{}");
   selectedAvatarData = avatarUrl;
   selectedAvatarFile = null;
 
@@ -402,7 +402,7 @@ async function selectPresetAvatar(avatarUrl) {
     });
 
     const updatedUser = res.user || { ...user, avatar: avatarUrl };
-    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
 
     if (typeof broadcastUserUpdate === "function") {
       broadcastUserUpdate(updatedUser);
@@ -941,7 +941,7 @@ async function loadProfile() {
     if (data.user.requiresAccountSetup || new URLSearchParams(window.location.search).get("setup") === "1") {
       showSiteToast("Vui lòng tạo username và mật khẩu để hoàn tất tài khoản.", "info");
     }
-    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     renderUser();
     await loadSocialAccounts();
     await loadSavedAddresses();
@@ -984,7 +984,7 @@ async function saveProfile(event) {
     const verificationUrl = data.verificationUrl;
     const profileMessage = data.message;
 
-    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
     selectedAvatarData = "";
     selectedAvatarFile = null;
     renderEmailVerifyStatus(data.user);
@@ -1453,13 +1453,13 @@ async function changePin(event) {
     clearProfilePinBoxes(form);
 
     if (data.user) {
-      sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
       renderPinMode(data.user);
       renderUser();
     }
 
-    sessionStorage.removeItem("foodhub_user_pin_locked");
-    sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
+    localStorage.removeItem("foodhub_user_pin_locked");
+    localStorage.setItem("foodhub_last_activity_at", String(Date.now()));
     showSiteToast(data.message || "Đã cập nhật mã PIN.");
   } catch (error) {
     showSiteToast(error.message, "error");

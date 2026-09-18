@@ -1,6 +1,6 @@
 const API_BASE_URL = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
 // File điều khiển đăng nhập/đăng ký frontend.
-// Các endpoint auth trả JWT và user; frontend lưu vào sessionStorage để gọi API riêng tư sau đó.
+// Các endpoint auth trả JWT và user; frontend lưu vào localStorage để các tab dùng chung một phiên web.
 const AUTH_API = `${API_BASE_URL}/auth`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
@@ -11,9 +11,6 @@ const FACEBOOK_SDK_VERSION = "v25.0";
 
 let googleTokenClient;
 let facebookSdkPromise;
-
-localStorage.removeItem(AUTH_TOKEN_KEY);
-localStorage.removeItem(AUTH_USER_KEY);
 
 function showToast(message, type = "info") {
   let stack = document.getElementById("authToastStack");
@@ -139,7 +136,7 @@ function getSafeRedirectUrl() {
   // Chỉ cho redirect về cùng origin sau khi đăng nhập.
   // Bước này tránh việc URL redirect bị lợi dụng để chuyển người dùng sang website lạ.
   const params = new URLSearchParams(window.location.search);
-  const redirectUrl = params.get("redirect") || sessionStorage.getItem("foodhub_after_login") || "index.html";
+  const redirectUrl = params.get("redirect") || localStorage.getItem("foodhub_after_login") || "index.html";
 
   try {
     const url = new URL(redirectUrl, window.location.origin);
@@ -157,10 +154,10 @@ function finishLogin(data) {
     return;
   }
 
-  sessionStorage.setItem(AUTH_TOKEN_KEY, data.token);
-  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
-  sessionStorage.setItem("foodhub_last_activity_at", String(Date.now()));
-  sessionStorage.setItem("foodhub_show_chat_bubble", "1");
+  localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+  localStorage.setItem("foodhub_last_activity_at", String(Date.now()));
+  localStorage.setItem("foodhub_show_chat_bubble", "1");
   showAuthLoading("Đăng nhập thành công. Đang chuyển vào Bếp 1979...");
   showToast("Đăng nhập thành công. Đang vào Bếp 1979...", "success");
 
@@ -168,7 +165,7 @@ function finishLogin(data) {
     const redirectUrl = data.requiresAccountSetup || data.user?.requiresAccountSetup
       ? "profile.html?setup=1"
       : getSafeRedirectUrl();
-    sessionStorage.removeItem("foodhub_after_login");
+    localStorage.removeItem("foodhub_after_login");
     window.location.href = redirectUrl;
   }, 700);
 }
@@ -247,7 +244,7 @@ async function postSocialToken(provider, accessToken) {
   const data = await response.json();
 
   if (response.status === 202 && data.requiresAccountSetup) {
-    sessionStorage.setItem(PENDING_SOCIAL_KEY, JSON.stringify({
+    localStorage.setItem(PENDING_SOCIAL_KEY, JSON.stringify({
       provider,
       accessToken,
       email: data.providerEmail || "",
@@ -439,7 +436,7 @@ async function register(event) {
   event.preventDefault();
 
   const form = event.currentTarget;
-  const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
+  const pendingSocial = JSON.parse(localStorage.getItem(PENDING_SOCIAL_KEY) || "null");
   const fullnameInput = form.querySelector("[name='fullname'], #fullname, #registerFullname");
   const usernameInput = form.querySelector("[name='username'], #username, #registerUsername");
   const emailInput = form.querySelector("[name='email'], #email, #registerEmail");
@@ -484,7 +481,7 @@ async function register(event) {
       return;
     }
 
-    sessionStorage.removeItem(PENDING_SOCIAL_KEY);
+    localStorage.removeItem(PENDING_SOCIAL_KEY);
     finishLogin(data);
   } catch (error) {
     showToast("Không kết nối được server.", "error");
@@ -498,7 +495,7 @@ function initSocialSetupForm() {
   const form = document.querySelector("form[onsubmit='register(event)']");
   if (!form) return;
 
-  const pendingSocial = JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null");
+  const pendingSocial = JSON.parse(localStorage.getItem(PENDING_SOCIAL_KEY) || "null");
   const emailInput = form.querySelector("[name='email'], #email, #registerEmail");
   const fullnameInput = form.querySelector("[name='fullname'], #fullname, #registerFullname");
 
@@ -600,7 +597,7 @@ async function forgotPassword(event) {
     }
 
     showToast(data.message || "Nếu email tồn tại, Bếp 1979 đã gửi hướng dẫn đặt lại mật khẩu.", "success");
-    sessionStorage.setItem("foodhub_reset_email", email);
+    localStorage.setItem("foodhub_reset_email", email);
     setTimeout(() => {
       window.location.href = "reset-password.html";
     }, 900);
@@ -664,7 +661,7 @@ async function resetPassword(event) {
     }
 
     showToast(data.message || "Đặt lại mật khẩu thành công.", "success");
-    sessionStorage.removeItem("foodhub_reset_email");
+    localStorage.removeItem("foodhub_reset_email");
     setTimeout(() => {
       window.location.href = "login.html";
     }, 1100);
@@ -680,7 +677,7 @@ function initResetPasswordForm() {
   const emailInput = document.getElementById("resetEmail");
   if (!emailInput) return;
 
-  const rememberedEmail = sessionStorage.getItem("foodhub_reset_email") || "";
+  const rememberedEmail = localStorage.getItem("foodhub_reset_email") || "";
   if (rememberedEmail && !emailInput.value) {
     emailInput.value = rememberedEmail;
   }
@@ -726,7 +723,7 @@ function initAuthSlider() {
     shell.classList.toggle("register-active", isRegister);
     shell.classList.toggle("login-active", !isRegister);
 
-    if (isRegister && !JSON.parse(sessionStorage.getItem(PENDING_SOCIAL_KEY) || "null")?.provider) {
+    if (isRegister && !JSON.parse(localStorage.getItem(PENDING_SOCIAL_KEY) || "null")?.provider) {
       showToast("Vui lòng xác thực bằng Google hoặc Facebook trước.", "info");
     }
 
@@ -1088,4 +1085,3 @@ initSocialSetupForm();
 initPasswordStrengthCheckers();
 initSupportWidget();
 initWebQrLogin();
-

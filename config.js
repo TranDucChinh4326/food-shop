@@ -6,6 +6,21 @@ window.FOODHUB_CONFIG = {
   FACEBOOK_APP_ID: "1385223216785892"
 };
 
+// Chia sẻ đúng một phiên web giữa các tab trong cùng trình duyệt.
+for (const key of ["foodhub_token", "foodhub_user"]) {
+  const legacyValue = sessionStorage.getItem(key);
+  if (!localStorage.getItem(key) && legacyValue) {
+    localStorage.setItem(key, legacyValue);
+  }
+  sessionStorage.removeItem(key);
+}
+
+window.addEventListener("storage", event => {
+  if (event.key === "foodhub_token" && event.oldValue !== event.newValue) {
+    window.location.reload();
+  }
+});
+
 function disableBrowserInputSuggestions(root = document) {
   const ignoredTypes = new Set(["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"]);
 

@@ -117,7 +117,7 @@ function syncAdminUserName() {
   let user = null;
 
   try {
-    user = JSON.parse(sessionStorage.getItem("foodhub_user") || "null");
+    user = JSON.parse(localStorage.getItem("foodhub_user") || "null");
   } catch (_) {
     user = null;
   }
@@ -282,7 +282,7 @@ function initAdminSidebar() {
 }
 
 function startAdminPresenceHeartbeat() {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
   if (!token || window.__foodHubPresenceHeartbeatStarted) return;
 
@@ -302,7 +302,7 @@ function startAdminPresenceHeartbeat() {
 }
 
 function startAdminRealtime() {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
   const socketBase = apiBase.replace(/\/api\/?$/, "");
   if (!token || window.__foodHubAdminRealtimeStarted) return;
@@ -379,7 +379,7 @@ function startAdminIdleSessionGuard() {
   const lockKey = "foodhub_admin_pin_locked";
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
   const idleLimitMs = Number(window.FOODHUB_CONFIG?.ADMIN_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
-  const token = sessionStorage.getItem(tokenKey);
+  const token = localStorage.getItem(tokenKey);
   let failedAttempts = 0;
   let isLocked = sessionStorage.getItem(lockKey) === "1";
 
@@ -390,9 +390,9 @@ function startAdminIdleSessionGuard() {
   const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
 
   const clearSession = () => {
-    sessionStorage.removeItem(tokenKey);
-    sessionStorage.removeItem(userKey);
-    sessionStorage.removeItem(cartKey);
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(userKey);
+    localStorage.removeItem(cartKey);
     sessionStorage.removeItem(activityKey);
     sessionStorage.removeItem(lockKey);
   };
@@ -492,7 +492,7 @@ function startAdminIdleSessionGuard() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem(tokenKey) || ""}`
+            Authorization: `Bearer ${localStorage.getItem(tokenKey) || ""}`
           },
           body: JSON.stringify({ pin })
         });
@@ -555,7 +555,7 @@ function startAdminIdleSessionGuard() {
   unlockIfNeededOnLoad();
 
   window.setInterval(() => {
-    const currentToken = sessionStorage.getItem(tokenKey);
+    const currentToken = localStorage.getItem(tokenKey);
     const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
     if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) lockScreen();
   }, 15000);

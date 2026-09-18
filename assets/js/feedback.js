@@ -8,7 +8,7 @@ const feedbackForm = document.getElementById("customerFeedbackForm");
 const myFeedbackList = document.getElementById("myFeedbackList");
 
 function getFeedbackToken() {
-  return sessionStorage.getItem(FEEDBACK_TOKEN_KEY);
+  return localStorage.getItem(FEEDBACK_TOKEN_KEY);
 }
 
 function feedbackEscapeHtml(value) {
@@ -52,7 +52,7 @@ function renderFeedbackStars(rating) {
 function requireFeedbackLogin() {
   if (getFeedbackToken()) return true;
 
-  sessionStorage.setItem("foodhub_after_login", "feedback.html");
+  localStorage.setItem("foodhub_after_login", "feedback.html");
   window.location.href = "login.html?redirect=feedback.html";
   return false;
 }

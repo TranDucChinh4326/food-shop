@@ -5,11 +5,8 @@ const ADMIN_API = `${API_BASE_URL}/admin`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 
-localStorage.removeItem(AUTH_TOKEN_KEY);
-localStorage.removeItem(AUTH_USER_KEY);
-
-const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
+const token = localStorage.getItem(AUTH_TOKEN_KEY);
+const user = JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "null");
 const params = new URLSearchParams(window.location.search);
 const foodIdParam = params.get("id");
 const isEditMode = Boolean(foodIdParam);
@@ -99,8 +96,8 @@ async function requestJson(url, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (response.status === 401) {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
     throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
@@ -125,8 +122,8 @@ async function requestFormData(url, formData, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (response.status === 401) {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
     throw new Error(data.message || "Phiên đăng nhập đã hết hạn.");
   }
@@ -401,9 +398,9 @@ async function saveFood(event) {
 }
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  sessionStorage.removeItem(AUTH_USER_KEY);
-  sessionStorage.removeItem("foodhub_cart");
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem("foodhub_cart");
   window.location.href = "login.html";
 });
 

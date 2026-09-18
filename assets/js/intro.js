@@ -17,13 +17,13 @@
 
   const urlParams = new URLSearchParams(window.location.search);
   const forceIntro = urlParams.get("intro") === "1";
-  const hasSeenIntro = sessionStorage.getItem("foodhub_grand_ad_intro_seen_v5");
+  const hasSeenIntro = localStorage.getItem("foodhub_grand_ad_intro_seen_v5");
 
   if (hasSeenIntro && !forceIntro) {
     return;
   }
 
-  sessionStorage.setItem("foodhub_grand_ad_intro_seen_v5", "true");
+  localStorage.setItem("foodhub_grand_ad_intro_seen_v5", "true");
 
   // Web Audio Synthesizer (Zero External Dependencies)
   let audioCtx = null;

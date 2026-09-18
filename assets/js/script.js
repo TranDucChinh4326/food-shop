@@ -26,7 +26,7 @@ let activeFlashSaleItems = new Map();
 // Các biến này giúp nhiều trang dùng chung script mà không phải gọi lại API cho từng thao tác nhỏ.
 let foodReviews = [];
 let publicCategories = [];
-let cart = JSON.parse(sessionStorage.getItem(CART_KEY) || "[]");
+let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 let announcementTimer;
 let floatingAdTimers = [];
 let announcementArchive = [];
@@ -82,10 +82,6 @@ const DEFAULT_ADDRESS_SUGGESTIONS = [
   "Tòa nhà, lầu, số phòng",
   "Ngõ, ngách, hẻm gần khu vực"
 ];
-
-localStorage.removeItem(AUTH_TOKEN_KEY);
-localStorage.removeItem(AUTH_USER_KEY);
-localStorage.removeItem(CART_KEY);
 
 function showSiteToast(message, type = "success") {
   let stack = document.getElementById("siteToastStack");
@@ -487,7 +483,7 @@ function formatDateTime(value) {
 }
 
 function saveCart() {
-  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
 function getCartItemKey(item) {
@@ -511,11 +507,11 @@ function getCartItemPayload(item) {
 }
 
 function getAuthToken() {
-  return sessionStorage.getItem(AUTH_TOKEN_KEY);
+  return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
 function getCurrentUser() {
-  return JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
+  return JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "null");
 }
 
 function isLoggedIn() {
@@ -523,7 +519,7 @@ function isLoggedIn() {
 }
 
 function requireLogin(message = "Vui lòng đăng nhập để tiếp tục.", target = window.location.href) {
-  sessionStorage.setItem("foodhub_after_login", target);
+  localStorage.setItem("foodhub_after_login", target);
   showSiteToast(message, "error");
 
   setTimeout(() => {
@@ -885,13 +881,13 @@ async function loadVietnamAddressLookup() {
 
   addressLookupPromise = (async () => {
     try {
-      const cached = JSON.parse(sessionStorage.getItem(ADDRESS_CACHE_KEY) || "null");
+      const cached = JSON.parse(localStorage.getItem(ADDRESS_CACHE_KEY) || "null");
       if (cached?.savedAt && cached?.lookup && Date.now() - cached.savedAt < 24 * 60 * 60 * 1000) {
         ADDRESS_LOOKUP = cached.lookup;
         return ADDRESS_LOOKUP;
       }
     } catch (error) {
-      sessionStorage.removeItem(ADDRESS_CACHE_KEY);
+      localStorage.removeItem(ADDRESS_CACHE_KEY);
     }
 
     try {
@@ -903,7 +899,7 @@ async function loadVietnamAddressLookup() {
       if (Object.keys(lookup).length === 0) throw new Error("Danh sách tỉnh thành không hợp lệ.");
 
       ADDRESS_LOOKUP = lookup;
-      sessionStorage.setItem(ADDRESS_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), lookup }));
+      localStorage.setItem(ADDRESS_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), lookup }));
     } catch (error) {
       console.warn(error);
       ADDRESS_LOOKUP = LEGACY_ADDRESS_LOOKUP;
@@ -1118,7 +1114,7 @@ async function loadCheckoutProfile() {
 
     if (!response.ok || !data.user) return null;
 
-    sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
 
     const nameInput = document.getElementById("customerName");
     const phoneInput = document.getElementById("customerPhone");
@@ -3459,7 +3455,7 @@ function handleSingleAnnouncementRead(event, id) {
 }
 
 async function markAnnouncementRead(article) {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const id = Number(article?.dataset.announcementId);
   if (!id || article.dataset.isRead === "1" || article.dataset.markingRead === "1") return;
 
@@ -3498,7 +3494,7 @@ async function markAnnouncementRead(article) {
 }
 
 async function markAllAnnouncementsRead() {
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const unreadItems = announcementArchive.filter(item => !Number(item.is_read));
   if (unreadItems.length === 0) return;
 
@@ -3585,7 +3581,7 @@ function resetAnnouncementFilters() {
 
 function observeUnreadAnnouncements() {
   if (announcementReadObserver) announcementReadObserver.disconnect();
-  if (!sessionStorage.getItem("foodhub_token")) return;
+  if (!localStorage.getItem("foodhub_token")) return;
 
   const unreadArticles = document.querySelectorAll('.archive-announcement[data-is-read="0"]');
   if (!("IntersectionObserver" in window)) {
@@ -3622,7 +3618,7 @@ async function loadAnnouncementArchive() {
     </div>
   `).join("");
 
-  const token = sessionStorage.getItem("foodhub_token");
+  const token = localStorage.getItem("foodhub_token");
   const guestHint = document.getElementById("announcementGuestHint");
   if (guestHint) {
     guestHint.style.display = token ? "none" : "flex";
@@ -5013,8 +5009,8 @@ async function submitOrder(event) {
     const data = await response.json();
 
     if (response.status === 401) {
-      sessionStorage.removeItem(AUTH_TOKEN_KEY);
-      sessionStorage.removeItem(AUTH_USER_KEY);
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_USER_KEY);
       requireLogin(data.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "cart.html");
       return;
     }
@@ -5167,8 +5163,8 @@ async function loadOrderHistory(eventOrOptions) {
       const data = await response.json();
 
       if (response.status === 401) {
-        sessionStorage.removeItem(AUTH_TOKEN_KEY);
-        sessionStorage.removeItem(AUTH_USER_KEY);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_USER_KEY);
         requireLogin(data.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "track.html");
         return;
       }
@@ -6082,9 +6078,9 @@ function initHeaderLiveSearch() {
 }
 
 function logout() {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  sessionStorage.removeItem(AUTH_USER_KEY);
-  sessionStorage.removeItem(CART_KEY);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem(CART_KEY);
   cart = [];
   showSiteToast("Đã đăng xuất");
 
@@ -6420,12 +6416,12 @@ function getFoodHubRobotIcon(showWordmark = false) {
 }
 
 function getChatSessionId() {
-  // Tạo/đọc sessionId cho chatbox trong sessionStorage.
+  // Tạo/đọc sessionId cho chatbox trong localStorage.
   // sessionId được gửi lên backend để lưu và tải lại lịch sử chat đúng phiên của trình duyệt.
-  let sessionId = sessionStorage.getItem(CHAT_SESSION_KEY);
+  let sessionId = localStorage.getItem(CHAT_SESSION_KEY);
   if (!sessionId) {
     sessionId = `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    sessionStorage.setItem(CHAT_SESSION_KEY, sessionId);
+    localStorage.setItem(CHAT_SESSION_KEY, sessionId);
   }
 
   return sessionId;
@@ -6849,13 +6845,13 @@ function maybeShowChatBubble(widget) {
   if (!bubble) return;
 
   const isHomePage = /(^|\/)index\.html$/.test(window.location.pathname) || window.location.pathname.endsWith("/");
-  const shouldShowAfterLogin = sessionStorage.getItem("foodhub_show_chat_bubble") === "1";
+  const shouldShowAfterLogin = localStorage.getItem("foodhub_show_chat_bubble") === "1";
   const shouldShowFirstHome = isHomePage && localStorage.getItem("foodhub_home_chat_bubble_seen") !== "1";
 
   if (!shouldShowAfterLogin && !shouldShowFirstHome) return;
 
   if (shouldShowAfterLogin) {
-    sessionStorage.removeItem("foodhub_show_chat_bubble");
+    localStorage.removeItem("foodhub_show_chat_bubble");
   }
 
   if (shouldShowFirstHome) {

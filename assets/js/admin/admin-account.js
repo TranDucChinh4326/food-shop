@@ -5,11 +5,8 @@ const ADMIN_API = `${API_BASE_URL}/admin`;
 const AUTH_TOKEN_KEY = "foodhub_token";
 const AUTH_USER_KEY = "foodhub_user";
 
-localStorage.removeItem(AUTH_TOKEN_KEY);
-localStorage.removeItem(AUTH_USER_KEY);
-
-const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-const user = JSON.parse(sessionStorage.getItem(AUTH_USER_KEY) || "null");
+const token = localStorage.getItem(AUTH_TOKEN_KEY);
+const user = JSON.parse(localStorage.getItem(AUTH_USER_KEY) || "null");
 const params = new URLSearchParams(window.location.search);
 const accountId = params.get("id");
 const isEditMode = Boolean(accountId);
@@ -111,7 +108,7 @@ async function loadCurrentAdmin() {
   // Cần để kiểm tra quyền mới nhất trước khi cho tạo/sửa user hoặc nhân viên.
   const data = await requestJson(`${ADMIN_API}/me`);
   currentAdmin = data;
-  sessionStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...data }));
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify({ ...user, ...data }));
   document.querySelectorAll("[data-admin-user-name]").forEach(node => {
     node.textContent = data.fullname || data.email || "admin";
   });
@@ -129,8 +126,8 @@ async function requestJson(url, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (response.status === 401) {
-    sessionStorage.removeItem(AUTH_TOKEN_KEY);
-    sessionStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
     window.location.href = "login.html";
     throw new Error(data.message || "Phiên đăng nhập da hết hạn.");
   }
@@ -309,8 +306,8 @@ async function saveAccount(event) {
       });
     }
 
-    sessionStorage.setItem("foodhub_admin_section", "accounts");
-    sessionStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
+    localStorage.setItem("foodhub_admin_section", "accounts");
+    localStorage.setItem("foodhub_account_type", accountType === "customer" ? "customers" : "staff");
     showAdminToast(isEditMode ? "\u0110\u00e3 c\u1eadp nh\u1eadt t\u00e0i kho\u1ea3n." : "\u0110\u00e3 t\u1ea1o t\u00e0i kho\u1ea3n.");
     setTimeout(() => {
       window.location.href = `admin.html?section=accounts&accountType=${accountType === "customer" ? "customers" : "staff"}`;
@@ -321,9 +318,9 @@ async function saveAccount(event) {
 }
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY);
-  sessionStorage.removeItem(AUTH_USER_KEY);
-  sessionStorage.removeItem("foodhub_cart");
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem("foodhub_cart");
   window.location.href = "login.html";
 });
 
