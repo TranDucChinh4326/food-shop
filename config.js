@@ -21,6 +21,48 @@ window.addEventListener("storage", event => {
   }
 });
 
+function startWebSessionMonitor() {
+  const tokenKey = "foodhub_token";
+  const userKey = "foodhub_user";
+  const token = localStorage.getItem(tokenKey);
+  const page = location.pathname.split("/").pop() || "index.html";
+  if (!token || page === "login.html" || page === "register.html") return;
+
+  let checking = false;
+  const checkSession = async () => {
+    if (checking || document.hidden) return;
+    checking = true;
+    try {
+      const response = await fetch(`${window.FOODHUB_CONFIG.API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(tokenKey) || ""}`,
+          "X-Client-Type": "web"
+        },
+        cache: "no-store"
+      });
+      if (response.status !== 401) return;
+
+      const data = await response.json().catch(() => ({}));
+      const reason = data.code === "SESSION_REPLACED"
+        ? "session-replaced"
+        : "session-invalid";
+      localStorage.removeItem(tokenKey);
+      localStorage.removeItem(userKey);
+      window.location.replace(`login.html?reason=${reason}`);
+    } catch (error) {
+      // Mất mạng tạm thời không được tự đăng xuất người dùng.
+    } finally {
+      checking = false;
+    }
+  };
+
+  checkSession();
+  window.setInterval(checkSession, 15000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) checkSession();
+  });
+}
+
 function disableBrowserInputSuggestions(root = document) {
   const ignoredTypes = new Set(["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"]);
 
@@ -59,7 +101,11 @@ function initBrowserInputSuggestionGuard() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initBrowserInputSuggestionGuard);
+  document.addEventListener("DOMContentLoaded", () => {
+    initBrowserInputSuggestionGuard();
+    startWebSessionMonitor();
+  });
 } else {
   initBrowserInputSuggestionGuard();
+  startWebSessionMonitor();
 }

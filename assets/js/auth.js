@@ -52,6 +52,18 @@ function showToast(message, type = "info") {
   startTimer(3600);
 }
 
+function showSessionReasonNotice() {
+  const reason = new URLSearchParams(window.location.search).get("reason");
+  if (reason === "session-replaced") {
+    showToast(
+      "Tài khoản của bạn đã được đăng nhập trên một trình duyệt khác. Phiên đăng nhập tại đây đã kết thúc.",
+      "error"
+    );
+  } else if (reason === "session-invalid") {
+    showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "error");
+  }
+}
+
 function shakeInputElement(input) {
   const el = typeof input === "string" ? document.getElementById(input) || document.querySelector(input) : input;
   if (!el) return;
@@ -1079,6 +1091,7 @@ async function checkQrSessionStatus(sessionId) {
 }
 
 initAuthPasswordToggles();
+showSessionReasonNotice();
 initAuthSlider();
 initResetPasswordForm();
 initSocialSetupForm();
