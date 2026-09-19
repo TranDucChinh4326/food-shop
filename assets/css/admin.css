@@ -1676,3 +1676,79 @@
   box-shadow: 0 0 0 3px rgba(255, 104, 49, 0.2);
 }
 
+/* ============================================================
+   Food Preview Card Styling (Light & Dark Theme)
+   ============================================================ */
+.food-preview {
+  align-items: center;
+  background: var(--paper, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  color: var(--ink, #1e293b);
+  display: flex;
+  gap: 16px;
+  margin: 12px 0 6px;
+  padding: 16px 18px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.food-preview[hidden] {
+  display: none !important;
+}
+
+.food-preview img {
+  aspect-ratio: 1;
+  background: var(--page, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  flex-shrink: 0;
+  height: 74px;
+  object-fit: cover;
+  width: 74px;
+}
+
+.food-preview > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.food-preview strong {
+  color: var(--ink, #1e293b);
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.food-preview small {
+  color: #ff5722;
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+[data-theme="dark"] .food-preview {
+  background: #1d1815 !important;
+  border-color: #382d25 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .food-preview img {
+  background: #241c18;
+  border-color: #382d25;
+}
+
+[data-theme="dark"] .food-preview strong {
+  color: #f7f3ee !important;
+}
+
+[data-theme="dark"] .food-preview small {
+  color: #ff8548 !important;
+}
+
