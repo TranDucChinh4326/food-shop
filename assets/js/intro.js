@@ -17,13 +17,21 @@
 
   const urlParams = new URLSearchParams(window.location.search);
   const forceIntro = urlParams.get("intro") === "1";
-  const hasSeenIntro = localStorage.getItem("foodhub_grand_ad_intro_seen_v5");
+  const INTRO_SESSION_KEY = "foodhub_grand_ad_intro_seen_session_v1";
 
-  if (hasSeenIntro && !forceIntro) {
+  try {
+    localStorage.removeItem("foodhub_grand_ad_intro_seen_v5");
+  } catch (_) {}
+
+  const hasSeenIntroInSession = sessionStorage.getItem(INTRO_SESSION_KEY);
+
+  if (hasSeenIntroInSession && !forceIntro) {
     return;
   }
 
-  localStorage.setItem("foodhub_grand_ad_intro_seen_v5", "true");
+  try {
+    sessionStorage.setItem(INTRO_SESSION_KEY, "true");
+  } catch (_) {}
 
   // Web Audio Synthesizer (Zero External Dependencies)
   let audioCtx = null;
