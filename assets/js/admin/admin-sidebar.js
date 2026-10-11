@@ -281,6 +281,49 @@ function initAdminSidebar() {
   }
 }
 
+function readAdminTokenPayload(token) {
+  // Đọc payload JWT ở client chỉ để biết hạn (exp/iat). Việc xác thực thật vẫn do backend làm.
+  try {
+    const part = String(token || "").split(".")[1];
+    if (!part) return null;
+    const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    return JSON.parse(atob(padded));
+  } catch (_) {
+    return null;
+  }
+}
+
+function isAdminTokenExpired(payload) {
+  return Boolean(payload?.exp) && Number(payload.exp) * 1000 <= Date.now();
+}
+
+function forceAdminLogout() {
+  // Đăng xuất hẳn: xóa token + dữ liệu phiên rồi về trang đăng nhập (nhớ trang đang mở để quay lại sau).
+  const activityKey = "foodhub_last_activity_at";
+  localStorage.removeItem("foodhub_token");
+  localStorage.removeItem("foodhub_user");
+  localStorage.removeItem("foodhub_cart");
+  localStorage.removeItem(activityKey);
+  sessionStorage.removeItem(activityKey);
+  sessionStorage.removeItem("foodhub_admin_pin_locked");
+  sessionStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "admin.html"}${location.search || ""}`);
+  window.location.href = "login.html?reason=session-timeout";
+}
+
+async function isAdminSessionRejected(apiBase) {
+  // Hỏi backend xem token còn dùng được không (401 = hết hạn hoặc bị thay thế bởi lần đăng nhập khác).
+  try {
+    const response = await fetch(`${apiBase}/auth/ping`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${localStorage.getItem("foodhub_token") || ""}` }
+    });
+    return response.status === 401;
+  } catch (_) {
+    return false;
+  }
+}
+
 function startAdminPresenceHeartbeat() {
   const token = localStorage.getItem("foodhub_token");
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
@@ -294,6 +337,8 @@ function startAdminPresenceHeartbeat() {
         Authorization: `Bearer ${token}`
       },
       keepalive: true
+    }).then(response => {
+      if (response.status === 401) forceAdminLogout();
     }).catch(() => {});
   };
 
@@ -380,19 +425,43 @@ function startAdminIdleSessionGuard() {
   const apiBase = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
   const idleLimitMs = Number(window.FOODHUB_CONFIG?.ADMIN_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
   const token = localStorage.getItem(tokenKey);
+  const logoutLimitMs = Number(window.FOODHUB_CONFIG?.ADMIN_LOGOUT_IDLE_LIMIT_MS || 15 * 60 * 1000);
+  const tokenPayload = readAdminTokenPayload(token);
+  const tokenIssuedAtMs = Number(tokenPayload?.iat || 0) * 1000;
   let failedAttempts = 0;
   let isLocked = sessionStorage.getItem(lockKey) === "1";
 
   if (!token || window.__foodHubIdleSessionStarted) return;
 
   window.__foodHubIdleSessionStarted = true;
+
+  // Token đã hết hạn thì đăng xuất ngay, không hiện ô nhập PIN.
+  if (isAdminTokenExpired(tokenPayload)) {
+    forceAdminLogout();
+    return;
+  }
+
+  // Mốc thao tác cuối lưu ở localStorage để còn đúng khi mở lại tab/trình duyệt.
+  // Mốc cũ hơn thời điểm cấp token nghĩa là phiên đăng nhập mới: bắt đầu tính lại từ bây giờ.
+  const storedActivity = Number(localStorage.getItem(activityKey) || 0);
+  if (!storedActivity || storedActivity < tokenIssuedAtMs) {
+    localStorage.setItem(activityKey, String(Date.now()));
+  }
+  sessionStorage.removeItem(activityKey);
+
   const now = Date.now();
-  const lastActivity = Number(sessionStorage.getItem(activityKey) || now);
+  const lastActivity = Number(localStorage.getItem(activityKey) || now);
+
+  if (now - lastActivity > logoutLimitMs) {
+    forceAdminLogout();
+    return;
+  }
 
   const clearSession = () => {
     localStorage.removeItem(tokenKey);
     localStorage.removeItem(userKey);
     localStorage.removeItem(cartKey);
+    localStorage.removeItem(activityKey);
     sessionStorage.removeItem(activityKey);
     sessionStorage.removeItem(lockKey);
   };
@@ -408,7 +477,7 @@ function startAdminIdleSessionGuard() {
     const now = Date.now();
     if (now - lastMarkActivityAt < 10000) return;
     lastMarkActivityAt = now;
-    sessionStorage.setItem(activityKey, String(now));
+    localStorage.setItem(activityKey, String(now));
   };
 
   const initPinBoxes = container => {
@@ -499,6 +568,12 @@ function startAdminIdleSessionGuard() {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
+          // 401 do token hết hạn / phiên bị thay thế thì không phải nhập sai PIN: đăng xuất luôn.
+          if (response.status === 401 && await isAdminSessionRejected(apiBase)) {
+            clearSession();
+            redirectToLogin();
+            return;
+          }
           failedAttempts += 1;
           if (failedAttempts >= 3) {
             clearSession();
@@ -517,7 +592,7 @@ function startAdminIdleSessionGuard() {
         failedAttempts = 0;
         isLocked = false;
         sessionStorage.removeItem(lockKey);
-        sessionStorage.setItem(activityKey, String(Date.now()));
+        localStorage.setItem(activityKey, String(Date.now()));
         overlay.classList.remove("is-visible");
       } catch (_) {
         error.textContent = "Không thể xác minh mã PIN. Vui lòng thử lại.";
@@ -554,11 +629,39 @@ function startAdminIdleSessionGuard() {
   if (!isLocked) markActivity();
   unlockIfNeededOnLoad();
 
-  window.setInterval(() => {
+  const runIdleChecks = () => {
     const currentToken = localStorage.getItem(tokenKey);
-    const latestActivity = Number(sessionStorage.getItem(activityKey) || 0);
-    if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) lockScreen();
-  }, 15000);
+
+    // Token đã bị xóa (đăng xuất ở tab khác) thì rời trang quản trị luôn.
+    if (!currentToken) {
+      window.location.href = "login.html?reason=session-timeout";
+      return;
+    }
+
+    if (isAdminTokenExpired(readAdminTokenPayload(currentToken))) {
+      forceAdminLogout();
+      return;
+    }
+
+    const latestActivity = Number(localStorage.getItem(activityKey) || 0);
+    const idleFor = Date.now() - latestActivity;
+
+    // Để quá lâu: đăng xuất hẳn, không chỉ khóa PIN.
+    if (idleFor > logoutLimitMs) {
+      forceAdminLogout();
+      return;
+    }
+
+    if (!isLocked && idleFor > idleLimitMs) lockScreen();
+  };
+
+  window.setInterval(runIdleChecks, 15000);
+  // Máy sleep/tab nền làm timer bị đình trệ, nên kiểm tra ngay khi quay lại tab.
+  window.addEventListener("focus", runIdleChecks);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) runIdleChecks();
+  });
+
 }
 
 initAdminSidebar();
