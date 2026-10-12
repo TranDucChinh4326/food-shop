@@ -5,21 +5,14 @@
    - Sáng sủa ở chế độ Sáng (Light Mode) & tự động chuyển sang tông tối ở chế độ Ban đêm
    ========================================================================== */
 
-:root {
-  --mg-food-tile-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg font-family='Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif' font-size='22' opacity='0.14'%3E%3Ctext x='24' y='42'%3E%F0%9F%8D%95%3C/text%3E%3Ctext x='144' y='42'%3E%F0%9F%8D%9C%3C/text%3E%3Ctext x='84' y='102'%3E%F0%9F%8D%94%3C/text%3E%3Ctext x='204' y='102'%3E%F0%9F%A7%8B%3C/text%3E%3Ctext x='24' y='162'%3E%F0%9F%8D%97%3C/text%3E%3Ctext x='144' y='162'%3E%F0%9F%8D%A3%3C/text%3E%3Ctext x='84' y='222'%3E%F0%9F%8D%B0%3C/text%3E%3Ctext x='204' y='222'%3E%F0%9F%A5%9F%3C/text%3E%3C/g%3E%3C/svg%3E");
-}
-
 body.mg-food-theme-body,
 body:has(.minigame-page) {
   background-color: #fff8f2;
   background-image:
-    var(--mg-food-tile-svg),
-    radial-gradient(circle at 15% 20%, rgba(255, 145, 0, 0.09) 0%, transparent 45%),
-    radial-gradient(circle at 85% 30%, rgba(255, 87, 34, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(255, 179, 0, 0.09) 0%, transparent 50%),
+    radial-gradient(circle at 15% 20%, rgba(255, 145, 0, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 30%, rgba(255, 87, 34, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(255, 179, 0, 0.08) 0%, transparent 50%),
     linear-gradient(180deg, #fffaf5 0%, #fff3e8 100%);
-  background-size: 240px 240px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
   background-attachment: fixed;
 }
 
@@ -87,14 +80,9 @@ footer,
   z-index: 2;
 }
 
-/* 1. Hero Banner (Mặc định: Chế độ Sáng - Light Mode + Họa tiết đồ ăn phân bổ đều) */
+/* 1. Hero Banner (Nền sạch sẽ, không chèn icon rối mắt) */
 .mg-hero-banner {
-  background-color: #fff4e8;
-  background-image:
-    var(--mg-food-tile-svg),
-    linear-gradient(135deg, rgba(255, 247, 240, 0.94) 0%, rgba(255, 234, 216, 0.94) 52%, rgba(255, 223, 196, 0.94) 100%);
-  background-size: 210px 210px, 100% 100%;
-  background-repeat: repeat, no-repeat;
+  background: linear-gradient(135deg, #fff7f0 0%, #ffead8 52%, #ffdfc4 100%);
   border: 1.5px solid #f5c6a5;
   border-radius: 24px;
   padding: 28px 32px;
@@ -229,14 +217,9 @@ footer,
   align-items: start;
 }
 
-/* Left Card: Wheel Stage (Mặc định: Chế độ Sáng + Họa tiết đồ ăn phân bổ đều) */
+/* Left Card: Wheel Stage (Nền phẳng sạch sẽ) */
 .mg-wheel-card {
-  background-color: #fffaf5;
-  background-image:
-    var(--mg-food-tile-svg),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 246, 238, 0.95) 100%);
-  background-size: 200px 200px, 100% 100%;
-  background-repeat: repeat, no-repeat;
+  background: linear-gradient(180deg, #ffffff 0%, #fff7f0 100%);
   border: 1.5px solid #f0dfd5;
   border-radius: 26px;
   padding: 24px 24px 28px;
@@ -418,7 +401,7 @@ footer,
   color: #785a4c;
 }
 
-/* Right Column: Side Panels */
+/* Right Column: Side Panels (Nền trắng đặc hoàn toàn, không lẫn họa tiết nền) */
 .mg-side-panels {
   display: flex;
   flex-direction: column;
@@ -426,11 +409,7 @@ footer,
 }
 
 .mg-panel-card {
-  background-color: #ffffff;
-  background-image:
-    var(--mg-food-tile-svg),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 251, 248, 0.97) 100%);
-  background-size: 220px 220px, 100% 100%;
+  background: #ffffff;
   border: 1px solid #f0dfd5;
   border-radius: 22px;
   padding: 22px 24px;
@@ -662,11 +641,9 @@ footer,
 [data-theme="dark"] body:has(.minigame-page) {
   background-color: #14100e;
   background-image:
-    var(--mg-food-tile-svg),
     radial-gradient(circle at 20% 25%, rgba(255, 111, 0, 0.08) 0%, transparent 45%),
     radial-gradient(circle at 80% 75%, rgba(230, 81, 0, 0.08) 0%, transparent 45%),
     linear-gradient(180deg, #181310 0%, #110e0c 100%);
-  background-size: 240px 240px, 100% 100%, 100% 100%, 100% 100%;
 }
 
 [data-theme="dark"] .mg-food-bg-chip {
@@ -677,11 +654,7 @@ footer,
 }
 
 [data-theme="dark"] .mg-hero-banner {
-  background-color: #240c04;
-  background-image:
-    var(--mg-food-tile-svg),
-    radial-gradient(circle at 80% 20%, rgba(78, 31, 13, 0.94) 0%, rgba(36, 12, 4, 0.95) 60%, rgba(20, 6, 2, 0.96) 100%);
-  background-size: 210px 210px, 100% 100%;
+  background: radial-gradient(circle at 80% 20%, #4e1f0d 0%, #240c04 60%, #140602 100%);
   border-color: rgba(255, 184, 48, 0.35);
   color: #fff;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
@@ -730,11 +703,7 @@ footer,
 }
 
 [data-theme="dark"] .mg-wheel-card {
-  background-color: #1b0a04;
-  background-image:
-    var(--mg-food-tile-svg),
-    radial-gradient(circle at 50% 15%, rgba(59, 23, 10, 0.94) 0%, rgba(27, 10, 4, 0.95) 68%, rgba(17, 5, 2, 0.96) 100%);
-  background-size: 200px 200px, 100% 100%;
+  background: radial-gradient(circle at 50% 15%, #3b170a 0%, #1b0a04 68%, #110502 100%);
   border-color: rgba(255, 184, 48, 0.38);
   color: #fff;
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.5);
@@ -773,11 +742,7 @@ footer,
 }
 
 [data-theme="dark"] .mg-panel-card {
-  background-color: #1c1310;
-  background-image:
-    var(--mg-food-tile-svg),
-    linear-gradient(180deg, rgba(28, 19, 16, 0.96) 0%, rgba(22, 15, 12, 0.96) 100%);
-  background-size: 220px 220px, 100% 100%;
+  background: #1c1310;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
