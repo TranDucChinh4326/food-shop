@@ -1260,10 +1260,16 @@ function initGentleFoodRain() {
 }
 
 function loadFoodHubMiniGameScript() {
-  if (document.getElementById("fh-minigame-script") || document.getElementById("fhMiniGameWidget")) return;
+  if (
+    document.getElementById("fh-minigame-script") ||
+    document.getElementById("fhMiniGameWidget") ||
+    document.querySelector('script[src*="assets/js/minigame.js"]')
+  ) {
+    return;
+  }
   const script = document.createElement("script");
   script.id = "fh-minigame-script";
-  script.src = "assets/js/minigame.js?v=20261012-wheel-v1";
+  script.src = "assets/js/minigame.js?v=20261012-wheel-page-v2";
   script.defer = true;
   document.body.appendChild(script);
 }

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- Trang sự kiện Vòng Quay Mỹ Vị 1979: mỗi tài khoản được quay 1 lần/ngày, tự động xóa và reset vào cuối ngày. -->
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vòng Quay Mỹ Vị 1979 - Săn Voucher Mỗi Ngày</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=20260917">
+  <script>(function(){try{var s=localStorage.getItem("foodhub_theme");var t=s==="dark"||s==="light"?s:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(_){}})();</script>
+  <link rel="stylesheet" href="assets/css/base.css?v=20260915-auth-header-v2">
+  <link rel="stylesheet" href="assets/css/minigame.css?v=20261012-page-v1">
+</head>
+<body>
+  <div data-shared-header></div>
+
+  <main class="minigame-page">
+    <!-- 1. Hero Banner & Đếm ngược Reset cuối ngày -->
+    <section class="mg-hero-banner" aria-label="Sự kiện Vòng Quay Mỹ Vị 1979">
+      <div class="mg-hero-copy">
+        <span class="mg-hero-eyebrow">🎡 Sự kiện ưu đãi hằng ngày • Bếp 1979</span>
+        <h1>Vòng Quay Mỹ Vị 1979</h1>
+        <p>
+          Mỗi tài khoản nhận <strong>01 lượt quay miễn phí mỗi ngày</strong> để săn Voucher giảm giá trực tiếp và hỗ trợ phí giao hàng. Toàn bộ lượt quay và Voucher sẽ tự động làm mới vào cuối ngày!
+        </p>
+      </div>
+
+      <div class="mg-hero-countdown-box" aria-label="Đếm ngược reset cuối ngày">
+        <span class="mg-hero-countdown-label">⏳ Reset lượt & xóa voucher sau</span>
+        <div class="mg-countdown-digits">
+          <span class="mg-time-unit">
+            <b id="mgTimerHours">00</b>
+            <small>Giờ</small>
+          </span>
+          <span class="mg-time-sep">:</span>
+          <span class="mg-time-unit">
+            <b id="mgTimerMinutes">00</b>
+            <small>Phút</small>
+          </span>
+          <span class="mg-time-sep">:</span>
+          <span class="mg-time-unit">
+            <b id="mgTimerSeconds">00</b>
+            <small>Giây</small>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Khung Vòng Quay & Bảng Thông Tin Xung Quanh -->
+    <section class="mg-main-grid">
+      <!-- Cột Trái: Sân khấu Vòng Quay -->
+      <div class="mg-wheel-card">
+        <div class="mg-wheel-top-bar">
+          <span class="mg-quota-badge" id="mgQuotaStatusBadge">🎁 Lượt quay hôm nay: 1 / 1</span>
+          <button type="button" class="mg-sound-btn" id="mgSoundToggleBtn" aria-label="Bật hoặc tắt âm thanh">
+            <span id="mgSoundIcon">🔊</span>
+            <span id="mgSoundText">Âm thanh: Bật</span>
+          </button>
+        </div>
+
+        <div class="mg-wheel-stage-box">
+          <div class="mg-wheel-outer-rim"></div>
+          <svg class="mg-wheel-pointer" id="mgWheelPointer" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20 46L5 16C2 9 7 2 15 2H25C33 2 38 9 35 16L20 46Z" fill="#FFD54F" stroke="#FFFFFF" stroke-width="2.5"/>
+            <circle cx="20" cy="14" r="5" fill="#D84315"/>
+          </svg>
+          <div class="mg-wheel-canvas-holder">
+            <canvas class="mg-wheel-canvas" id="mgWheelCanvas"></canvas>
+          </div>
+          <button type="button" class="mg-wheel-center-btn" id="mgWheelCenterBtn" aria-label="Quay ngay">
+            <span>QUAY</span>
+            <small>1 LƯỢT</small>
+          </button>
+        </div>
+
+        <button type="button" class="mg-spin-cta-btn" id="mgSpinMainBtn">
+          🎰 QUAY NGAY (1 LƯỢT HÔM NAY)
+        </button>
+        <p class="mg-wheel-footnote" id="mgWheelFootnote">
+          * Nếu quay vào ô "Thêm 1 Lượt", bạn được quay tiếp ngay mà không mất lượt hôm nay!
+        </p>
+      </div>
+
+      <!-- Cột Phải: Quà Hôm Nay, Cơ Cấu Giải Thưởng & Thể Lệ -->
+      <div class="mg-side-panels">
+        <!-- Panel 1: Voucher hôm nay của tài khoản -->
+        <article class="mg-panel-card">
+          <div class="mg-panel-head">
+            <h2>🎟️ Phần Thưởng Hôm Nay Của Bạn</h2>
+            <span class="mg-panel-tag" id="mgTodayDateTag">Hôm nay</span>
+          </div>
+          <div id="mgMyRewardBox">
+            <div class="mg-my-voucher-empty">
+              <strong>Bạn chưa sử dụng lượt quay hôm nay!</strong>
+              <p>Hãy bấm nút <b>Quay Ngay</b> bên trái để nhận ngay 1 Voucher ưu đãi trong ngày.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 2: Bảng cơ cấu giải thưởng -->
+        <article class="mg-panel-card">
+          <div class="mg-panel-head">
+            <h2>🏆 Cơ Cấu Giải Thưởng Trên Vòng Quay</h2>
+            <span class="mg-panel-tag">100% Trúng Quà</span>
+          </div>
+          <div class="mg-prize-grid">
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">👑</span>
+              <div class="mg-prize-info">
+                <strong>Siêu Voucher 30.000đ</strong>
+                <small>Áp dụng đơn từ 120.000đ</small>
+              </div>
+            </div>
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">🔥</span>
+              <div class="mg-prize-info">
+                <strong>Voucher Giảm 20.000đ</strong>
+                <small>Áp dụng đơn từ 100.000đ</small>
+              </div>
+            </div>
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">🎟️</span>
+              <div class="mg-prize-info">
+                <strong>Voucher Giảm 15.000đ</strong>
+                <small>Áp dụng đơn từ 80.000đ</small>
+              </div>
+            </div>
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">🎁</span>
+              <div class="mg-prize-info">
+                <strong>Voucher Giảm 10.000đ</strong>
+                <small>Áp dụng đơn từ 50.000đ</small>
+              </div>
+            </div>
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">⚡</span>
+              <div class="mg-prize-info">
+                <strong>Voucher Giảm 10%</strong>
+                <small>Giảm tối đa 25k (Đơn từ 60k)</small>
+              </div>
+            </div>
+            <div class="mg-prize-item">
+              <span class="mg-prize-icon">🛵</span>
+              <div class="mg-prize-info">
+                <strong>Freeship 15.000đ</strong>
+                <small>Hỗ trợ phí giao hàng (Đơn từ 60k)</small>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 3: Thể lệ & Quy định Reset cuối ngày -->
+        <article class="mg-panel-card">
+          <div class="mg-panel-head">
+            <h2>📜 Thể Lệ & Quy Định Reset Cuối Ngày</h2>
+          </div>
+          <ul class="mg-rules-list">
+            <li>Mỗi tài khoản đăng nhập được cấp <strong>01 lượt quay mỗi ngày</strong>.</li>
+            <li>Nếu kim dừng ở ô <strong>"Thêm 1 Lượt 🎲"</strong> hoặc <strong>"Quay Lại Nhé 🍀"</strong>, hệ thống cộng bù ngay để bạn quay tiếp cho đến khi nhận được Voucher.</li>
+            <li>Voucher trúng thưởng được lưu tự động vào <strong>Kho Voucher cá nhân</strong> và có thể áp dụng ngay tại Giỏ hàng.</li>
+            <li><strong>Cơ chế Reset 23:59:59:</strong> Vào cuối mỗi ngày (00:00 đêm), hệ thống sẽ <strong>xóa toàn bộ Voucher Vòng Quay của ngày cũ (dù đã xài hay chưa xài)</strong> và cấp lại 01 lượt quay mới cho ngày tiếp theo.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div data-shared-footer></div>
+
+  <script src="config.js?v=20261012-session-guard-v2"></script>
+  <script src="assets/js/shared-layout.js?v=20261012-wheel-page-v2"></script>
+  <script src="assets/js/minigame.js?v=20261012-wheel-page-v2"></script>
+  <script src="assets/js/script.js?v=20260914-phone-fix"></script>
+</body>
+</html>
+
