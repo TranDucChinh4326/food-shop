@@ -705,11 +705,53 @@
     return 0;
   }
 
+  function mountEvenFoodBackgroundGrid() {
+    document.body.classList.add("mg-food-theme-body");
+    let grid = document.getElementById("mgFoodBgGrid");
+    if (!grid) {
+      grid = document.createElement("div");
+      grid.id = "mgFoodBgGrid";
+      grid.className = "mg-food-bg-grid";
+      grid.setAttribute("aria-hidden", "true");
+      document.body.insertBefore(grid, document.body.firstChild);
+    }
+    if (grid.children.length > 0) return;
+
+    const FOOD_BG_ITEMS = [
+      "🍕", "🍜", "🍔", "🧋", "🍗", "🍣",
+      "🥟", "🍰", "🍟", "🥐", "🍱", "🍦",
+      "🌮", "🍤", "🥞", "🍓", "🥪", "🍩",
+      "🍙", "🧁", "🥑", "🍳", "🥤", "🍲"
+    ];
+
+    const cols = 6;
+    grid.innerHTML = FOOD_BG_ITEMS.map((icon, index) => {
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+      // Dịch so le (staggered brick pattern) giữa hàng chẵn và hàng lẻ để phân bổ đều tự nhiên
+      const shiftX = (row % 2 === 0 ? -14 : 14) + ((col % 2 === 0 ? 6 : -6));
+      const shiftY = (col % 2 === 0 ? -10 : 10);
+      const rot = ((index % 5) - 2) * 5;
+      const dur = (5.2 + (index % 4) * 0.65).toFixed(2);
+      const delay = ((index % 6) * 0.45).toFixed(2);
+      return `
+        <div class="mg-food-bg-cell">
+          <span
+            class="mg-food-bg-chip"
+            style="--mg-shift-x:${shiftX}px;--mg-shift-y:${shiftY}px;--mg-rot:${rot}deg;--mg-float-dur:${dur}s;--mg-float-delay:-${delay}s;"
+          >${icon}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
   function initDedicatedMiniGamePage() {
     const canvas = document.getElementById("mgWheelCanvas");
     if (!canvas) return;
     if (canvas.dataset.mgInitialized === "1") return;
     canvas.dataset.mgInitialized = "1";
+
+    mountEvenFoodBackgroundGrid();
 
     const pointer = document.getElementById("mgWheelPointer");
     const centerBtn = document.getElementById("mgWheelCenterBtn");

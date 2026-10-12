@@ -1,18 +1,95 @@
 /* ==========================================================================
    BẾP 1979 - TRANG MINI GAME "VÒNG QUAY MỸ VỊ 1979" (minigame.html)
-   Thiết kế giao diện trang độc lập: Sáng sủa ở chế độ Sáng (Light Mode)
-   và tự động chuyển sang tông tối ấm áp ở chế độ Ban đêm ([data-theme="dark"]).
+   Thiết kế giao diện trang độc lập:
+   - Background riêng theo chủ đề đồ ăn phân bổ đều khắp trang (Lưới so le + Họa tiết ẩm thực)
+   - Sáng sủa ở chế độ Sáng (Light Mode) & tự động chuyển sang tông tối ở chế độ Ban đêm
    ========================================================================== */
+
+:root {
+  --mg-food-tile-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg font-family='Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif' font-size='22' opacity='0.14'%3E%3Ctext x='24' y='42'%3E%F0%9F%8D%95%3C/text%3E%3Ctext x='144' y='42'%3E%F0%9F%8D%9C%3C/text%3E%3Ctext x='84' y='102'%3E%F0%9F%8D%94%3C/text%3E%3Ctext x='204' y='102'%3E%F0%9F%A7%8B%3C/text%3E%3Ctext x='24' y='162'%3E%F0%9F%8D%97%3C/text%3E%3Ctext x='144' y='162'%3E%F0%9F%8D%A3%3C/text%3E%3Ctext x='84' y='222'%3E%F0%9F%8D%B0%3C/text%3E%3Ctext x='204' y='222'%3E%F0%9F%A5%9F%3C/text%3E%3C/g%3E%3C/svg%3E");
+}
+
+body.mg-food-theme-body,
+body:has(.minigame-page) {
+  background-color: #fff8f2;
+  background-image:
+    var(--mg-food-tile-svg),
+    radial-gradient(circle at 15% 20%, rgba(255, 145, 0, 0.09) 0%, transparent 45%),
+    radial-gradient(circle at 85% 30%, rgba(255, 87, 34, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(255, 179, 0, 0.09) 0%, transparent 50%),
+    linear-gradient(180deg, #fffaf5 0%, #fff3e8 100%);
+  background-size: 240px 240px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
+}
+
+/* Lưới Background Đồ Ăn Phân Bổ Đều (Staggered Grid 6x4 = 24 ô đều toàn màn hình) */
+.mg-food-bg-grid {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  place-items: center;
+  padding: 96px 32px 24px;
+  overflow: hidden;
+}
+
+.mg-food-bg-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.mg-food-bg-chip {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 145, 77, 0.22);
+  box-shadow: 0 8px 20px rgba(216, 67, 21, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  opacity: 0.42;
+  transform: translate(var(--mg-shift-x, 0px), var(--mg-shift-y, 0px)) rotate(var(--mg-rot, 0deg));
+  animation: mgFoodBgFloat var(--mg-float-dur, 6s) ease-in-out infinite alternate;
+  animation-delay: var(--mg-float-delay, 0s);
+}
+
+@keyframes mgFoodBgFloat {
+  0% {
+    transform: translate(var(--mg-shift-x, 0px), var(--mg-shift-y, 0px)) rotate(var(--mg-rot, -6deg)) scale(0.96);
+  }
+  100% {
+    transform: translate(var(--mg-shift-x, 0px), calc(var(--mg-shift-y, 0px) - 10px)) rotate(calc(var(--mg-rot, -6deg) + 8deg)) scale(1.04);
+  }
+}
 
 .minigame-page {
   max-width: 1180px;
   margin: 24px auto 56px;
   padding: 0 18px;
+  position: relative;
+  z-index: 1;
 }
 
-/* 1. Hero Banner (Mặc định: Chế độ Sáng - Light Mode) */
+/* 1. Hero Banner (Mặc định: Chế độ Sáng - Light Mode + Họa tiết đồ ăn phân bổ đều) */
 .mg-hero-banner {
-  background: linear-gradient(135deg, #fff7f0 0%, #ffead8 52%, #ffdfc4 100%);
+  background-color: #fff4e8;
+  background-image:
+    var(--mg-food-tile-svg),
+    linear-gradient(135deg, rgba(255, 247, 240, 0.94) 0%, rgba(255, 234, 216, 0.94) 52%, rgba(255, 223, 196, 0.94) 100%);
+  background-size: 210px 210px, 100% 100%;
+  background-repeat: repeat, no-repeat;
   border: 1.5px solid #f5c6a5;
   border-radius: 24px;
   padding: 28px 32px;
@@ -79,7 +156,7 @@
 }
 
 .mg-hero-countdown-box {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.92);
   border: 1.5px solid #f5c199;
   border-radius: 18px;
   padding: 16px 20px;
@@ -147,9 +224,14 @@
   align-items: start;
 }
 
-/* Left Card: Wheel Stage (Mặc định: Chế độ Sáng - Light Mode) */
+/* Left Card: Wheel Stage (Mặc định: Chế độ Sáng + Họa tiết đồ ăn phân bổ đều) */
 .mg-wheel-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fff7f0 100%);
+  background-color: #fffaf5;
+  background-image:
+    var(--mg-food-tile-svg),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 246, 238, 0.95) 100%);
+  background-size: 200px 200px, 100% 100%;
+  background-repeat: repeat, no-repeat;
   border: 1.5px solid #f0dfd5;
   border-radius: 26px;
   padding: 24px 24px 28px;
@@ -167,6 +249,8 @@
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 18px;
+  position: relative;
+  z-index: 2;
 }
 
 .mg-quota-badge {
@@ -216,6 +300,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .mg-wheel-outer-rim {
@@ -291,6 +376,8 @@
 }
 
 .mg-spin-cta-btn {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: 350px;
   padding: 15px 24px;
@@ -319,6 +406,8 @@
 }
 
 .mg-wheel-footnote {
+  position: relative;
+  z-index: 2;
   margin: 12px 0 0;
   font-size: 12.5px;
   color: #785a4c;
@@ -332,7 +421,11 @@
 }
 
 .mg-panel-card {
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image:
+    var(--mg-food-tile-svg),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 251, 248, 0.97) 100%);
+  background-size: 220px 220px, 100% 100%;
   border: 1px solid #f0dfd5;
   border-radius: 22px;
   padding: 22px 24px;
@@ -368,7 +461,7 @@
 
 /* My Daily Voucher Ticket & Buttons */
 .mg-my-voucher-empty {
-  background: #fff9f5;
+  background: rgba(255, 249, 245, 0.92);
   border: 1.5px dashed #f2cbb6;
   border-radius: 16px;
   padding: 20px 18px;
@@ -514,7 +607,7 @@
   gap: 10px;
   padding: 11px 12px;
   border-radius: 14px;
-  background: #fffaf7;
+  background: rgba(255, 250, 247, 0.94);
   border: 1px solid #f2e1d7;
 }
 
@@ -560,8 +653,30 @@
 /* ==========================================================================
    CHẾ ĐỘ TỐI (DARK MODE - [data-theme="dark"])
    ========================================================================== */
+[data-theme="dark"] body.mg-food-theme-body,
+[data-theme="dark"] body:has(.minigame-page) {
+  background-color: #14100e;
+  background-image:
+    var(--mg-food-tile-svg),
+    radial-gradient(circle at 20% 25%, rgba(255, 111, 0, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 80% 75%, rgba(230, 81, 0, 0.08) 0%, transparent 45%),
+    linear-gradient(180deg, #181310 0%, #110e0c 100%);
+  background-size: 240px 240px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+[data-theme="dark"] .mg-food-bg-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 184, 48, 0.14);
+  box-shadow: none;
+  opacity: 0.24;
+}
+
 [data-theme="dark"] .mg-hero-banner {
-  background: radial-gradient(circle at 80% 20%, #4e1f0d 0%, #240c04 60%, #140602 100%);
+  background-color: #240c04;
+  background-image:
+    var(--mg-food-tile-svg),
+    radial-gradient(circle at 80% 20%, rgba(78, 31, 13, 0.94) 0%, rgba(36, 12, 4, 0.95) 60%, rgba(20, 6, 2, 0.96) 100%);
+  background-size: 210px 210px, 100% 100%;
   border-color: rgba(255, 184, 48, 0.35);
   color: #fff;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
@@ -610,7 +725,11 @@
 }
 
 [data-theme="dark"] .mg-wheel-card {
-  background: radial-gradient(circle at 50% 15%, #3b170a 0%, #1b0a04 68%, #110502 100%);
+  background-color: #1b0a04;
+  background-image:
+    var(--mg-food-tile-svg),
+    radial-gradient(circle at 50% 15%, rgba(59, 23, 10, 0.94) 0%, rgba(27, 10, 4, 0.95) 68%, rgba(17, 5, 2, 0.96) 100%);
+  background-size: 200px 200px, 100% 100%;
   border-color: rgba(255, 184, 48, 0.38);
   color: #fff;
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.5);
@@ -649,7 +768,11 @@
 }
 
 [data-theme="dark"] .mg-panel-card {
-  background: #1c1310;
+  background-color: #1c1310;
+  background-image:
+    var(--mg-food-tile-svg),
+    linear-gradient(180deg, rgba(28, 19, 16, 0.96) 0%, rgba(22, 15, 12, 0.96) 100%);
+  background-size: 220px 220px, 100% 100%;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -736,6 +859,10 @@
   .mg-main-grid {
     grid-template-columns: 1fr;
   }
+  .mg-food-bg-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+  }
 }
 
 @media (max-width: 540px) {
@@ -748,5 +875,9 @@
   }
   .mg-prize-grid {
     grid-template-columns: 1fr;
+  }
+  .mg-food-bg-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(6, 1fr);
   }
 }
