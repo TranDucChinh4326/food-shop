@@ -23,20 +23,20 @@ body:has(.minigame-page) {
   background-attachment: fixed;
 }
 
-/* Lưới Background Đồ Ăn Phân Bổ Đều (Staggered Grid 6x4 = 24 ô đều toàn màn hình) */
+/* Lưới Background Đồ Ăn Phân Bổ Đều (Nằm hoàn toàn dưới nền z-index: -1, không đè lên nội dung hay Footer) */
 .mg-food-bg-grid {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
   user-select: none;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(4, 1fr);
   place-items: center;
-  padding: 96px 32px 24px;
+  padding: 96px 28px 24px;
   overflow: hidden;
 }
 
@@ -49,17 +49,15 @@ body:has(.minigame-page) {
 }
 
 .mg-food-bg-chip {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 145, 77, 0.22);
-  box-shadow: 0 8px 20px rgba(216, 67, 21, 0.06);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  opacity: 0.42;
+  font-size: 26px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  opacity: 0.22;
+  filter: saturate(0.95);
   transform: translate(var(--mg-shift-x, 0px), var(--mg-shift-y, 0px)) rotate(var(--mg-rot, 0deg));
   animation: mgFoodBgFloat var(--mg-float-dur, 6s) ease-in-out infinite alternate;
   animation-delay: var(--mg-float-delay, 0s);
@@ -70,7 +68,7 @@ body:has(.minigame-page) {
     transform: translate(var(--mg-shift-x, 0px), var(--mg-shift-y, 0px)) rotate(var(--mg-rot, -6deg)) scale(0.96);
   }
   100% {
-    transform: translate(var(--mg-shift-x, 0px), calc(var(--mg-shift-y, 0px) - 10px)) rotate(calc(var(--mg-rot, -6deg) + 8deg)) scale(1.04);
+    transform: translate(var(--mg-shift-x, 0px), calc(var(--mg-shift-y, 0px) - 8px)) rotate(calc(var(--mg-rot, -6deg) + 8deg)) scale(1.04);
   }
 }
 
@@ -79,7 +77,14 @@ body:has(.minigame-page) {
   margin: 24px auto 56px;
   padding: 0 18px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+
+[data-shared-footer],
+footer,
+.site-footer {
+  position: relative;
+  z-index: 2;
 }
 
 /* 1. Hero Banner (Mặc định: Chế độ Sáng - Light Mode + Họa tiết đồ ăn phân bổ đều) */
@@ -665,10 +670,10 @@ body:has(.minigame-page) {
 }
 
 [data-theme="dark"] .mg-food-bg-chip {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 184, 48, 0.14);
+  background: transparent;
+  border: none;
   box-shadow: none;
-  opacity: 0.24;
+  opacity: 0.14;
 }
 
 [data-theme="dark"] .mg-hero-banner {
