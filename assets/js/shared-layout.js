@@ -1269,7 +1269,7 @@ function loadFoodHubMiniGameScript() {
   }
   const script = document.createElement("script");
   script.id = "fh-minigame-script";
-  script.src = "assets/js/minigame.js?v=20261012-wheel-page-v2";
+  script.src = "assets/js/minigame.js?v=20261012-wheel-page-v3";
   script.defer = true;
   document.body.appendChild(script);
 }

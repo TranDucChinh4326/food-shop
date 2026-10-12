@@ -7,7 +7,8 @@
 
 (function initFoodHubMiniGame() {
   if (typeof window === "undefined" || typeof document === "undefined") return;
-  const pageName = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const rawSegment = (window.location.pathname.split("/").filter(Boolean).pop() || "index.html").toLowerCase();
+  const pageName = rawSegment.endsWith(".html") ? rawSegment : `${rawSegment}.html`;
   if (pageName.startsWith("admin") || pageName === "login.html" || pageName === "register.html") return;
 
   const API_BASE = window.FOODHUB_CONFIG?.API_BASE_URL || "http://localhost:3000/api";
@@ -545,7 +546,7 @@
         position: absolute;
         left: calc(100% + 12px);
         top: 50%;
-        transform: translateY(-50%);
+        transform: translateY(-50%) translateX(-6px);
         background: linear-gradient(135deg, #2b160c, #432010);
         color: #fff8e1;
         border: 1px solid rgba(255, 193, 7, 0.45);
@@ -559,10 +560,15 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: opacity 0.2s ease, transform 0.2s ease;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
       }
 
-      .fh-minigame-Launcher:hover .fh-minigame-tooltip {
+      .fh-minigame-Launcher:hover .fh-minigame-tooltip,
+      .fh-minigame-Launcher:focus-visible .fh-minigame-tooltip {
+        opacity: 1;
+        visibility: visible;
         transform: translateY(-50%) translateX(3px);
       }
 
@@ -584,7 +590,7 @@
   }
 
   function buildFloatingLauncherOnly() {
-    if (document.getElementById("fhMiniGameWidget")) return;
+    if (document.getElementById("fhMiniGameWidget") || document.getElementById("mgWheelCanvas")) return;
     injectFloatingLauncherStyles();
 
     const wrapper = document.createElement("div");
@@ -640,7 +646,8 @@
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const cx = size / 2;
     const cy = size / 2;
@@ -701,6 +708,8 @@
   function initDedicatedMiniGamePage() {
     const canvas = document.getElementById("mgWheelCanvas");
     if (!canvas) return;
+    if (canvas.dataset.mgInitialized === "1") return;
+    canvas.dataset.mgInitialized = "1";
 
     const pointer = document.getElementById("mgWheelPointer");
     const centerBtn = document.getElementById("mgWheelCenterBtn");
@@ -1020,7 +1029,10 @@
     purgeExpiredMiniGameLocalStorage();
     autoApplyPendingVoucherOnCart();
 
-    if (pageName === "minigame.html") {
+    const hasWheelCanvasOnPage = Boolean(document.getElementById("mgWheelCanvas"));
+    if (hasWheelCanvasOnPage || pageName === "minigame.html") {
+      const existingWidget = document.getElementById("fhMiniGameWidget");
+      if (existingWidget) existingWidget.remove();
       initDedicatedMiniGamePage();
     } else {
       buildFloatingLauncherOnly();
