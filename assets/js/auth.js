@@ -59,8 +59,8 @@ function showSessionReasonNotice() {
       "Tài khoản của bạn đã được đăng nhập trên một trình duyệt khác. Phiên đăng nhập tại đây đã kết thúc.",
       "error"
     );
-  } else if (reason === "session-invalid") {
-    showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "error");
+  } else if (reason === "session-invalid" || reason === "session-timeout") {
+    showToast("Phiên đăng nhập đã hết hạn do không thao tác hoặc quá thời gian cho phép. Vui lòng đăng nhập lại.", "error");
   }
 }
 

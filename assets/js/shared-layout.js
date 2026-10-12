@@ -406,12 +406,27 @@ function startFoodHubPresenceHeartbeat() {
 
   window["__foodHubPresenceHeartbeatStarted"] = true;
   const pingPresence = () => {
+    const currentToken = localStorage.getItem("foodhub_token");
+    if (!currentToken) return;
     fetch(`${apiBase}/auth/ping`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${currentToken}`
       },
       keepalive: true
+    }).then(response => {
+      if (response.status === 401) {
+        if (typeof window.clearFoodHubSessionStorage === "function") {
+          window.clearFoodHubSessionStorage();
+        } else {
+          localStorage.removeItem("foodhub_token");
+          localStorage.removeItem("foodhub_user");
+          localStorage.removeItem("foodhub_cart");
+          localStorage.removeItem("foodhub_last_activity_at");
+          localStorage.removeItem("foodhub_user_pin_locked");
+        }
+        window.location.href = "login.html?reason=session-timeout";
+      }
     }).catch(err => {
       console.warn("Presence ping skipped:", err.message);
     });
@@ -609,6 +624,7 @@ function startFoodHubIdleSessionGuard() {
   const activityKey = "foodhub_last_activity_at";
   const userPinLockKey = "foodhub_user_pin_locked";
   const idleLimitMs = Number(getFoodHubConfig().USER_PIN_IDLE_LIMIT_MS || 5 * 60 * 1000);
+  const logoutLimitMs = Number(getFoodHubConfig().SESSION_LOGOUT_IDLE_LIMIT_MS || 15 * 60 * 1000);
   const token = localStorage.getItem(tokenKey);
   const apiBase = getSharedApiBase();
   let failedAttempts = 0;
@@ -617,8 +633,69 @@ function startFoodHubIdleSessionGuard() {
   if (!token || window["__foodHubIdleSessionStarted"]) return;
 
   window["__foodHubIdleSessionStarted"] = true;
+
+  const parseTokenPayload = rawToken => {
+    if (typeof window.readFoodHubTokenPayload === "function") {
+      return window.readFoodHubTokenPayload(rawToken);
+    }
+    try {
+      const part = String(rawToken || "").split(".")[1];
+      if (!part) return null;
+      const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+      return JSON.parse(atob(padded));
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const isTokenExpired = rawToken => {
+    if (typeof window.isFoodHubTokenExpired === "function") {
+      return window.isFoodHubTokenExpired(rawToken);
+    }
+    const payload = parseTokenPayload(rawToken);
+    if (!payload) return true;
+    const current = Date.now();
+    if (payload.exp && Number(payload.exp) * 1000 <= current) return true;
+    const role = String(payload.role || "").toUpperCase();
+    const maxAgeMs = role && role !== "USER"
+      ? Number(getFoodHubConfig().ADMIN_TOKEN_MAX_AGE_MS || 2 * 60 * 60 * 1000)
+      : Number(getFoodHubConfig().USER_TOKEN_MAX_AGE_MS || 12 * 60 * 60 * 1000);
+    if (payload.iat && current - Number(payload.iat) * 1000 >= maxAgeMs) return true;
+    return false;
+  };
+
+  const clearSession = () => {
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(userKey);
+    localStorage.removeItem(cartKey);
+    localStorage.removeItem(activityKey);
+    localStorage.removeItem(userPinLockKey);
+    sessionStorage.removeItem(activityKey);
+    sessionStorage.removeItem("foodhub_admin_pin_locked");
+  };
+
+  const redirectToLogin = () => {
+    if (location.pathname.endsWith("/login.html") || location.pathname.endsWith("/register.html")) return;
+    localStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "index.html"}${location.search || ""}`);
+    window.location.href = "login.html?reason=session-timeout";
+  };
+
+  const tokenPayload = parseTokenPayload(token);
+  const tokenIssuedAtMs = Number(tokenPayload?.iat || 0) * 1000;
+  const storedActivity = Number(localStorage.getItem(activityKey) || 0);
+  const lastActivity = storedActivity >= tokenIssuedAtMs ? storedActivity : tokenIssuedAtMs;
   const now = Date.now();
-  const lastActivity = Number(localStorage.getItem(activityKey) || now);
+
+  if (isTokenExpired(token) || !lastActivity || now - lastActivity > logoutLimitMs) {
+    clearSession();
+    redirectToLogin();
+    return;
+  }
+
+  if (!storedActivity || storedActivity < tokenIssuedAtMs) {
+    localStorage.setItem(activityKey, String(lastActivity));
+  }
 
   const getSessionUser = () => {
     try {
@@ -688,20 +765,6 @@ function startFoodHubIdleSessionGuard() {
     });
   };
 
-  const clearSession = () => {
-    localStorage.removeItem(tokenKey);
-    localStorage.removeItem(userKey);
-    localStorage.removeItem(cartKey);
-    localStorage.removeItem(activityKey);
-    localStorage.removeItem(userPinLockKey);
-  };
-
-  const redirectToLogin = () => {
-    if (location.pathname.endsWith("/login.html") || location.pathname.endsWith("/register.html")) return;
-    localStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "index.html"}${location.search || ""}`);
-    window.location.href = "login.html?reason=session-timeout";
-  };
-
   const ensurePinOverlay = () => {
     let overlay = document.querySelector("[data-user-pin-lock]");
     if (overlay) return overlay;
@@ -745,17 +808,29 @@ function startFoodHubIdleSessionGuard() {
       if (errorEl) errorEl.textContent = "Đang kiểm tra mã PIN...";
 
       try {
+        const currentToken = localStorage.getItem(tokenKey) || "";
+        if (!currentToken || isTokenExpired(currentToken)) {
+          clearSession();
+          redirectToLogin();
+          return;
+        }
+
         const response = await fetch(`${apiBase}/auth/pin/verify`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem(tokenKey) || ""}`
+            Authorization: `Bearer ${currentToken}`
           },
           body: JSON.stringify({ pin })
         });
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
+          if (response.status === 401 && data.code) {
+            clearSession();
+            redirectToLogin();
+            return;
+          }
           failedAttempts += 1;
           if (failedAttempts >= 3) {
             clearSession();
@@ -808,10 +883,8 @@ function startFoodHubIdleSessionGuard() {
 
   if (now - lastActivity > idleLimitMs) {
     lockScreen();
-    return;
-  }
-
-  if (isLocked && shouldUsePinLock()) {
+    if (!shouldUsePinLock()) return;
+  } else if (isLocked && shouldUsePinLock()) {
     const overlay = ensurePinOverlay();
     resetPinOverlayInputs(overlay);
     overlay.classList.add("is-visible");
@@ -825,23 +898,43 @@ function startFoodHubIdleSessionGuard() {
   let lastMarkActivityAt = 0;
   const markActivity = () => {
     if (isLocked) return;
-    const now = Date.now();
-    if (now - lastMarkActivityAt < 10000) return;
-    lastMarkActivityAt = now;
-    localStorage.setItem(activityKey, String(now));
+    const current = Date.now();
+    if (current - lastMarkActivityAt < 10000) return;
+    lastMarkActivityAt = current;
+    localStorage.setItem(activityKey, String(current));
   };
   ["click", "keydown", "pointerdown"].forEach(eventName => {
     window.addEventListener(eventName, markActivity, { passive: true });
   });
-  markActivity();
+  if (!isLocked) markActivity();
 
-  window.setInterval(() => {
+  const runIdleChecks = () => {
     const currentToken = localStorage.getItem(tokenKey);
+    if (!currentToken || isTokenExpired(currentToken)) {
+      clearSession();
+      redirectToLogin();
+      return;
+    }
+
     const latestActivity = Number(localStorage.getItem(activityKey) || 0);
-    if (currentToken && !isLocked && Date.now() - latestActivity > idleLimitMs) {
+    const idleFor = Date.now() - latestActivity;
+
+    if (!latestActivity || idleFor > logoutLimitMs) {
+      clearSession();
+      redirectToLogin();
+      return;
+    }
+
+    if (!isLocked && idleFor > idleLimitMs) {
       lockScreen();
     }
-  }, 60000);
+  };
+
+  window.setInterval(runIdleChecks, 15000);
+  window.addEventListener("focus", runIdleChecks);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) runIdleChecks();
+  });
 }
 
 function setFoodHubTranslateCookie(lang) {

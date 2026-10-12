@@ -295,7 +295,12 @@ function readAdminTokenPayload(token) {
 }
 
 function isAdminTokenExpired(payload) {
-  return Boolean(payload?.exp) && Number(payload.exp) * 1000 <= Date.now();
+  if (!payload) return true;
+  const now = Date.now();
+  if (payload.exp && Number(payload.exp) * 1000 <= now) return true;
+  const maxAgeMs = Number(window.FOODHUB_CONFIG?.ADMIN_TOKEN_MAX_AGE_MS || 2 * 60 * 60 * 1000);
+  if (payload.iat && now - Number(payload.iat) * 1000 >= maxAgeMs) return true;
+  return false;
 }
 
 function forceAdminLogout() {
@@ -305,6 +310,7 @@ function forceAdminLogout() {
   localStorage.removeItem("foodhub_user");
   localStorage.removeItem("foodhub_cart");
   localStorage.removeItem(activityKey);
+  localStorage.removeItem("foodhub_user_pin_locked");
   sessionStorage.removeItem(activityKey);
   sessionStorage.removeItem("foodhub_admin_pin_locked");
   sessionStorage.setItem("foodhub_after_login", `${location.pathname.split("/").pop() || "admin.html"}${location.search || ""}`);
@@ -442,19 +448,20 @@ function startAdminIdleSessionGuard() {
   }
 
   // Mốc thao tác cuối lưu ở localStorage để còn đúng khi mở lại tab/trình duyệt.
-  // Mốc cũ hơn thời điểm cấp token nghĩa là phiên đăng nhập mới: bắt đầu tính lại từ bây giờ.
+  // Nếu chưa có mốc thao tác hoặc mốc cũ hơn lúc cấp token, lấy đúng thời điểm cấp token (iat), tuyệt đối không lấy Date.now().
   const storedActivity = Number(localStorage.getItem(activityKey) || 0);
-  if (!storedActivity || storedActivity < tokenIssuedAtMs) {
-    localStorage.setItem(activityKey, String(Date.now()));
-  }
+  const lastActivity = storedActivity >= tokenIssuedAtMs ? storedActivity : tokenIssuedAtMs;
   sessionStorage.removeItem(activityKey);
 
   const now = Date.now();
-  const lastActivity = Number(localStorage.getItem(activityKey) || now);
 
-  if (now - lastActivity > logoutLimitMs) {
+  if (!lastActivity || now - lastActivity > logoutLimitMs) {
     forceAdminLogout();
     return;
+  }
+
+  if (!storedActivity || storedActivity < tokenIssuedAtMs) {
+    localStorage.setItem(activityKey, String(lastActivity));
   }
 
   const clearSession = () => {
