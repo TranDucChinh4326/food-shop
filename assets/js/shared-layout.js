@@ -1259,6 +1259,15 @@ function initGentleFoodRain() {
   }, 5000);
 }
 
+function loadFoodHubMiniGameScript() {
+  if (document.getElementById("fh-minigame-script") || document.getElementById("fhMiniGameWidget")) return;
+  const script = document.createElement("script");
+  script.id = "fh-minigame-script";
+  script.src = "assets/js/minigame.js?v=20261012-wheel-v1";
+  script.defer = true;
+  document.body.appendChild(script);
+}
+
 renderSharedHeader();
 initFoodHubTheme();
 renderSharedFooter();
@@ -1270,3 +1279,4 @@ startFoodHubRealtime();
 startFoodHubIdleSessionGuard();
 startFoodHubPresenceHeartbeat();
 initGentleFoodRain();
+loadFoodHubMiniGameScript();
